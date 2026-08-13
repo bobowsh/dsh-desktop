@@ -41,7 +41,7 @@ function createWindow(): BrowserWindow {
     minWidth: 900,
     minHeight: 640,
     show: false,
-    title: 'DSH Desktop',
+    title: '',
     backgroundColor: '#f8f8f6',
     webPreferences: {
       contextIsolation: true,
@@ -49,6 +49,10 @@ function createWindow(): BrowserWindow {
       sandbox: true,
       webSecurity: true
     }
+  })
+  window.on('page-title-updated', (event) => {
+    event.preventDefault()
+    window.setTitle('')
   })
   secureWindow(window)
   window.on('closed', () => {

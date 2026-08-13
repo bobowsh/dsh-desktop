@@ -1,8 +1,168 @@
 diff --git a/node_modules/@deepseek-ai/dsh-client-ui-settings-models/lib/client.js b/node_modules/@deepseek-ai/dsh-client-ui-settings-models/lib/client.js
-index 644a0f2..8fff22c 100644
+index 644a0f2..42e2f81 100644
 --- a/node_modules/@deepseek-ai/dsh-client-ui-settings-models/lib/client.js
 +++ b/node_modules/@deepseek-ai/dsh-client-ui-settings-models/lib/client.js
-@@ -2135,7 +2135,7 @@ window.__ModuleLoader__.load({
+@@ -66,6 +66,14 @@ window.__ModuleLoader__.load({
+ 			tag.textContent = css$3;
+ 			document.head.appendChild(tag);
+ 		}
++		const providerPickerTagId = "@deepseek-ai/dsh-client-ui-settings-models/ProviderPicker";
++		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(providerPickerTagId) + "]") === null) {
++			const tag = document.createElement("style");
++			tag.dataset.plugin = "@deepseek-ai/dsh-client-ui-settings-models";
++			tag.dataset.pluginCss = providerPickerTagId;
++			tag.textContent = ".dshProviderPicker{flex-direction:column;gap:10px;display:flex}.dshProviderSearch{box-sizing:border-box;border:1px solid var(--dsw-alias-border-l2);width:100%;height:36px;font:inherit;background:var(--dsw-alias-bg-layer-1);color:var(--dsw-alias-label-primary);border-radius:8px;padding:0 11px;font-size:13px}.dshProviderSearch:focus{border-color:var(--dsw-alias-border-l1);outline:none}.dshProviderSearch::placeholder{color:var(--dsw-alias-label-dimmed)}.dshProviderGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;display:grid}.dshProviderCard{box-sizing:border-box;color:var(--dsw-alias-label-primary);background:var(--dsw-alias-bg-layer-1);border:1px solid var(--dsw-alias-border-l2);border-radius:8px;flex-direction:column;align-items:flex-start;min-height:58px;padding:10px 12px;display:flex;cursor:pointer;text-align:left;font:inherit}.dshProviderCard:hover{background:var(--dsw-alias-interactive-bg-hover)}.dshProviderCard[aria-pressed=true]{border-color:var(--dsw-alias-border-l1);background:var(--dsw-alias-interactive-bg-hover)}.dshProviderCard:focus-visible{outline:none;box-shadow:0 0 0 2px var(--dsw-alias-border-l3)}.dshProviderName{font-size:14px;font-weight:500;line-height:20px}.dshProviderRoute{color:var(--dsw-alias-label-tertiary);font-size:11px;line-height:16px}.dshProviderSummary{box-sizing:border-box;border:1px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-1);border-radius:8px;align-items:center;gap:12px;min-height:52px;padding:8px 10px 8px 12px;display:flex}.dshProviderSummaryText{flex-direction:column;min-width:0;display:flex}.dshProviderChange{color:var(--dsw-alias-label-secondary);background:transparent;border:1px solid var(--dsw-alias-border-l2);border-radius:14px;margin-left:auto;padding:4px 10px;font:inherit;font-size:12px;cursor:pointer}.dshProviderChange:hover{background:var(--dsw-alias-interactive-bg-hover)}@media (width<=620px){.dshProviderGrid{grid-template-columns:1fr}}";
++			document.head.appendChild(tag);
++		}
+ 		var ModelsSection_module_css_default = {
+ 			"iconButtonDanger": "zGbnIq_iconButtonDanger",
+ 			"editorActions": "zGbnIq_editorActions",
+@@ -1753,6 +1761,26 @@ window.__ModuleLoader__.load({
+ 		function providerCopy(template, target) {
+ 			return template.replace("{provider}", () => providerTargetLabel(target));
+ 		}
++		/** Common providers first; specialized routes follow alphabetically. */
++		const SETTINGS_PROVIDER_PRIORITY = [
++			"deepseek-official",
++			"deepseek",
++			"openai",
++			"anthropic",
++			"google",
++			"openrouter",
++			"xai",
++			"moonshotai-cn",
++			"moonshotai",
++			"minimax-cn",
++			"minimax",
++			"zai-coding-cn",
++			"zai",
++			"mistral",
++			"groq",
++			"together"
++		];
++		const SETTINGS_PROVIDER_RANK = new Map(SETTINGS_PROVIDER_PRIORITY.map((provider, index) => [provider, index]));
+ 		/**
+ 		* Render the Models section content column.
+ 		* @param props - slot-delivered injected dependencies.
+@@ -1778,6 +1806,8 @@ window.__ModuleLoader__.load({
+ 			const [deleteFailure, setDeleteFailure] = (0, react.useState)(void 0);
+ 			const [savedTarget, setSavedTarget] = (0, react.useState)(void 0);
+ 			const [declaring, setDeclaring] = (0, react.useState)(false);
++			const [providerPickerOpen, setProviderPickerOpen] = (0, react.useState)(false);
++			const [providerQuery, setProviderQuery] = (0, react.useState)("");
+ 			const [dismissedSetup, setDismissedSetup] = (0, react.useState)(() => /* @__PURE__ */ new Set());
+ 			const announceSaved = (target) => {
+ 				controller.load().then(() => {
+@@ -1847,10 +1877,16 @@ window.__ModuleLoader__.load({
+ 			};
+ 			const anyUsable = state.rows.some(providerUsable);
+ 			const configured = state.rows.filter((row) => row.configured);
+-			const addable = state.rows.filter((row) => !row.configured && row.entry.settingsNs !== "");
++			const addable = state.rows.filter((row) => !row.configured && row.entry.settingsNs !== "").sort((left, right) => {
++				const leftRank = SETTINGS_PROVIDER_RANK.get(left.entry.provider) ?? Number.MAX_SAFE_INTEGER;
++				const rightRank = SETTINGS_PROVIDER_RANK.get(right.entry.provider) ?? Number.MAX_SAFE_INTEGER;
++				return leftRank - rightRank || left.entry.displayName.localeCompare(right.entry.displayName);
++			});
+ 			const addTarget = adding ? editing : void 0;
+ 			const addNamespace = addTarget === void 0 ? void 0 : state.namespaces.get(addTarget.settingsNs);
+ 			const protocols = protocolChoices(state.namespaces.get("llm-pi-ai"));
++			const normalizedProviderQuery = providerQuery.trim().toLowerCase();
++			const visibleAddable = normalizedProviderQuery.length === 0 ? addable : addable.filter((row) => `${row.entry.displayName} ${row.entry.provider}`.toLowerCase().includes(normalizedProviderQuery));
+ 			return (0, react_jsx_runtime.jsxs)("div", {
+ 				className: ModelsSection_module_css_default["section"],
+ 				children: [
+@@ -1967,24 +2003,66 @@ window.__ModuleLoader__.load({
+ 							className: ModelsSection_module_css_default["addCard"],
+ 							children: [(0, react_jsx_runtime.jsxs)("div", {
+ 								className: ModelsSection_module_css_default["field"],
+-								children: [(0, react_jsx_runtime.jsx)("span", {
+-									className: ModelsSection_module_css_default["fieldLabel"],
+-									children: t("provider")
+-								}), (0, react_jsx_runtime.jsx)("select", {
+-									className: `${ModelsSection_module_css_default["input"]} ${ModelsSection_module_css_default["selectInput"]}`,
+-									value: addTarget.provider,
+-									"aria-label": t("provider"),
++							children: [(0, react_jsx_runtime.jsx)("span", {
++								className: ModelsSection_module_css_default["fieldLabel"],
++								children: t("provider")
++							}), providerPickerOpen ? (0, react_jsx_runtime.jsxs)("div", {
++								className: "dshProviderPicker",
++								children: [(0, react_jsx_runtime.jsx)("input", {
++									className: "dshProviderSearch",
++									type: "search",
++									value: providerQuery,
++									placeholder: t("providerSearch"),
++									"aria-label": t("providerSearch"),
++									autoFocus: true,
+ 									onChange: (event) => {
+-										const row = addable.find((candidate) => candidate.entry.provider === event.target.value);
+-										/* v8 ignore next -- the select only lists addable rows */
+-										if (row === void 0) return;
+-										setEditing(targetOf(row));
++										setProviderQuery(event.target.value);
++									}
++								}), (0, react_jsx_runtime.jsx)("div", {
++									className: "dshProviderGrid",
++									role: "group",
++									"aria-label": t("provider"),
++									children: visibleAddable.map((row) => {
++									const active = row.entry.provider === addTarget.provider;
++									return (0, react_jsx_runtime.jsxs)("button", {
++										type: "button",
++										className: "dshProviderCard",
++										"aria-pressed": active,
++										onClick: () => {
++											setEditing(targetOf(row));
++											setProviderPickerOpen(false);
++											setProviderQuery("");
++										},
++										children: [(0, react_jsx_runtime.jsx)("span", {
++											className: "dshProviderName",
++											children: row.entry.displayName
++										}), (0, react_jsx_runtime.jsx)("span", {
++											className: "dshProviderRoute",
++											children: row.entry.provider
++										})]
++									}, row.entry.provider);
++									})
++								})]
++							}) : (0, react_jsx_runtime.jsxs)("div", {
++								className: "dshProviderSummary",
++								children: [(0, react_jsx_runtime.jsxs)("span", {
++									className: "dshProviderSummaryText",
++									children: [(0, react_jsx_runtime.jsx)("span", {
++										className: "dshProviderName",
++										children: addTarget.displayName
++									}), (0, react_jsx_runtime.jsx)("span", {
++										className: "dshProviderRoute",
++										children: addTarget.provider
++									})]
++								}), (0, react_jsx_runtime.jsx)("button", {
++									type: "button",
++									className: "dshProviderChange",
++									onClick: () => {
++										setProviderPickerOpen(true);
+ 									},
+-									children: addable.map((row) => (0, react_jsx_runtime.jsx)("option", {
+-										value: row.entry.provider,
+-										children: row.entry.displayName
+-									}, row.entry.provider))
++									children: t("changeProvider")
+ 								})]
++							})]
+ 							}), (0, react_jsx_runtime.jsx)(ProviderEditor, {
+ 								provider: addTarget.provider,
+ 								displayName: addTarget.displayName,
+@@ -2027,6 +2105,8 @@ window.__ModuleLoader__.load({
+ 									setDeclaring(false);
+ 									setAdding(true);
+ 									setEditing(targetOf(first));
++									setProviderPickerOpen(true);
++									setProviderQuery("");
+ 								},
+ 								children: [(0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconPlusOutline16, { size: 14 }), t("add")]
+ 							}), (0, react_jsx_runtime.jsxs)("button", {
+@@ -2135,7 +2215,7 @@ window.__ModuleLoader__.load({
  		}
  		//#endregion
  		//#region \0dsh-css:/home/runner/work/deepseek-harness/deepseek-harness/packages/client/ui-settings-models/src/client/DeepSeekOnboardingDialog.module.css.mjs
@@ -11,7 +171,7 @@ index 644a0f2..8fff22c 100644
  		const tagId$1 = "@deepseek-ai/dsh-client-ui-settings-models/DeepSeekOnboardingDialog.module.css";
  		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId$1) + "]") === null) {
  			const tag = document.createElement("style");
-@@ -2146,50 +2146,60 @@ window.__ModuleLoader__.load({
+@@ -2146,50 +2226,60 @@ window.__ModuleLoader__.load({
  		}
  		var DeepSeekOnboardingDialog_module_css_default = {
  			"description": "GL8Viq_description",
@@ -101,7 +261,7 @@ index 644a0f2..8fff22c 100644
  			const finishCredential = (changed) => {
  				if (!changed) {
  					complete();
-@@ -2199,28 +2209,54 @@ window.__ModuleLoader__.load({
+@@ -2199,28 +2289,54 @@ window.__ModuleLoader__.load({
  			};
  			return (0, react_jsx_runtime.jsxs)(OnboardingModal, {
  				title: t("onboardingTitle"),
@@ -161,7 +321,16 @@ index 644a0f2..8fff22c 100644
  				})]
  			});
  		}
-@@ -2530,10 +2566,14 @@ window.__ModuleLoader__.load({
+@@ -2457,6 +2573,8 @@ window.__ModuleLoader__.load({
+ 			deleting: "Deleting {provider}…",
+ 			add: "Add provider",
+ 			provider: "Provider",
++			providerSearch: "Search providers",
++			changeProvider: "Change",
+ 			close: "Close",
+ 			cancel: "Cancel",
+ 			apply: "Apply",
+@@ -2530,10 +2648,14 @@ window.__ModuleLoader__.load({
  			welcomeBody: WELCOME_NOTICE_COPY.en.body,
  			welcomeContinue: WELCOME_NOTICE_COPY.en.continueLabel,
  			welcomeError: "The acknowledgement could not be saved. Please try again.",
@@ -179,7 +348,16 @@ index 644a0f2..8fff22c 100644
  			onboardingSaving: "Saving…",
  			keyRequired: "Enter an API key to continue."
  		};
-@@ -2626,10 +2666,14 @@ window.__ModuleLoader__.load({
+@@ -2553,6 +2675,8 @@ window.__ModuleLoader__.load({
+ 			deleting: "正在删除 {provider}…",
+ 			add: "添加提供方",
+ 			provider: "提供方",
++			providerSearch: "搜索提供方",
++			changeProvider: "更换",
+ 			close: "关闭",
+ 			cancel: "取消",
+ 			apply: "保存",
+@@ -2626,10 +2750,14 @@ window.__ModuleLoader__.load({
  			welcomeBody: WELCOME_NOTICE_COPY.zh.body,
  			welcomeContinue: WELCOME_NOTICE_COPY.zh.continueLabel,
  			welcomeError: "暂时无法保存确认状态，请重试。",
