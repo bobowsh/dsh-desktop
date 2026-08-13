@@ -1,10 +1,9 @@
 ![DSH Desktop 模型提供方接入界面](docs/images/model-provider-onboarding.png)
 
-<p align="center">
-  <img src="build/icon.png" width="144" alt="DSH Desktop logo" />
-</p>
-
-<h1 align="center">DSH Desktop</h1>
+<h1 align="center">
+  <img src="build/icon.png" width="64" alt="DSH Desktop logo" valign="middle" />
+  DSH Desktop
+</h1>
 
 <p align="center">
   A local-first, cross-platform desktop shell for
@@ -20,6 +19,8 @@
   <img alt="macOS" src="https://img.shields.io/badge/macOS-Apple%20Silicon%20%7C%20Intel-171513.svg" />
   <img alt="Windows" src="https://img.shields.io/badge/Windows-x64-171513.svg" />
 </p>
+
+![DSH Desktop 模型提供方接入界面](docs/images/model-provider-onboarding.png)
 
 DSH Desktop 把 DeepSeek Harness 的本地 Web 体验封装为桌面应用：选择一个工作区，应用会启动本地 Harness、管理随机回环端口、持久化 Profile/插件/会话，并在 Harness 就绪后直接进入完整界面。
 
