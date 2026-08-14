@@ -28,43 +28,13 @@ let failureDialogVisible = false
 async function syncNativeTheme(window: BrowserWindow): Promise<void> {
   if (window.isDestroyed()) return
 
-  // The traffic-light strip remains dark in both Harness appearances. The page
-  // theme is tracked separately so the sidebar logo can still switch live.
+  // The traffic-light strip remains dark in both Harness appearances. Harness
+  // exposes its resolved appearance on body[data-ds-dark-theme], which the
+  // sidebar branding follows directly.
   nativeTheme.themeSource = 'dark'
   window.setBackgroundColor('#141416')
   await window.webContents.executeJavaScript(`
     (() => {
-      const detectDarkPage = () => {
-        const center = document.elementFromPoint(innerWidth / 2, innerHeight / 2)
-        const elements = [center, document.body, document.documentElement].filter(Boolean)
-        let channels
-        for (const element of elements) {
-          const values = getComputedStyle(element).backgroundColor.match(/[\\d.]+/g)?.map(Number)
-          if (values && values.length >= 3 && (values[3] ?? 1) > 0.1) {
-            channels = values.slice(0, 3)
-            break
-          }
-        }
-        if (!channels || channels.length < 3) {
-          return matchMedia('(prefers-color-scheme: dark)').matches
-        }
-        const [red, green, blue] = channels
-        return (red * 299 + green * 587 + blue * 114) / 1000 < 128
-      }
-
-      const applyPageTheme = () => {
-        const dark = detectDarkPage()
-        const theme = dark ? 'dark' : 'light'
-        if (document.documentElement.dataset.dshDesktopTheme !== theme) {
-          document.documentElement.dataset.dshDesktopTheme = theme
-        }
-        document.querySelectorAll('.dshDesktopLogoLight').forEach((logo) => {
-          logo.style.display = dark ? 'none' : ''
-        })
-        document.querySelectorAll('.dshDesktopLogoDark').forEach((logo) => {
-          logo.style.display = dark ? 'block' : 'none'
-        })
-      }
       if (${process.platform === 'darwin'}) {
         let style = document.getElementById('dsh-desktop-titlebar-style')
         if (!style) {
@@ -75,13 +45,6 @@ async function syncNativeTheme(window: BrowserWindow): Promise<void> {
         style.textContent = \`
           html { --dsh-desktop-titlebar-height: 30px; }
           body { box-sizing: border-box; padding-top: var(--dsh-desktop-titlebar-height); }
-          html[data-dsh-desktop-theme='dark'] .dshDesktopLogoLight {
-            display: none !important;
-          }
-          html[data-dsh-desktop-theme='dark'] .dshDesktopLogoDark {
-            display: block !important;
-            filter: brightness(0) invert(1);
-          }
           html::before {
             content: '';
             position: fixed;
@@ -94,16 +57,6 @@ async function syncNativeTheme(window: BrowserWindow): Promise<void> {
         \`
       }
 
-      window.__dshDesktopThemeObserver?.disconnect()
-      window.__dshDesktopThemeObserver = new MutationObserver(() => {
-        requestAnimationFrame(applyPageTheme)
-      })
-      window.__dshDesktopThemeObserver.observe(document.documentElement, {
-        attributes: true,
-        childList: true,
-        subtree: true
-      })
-      applyPageTheme()
     })()
   `)
 }

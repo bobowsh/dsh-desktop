@@ -13,8 +13,9 @@ describe('DSH Desktop sidebar branding', () => {
     expect(main).toContain("window.setBackgroundColor('#141416')")
     expect(main).toContain('window.setWindowButtonVisibility(true)')
     expect(main).toContain('window.setWindowButtonPosition({ x: 12, y: 9 })')
-    expect(main).toContain('new MutationObserver')
-    expect(main).toContain("const theme = dark ? 'dark' : 'light'")
+    expect(main).toContain('body[data-ds-dark-theme]')
+    expect(main).not.toContain('new MutationObserver')
+    expect(main).not.toContain('detectDarkPage')
     expect(main).toContain('background: #141416')
   })
 
@@ -33,7 +34,8 @@ describe('DSH Desktop sidebar branding', () => {
     expect(patch).toContain('height: 18')
     expect(patch).toContain('.hHd-Xa_brand:hover')
     expect(patch).toContain('padding-top:22px')
-    expect(patch).toContain('@media (prefers-color-scheme: dark)')
+    expect(patch).toContain('body[data-ds-dark-theme] .dshDesktopLogoLight')
+    expect(patch).toContain('body[data-ds-dark-theme] .dshDesktopLogoDark')
   })
 
   it('installs the source logo into the Harness static frontend', async () => {
