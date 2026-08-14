@@ -32,7 +32,8 @@ describe('DSH Desktop sidebar branding', () => {
     expect(patch).toContain('height: 18')
     expect(patch).toContain('.hHd-Xa_brand:hover')
     expect(patch).toContain('padding-top:22px')
-    expect(patch).toContain('filter: "brightness(0)"')
+    expect(patch).toContain('dsh-desktop-logo-black')
+    expect(patch).toContain('0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0')
     expect(patch).toContain('@media (prefers-color-scheme: dark)')
   })
 
