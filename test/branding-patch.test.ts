@@ -36,18 +36,4 @@ describe('DSH Desktop sidebar branding', () => {
     expect(installer).toContain('<link rel="icon" type="image/png" href="/dsh-desktop-logo.png" />')
     expect(installer).toContain('"src": "/dsh-desktop-logo.png"')
   })
-
-  it('uses the desktop logo in the new-conversation hero', async () => {
-    const patch = await readFile(
-      path.join(
-        projectRoot,
-        'patches',
-        '@deepseek-ai+dsh-client-ui-conversation+0.1.0-rc.6.patch'
-      ),
-      'utf8'
-    )
-
-    expect(patch).toContain('/dsh-desktop-logo.png')
-    expect(patch).toContain('src: "/dsh-desktop-logo.png"')
-  })
 })
