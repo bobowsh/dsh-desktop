@@ -57,5 +57,4 @@ describe('DSH Desktop sidebar branding', () => {
     expect(installer).toContain('<link rel="icon" type="image/png" href="/dsh-desktop-logo.png" />')
     expect(installer).toContain('"src": "/dsh-desktop-logo.png"')
   })
-
 })
