@@ -28,37 +28,43 @@ let failureDialogVisible = false
 async function syncNativeTheme(window: BrowserWindow): Promise<void> {
   if (window.isDestroyed()) return
 
-  const useDarkColors = await window.webContents.executeJavaScript(`
-    (() => {
-      const center = document.elementFromPoint(innerWidth / 2, innerHeight / 2)
-      const elements = [center, document.body, document.documentElement].filter(Boolean)
-      let channels
-      for (const element of elements) {
-        const values = getComputedStyle(element).backgroundColor.match(/[\\d.]+/g)?.map(Number)
-        if (values && values.length >= 3 && (values[3] ?? 1) > 0.1) {
-          channels = values.slice(0, 3)
-          break
-        }
-      }
-      if (!channels || channels.length < 3) {
-        return matchMedia('(prefers-color-scheme: dark)').matches
-      }
-      const [red, green, blue] = channels
-      return (red * 299 + green * 587 + blue * 114) / 1000 < 128
-    })()
-  `)
-
-  nativeTheme.themeSource = useDarkColors ? 'dark' : 'light'
-  window.setBackgroundColor(useDarkColors ? '#141416' : '#f8f8f6')
+  // The traffic-light strip remains dark in both Harness appearances. The page
+  // theme is tracked separately so the sidebar logo can still switch live.
+  nativeTheme.themeSource = 'dark'
+  window.setBackgroundColor('#141416')
   await window.webContents.executeJavaScript(`
     (() => {
-      document.documentElement.dataset.dshDesktopTheme = '${useDarkColors ? 'dark' : 'light'}'
-      document.querySelectorAll('.dshDesktopLogoLight').forEach((logo) => {
-        logo.style.display = '${useDarkColors ? 'none' : ''}'
-      })
-      document.querySelectorAll('.dshDesktopLogoDark').forEach((logo) => {
-        logo.style.display = '${useDarkColors ? 'block' : 'none'}'
-      })
+      const detectDarkPage = () => {
+        const center = document.elementFromPoint(innerWidth / 2, innerHeight / 2)
+        const elements = [center, document.body, document.documentElement].filter(Boolean)
+        let channels
+        for (const element of elements) {
+          const values = getComputedStyle(element).backgroundColor.match(/[\\d.]+/g)?.map(Number)
+          if (values && values.length >= 3 && (values[3] ?? 1) > 0.1) {
+            channels = values.slice(0, 3)
+            break
+          }
+        }
+        if (!channels || channels.length < 3) {
+          return matchMedia('(prefers-color-scheme: dark)').matches
+        }
+        const [red, green, blue] = channels
+        return (red * 299 + green * 587 + blue * 114) / 1000 < 128
+      }
+
+      const applyPageTheme = () => {
+        const dark = detectDarkPage()
+        const theme = dark ? 'dark' : 'light'
+        if (document.documentElement.dataset.dshDesktopTheme !== theme) {
+          document.documentElement.dataset.dshDesktopTheme = theme
+        }
+        document.querySelectorAll('.dshDesktopLogoLight').forEach((logo) => {
+          logo.style.display = dark ? 'none' : ''
+        })
+        document.querySelectorAll('.dshDesktopLogoDark').forEach((logo) => {
+          logo.style.display = dark ? 'block' : 'none'
+        })
+      }
       if (${process.platform === 'darwin'}) {
         let style = document.getElementById('dsh-desktop-titlebar-style')
         if (!style) {
@@ -82,11 +88,22 @@ async function syncNativeTheme(window: BrowserWindow): Promise<void> {
             z-index: 2147483647;
             inset: 0 0 auto 0;
             height: var(--dsh-desktop-titlebar-height);
-            background: ${useDarkColors ? '#141416' : '#ffffff'};
+            background: #141416;
             -webkit-app-region: drag;
           }
         \`
       }
+
+      window.__dshDesktopThemeObserver?.disconnect()
+      window.__dshDesktopThemeObserver = new MutationObserver(() => {
+        requestAnimationFrame(applyPageTheme)
+      })
+      window.__dshDesktopThemeObserver.observe(document.documentElement, {
+        attributes: true,
+        childList: true,
+        subtree: true
+      })
+      applyPageTheme()
     })()
   `)
 }

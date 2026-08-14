@@ -5,14 +5,17 @@ import { describe, expect, it } from 'vitest'
 const projectRoot = path.resolve(import.meta.dirname, '..')
 
 describe('DSH Desktop sidebar branding', () => {
-  it('matches the native macOS window background to the active page theme', async () => {
+  it('keeps macOS chrome dark while tracking the page theme for branding', async () => {
     const main = await readFile(path.join(projectRoot, 'src', 'main', 'index.ts'), 'utf8')
 
     expect(main).toContain("frame: process.platform !== 'darwin'")
     expect(main).toContain("if (process.platform === 'darwin') nativeTheme.themeSource = 'dark'")
-    expect(main).toContain("window.setBackgroundColor(useDarkColors ? '#141416' : '#f8f8f6')")
+    expect(main).toContain("window.setBackgroundColor('#141416')")
     expect(main).toContain('window.setWindowButtonVisibility(true)')
     expect(main).toContain('window.setWindowButtonPosition({ x: 12, y: 9 })')
+    expect(main).toContain('new MutationObserver')
+    expect(main).toContain("const theme = dark ? 'dark' : 'light'")
+    expect(main).toContain('background: #141416')
   })
 
   it('uses a compact brand lockup in the expanded and collapsed sidebar states', async () => {
