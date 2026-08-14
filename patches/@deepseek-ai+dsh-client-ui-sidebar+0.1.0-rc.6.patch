@@ -1,5 +1,5 @@
 diff --git a/node_modules/@deepseek-ai/dsh-client-ui-sidebar/lib/client.js b/node_modules/@deepseek-ai/dsh-client-ui-sidebar/lib/client.js
-index 629e313..19d4bfc 100644
+index 629e313..bc42a1d 100644
 --- a/node_modules/@deepseek-ai/dsh-client-ui-sidebar/lib/client.js
 +++ b/node_modules/@deepseek-ai/dsh-client-ui-sidebar/lib/client.js
 @@ -23,7 +23,7 @@ window.__ModuleLoader__.load({
@@ -21,12 +21,13 @@ index 629e313..19d4bfc 100644
  			"railFish": "hHd-Xa_railFish",
  			"settingsArea": "hHd-Xa_settingsArea",
  			"rail-fade-in": "hHd-Xa_rail-fade-in",
-@@ -56,6 +59,48 @@ window.__ModuleLoader__.load({
+@@ -56,6 +59,60 @@ window.__ModuleLoader__.load({
  			"newSessionLabel": "hHd-Xa_newSessionLabel"
  		};
  		//#endregion
 +		//#region lib/types/client/DshDesktopLogo.js
 +		const DSH_DESKTOP_LOGO_URL = "/dsh-desktop-logo.png";
++		const DSH_DESKTOP_DARK_LOGO_URL = "/dsh-desktop-logo-dark.png";
 +		function DshDesktopLogo({ height = 20, className }) {
 +			return (0, react_jsx_runtime.jsxs)("svg", {
 +				width: height * 1030 / 590,
@@ -35,7 +36,9 @@ index 629e313..19d4bfc 100644
 +				viewBox: "150 330 1030 590",
 +				fill: "none",
 +				"aria-hidden": "true",
-+				children: [(0, react_jsx_runtime.jsx)("defs", {
++				children: [(0, react_jsx_runtime.jsx)("style", {
++					children: ".dshDesktopLogoDark{display:none}html[data-dsh-desktop-theme=dark] .dshDesktopLogoLight{display:none}html[data-dsh-desktop-theme=dark] .dshDesktopLogoDark{display:block}@media (prefers-color-scheme: dark){html:not([data-dsh-desktop-theme]) .dshDesktopLogoLight{display:none}html:not([data-dsh-desktop-theme]) .dshDesktopLogoDark{display:block}}"
++				}), (0, react_jsx_runtime.jsx)("defs", {
 +					children: (0, react_jsx_runtime.jsx)("filter", {
 +						id: "dsh-desktop-logo-knockout",
 +						colorInterpolationFilters: "sRGB",
@@ -44,6 +47,7 @@ index 629e313..19d4bfc 100644
 +						})
 +					})
 +				}), (0, react_jsx_runtime.jsx)("image", {
++					className: "dshDesktopLogoLight",
 +					href: DSH_DESKTOP_LOGO_URL,
 +					x: 0,
 +					y: 0,
@@ -51,6 +55,14 @@ index 629e313..19d4bfc 100644
 +					height: 1254,
 +					preserveAspectRatio: "none",
 +					filter: "url(#dsh-desktop-logo-knockout)"
++				}), (0, react_jsx_runtime.jsx)("image", {
++					className: "dshDesktopLogoDark",
++					href: DSH_DESKTOP_DARK_LOGO_URL,
++					x: 150,
++					y: 330,
++					width: 1030,
++					height: 590,
++					preserveAspectRatio: "xMidYMid meet"
 +				})]
 +			});
 +		}
@@ -70,7 +82,7 @@ index 629e313..19d4bfc 100644
  		//#region lib/types/client/SidebarRoot.js
  		/**
  		* Sidebar shell: column geometry only. Collapse is a slide plus crossfade:
-@@ -157,7 +202,7 @@ window.__ModuleLoader__.load({
+@@ -157,7 +214,7 @@ window.__ModuleLoader__.load({
  							onClick: () => {
  								startSession();
  							},
@@ -79,7 +91,7 @@ index 629e313..19d4bfc 100644
  						}), (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Tooltip, {
  							label: collapsed ? t("toggle.open") : t("toggle.collapse"),
  							delayMs: 500,
-@@ -168,9 +213,9 @@ window.__ModuleLoader__.load({
+@@ -168,9 +225,9 @@ window.__ModuleLoader__.load({
  								onClick: () => {
  									toggleSidebar();
  								},

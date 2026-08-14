@@ -4,6 +4,7 @@ import path from 'node:path'
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const source = path.join(projectRoot, 'build', 'icon.png')
+const darkSource = path.join(projectRoot, 'build', 'logo-dark.png')
 const destinationDirectory = path.join(
   projectRoot,
   'node_modules',
@@ -12,6 +13,7 @@ const destinationDirectory = path.join(
   'dist'
 )
 const destination = path.join(destinationDirectory, 'dsh-desktop-logo.png')
+const darkDestination = path.join(destinationDirectory, 'dsh-desktop-logo-dark.png')
 const indexPath = path.join(destinationDirectory, 'index.html')
 const manifestPath = path.join(destinationDirectory, 'manifest.webmanifest')
 
@@ -25,6 +27,7 @@ function replaceRequired(contents, search, replacement, file) {
 
 await mkdir(destinationDirectory, { recursive: true })
 await copyFile(source, destination)
+await copyFile(darkSource, darkDestination)
 
 const index = await readFile(indexPath, 'utf8')
 await writeFile(
@@ -48,4 +51,6 @@ await writeFile(
   )
 )
 
-console.log(`Installed DSH Desktop branding in ${path.relative(projectRoot, destinationDirectory)}`)
+console.log(
+  `Installed DSH Desktop brand assets: ${path.relative(projectRoot, destination)}, ${path.relative(projectRoot, darkDestination)}`
+)

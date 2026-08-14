@@ -14,11 +14,13 @@ describe('DSH Desktop sidebar branding', () => {
     expect(patch).toContain('DshDesktopLogo')
     expect(patch).toContain('DshDesktopBrand')
     expect(patch).toContain('/dsh-desktop-logo.png')
+    expect(patch).toContain('/dsh-desktop-logo-dark.png')
     expect(patch).toContain('children: "DSH Desktop"')
     expect(patch).toContain('height = 20')
     expect(patch).toContain('height: 18')
     expect(patch).toContain('.hHd-Xa_brand:hover')
     expect(patch).toContain('dsh-desktop-logo-knockout')
+    expect(patch).toContain('@media (prefers-color-scheme: dark)')
   })
 
   it('installs the source logo into the Harness static frontend', async () => {
@@ -33,6 +35,8 @@ describe('DSH Desktop sidebar branding', () => {
     expect(packageJson.scripts.postinstall).toContain('node scripts/install-brand-assets.mjs')
     expect(installer).toContain("'build', 'icon.png'")
     expect(installer).toContain("'dsh-desktop-logo.png'")
+    expect(installer).toContain("'build', 'logo-dark.png'")
+    expect(installer).toContain("'dsh-desktop-logo-dark.png'")
     expect(installer).toContain('<link rel="icon" type="image/png" href="/dsh-desktop-logo.png" />')
     expect(installer).toContain('"src": "/dsh-desktop-logo.png"')
   })
