@@ -5,6 +5,7 @@ dist/
 *.log
 coverage/
 build/icon.iconset/
+build/app-icon.iconset/
 build/icon-1024.png
 .env
 .env.*

@@ -57,7 +57,7 @@ describe('GitHub release contract', () => {
 
     expect(packageJson.build.artifactName).toBe('dsh-desktop-${os}-${arch}.${ext}')
     expect(packageJson.build.extraResources).toContainEqual({
-      from: 'build/icon.png',
+      from: 'build/app-icon.png',
       to: 'icon.png'
     })
     expect(packageJson.build.nsis.artifactName).toBe(

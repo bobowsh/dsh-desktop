@@ -126,7 +126,7 @@ function dshEntryPath(): string {
 function desktopIconPath(): string {
   return app.isPackaged
     ? join(process.resourcesPath, 'icon.png')
-    : join(app.getAppPath(), 'build', 'icon.png')
+    : join(app.getAppPath(), 'build', 'app-icon.png')
 }
 
 function createWindow(): BrowserWindow {
