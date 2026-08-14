@@ -26,13 +26,13 @@ describe('DSH Desktop sidebar branding', () => {
 
     expect(patch).toContain('DshDesktopLogo')
     expect(patch).toContain('DshDesktopBrand')
-    expect(patch).toContain('/dsh-desktop-logo.png')
     expect(patch).toContain('/dsh-desktop-logo-dark.png')
     expect(patch).toContain('children: "DSH Desktop"')
     expect(patch).toContain('height = 20')
     expect(patch).toContain('height: 18')
     expect(patch).toContain('.hHd-Xa_brand:hover')
-    expect(patch).toContain('dsh-desktop-logo-knockout')
+    expect(patch).toContain('padding-top:18px')
+    expect(patch).toContain('filter: "brightness(0)"')
     expect(patch).toContain('@media (prefers-color-scheme: dark)')
   })
 

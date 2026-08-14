@@ -1,8 +1,8 @@
 diff --git a/node_modules/@deepseek-ai/dsh-client-ui-sidebar/lib/client.js b/node_modules/@deepseek-ai/dsh-client-ui-sidebar/lib/client.js
-index 629e313..bc42a1d 100644
+index 629e313..e149bfc 100644
 --- a/node_modules/@deepseek-ai/dsh-client-ui-sidebar/lib/client.js
 +++ b/node_modules/@deepseek-ai/dsh-client-ui-sidebar/lib/client.js
-@@ -23,7 +23,7 @@ window.__ModuleLoader__.load({
+@@ -23,16 +23,19 @@ window.__ModuleLoader__.load({
  		}
  		//#endregion
  		//#region \0dsh-css:/home/runner/work/deepseek-harness/deepseek-harness/packages/client/ui-sidebar/src/client/SidebarRoot.module.css.mjs
@@ -11,7 +11,10 @@ index 629e313..bc42a1d 100644
  		const tagId = "@deepseek-ai/dsh-client-ui-sidebar/SidebarRoot.module.css";
  		if (typeof document !== "undefined" && document.querySelector("style[data-plugin-css=" + JSON.stringify(tagId) + "]") === null) {
  			const tag = document.createElement("style");
-@@ -33,6 +33,9 @@ window.__ModuleLoader__.load({
+ 			tag.dataset.plugin = "@deepseek-ai/dsh-client-ui-sidebar";
+ 			tag.dataset.pluginCss = tagId;
+-			tag.textContent = css;
++			tag.textContent = css + ".hHd-Xa_root:not(.hHd-Xa_collapsed){padding-top:18px}";
  			document.head.appendChild(tag);
  		}
  		var SidebarRoot_module_css_default = {
@@ -21,12 +24,11 @@ index 629e313..bc42a1d 100644
  			"railFish": "hHd-Xa_railFish",
  			"settingsArea": "hHd-Xa_settingsArea",
  			"rail-fade-in": "hHd-Xa_rail-fade-in",
-@@ -56,6 +59,60 @@ window.__ModuleLoader__.load({
+@@ -56,6 +59,51 @@ window.__ModuleLoader__.load({
  			"newSessionLabel": "hHd-Xa_newSessionLabel"
  		};
  		//#endregion
 +		//#region lib/types/client/DshDesktopLogo.js
-+		const DSH_DESKTOP_LOGO_URL = "/dsh-desktop-logo.png";
 +		const DSH_DESKTOP_DARK_LOGO_URL = "/dsh-desktop-logo-dark.png";
 +		function DshDesktopLogo({ height = 20, className }) {
 +			return (0, react_jsx_runtime.jsxs)("svg", {
@@ -38,23 +40,15 @@ index 629e313..bc42a1d 100644
 +				"aria-hidden": "true",
 +				children: [(0, react_jsx_runtime.jsx)("style", {
 +					children: ".dshDesktopLogoDark{display:none}html[data-dsh-desktop-theme=dark] .dshDesktopLogoLight{display:none}html[data-dsh-desktop-theme=dark] .dshDesktopLogoDark{display:block}@media (prefers-color-scheme: dark){html:not([data-dsh-desktop-theme]) .dshDesktopLogoLight{display:none}html:not([data-dsh-desktop-theme]) .dshDesktopLogoDark{display:block}}"
-+				}), (0, react_jsx_runtime.jsx)("defs", {
-+					children: (0, react_jsx_runtime.jsx)("filter", {
-+						id: "dsh-desktop-logo-knockout",
-+						colorInterpolationFilters: "sRGB",
-+						children: (0, react_jsx_runtime.jsx)("feColorMatrix", {
-+							values: "1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  -1 -1 -1 0 3"
-+						})
-+					})
 +				}), (0, react_jsx_runtime.jsx)("image", {
 +					className: "dshDesktopLogoLight",
-+					href: DSH_DESKTOP_LOGO_URL,
-+					x: 0,
-+					y: 0,
-+					width: 1254,
-+					height: 1254,
-+					preserveAspectRatio: "none",
-+					filter: "url(#dsh-desktop-logo-knockout)"
++					href: DSH_DESKTOP_DARK_LOGO_URL,
++					x: 150,
++					y: 330,
++					width: 1030,
++					height: 590,
++					preserveAspectRatio: "xMidYMid meet",
++					style: { filter: "brightness(0)" }
 +				}), (0, react_jsx_runtime.jsx)("image", {
 +					className: "dshDesktopLogoDark",
 +					href: DSH_DESKTOP_DARK_LOGO_URL,
@@ -82,7 +76,7 @@ index 629e313..bc42a1d 100644
  		//#region lib/types/client/SidebarRoot.js
  		/**
  		* Sidebar shell: column geometry only. Collapse is a slide plus crossfade:
-@@ -157,7 +214,7 @@ window.__ModuleLoader__.load({
+@@ -157,7 +205,7 @@ window.__ModuleLoader__.load({
  							onClick: () => {
  								startSession();
  							},
@@ -91,7 +85,7 @@ index 629e313..bc42a1d 100644
  						}), (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Tooltip, {
  							label: collapsed ? t("toggle.open") : t("toggle.collapse"),
  							delayMs: 500,
-@@ -168,9 +225,9 @@ window.__ModuleLoader__.load({
+@@ -168,9 +216,9 @@ window.__ModuleLoader__.load({
  								onClick: () => {
  									toggleSidebar();
  								},
