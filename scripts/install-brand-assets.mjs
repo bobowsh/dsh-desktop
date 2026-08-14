@@ -4,6 +4,7 @@ import path from 'node:path'
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const source = path.join(projectRoot, 'build', 'icon.png')
+const lightSource = path.join(projectRoot, 'build', 'logo-light.png')
 const darkSource = path.join(projectRoot, 'build', 'logo-dark.png')
 const destinationDirectory = path.join(
   projectRoot,
@@ -13,6 +14,7 @@ const destinationDirectory = path.join(
   'dist'
 )
 const destination = path.join(destinationDirectory, 'dsh-desktop-logo.png')
+const lightDestination = path.join(destinationDirectory, 'dsh-desktop-logo-light.png')
 const darkDestination = path.join(destinationDirectory, 'dsh-desktop-logo-dark.png')
 const indexPath = path.join(destinationDirectory, 'index.html')
 const manifestPath = path.join(destinationDirectory, 'manifest.webmanifest')
@@ -27,6 +29,7 @@ function replaceRequired(contents, search, replacement, file) {
 
 await mkdir(destinationDirectory, { recursive: true })
 await copyFile(source, destination)
+await copyFile(lightSource, lightDestination)
 await copyFile(darkSource, darkDestination)
 
 const index = await readFile(indexPath, 'utf8')
@@ -51,6 +54,8 @@ await writeFile(
   )
 )
 
-console.log(
-  `Installed DSH Desktop brand assets: ${path.relative(projectRoot, destination)}, ${path.relative(projectRoot, darkDestination)}`
-)
+console.log(`Installed DSH Desktop brand assets: ${[
+  destination,
+  lightDestination,
+  darkDestination
+].map((file) => path.relative(projectRoot, file)).join(', ')}`)

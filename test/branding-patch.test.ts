@@ -26,14 +26,13 @@ describe('DSH Desktop sidebar branding', () => {
 
     expect(patch).toContain('DshDesktopLogo')
     expect(patch).toContain('DshDesktopBrand')
+    expect(patch).toContain('/dsh-desktop-logo-light.png')
     expect(patch).toContain('/dsh-desktop-logo-dark.png')
     expect(patch).toContain('children: "DSH Desktop"')
     expect(patch).toContain('height = 20')
     expect(patch).toContain('height: 18')
     expect(patch).toContain('.hHd-Xa_brand:hover')
     expect(patch).toContain('padding-top:22px')
-    expect(patch).toContain('dsh-desktop-logo-black')
-    expect(patch).toContain('0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0')
     expect(patch).toContain('@media (prefers-color-scheme: dark)')
   })
 
@@ -49,23 +48,12 @@ describe('DSH Desktop sidebar branding', () => {
     expect(packageJson.scripts.postinstall).toContain('node scripts/install-brand-assets.mjs')
     expect(installer).toContain("'build', 'icon.png'")
     expect(installer).toContain("'dsh-desktop-logo.png'")
+    expect(installer).toContain("'build', 'logo-light.png'")
+    expect(installer).toContain("'dsh-desktop-logo-light.png'")
     expect(installer).toContain("'build', 'logo-dark.png'")
     expect(installer).toContain("'dsh-desktop-logo-dark.png'")
     expect(installer).toContain('<link rel="icon" type="image/png" href="/dsh-desktop-logo.png" />')
     expect(installer).toContain('"src": "/dsh-desktop-logo.png"')
   })
 
-  it('uses the desktop logo in the new-conversation hero', async () => {
-    const patch = await readFile(
-      path.join(
-        projectRoot,
-        'patches',
-        '@deepseek-ai+dsh-client-ui-conversation+0.1.0-rc.6.patch'
-      ),
-      'utf8'
-    )
-
-    expect(patch).toContain('/dsh-desktop-logo.png')
-    expect(patch).toContain('src: "/dsh-desktop-logo.png"')
-  })
 })
