@@ -49,6 +49,7 @@ async function syncNativeTheme(window: BrowserWindow): Promise<void> {
   `)
 
   nativeTheme.themeSource = useDarkColors ? 'dark' : 'light'
+  window.setBackgroundColor(useDarkColors ? '#141416' : '#f8f8f6')
   await window.webContents.executeJavaScript(`
     (() => {
       document.documentElement.dataset.dshDesktopTheme = '${useDarkColors ? 'dark' : 'light'}'
@@ -112,6 +113,9 @@ function desktopIconPath(): string {
 }
 
 function createWindow(): BrowserWindow {
+  // Harness restores its own theme after navigation. Start macOS in dark mode so
+  // the native traffic-light strip never flashes light before that state is readable.
+  if (process.platform === 'darwin') nativeTheme.themeSource = 'dark'
   const window = new BrowserWindow({
     width: 1380,
     height: 900,
@@ -120,8 +124,8 @@ function createWindow(): BrowserWindow {
     show: false,
     title: '',
     icon: desktopIconPath(),
-    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
-    backgroundColor: '#f8f8f6',
+    frame: process.platform !== 'darwin',
+    backgroundColor: nativeTheme.shouldUseDarkColors ? '#141416' : '#f8f8f6',
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
@@ -129,6 +133,10 @@ function createWindow(): BrowserWindow {
       webSecurity: true
     }
   })
+  if (process.platform === 'darwin') {
+    window.setWindowButtonVisibility(true)
+    window.setWindowButtonPosition({ x: 12, y: 9 })
+  }
   window.on('page-title-updated', (event) => {
     event.preventDefault()
     window.setTitle('')

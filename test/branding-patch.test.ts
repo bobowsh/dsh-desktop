@@ -5,6 +5,16 @@ import { describe, expect, it } from 'vitest'
 const projectRoot = path.resolve(import.meta.dirname, '..')
 
 describe('DSH Desktop sidebar branding', () => {
+  it('matches the native macOS window background to the active page theme', async () => {
+    const main = await readFile(path.join(projectRoot, 'src', 'main', 'index.ts'), 'utf8')
+
+    expect(main).toContain("frame: process.platform !== 'darwin'")
+    expect(main).toContain("if (process.platform === 'darwin') nativeTheme.themeSource = 'dark'")
+    expect(main).toContain("window.setBackgroundColor(useDarkColors ? '#141416' : '#f8f8f6')")
+    expect(main).toContain('window.setWindowButtonVisibility(true)')
+    expect(main).toContain('window.setWindowButtonPosition({ x: 12, y: 9 })')
+  })
+
   it('uses a compact brand lockup in the expanded and collapsed sidebar states', async () => {
     const patch = await readFile(
       path.join(projectRoot, 'patches', '@deepseek-ai+dsh-client-ui-sidebar+0.1.0-rc.6.patch'),
