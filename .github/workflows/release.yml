@@ -412,10 +412,11 @@ jobs:
           COS_SECRET_ID: ${{ secrets.COS_SECRET_ID }}
           COS_SECRET_KEY: ${{ secrets.COS_SECRET_KEY }}
           COS_BUCKET: ${{ vars.COS_BUCKET }}
+          COS_REGION: ${{ vars.COS_REGION }}
         run: |
           set -euo pipefail
           test -n "$COS_SECRET_ID" && test -n "$COS_SECRET_KEY" || { echo "::error::Missing secrets COS_SECRET_ID/COS_SECRET_KEY"; exit 1; }
-          test -n "$COS_BUCKET" || { echo "::error::Missing variables COS_BUCKET"; exit 1; }
+          test -n "$COS_BUCKET" && test -n "$COS_REGION" || { echo "::error::Missing variables COS_BUCKET/COS_REGION"; exit 1; }
           curl -sSfL -o coscli https://github.com/tencentyun/coscli/releases/download/v1.0.8/coscli-v1.0.8-linux-amd64
           chmod +x coscli
           cat > "$HOME/.cos.yaml" <<YAML
@@ -427,8 +428,8 @@ jobs:
               protocol: https
             buckets:
             - name: ${COS_BUCKET}
-              endpoint: cos.accelerate.myqcloud.com
+              endpoint: cos.${COS_REGION}.myqcloud.com
               alias: ""
           YAML
           chmod 600 "$HOME/.cos.yaml"
-          ./coscli cp release-assets/ "cos://${COS_BUCKET}/releases/latest/" -r -p 20 --thread-num 4 --part-size 16
+          ./coscli cp release-assets/ "cos://${COS_BUCKET}/releases/latest/" -r -p 10 --thread-num 4 --part-size 16
