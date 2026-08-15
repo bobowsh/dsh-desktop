@@ -432,4 +432,4 @@ jobs:
               alias: ""
           YAML
           chmod 600 "$HOME/.cos.yaml"
-          ./coscli cp release-assets/ "cos://${COS_BUCKET}/releases/latest/" -r -p 10 --thread-num 4 --part-size 16
+          ./coscli sync release-assets/ "cos://${COS_BUCKET}/releases/latest/" -r --routines 10 --thread-num 8 --part-size 32 --long-links-nums 20 --disable-crc64 --snapshot-path /tmp/cos-snapshot
