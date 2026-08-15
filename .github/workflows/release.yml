@@ -429,7 +429,8 @@ jobs:
             buckets:
             - name: ${COS_BUCKET}
               endpoint: cos.${COS_REGION}.myqcloud.com
+              accelerate: true
               alias: ""
           YAML
           chmod 600 "$HOME/.cos.yaml"
-          ./coscli cp release-assets/ "cos://${COS_BUCKET}/releases/latest/" -r -p 10
+          ./coscli cp release-assets/ "cos://${COS_BUCKET}/releases/latest/" -r -p 20 --thread-num 4 --part-size 16
