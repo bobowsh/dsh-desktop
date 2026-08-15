@@ -98,7 +98,7 @@ describe('GitHub release contract', () => {
     ) as {
       dependencies: Record<string, string>
       build: {
-        publish: Array<{ provider: string; owner: string; repo: string }>
+        publish: Array<{ provider: string; url?: string; owner?: string; repo?: string }>
         win: { verifyUpdateCodeSignature: boolean }
       }
     }
@@ -109,7 +109,7 @@ describe('GitHub release contract', () => {
 
     expect(packageJson.dependencies['electron-updater']).toBeTruthy()
     expect(packageJson.build.publish).toEqual([
-      { provider: 'github', owner: 'dataelement', repo: 'dsh-desktop' }
+      { provider: 'generic', url: 'https://dshdesktop.com/updates/latest/' }
     ])
     expect(packageJson.build.win.verifyUpdateCodeSignature).toBe(false)
     for (const asset of [
