@@ -159,6 +159,7 @@ function createWindow(): BrowserWindow {
     title: windowTitle(),
     icon: desktopIconPath(),
     frame: process.platform !== 'darwin',
+    autoHideMenuBar: process.platform !== 'darwin',
     backgroundColor: nativeTheme.shouldUseDarkColors ? '#141416' : '#f8f8f6',
     webPreferences: {
       contextIsolation: true,
