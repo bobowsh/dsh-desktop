@@ -50,26 +50,17 @@ jobs:
         env:
           MNEMON_VERSION: '0.2.3'
         run: |
-          # dsh CLI — pinned to match the desktop app's @deepseek-ai/dsh dependency,
-          # so `dsh plugin` behaves exactly like a local install.
-          npm install -g @deepseek-ai/dsh@0.1.0-rc.6
-          $env:PATH = "$env:APPDATA\npm;$env:PATH"
-
-          # Point dsh at the repo-bundled profile so `dsh plugin` installs the
-          # web profile's plugins INTO bundled-user-data (which electron-builder then ships).
-          # Install one bundle at a time (non-frozen) rather than `install --frozen-lockfile`:
-          # on GitHub-hosted runners CI=true makes pnpm v11 deny-by-default, so a single frozen
-          # install would block every build script at once. Per-bundle `dsh plugin add` (which
-          # forwards to `pnpm add`) resolves & builds each incrementally, and build approvals are
-          # pinned in package.json's pnpm.onlyBuiltDependencies so CI never denies them.
+          # Install the web profile's bundled plugins into bundled-user-data/.dsh/profiles/web.
+          # We run `pnpm install --frozen-lockfile` directly (no global `dsh` CLI needed): the
+          # profile's committed pnpm-lock.yaml already pins every dependency reproducibly.
+          # pnpm v11 deny-by-default blocks build scripts of git-hosted/native deps; the profile's
+          # pnpm-workspace.yaml sets dangerouslyAllowAllBuilds (scoped to this plugin-bundling
+          # workspace, deps are pinned in package.json).
           $dshHome = Join-Path $env:GITHUB_WORKSPACE 'bundled-user-data\.dsh'
-          $env:DSH_HOME = $dshHome
-          $profilePkg = Join-Path $dshHome 'profiles\web\package.json'
-          $bundles = (Get-Content $profilePkg | ConvertFrom-Json).dsh.profile.bundles
-          foreach ($b in $bundles) {
-            Write-Host "dsh plugin --profile web add $b"
-            dsh plugin --profile web add $b
-          }
+          $profileDir = Join-Path $dshHome 'profiles\web'
+          Push-Location $profileDir
+          pnpm install --frozen-lockfile
+          Pop-Location
 
           # Fetch the prebuilt Mnemon memory CLI and stage it for packaging.
           $ver = $env:MNEMON_VERSION

@@ -4,6 +4,11 @@ packages:
 nodeLinker: hoisted
 minimumReleaseAge: 0
 autoInstallPeers: false
+# CI (GitHub Actions, pnpm v11) deny-by-default blocks build scripts of git-hosted
+# and native deps unless explicitly allowed. This workspace only bundles the curated,
+# version-pinned plugins declared in profiles/web/package.json, so we allow all build
+# scripts here. Scoped to this plugin-bundling workspace only.
+dangerouslyAllowAllBuilds: true
 minimumReleaseAgeExclude:
   - dshmarket@1.2.4 || 1.4.0 || 1.4.1 || 1.5.0
   - '@anionex/dsh-vision-toolkit@0.1.7'

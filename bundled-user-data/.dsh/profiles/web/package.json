@@ -1,25 +1,6 @@
 {
   "name": "dsh-profile-web",
   "private": true,
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "cpu-features",
-      "crelt",
-      "dingbat-to-unicode",
-      "dsh-better-sidebar",
-      "dsh-context",
-      "dsh-plugin-search",
-      "dsh-queue-plus",
-      "dshmarket",
-      "luxon",
-      "mammoth",
-      "node-pty",
-      "ssh2",
-      "style-mod",
-      "undici",
-      "w3c-keyname"
-    ]
-  },
   "dependencies": {
     "@anionex/dsh-turn-rewind": "^0.1.0",
     "@dsh-external/dsh-automation": "github:titanwings/dsh-automation",
