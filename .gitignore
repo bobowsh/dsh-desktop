@@ -8,6 +8,7 @@ coverage/
 build/icon.iconset/
 build/app-icon.iconset/
 build/icon-1024.png
+bundled-user-data/
 .env
 .env.*
 !.env.example

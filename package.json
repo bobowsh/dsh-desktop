@@ -1,11 +1,11 @@
 {
   "name": "dsh-desktop",
-  "version": "0.1.1",
+  "version": "0.1.9",
   "description": "A cross-platform desktop shell for DeepSeek Harness.",
   "private": true,
   "type": "module",
   "main": "./out/main/index.js",
-  "author": "DataElement",
+  "author": "bobowsh",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -31,13 +31,13 @@
     "typecheck": "tsc --noEmit -p tsconfig.node.json",
     "test": "vitest run",
     "test:watch": "vitest",
-    "package:dir": "npm run build && electron-builder --dir",
-    "package:dev:dir": "npm run build && electron-builder --dir --config electron-builder.dev.cjs",
-    "package:dev:win": "node scripts/verify-target.mjs win32 x64 && npm run build && electron-builder --win --x64 --publish never --config electron-builder.dev.cjs",
+    "package:dir": "node scripts/bundle-user-data.mjs && npm run build && electron-builder --dir",
+    "package:dev:dir": "node scripts/bundle-user-data.mjs && npm run build && electron-builder --dir --config electron-builder.dev.cjs",
+    "package:dev:win": "node scripts/verify-target.mjs win32 x64 && npm run build && node scripts/bundle-user-data.mjs && electron-builder --win --x64 --publish never --config electron-builder.dev.cjs",
     "package:mac": "npm run build && electron-builder --mac --publish never",
     "package:mac:arm64": "node scripts/verify-target.mjs darwin arm64 && npm run build && electron-builder --mac --arm64 --publish never",
     "package:mac:x64": "node scripts/verify-target.mjs darwin x64 && npm run build && electron-builder --mac --x64 --publish never",
-    "package:win": "node scripts/verify-target.mjs win32 x64 && npm run build && electron-builder --win --x64 --publish never"
+    "package:win": "node scripts/verify-target.mjs win32 x64 && npm run build && node scripts/bundle-user-data.mjs && electron-builder --win --x64 --publish never"
   },
   "dependencies": {
     "@deepseek-ai/cordis-plugin-group": "1.0.1",
@@ -76,6 +76,7 @@
   "build": {
     "appId": "io.dsh.desktop",
     "productName": "DSH Desktop",
+    "electronDist": "node_modules/electron/dist",
     "asar": false,
     "npmRebuild": false,
     "compression": "maximum",
@@ -111,12 +112,16 @@
       {
         "from": "build/splash.html",
         "to": "splash.html"
+      },
+      {
+        "from": "bundled-user-data",
+        "to": "bundled-user-data"
       }
     ],
     "publish": [
       {
         "provider": "generic",
-        "url": "https://dshdesktop.com/updates/latest/"
+        "url": "https://github.com/bobowsh/dsh-desktop/releases/latest/download/"
       }
     ],
     "artifactName": "dsh-desktop-${os}-${arch}.${ext}",
@@ -147,6 +152,7 @@
     },
     "nsis": {
       "artifactName": "dsh-desktop-windows-${arch}-setup.${ext}",
+      "include": "build/install-user-data.nsh",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
