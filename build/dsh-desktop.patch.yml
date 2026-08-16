@@ -1,15 +1,20 @@
-# DSH Desktop always runs the Host on the same machine as its operator.
-# Pin the dual-face native interaction instead of the web/remote browse fallback.
+# DSH Desktop always runs the Host on the same machine as its operator, but the
+# Harness child reuses the Electron binary as its Node.js runtime
+# (ELECTRON_RUN_AS_NODE=1). Electron's V8 sandbox forbids the external
+# ArrayBuffer that the native worker's Koffi path decoder creates
+# (`Buffer.from(koffi.view(addr, …))`), so the win32 dialog worker dies before
+# it can report a result. Pin the browse interaction instead: it is pure
+# node:fs (list/mkdir), loads no Koffi, and works everywhere.
 - id: directory-picker
   disabled: true
 
 - insert:
-    - id: directory-picker-native-desktop
-      name: '@deepseek-ai/dsh-host-directory-picker-native'
+    - id: directory-picker-browse-desktop
+      name: '@deepseek-ai/dsh-host-directory-picker-browse'
 
-    # The native interaction has a second, renderless client row. Without it
+    # The browse interaction has a second, renderless client row. Without it
     # ui-workspace has no directory-flow occupant, so every workspace picker
     # entry point becomes inert or disappears even though the Host capability
     # itself is running.
-    - id: directory-picker-native-desktop-surface
-      name: '@deepseek-ai/dsh-client-ui-directory-picker-native'
+    - id: directory-picker-browse-desktop-surface
+      name: '@deepseek-ai/dsh-client-ui-directory-picker-browse'

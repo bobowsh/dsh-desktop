@@ -1,0 +1,23 @@
+diff --git a/node_modules/@deepseek-ai/dsh-sandbox-windows-acl/lib/types-CNjZgO4h.js b/node_modules/@deepseek-ai/dsh-sandbox-windows-acl/lib/types-CNjZgO4h.js
+--- a/node_modules/@deepseek-ai/dsh-sandbox-windows-acl/lib/types-CNjZgO4h.js
++++ b/node_modules/@deepseek-ai/dsh-sandbox-windows-acl/lib/types-CNjZgO4h.js
+@@ -854,7 +854,8 @@ function spawnSandboxed(api, token, options) {
+ 	const startupInfo = allocStartupInfo();
+ 	encodeStartupInfo(startupInfo, {
+ 		cb: 104,
+-		dwFlags: 256,
++		dwFlags: 257,
++		wShowWindow: 0,
+ 		hStdInput: stdIn.read,
+ 		hStdOutput: stdOut.write,
+ 		hStdError: stdErr.write
+@@ -991,7 +992,8 @@ function spawnSandboxedInherited(api, token, options) {
+ 	const startupInfo = allocStartupInfo();
+ 	encodeStartupInfo(startupInfo, {
+ 		cb: 104,
+-		dwFlags: 256,
++		dwFlags: 257,
++		wShowWindow: 0,
+ 		hStdInput: stdIn,
+ 		hStdOutput: stdOut,
+ 		hStdError: stdErr

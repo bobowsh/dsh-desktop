@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process'
 import { join } from 'node:path'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import {
   app,
   BrowserWindow,
@@ -25,6 +25,10 @@ import type { RuntimeSnapshot } from '../shared/contracts'
 let mainWindow: BrowserWindow | undefined
 let runtime: HarnessRuntime
 let launchDirectory: string
+
+function windowTitle(): string {
+  return `DeepSeek Harness Desktop V${app.getVersion()}`
+}
 let quitting = false
 let failureDialogVisible = false
 
@@ -110,9 +114,23 @@ function dshEntryPath(): string {
   return join(app.getAppPath(), 'node_modules', '@deepseek-ai', 'dsh', 'lib', 'bin.js')
 }
 
-function bundledNodePath(): string {
+interface HarnessNodeRuntime {
+  executablePath: string
+  /** True when the Harness child reuses the Electron binary as its Node.js runtime. */
+  useElectronRuntime: boolean
+}
+
+// Prefer reusing the running Electron binary as the Harness Node.js runtime so we
+// do not pay for a second standalone Node process. Fall back to the bundled
+// node_modules/node runtime when the Electron executable is unavailable (or when
+// running unpackaged in an environment where execPath is not the app binary).
+function harnessNodeRuntime(): HarnessNodeRuntime {
   const executable = process.platform === 'win32' ? 'node.exe' : 'node'
-  return join(app.getAppPath(), 'node_modules', 'node', 'bin', executable)
+  const bundled = join(app.getAppPath(), 'node_modules', 'node', 'bin', executable)
+  if (process.execPath && existsSync(process.execPath)) {
+    return { executablePath: process.execPath, useElectronRuntime: true }
+  }
+  return { executablePath: bundled, useElectronRuntime: false }
 }
 
 function harnessNodeEntryPath(): string {
@@ -138,9 +156,10 @@ function createWindow(): BrowserWindow {
     minWidth: 900,
     minHeight: 640,
     show: false,
-    title: '',
+    title: windowTitle(),
     icon: desktopIconPath(),
     frame: process.platform !== 'darwin',
+    autoHideMenuBar: process.platform !== 'darwin',
     backgroundColor: nativeTheme.shouldUseDarkColors ? '#141416' : '#f8f8f6',
     webPreferences: {
       contextIsolation: true,
@@ -156,7 +175,7 @@ function createWindow(): BrowserWindow {
   }
   window.on('page-title-updated', (event) => {
     event.preventDefault()
-    window.setTitle('')
+    window.setTitle(windowTitle())
   })
   secureWindow(window)
   window.on('closed', () => {
@@ -330,9 +349,11 @@ async function bootstrap(): Promise<void> {
   launchDirectory = await ensureLaunchRoot(app.getPath('userData'))
   registerUpdateHandlers()
   createWindow()
+  const nodeRuntime = harnessNodeRuntime()
   runtime = new HarnessRuntime({
     dshEntryPath: dshEntryPath(),
-    nodeExecutablePath: bundledNodePath(),
+    nodeExecutablePath: nodeRuntime.executablePath,
+    useElectronRuntime: nodeRuntime.useElectronRuntime,
     nodeEntryPath: harnessNodeEntryPath(),
     dshPatchPath: desktopResourcePath('dsh-desktop.patch.yml'),
     dshHome: join(app.getPath('userData'), 'harness'),

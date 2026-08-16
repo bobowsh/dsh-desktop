@@ -1,0 +1,25 @@
+diff --git a/node_modules/@deepseek-ai/dsh-tool-str-replace-editor/lib/index.js b/node_modules/@deepseek-ai/dsh-tool-str-replace-editor/lib/index.js
+index 791f97e..f1dc035 100644
+--- a/node_modules/@deepseek-ai/dsh-tool-str-replace-editor/lib/index.js
++++ b/node_modules/@deepseek-ai/dsh-tool-str-replace-editor/lib/index.js
+@@ -15,6 +15,7 @@ Custom editing tool for viewing, creating and editing files
+ * If \`path\` is a file, \`view\` displays the result of applying \`cat -n\`. If \`path\` is a directory, \`view\` lists non-hidden files and directories up to 2 levels deep
+ * The \`create\` command cannot be used if the specified \`path\` already exists as a file
+ * If a \`command\` generates a long output, it will be truncated and marked with \`<response clipped>\`
++* Text encoding is auto-detected (UTF-8 or GB18030) and preserved on write. Use \`encoding\` parameter to override.
+ 
+ Notes for using the \`str_replace\` command:
+ * The \`old_str\` parameter should match EXACTLY one or more consecutive lines from the original file. Be mindful of whitespaces!
+@@ -300,6 +301,12 @@ function registerStrReplaceEditor(ctx, config) {
+ 				type: "array",
+ 				items: { type: "integer" },
+ 				description: "Optional parameter of `view` command when `path` points to a file. If none is given, the full file is shown. If provided, the file will be shown in the indicated line number range, e.g. [11, 12] will show lines 11 and 12. Indexing at 1 to start. Setting `[start_line, -1]` shows all lines from `start_line` to the end of the file."
++			},
++			encoding: {
++				type: "string",
++				description: "Optional text encoding for file operations. Auto-detected by default (UTF-8 or GB18030). Specify explicitly to override: `utf-8`, `gb18030`, `gbk`, `gb2312`.",
++				enum: ["utf-8", "gb18030", "gbk", "gb2312", "auto"],
++				default: "auto"
+ 			}
+ 		},
+ 		output: {

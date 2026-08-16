@@ -12,6 +12,12 @@ export interface HarnessRuntimeOptions {
   dshPatchPath: string
   dshHome: string
   logPath: string
+  /**
+   * True when `nodeExecutablePath` points at the Electron binary being reused as
+   * the Node.js runtime; the Harness child then needs ELECTRON_RUN_AS_NODE=1.
+   * False when it points at the standalone bundled Node.js runtime (fallback).
+   */
+  useElectronRuntime?: boolean
   launchProcess(
     executablePath: string,
     args: string[],
@@ -36,7 +42,8 @@ export function buildHarnessSpawnOptions(
   launchDirectory: string,
   dshHome: string,
   platform: NodeJS.Platform = process.platform,
-  environment: NodeJS.ProcessEnv = process.env
+  environment: NodeJS.ProcessEnv = process.env,
+  useElectronRuntime = false
 ): SpawnOptionsWithoutStdio {
   const { ELECTRON_RUN_AS_NODE: _runAsNode, ...parentEnvironment } = environment
   const pathKey = platform === 'win32' ? 'Path' : 'PATH'
@@ -45,8 +52,12 @@ export function buildHarnessSpawnOptions(
     cwd: launchDirectory,
     env: {
       ...parentEnvironment,
-      DSH_HOME: dshHome,
       NO_COLOR: '1',
+      // When the Harness child reuses the Electron binary as its Node.js runtime
+      // it must opt back into "run as Node" mode so Electron does not boot a GUI.
+      // When the child runs the standalone bundled Node.js runtime instead, the
+      // flag must be stripped so Node is not accidentally forced back into that mode.
+      ...(useElectronRuntime ? { ELECTRON_RUN_AS_NODE: '1' } : {}),
       [pathKey]: environment[pathKey] ?? environment.PATH ?? ''
     },
     stdio: ['pipe', 'pipe', 'pipe'],
@@ -136,7 +147,13 @@ export class HarnessRuntime {
       child = this.options.launchProcess(
         this.options.nodeExecutablePath,
         args,
-        buildHarnessSpawnOptions(launchDirectory, this.options.dshHome)
+        buildHarnessSpawnOptions(
+          launchDirectory,
+          this.options.dshHome,
+          process.platform,
+          process.env,
+          this.options.useElectronRuntime ?? false
+        )
       )
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)

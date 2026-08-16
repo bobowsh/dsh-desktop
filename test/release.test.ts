@@ -4,11 +4,7 @@ import { describe, expect, it } from 'vitest'
 
 const projectRoot = path.resolve(import.meta.dirname, '..')
 
-const releaseAssets = [
-  'dsh-desktop-mac-arm64.dmg',
-  'dsh-desktop-mac-x64.dmg',
-  'dsh-desktop-windows-x64-setup.exe'
-]
+const releaseAssets = ['dsh-desktop-windows-x64-setup.exe']
 
 describe('GitHub release contract', () => {
   it('keeps the package and lockfile versions aligned', async () => {
@@ -75,7 +71,7 @@ describe('GitHub release contract', () => {
     expect(packageJson.build.portable).toBeUndefined()
   })
 
-  it('shows a packaged startup surface and pins the native directory picker', async () => {
+  it('shows a packaged startup surface and pins the browse directory picker', async () => {
     const main = await readFile(path.join(projectRoot, 'src', 'main', 'index.ts'), 'utf8')
     const splash = await readFile(path.join(projectRoot, 'build', 'splash.html'), 'utf8')
     const patch = await readFile(
@@ -88,8 +84,13 @@ describe('GitHub release contract', () => {
     expect(splash).toContain('Starting DSH Desktop')
     expect(splash).toContain('prefers-reduced-motion')
     expect(patch).toMatch(/id: directory-picker\r?\n  disabled: true/)
-    expect(patch).toContain("name: '@deepseek-ai/dsh-host-directory-picker-native'")
-    expect(patch).toContain("name: '@deepseek-ai/dsh-client-ui-directory-picker-native'")
+    // The Harness child runs under Electron's Node.js runtime, whose V8 sandbox
+    // forbids the external ArrayBuffer the native worker's Koffi path decoder
+    // creates. Pin the browse backend (pure node:fs) so the picker never crashes.
+    expect(patch).toContain("name: '@deepseek-ai/dsh-host-directory-picker-browse'")
+    expect(patch).toContain("name: '@deepseek-ai/dsh-client-ui-directory-picker-browse'")
+    expect(patch).not.toContain("name: '@deepseek-ai/dsh-host-directory-picker-native'")
+    expect(patch).not.toContain("name: '@deepseek-ai/dsh-client-ui-directory-picker-native'")
   })
 
   it('publishes update metadata for installed desktop builds', async () => {
@@ -98,7 +99,7 @@ describe('GitHub release contract', () => {
     ) as {
       dependencies: Record<string, string>
       build: {
-        publish: Array<{ provider: string; owner: string; repo: string }>
+        publish: Array<{ provider: string; url: string }>
         win: { verifyUpdateCodeSignature: boolean }
       }
     }
@@ -109,21 +110,18 @@ describe('GitHub release contract', () => {
 
     expect(packageJson.dependencies['electron-updater']).toBeTruthy()
     expect(packageJson.build.publish).toEqual([
-      { provider: 'github', owner: 'dataelement', repo: 'dsh-desktop' }
+      {
+        provider: 'generic',
+        url: 'https://github.com/bobowsh/dsh-desktop/releases/latest/download/'
+      }
     ])
     expect(packageJson.build.win.verifyUpdateCodeSignature).toBe(false)
     for (const asset of [
-      'latest-mac-arm64.yml',
-      'latest-mac-x64.yml',
-      'latest-mac.yml',
       'latest.yml',
-      'dsh-desktop-mac-arm64.zip.blockmap',
-      'dsh-desktop-mac-x64.zip.blockmap',
       'dsh-desktop-windows-x64-setup.exe.blockmap'
     ]) {
       expect(workflow).toContain(asset)
     }
-    expect(workflow).toContain('merge-mac-update-metadata.mjs')
   })
 
   it('keeps builder jobs from attempting implicit tag publishing', async () => {
@@ -168,15 +166,14 @@ describe('GitHub release contract', () => {
     expect(main).toContain('if (!developmentBuild)')
   })
 
-  it('builds and publishes every supported platform', async () => {
+  it('builds and publishes the Windows platform', async () => {
     const workflow = await readFile(
       path.join(projectRoot, '.github', 'workflows', 'release.yml'),
       'utf8'
     )
 
-    expect(workflow).toContain('runs-on: macos-15')
-    expect(workflow).toContain('runs-on: macos-15-intel')
     expect(workflow).toContain('runs-on: windows-2022')
+    expect(workflow).not.toContain('runs-on: macos-15')
     expect(workflow).toContain('npm run package:dev:win')
     expect(workflow).toContain('Smoke test packaged Windows Harness')
     expect(workflow).toContain("$executable = 'dist-dev\\win-unpacked\\DSH Desktop Dev.exe'")
@@ -193,36 +190,7 @@ describe('GitHub release contract', () => {
       workflow.match(
         /npm version --no-git-tag-version --allow-same-version "\$\{\{ github\.ref_name \}\}"/g
       )
-    ).toHaveLength(3)
-  })
-
-  it('signs and notarizes both macOS architectures on tag releases', async () => {
-    const workflow = await readFile(
-      path.join(projectRoot, '.github', 'workflows', 'release.yml'),
-      'utf8'
-    )
-
-    for (const secret of [
-      'DESKTOP_CSC_LINK',
-      'DESKTOP_CSC_KEY_PASSWORD',
-      'DESKTOP_APPLE_API_KEY',
-      'DESKTOP_APPLE_API_KEY_ID',
-      'DESKTOP_APPLE_API_ISSUER',
-      'DESKTOP_APPLE_TEAM_ID'
-    ]) {
-      expect(workflow).toContain(`secrets.${secret}`)
-    }
-    expect(workflow.match(/Prepare macOS signing keychain/g)).toHaveLength(2)
-    expect(workflow.match(/xcrun stapler validate/g)).toHaveLength(4)
-    expect(workflow.match(/xcrun notarytool submit/g)).toHaveLength(2)
-    expect(workflow.match(/CSC_IDENTITY_AUTO_DISCOVERY: 'false'/g)).toHaveLength(2)
-    expect(workflow).not.toContain("CSC_LINK: ''")
-    expect(workflow).toMatch(
-      /macos-apple-silicon:\r?\n    name: macOS Apple Silicon\r?\n    runs-on: macos-15\r?\n    steps:/
-    )
-    expect(workflow).toMatch(
-      /macos-intel:\r?\n    name: macOS Intel\r?\n    if: [^\r\n]+\r?\n    runs-on: macos-15-intel\r?\n    steps:/
-    )
+    ).toHaveLength(1)
   })
 
   it('routes the published download through the official website', async () => {

@@ -8,6 +8,11 @@ coverage/
 build/icon.iconset/
 build/app-icon.iconset/
 build/icon-1024.png
+# Keep the web profile's source-of-truth manifests tracked so CI can reproduce
+# the plugin tree; the heavy/non-source bits stay ignored.
+#   tracked:   package.json, pnpm-lock.yaml, pnpm-workspace.yaml, cordis.yml, cordis.patch.yml, settings.yaml
+#   ignored:   node_modules (per global rule above) + the prebuilt mnemon CLI
+bundled-user-data/.mnemon/
 .env
 .env.*
 !.env.example

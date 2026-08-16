@@ -34,7 +34,7 @@ describe('Harness launch contract', () => {
     ])
   })
 
-  it('launches Harness with the bundled Node.js runtime', () => {
+  it('strips ELECTRON_RUN_AS_NODE when launching the bundled Node.js runtime', () => {
     const options = buildHarnessSpawnOptions(
       'C:\\Users\\tester\\AppData\\Roaming\\dsh-desktop\\launch-root',
       'C:\\Users\\tester\\AppData\\Roaming\\dsh-desktop\\harness',
@@ -43,7 +43,8 @@ describe('Harness launch contract', () => {
         ELECTRON_RUN_AS_NODE: '1',
         PATH: 'fallback-path',
         Path: 'windows-path'
-      }
+      },
+      false
     )
 
     expect(options).toMatchObject({
@@ -51,12 +52,35 @@ describe('Harness launch contract', () => {
       stdio: ['pipe', 'pipe', 'pipe'],
       windowsHide: true,
       env: {
-        DSH_HOME: 'C:\\Users\\tester\\AppData\\Roaming\\dsh-desktop\\harness',
         NO_COLOR: '1',
         Path: 'windows-path'
       }
     })
     expect(options.env).not.toHaveProperty('ELECTRON_RUN_AS_NODE')
+  })
+
+  it('injects ELECTRON_RUN_AS_NODE=1 when reusing the Electron binary as Node.js', () => {
+    const options = buildHarnessSpawnOptions(
+      'C:\\Users\\tester\\AppData\\Roaming\\dsh-desktop\\launch-root',
+      'C:\\Users\\tester\\AppData\\Roaming\\dsh-desktop\\harness',
+      'win32',
+      {
+        PATH: 'fallback-path',
+        Path: 'windows-path'
+      },
+      true
+    )
+
+    expect(options).toMatchObject({
+      cwd: 'C:\\Users\\tester\\AppData\\Roaming\\dsh-desktop\\launch-root',
+      stdio: ['pipe', 'pipe', 'pipe'],
+      windowsHide: true,
+      env: {
+        NO_COLOR: '1',
+        ELECTRON_RUN_AS_NODE: '1',
+        Path: 'windows-path'
+      }
+    })
   })
 
   it('passes the internal-loader flag directly to bundled Node.js', () => {
