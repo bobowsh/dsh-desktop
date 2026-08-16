@@ -36,12 +36,55 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
       - name: Set app version from release tag
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm version --no-git-tag-version --allow-same-version "${{ github.ref_name }}"
       - run: npm ci
       - run: npm test
       - run: npm run typecheck
+      - name: Stage bundled user data (web profile plugins + mnemon CLI)
+        shell: pwsh
+        env:
+          MNEMON_VERSION: '0.2.3'
+        run: |
+          # dsh CLI — pinned to match the desktop app's @deepseek-ai/dsh dependency,
+          # so `dsh plugin` behaves exactly like a local install.
+          npm install -g @deepseek-ai/dsh@0.1.0-rc.6
+          $env:PATH = "$env:APPDATA\npm;$env:PATH"
+
+          # Point dsh at the repo-bundled profile so `dsh plugin` installs the
+          # web profile's plugins INTO bundled-user-data (which electron-builder then ships).
+          # Install one bundle at a time (non-frozen) rather than `install --frozen-lockfile`:
+          # on GitHub-hosted runners CI=true makes pnpm v11 deny-by-default, so a single frozen
+          # install would block every build script at once. Per-bundle `dsh plugin add` (which
+          # forwards to `pnpm add`) resolves & builds each incrementally, and build approvals are
+          # pinned in package.json's pnpm.onlyBuiltDependencies so CI never denies them.
+          $dshHome = Join-Path $env:GITHUB_WORKSPACE 'bundled-user-data\.dsh'
+          $env:DSH_HOME = $dshHome
+          $profilePkg = Join-Path $dshHome 'profiles\web\package.json'
+          $bundles = (Get-Content $profilePkg | ConvertFrom-Json).dsh.profile.bundles
+          foreach ($b in $bundles) {
+            Write-Host "dsh plugin --profile web add $b"
+            dsh plugin --profile web add $b
+          }
+
+          # Fetch the prebuilt Mnemon memory CLI and stage it for packaging.
+          $ver = $env:MNEMON_VERSION
+          $url = "https://github.com/mnemon-dev/mnemon/releases/download/v$ver/mnemon_${ver}_windows_amd64.zip"
+          $tmpZip = Join-Path $env:RUNNER_TEMP 'mnemon.zip'
+          Invoke-WebRequest -Uri $url -OutFile $tmpZip
+          $tmpDir = Join-Path $env:RUNNER_TEMP 'mnemon-extract'
+          if (Test-Path $tmpDir) { Remove-Item -Recurse -Force $tmpDir }
+          Expand-Archive -Path $tmpZip -DestinationPath $tmpDir
+          $mnemonExe = Get-ChildItem -Path $tmpDir -Recurse -Filter 'mnemon.exe' | Select-Object -First 1
+          if (-not $mnemonExe) { throw 'mnemon.exe not found in the release asset' }
+          $dest = Join-Path $dshHome '..\.mnemon\bin'
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          Copy-Item -Path $mnemonExe.FullName -Destination (Join-Path $dest 'mnemon.exe') -Force
+          Write-Host "Staged mnemon.exe -> $dest"
       - name: Build Windows release package
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm run package:win
