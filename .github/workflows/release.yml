@@ -50,19 +50,35 @@ jobs:
         env:
           MNEMON_VERSION: '0.2.3'
         run: |
-          # Install the web profile's bundled plugins into bundled-user-data/.dsh/profiles/web.
-          # We run `pnpm install --frozen-lockfile` directly (no global `dsh` CLI needed): the
-          # profile's committed pnpm-lock.yaml already pins every dependency reproducibly.
-          # pnpm v11 deny-by-default blocks build scripts of git-hosted/native deps; the profile's
-          # pnpm-workspace.yaml sets dangerouslyAllowAllBuilds (scoped to this plugin-bundling
-          # workspace, deps are pinned in package.json).
-          $dshHome = Join-Path $env:GITHUB_WORKSPACE 'bundled-user-data\.dsh'
-          $profileDir = Join-Path $dshHome 'profiles\web'
-          Push-Location $profileDir
+          # Install the web profile's bundled plugins into the REAL user home
+          # (~/.dsh) and the Mnemon CLI into ~/.mnemon — the exact layout that
+          # scripts/bundle-user-data.mjs snapshots from (it copies ~/.dsh +
+          # ~/.mnemon into ./bundled-user-data, which electron-builder then
+          # ships). This keeps the flow correct: bundle-user-data.mjs does the
+          # staging, instead of us writing straight into bundled-user-data
+          # (which made the snapshot script skip everything as "source not
+          # found" on CI, where the home dir starts empty).
+          #
+          # pnpm v11 deny-by-default blocks build scripts of git-hosted/native
+          # deps. The profile's pnpm-workspace.yaml sets dangerouslyAllowAllBuilds
+          # (scoped to this plugin-bundling workspace; deps are version-pinned in
+          # package.json). We seed that committed config into the real home so
+          # pnpm reads the approval from ~/.dsh/profiles/web/pnpm-workspace.yaml.
+          $srcProfile = Join-Path $env:GITHUB_WORKSPACE 'bundled-user-data\.dsh\profiles\web'
+          $homeDsh = Join-Path $env:USERPROFILE '.dsh'
+          $homeProfile = Join-Path $homeDsh 'profiles\web'
+          New-Item -ItemType Directory -Force -Path $homeProfile | Out-Null
+          # Seed the committed profile manifest + build-approval + lockfile into
+          # the real home so pnpm installs reproducibly (frozen) and the approval
+          # is in effect for the install that follows.
+          Copy-Item "$srcProfile\package.json" "$homeProfile\package.json" -Force
+          Copy-Item "$srcProfile\pnpm-workspace.yaml" "$homeProfile\pnpm-workspace.yaml" -Force
+          Copy-Item "$srcProfile\pnpm-lock.yaml" "$homeProfile\pnpm-lock.yaml" -Force
+          Push-Location $homeProfile
           pnpm install --frozen-lockfile
           Pop-Location
 
-          # Fetch the prebuilt Mnemon memory CLI and stage it for packaging.
+          # Fetch the prebuilt Mnemon memory CLI into the real home ~/.mnemon/bin.
           $ver = $env:MNEMON_VERSION
           $url = "https://github.com/mnemon-dev/mnemon/releases/download/v$ver/mnemon_${ver}_windows_amd64.zip"
           $tmpZip = Join-Path $env:RUNNER_TEMP 'mnemon.zip'
@@ -72,7 +88,7 @@ jobs:
           Expand-Archive -Path $tmpZip -DestinationPath $tmpDir
           $mnemonExe = Get-ChildItem -Path $tmpDir -Recurse -Filter 'mnemon.exe' | Select-Object -First 1
           if (-not $mnemonExe) { throw 'mnemon.exe not found in the release asset' }
-          $dest = Join-Path $dshHome '..\.mnemon\bin'
+          $dest = Join-Path $env:USERPROFILE '.mnemon\bin'
           New-Item -ItemType Directory -Force -Path $dest | Out-Null
           Copy-Item -Path $mnemonExe.FullName -Destination (Join-Path $dest 'mnemon.exe') -Force
           Write-Host "Staged mnemon.exe -> $dest"
