@@ -75,7 +75,16 @@ jobs:
           Copy-Item "$srcProfile\pnpm-workspace.yaml" "$homeProfile\pnpm-workspace.yaml" -Force
           Copy-Item "$srcProfile\pnpm-lock.yaml" "$homeProfile\pnpm-lock.yaml" -Force
           Push-Location $homeProfile
-          pnpm install --frozen-lockfile
+          # Force the pnpm content-addressable store OUT of any node_modules path.
+          # When installing into the real home (~/.dsh, on C:), pnpm v11 otherwise
+          # resolves its store to the pnpm-install dir under .../node_modules, so
+          # git-hosted packages' `prepare` (e.g. dsh-queue-plus runs `tsdown`) then
+          # executes from a temp dir under that store — tsdown refuses to strip types
+          # from config files "under node_modules" and the prepare fails. Pointing the
+          # store at a plain workspace path (not under node_modules) keeps the prepare
+          # temp dir safe, exactly like the repo-local install that previously worked.
+          $storeDir = Join-Path $env:GITHUB_WORKSPACE '.pnpm-store'
+          pnpm install --store-dir $storeDir --frozen-lockfile
           Pop-Location
 
           # Fetch the prebuilt Mnemon memory CLI into the real home ~/.mnemon/bin.
