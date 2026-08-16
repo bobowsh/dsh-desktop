@@ -63,4 +63,22 @@
   ${Else}
     DetailPrint "Keeping existing .mnemon"
   ${EndIf}
+
+  ; --- dsh.cmd CLI shim : root shortcut -------------------------------------
+  ; dsh.cmd is shipped via extraResources to
+  ;   resources\app\node_modules\node\bin\dsh.cmd
+  ; where node.exe lives and its relative path "..\@deepseek-ai\dsh\lib\bin.js"
+  ; resolves to the real installed bin.js — so NO rewrite is needed here, we
+  ; only drop a shortcut in the install root.
+  ${If} ${FileExists} "$INSTDIR\resources\app\node_modules\node\bin\dsh.cmd"
+    DetailPrint "dsh CLI: $INSTDIR\resources\app\node_modules\node\bin\dsh.cmd"
+    CreateShortcut "$INSTDIR\dsh.lnk" "$INSTDIR\resources\app\node_modules\node\bin\dsh.cmd" "" "$INSTDIR\resources\icon.png"
+    DetailPrint "Created shortcut: $INSTDIR\dsh.lnk"
+  ${EndIf}
+!macroend
+
+!macro customUnInstall
+  ; Remove the root CLI shortcut. resources\node\dsh.cmd is removed with the
+  ; program files by electron-builder's built-in uninstall.
+  Delete "$INSTDIR\dsh.lnk"
 !macroend

@@ -117,6 +117,10 @@
       {
         "from": "bundled-user-data",
         "to": "bundled-user-data"
+      },
+      {
+        "from": "scripts/dsh.cmd",
+        "to": "app/node_modules/node/bin/dsh.cmd"
       }
     ],
     "publish": [
