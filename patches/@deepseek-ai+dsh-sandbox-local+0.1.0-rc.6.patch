@@ -1,0 +1,34 @@
+diff --git a/node_modules/@deepseek-ai/dsh-sandbox-local/lib/index.js b/node_modules/@deepseek-ai/dsh-sandbox-local/lib/index.js
+index 8ee846e..4b07208 100644
+--- a/node_modules/@deepseek-ai/dsh-sandbox-local/lib/index.js
++++ b/node_modules/@deepseek-ai/dsh-sandbox-local/lib/index.js
+@@ -110,7 +110,8 @@ function defaultProbeBwrap(timeoutMs) {
+ 		"true"
+ 	], {
+ 		timeout: timeoutMs,
+-		stdio: "ignore"
++		stdio: "ignore",
++		windowsHide: true
+ 	}).status === 0;
+ }
+ /**
+@@ -132,7 +133,8 @@ function defaultProbeSeatbelt(seatbeltExec, timeoutMs) {
+ 		"true"
+ 	], {
+ 		timeout: timeoutMs,
+-		stdio: "ignore"
++		stdio: "ignore",
++		windowsHide: true
+ 	}).status === 0;
+ }
+ /**
+@@ -160,7 +162,8 @@ function defaultProbeWindowsAcl(runnerInvocation, timeoutMs) {
+ 		"0"
+ 	], {
+ 		timeout: timeoutMs,
+-		stdio: "ignore"
++		stdio: "ignore",
++		windowsHide: true
+ 	}).status === 0;
+ }
+ /**
