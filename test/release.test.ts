@@ -71,7 +71,7 @@ describe('GitHub release contract', () => {
     expect(packageJson.build.portable).toBeUndefined()
   })
 
-  it('shows a packaged startup surface and pins the browse directory picker', async () => {
+  it('shows a packaged startup surface and pins the Electron directory picker surface', async () => {
     const main = await readFile(path.join(projectRoot, 'src', 'main', 'index.ts'), 'utf8')
     const splash = await readFile(path.join(projectRoot, 'build', 'splash.html'), 'utf8')
     const patch = await readFile(
@@ -84,13 +84,8 @@ describe('GitHub release contract', () => {
     expect(splash).toContain('Starting DSH Desktop')
     expect(splash).toContain('prefers-reduced-motion')
     expect(patch).toMatch(/id: directory-picker\r?\n  disabled: true/)
-    // The Harness child runs under Electron's Node.js runtime, whose V8 sandbox
-    // forbids the external ArrayBuffer the native worker's Koffi path decoder
-    // creates. Pin the browse backend (pure node:fs) so the picker never crashes.
-    expect(patch).toContain("name: '@deepseek-ai/dsh-host-directory-picker-browse'")
-    expect(patch).toContain("name: '@deepseek-ai/dsh-client-ui-directory-picker-browse'")
     expect(patch).not.toContain("name: '@deepseek-ai/dsh-host-directory-picker-native'")
-    expect(patch).not.toContain("name: '@deepseek-ai/dsh-client-ui-directory-picker-native'")
+    expect(patch).toContain("name: '@deepseek-ai/dsh-client-ui-directory-picker-native'")
   })
 
   it('publishes update metadata for installed desktop builds', async () => {
@@ -99,7 +94,7 @@ describe('GitHub release contract', () => {
     ) as {
       dependencies: Record<string, string>
       build: {
-        publish: Array<{ provider: string; url: string }>
+        publish: Array<{ provider: string; url?: string; owner?: string; repo?: string }>
         win: { verifyUpdateCodeSignature: boolean }
       }
     }
@@ -114,6 +109,7 @@ describe('GitHub release contract', () => {
         provider: 'generic',
         url: 'https://github.com/bobowsh/dsh-desktop/releases/latest/download/'
       }
+      { provider: 'generic', url: 'https://dshdesktop.com/updates/latest/' }
     ])
     expect(packageJson.build.win.verifyUpdateCodeSignature).toBe(false)
     for (const asset of [
@@ -178,7 +174,9 @@ describe('GitHub release contract', () => {
     expect(workflow).toContain('Smoke test packaged Windows Harness')
     expect(workflow).toContain("$executable = 'dist-dev\\win-unpacked\\DSH Desktop Dev.exe'")
     expect(workflow).toContain('Packaged Windows Harness smoke test passed.')
-    expect(workflow).toContain('Harness reported stderr after HTTP became ready')
+    expect(workflow).toContain("Invoke-HarnessRpc 'workspace.create'")
+    expect(workflow).toContain("Invoke-HarnessRpc 'session.create'")
+    expect(workflow).toContain('Harness process exited after workspace and session creation.')
     expect(workflow).toContain('windows_prerelease_tag:')
     expect(workflow).toContain('Publish validated Windows development pre-release')
     expect(workflow).toContain('gh release create $env:PRERELEASE_TAG')

@@ -1,5 +1,5 @@
 diff --git a/node_modules/@deepseek-ai/dsh-host-apiproxy/lib/index.js b/node_modules/@deepseek-ai/dsh-host-apiproxy/lib/index.js
-index 9e3afa7..1c97a67 100644
+index 9e3afa7..0a08a41 100644
 --- a/node_modules/@deepseek-ai/dsh-host-apiproxy/lib/index.js
 +++ b/node_modules/@deepseek-ai/dsh-host-apiproxy/lib/index.js
 @@ -1,8 +1,8 @@
@@ -135,7 +135,52 @@ index 9e3afa7..1c97a67 100644
  //#region lib/types/session-export.js
  /**
  * Host-side session-log download: streams one ZIP archive whose files are the
-@@ -3299,6 +3403,127 @@ function createApiProxy(ctx, defaults) {
+@@ -3205,7 +3309,13 @@ function createApiProxy(ctx, defaults) {
+ 				}));
+ 			},
+ 			async pickDirectory(request, signal) {
+-				const capability = ctx.directoryPicker.capability();
++				const directoryPicker = ctx.get("directoryPicker");
++				if (!directoryPicker) return err(request, {
++					code: "directory-picker-unavailable",
++					message: "host.pickDirectory needs a composed directory picker",
++					details: { capability: "none" }
++				});
++				const capability = directoryPicker.capability();
+ 				if (capability.kind !== "native") return err(request, {
+ 					code: "directory-picker-unavailable",
+ 					message: `host.pickDirectory needs the native capability; the composed picker serves "${capability.kind}"`,
+@@ -3227,7 +3337,13 @@ function createApiProxy(ctx, defaults) {
+ 				}
+ 			},
+ 			async listDirectory(request, signal) {
+-				const capability = ctx.directoryPicker.capability();
++				const directoryPicker = ctx.get("directoryPicker");
++				if (!directoryPicker) return err(request, {
++					code: "directory-picker-unavailable",
++					message: "host.listDirectory needs a composed directory picker",
++					details: { capability: "none" }
++				});
++				const capability = directoryPicker.capability();
+ 				if (capability.kind !== "browse") return err(request, {
+ 					code: "directory-picker-unavailable",
+ 					message: `host.listDirectory needs the browse capability; the composed picker serves "${capability.kind}"`,
+@@ -3245,7 +3361,13 @@ function createApiProxy(ctx, defaults) {
+ 				}
+ 			},
+ 			async createDirectory(request) {
+-				const capability = ctx.directoryPicker.capability();
++				const directoryPicker = ctx.get("directoryPicker");
++				if (!directoryPicker) return err(request, {
++					code: "directory-picker-unavailable",
++					message: "host.createDirectory needs a composed directory picker",
++					details: { capability: "none" }
++				});
++				const capability = directoryPicker.capability();
+ 				if (capability.kind !== "browse") return err(request, {
+ 					code: "directory-picker-unavailable",
+ 					message: `host.createDirectory needs the browse capability; the composed picker serves "${capability.kind}"`,
+@@ -3299,6 +3421,127 @@ function createApiProxy(ctx, defaults) {
  			}
  		},
  		agentPresets: {
@@ -263,7 +308,7 @@ index 9e3afa7..1c97a67 100644
  			async list(request) {
  				const presets = ctx.get("agentPresets");
  				if (presets === void 0) return ok(request, {
-@@ -4993,6 +5218,34 @@ function toFetchHandler(api) {
+@@ -4993,6 +5236,34 @@ function toFetchHandler(api) {
  			rpcId: RpcId(randomUUID()),
  			payload: {}
  		}, req.signal));
@@ -298,3 +343,11 @@ index 9e3afa7..1c97a67 100644
  		if (path === "/api/session.export" && (req.method === "GET" || req.method === "HEAD")) {
  			const parsed = sessionLogQuerySchema.safeParse(Object.fromEntries(url.searchParams));
  			if (!parsed.success) return new Response("missing or invalid sessionId query parameter", { status: 400 });
+@@ -5592,7 +5863,6 @@ var ApiProxyService = class extends Service {
+ 		"agentDefaultModel",
+ 		"agents",
+ 		"attachments",
+-		"directoryPicker",
+ 		"llm",
+ 		"sessions",
+ 		"subagents",

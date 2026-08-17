@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="build/icon.png" width="64" alt="DSH Desktop logo" valign="middle" />
+  <img src="docs/images/readme-logo-black-v020.png" width="64" alt="DSH Desktop logo" valign="middle" />
   DSH Desktop
 </h1>
 
@@ -18,7 +18,7 @@
   <img alt="Windows" src="https://img.shields.io/badge/Windows-x64-171513.svg" />
 </p>
 
-![DSH Desktop model provider settings](docs/images/model-provider-settings-v011.png)
+![DSH Desktop overview with portable presets, model providers, and phone control](docs/images/dsh-desktop-hero-v020.png)
 
 <p align="center"><strong>Beyond official DeepSeek models, DSH Desktop supports mainstream third-party model providers—with more DSH-powered desktop experiences coming soon.</strong></p>
 
@@ -65,19 +65,9 @@ DeepSeek Harness already provides a complete agent runtime and Web UI. DSH Deskt
 - Imports and exports complete custom Agent presets as portable [`.dshpreset` packages](docs/preset-packages.md), with conflict checks and a trust warning before installation
 - Includes a production DSH app icon in macOS ICNS and Windows ICO formats
 
-## Model providers
+## Friends
 
-During initial setup, you can choose a model provider and enter its API key directly. DSH Desktop uses the real Harness Settings and Credentials APIs: the key is written only to the credential store, the corresponding provider route is created automatically, and its built-in model catalog is inherited without requiring model IDs to be entered manually.
-
-The initial setup currently includes:
-
-| Type | Providers |
-| --- | --- |
-| Model vendors | DeepSeek, OpenAI, Anthropic, Google Gemini, xAI, Moonshot/Kimi, MiniMax, Zhipu GLM, Mistral AI |
-| Model aggregation | OpenRouter |
-| Inference platforms | Groq, Together AI |
-
-Additional built-in or custom providers can be added from **Settings → Models** in Harness.
+[dsh-market](https://github.com/dsh-market/dsh-market) — the DeepSeek Harness plugin market: browse and search 900+ community plugins, preview screenshots, and install, update, enable or disable plugins, or switch themes with one click. Most plugins take effect instantly without a restart.
 
 ## Quick start
 

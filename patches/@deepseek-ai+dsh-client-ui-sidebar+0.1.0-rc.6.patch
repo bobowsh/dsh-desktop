@@ -1,5 +1,5 @@
 diff --git a/node_modules/@deepseek-ai/dsh-client-ui-sidebar/lib/client.js b/node_modules/@deepseek-ai/dsh-client-ui-sidebar/lib/client.js
-index 629e313..27a52a1 100644
+index 629e313..39c4519 100644
 --- a/node_modules/@deepseek-ai/dsh-client-ui-sidebar/lib/client.js
 +++ b/node_modules/@deepseek-ai/dsh-client-ui-sidebar/lib/client.js
 @@ -23,16 +23,19 @@ window.__ModuleLoader__.load({
@@ -76,7 +76,16 @@ index 629e313..27a52a1 100644
  		//#region lib/types/client/SidebarRoot.js
  		/**
  		* Sidebar shell: column geometry only. Collapse is a slide plus crossfade:
-@@ -157,7 +205,7 @@ window.__ModuleLoader__.load({
+@@ -138,6 +186,8 @@ window.__ModuleLoader__.load({
+ 			}, [pointerInside]);
+ 			return (0, react_jsx_runtime.jsxs)("div", {
+ 				ref: column,
++				"data-dsh-sidebar-root": "",
++				"data-dsh-sidebar-wide": wide ? "true" : "false",
+ 				className: clsx(SidebarRoot_module_css_default.root, !wide && SidebarRoot_module_css_default.collapsed, !wide && everWide.current && SidebarRoot_module_css_default.railIn, collapsed && wide && SidebarRoot_module_css_default.fading, !pointerInside && SidebarRoot_module_css_default.quietBars),
+ 				style: wide ? { width: collapsed ? lastWideWidth.current : width } : void 0,
+ 				onPointerEnter: () => {
+@@ -157,7 +207,7 @@ window.__ModuleLoader__.load({
  							onClick: () => {
  								startSession();
  							},
@@ -85,7 +94,7 @@ index 629e313..27a52a1 100644
  						}), (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Tooltip, {
  							label: collapsed ? t("toggle.open") : t("toggle.collapse"),
  							delayMs: 500,
-@@ -168,9 +216,9 @@ window.__ModuleLoader__.load({
+@@ -168,9 +218,9 @@ window.__ModuleLoader__.load({
  								onClick: () => {
  									toggleSidebar();
  								},
@@ -97,3 +106,11 @@ index 629e313..27a52a1 100644
  								}), (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconPanelLeftOutline16, {
  									className: SidebarRoot_module_css_default.panelIcon,
  									size: wide ? 16 : 18
+@@ -205,6 +255,7 @@ window.__ModuleLoader__.load({
+ 						})
+ 					}),
+ 					(0, react_jsx_runtime.jsxs)("div", {
++						"data-dsh-sidebar-footer": "",
+ 						className: SidebarRoot_module_css_default.footArea,
+ 						children: [(0, react_jsx_runtime.jsx)("div", {
+ 							className: SidebarRoot_module_css_default.footerActions,

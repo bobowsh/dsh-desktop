@@ -1,20 +1,27 @@
-# DSH Desktop always runs the Host on the same machine as its operator, but the
-# Harness child reuses the Electron binary as its Node.js runtime
-# (ELECTRON_RUN_AS_NODE=1). Electron's V8 sandbox forbids the external
-# ArrayBuffer that the native worker's Koffi path decoder creates
-# (`Buffer.from(koffi.view(addr, …))`), so the win32 dialog worker dies before
-# it can report a result. Pin the browse interaction instead: it is pure
-# node:fs (list/mkdir), loads no Koffi, and works everywhere.
+# DSH Desktop delegates directory selection to Electron's system dialog. Keep
+# the renderless client surface, but do not load the Koffi-based Host worker:
+# on Windows it can exit before reporting a result inside packaged Electron.
 - id: directory-picker
   disabled: true
 
 - insert:
-    - id: directory-picker-browse-desktop
-      name: '@deepseek-ai/dsh-host-directory-picker-browse'
+    - id: directory-picker-electron-desktop-surface
+      name: '@deepseek-ai/dsh-client-ui-directory-picker-native'
 
-    # The browse interaction has a second, renderless client row. Without it
-    # ui-workspace has no directory-flow occupant, so every workspace picker
-    # entry point becomes inert or disappears even though the Host capability
-    # itself is running.
-    - id: directory-picker-browse-desktop-surface
-      name: '@deepseek-ai/dsh-client-ui-directory-picker-browse'
+    # DSH Desktop owns the fixed-target dsh-market installer and its lightweight
+    # settings entry. After dshmarket is installed and Harness restarts, the
+    # community plugin replaces the placeholder with its complete market UI.
+    # Disabled 2026-08-17 at user's request: the desktop-shell market entry /
+    # pnpm shim is no longer injected on launch. Community dshmarket plugin is
+    # unaffected (it lives in the profile's own dependencies).
+    - id: dsh-desktop-market-installer
+      name: dsh-desktop-market-installer
+      disabled: true
+
+# dsh-market normally offers to restart its own Node process after mutations.
+# The desktop shell has the real lifecycle authority, so keep that behavior off
+# whenever the optional plugin is present in the composed profile.
+- id: dsh-market
+  config:
+    profile: web
+    allowRestart: false

@@ -122,6 +122,7 @@ jobs:
           try {
             $deadline = (Get-Date).AddSeconds(75)
             $ready = $false
+            $endpoint = $null
             while ((Get-Date) -lt $deadline) {
               if ($desktop.HasExited) {
                 throw "DSH Desktop Dev exited before Harness was ready (exit code $($desktop.ExitCode))."
@@ -133,14 +134,7 @@ jobs:
                   try {
                     $response = Invoke-WebRequest -UseBasicParsing -Uri $match.Groups[1].Value -TimeoutSec 2
                     if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 500) {
-                      Start-Sleep -Seconds 5
-                      $stableLog = Get-Content -Raw $logPath
-                      if ($stableLog -match '\[stderr\]') {
-                        throw 'Harness reported stderr after HTTP became ready.'
-                      }
-                      if ($desktop.HasExited) {
-                        throw "DSH Desktop Dev exited after Harness became ready (exit code $($desktop.ExitCode))."
-                      }
+                      $endpoint = $match.Groups[1].Value
                       $ready = $true
                       break
                     }
@@ -150,6 +144,47 @@ jobs:
               Start-Sleep -Milliseconds 500
             }
             if (-not $ready) { throw 'Packaged Harness did not become ready within 75 seconds.' }
+
+            function Invoke-HarnessRpc([string]$method, [hashtable]$payload) {
+              $rpcId = [guid]::NewGuid().ToString()
+              $body = @{
+                type = 'client-request'
+                rpcId = $rpcId
+                method = $method
+                payload = $payload
+              } | ConvertTo-Json -Depth 8 -Compress
+              $response = Invoke-RestMethod `
+                -Method Post `
+                -Uri "$endpoint/api/$method" `
+                -ContentType 'application/json; charset=utf-8' `
+                -Body ([System.Text.Encoding]::UTF8.GetBytes($body)) `
+                -TimeoutSec 30
+              if ($response.rpcId -ne $rpcId) { throw "Harness RPC id mismatch for $method." }
+              if (-not $response.result.ok) {
+                throw "Harness RPC $method failed: $($response.result.error.code): $($response.result.error.message)"
+              }
+              return $response.result.value
+            }
+
+            $workspacePath = Join-Path $env:RUNNER_TEMP '数据项素-工作区'
+            New-Item -ItemType Directory -Force -Path $workspacePath | Out-Null
+            $workspace = Invoke-HarnessRpc 'workspace.create' @{ path = $workspacePath }
+            $session = Invoke-HarnessRpc 'session.create' @{ workspaceId = $workspace.workspace.workspaceId }
+            if ([string]::IsNullOrWhiteSpace($session.sessionId)) {
+              throw 'Harness did not return a session id for the selected workspace.'
+            }
+
+            Start-Sleep -Seconds 20
+            $stableLog = Get-Content -Raw $logPath
+            if ($stableLog -match '\[stderr\]') {
+              throw 'Harness reported stderr after workspace and session creation.'
+            }
+            if ($stableLog -match '\[node\] Harness process exited') {
+              throw 'Harness process exited after workspace and session creation.'
+            }
+            if ($desktop.HasExited) {
+              throw "DSH Desktop Dev exited after workspace and session creation (exit code $($desktop.ExitCode))."
+            }
             Write-Host 'Packaged Windows Harness smoke test passed.'
           } finally {
             if (Test-Path $logPath) {
@@ -169,8 +204,8 @@ jobs:
             --repo $env:GITHUB_REPOSITORY `
             --target $env:GITHUB_SHA `
             --prerelease `
-            --title 'DSH Desktop Windows Harness Test' `
-            --notes "Windows x64 development build for validating the Harness startup fix from PR #39. This build uses an isolated app identity and user data directory, and has passed the packaged Windows Harness smoke test." `
+            --title 'DSH Desktop Windows Workspace Test' `
+            --notes "Windows x64 development build for validating workspace selection and session startup on affected machines. This build pins Koffi 3.1.5 for the stable native Windows binaries, uses an isolated app identity and user data directory, and has passed a packaged Harness smoke test that creates a Unicode-path workspace and session." `
             'dist-dev/dsh-desktop-dev-windows-x64-setup.exe#DSH Desktop Dev Windows x64 Setup'
       - uses: actions/upload-artifact@v4
         if: startsWith(github.ref, 'refs/tags/v')
@@ -225,3 +260,29 @@ jobs:
               --title "DSH Desktop $RELEASE_TAG" \
               --repo "$GITHUB_REPOSITORY"
           fi
+      - name: Mirror release assets to Tencent COS
+        env:
+          COS_SECRET_ID: ${{ secrets.COS_SECRET_ID }}
+          COS_SECRET_KEY: ${{ secrets.COS_SECRET_KEY }}
+          COS_BUCKET: ${{ vars.COS_BUCKET }}
+        run: |
+          set -euo pipefail
+          test -n "$COS_SECRET_ID" && test -n "$COS_SECRET_KEY" || { echo "::error::Missing secrets COS_SECRET_ID/COS_SECRET_KEY"; exit 1; }
+          test -n "$COS_BUCKET" || { echo "::error::Missing variable COS_BUCKET"; exit 1; }
+          curl -sSfL -o coscli https://github.com/tencentyun/coscli/releases/download/v1.0.8/coscli-v1.0.8-linux-amd64
+          chmod +x coscli
+          cat > "$HOME/.cos.yaml" <<YAML
+          cos:
+            base:
+              secretid: ${COS_SECRET_ID}
+              secretkey: ${COS_SECRET_KEY}
+              sessiontoken: ""
+              protocol: https
+            buckets:
+            - name: ${COS_BUCKET}
+              endpoint: cos.accelerate.myqcloud.com
+              accelerate: true
+              alias: ""
+          YAML
+          chmod 600 "$HOME/.cos.yaml"
+          ./coscli cp release-assets/ "cos://${COS_BUCKET}/releases/latest/" -r --routines 10 --thread-num 8 --long-links-nums 20 --disable-crc64

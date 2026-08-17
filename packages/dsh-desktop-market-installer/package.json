@@ -1,0 +1,31 @@
+{
+  "name": "dsh-desktop-market-installer",
+  "version": "0.1.0",
+  "description": "DSH Desktop's fixed-target installer entry for the optional dsh-market community plugin.",
+  "private": true,
+  "type": "module",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-settings-plugins"
+      ],
+      "platform": "web"
+    }
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/dsh-host-webserver": "^0.1.0-rc.6"
+  },
+  "dependencies": {
+    "pnpm": "11.21.0"
+  }
+}

@@ -58,6 +58,24 @@ describe('DSH Desktop sidebar branding', () => {
     expect(patch).toContain('sidebar === 0 ? COLLAPSED_SIDEBAR_WIDTH')
   })
 
+  it('provides a sidebar phone entry that follows expanded and connected state', async () => {
+    const patch = await readFile(
+      path.join(projectRoot, 'patches', '@deepseek-ai+dsh-client-ui-sidebar+0.1.0-rc.6.patch'),
+      'utf8'
+    )
+    const preload = await readFile(path.join(projectRoot, 'src', 'preload', 'index.ts'), 'utf8')
+    const main = await readFile(path.join(projectRoot, 'src', 'main', 'index.ts'), 'utf8')
+
+    expect(patch).toContain('data-dsh-sidebar-root')
+    expect(patch).toContain('data-dsh-sidebar-wide')
+    expect(patch).toContain('data-dsh-sidebar-footer')
+    expect(preload).toContain("button.hidden = !wide && !phoneConnected")
+    expect(preload).toContain("button.classList.toggle('is-connected', phoneConnected)")
+    expect(preload).toContain("ipcRenderer.invoke('mobile:open-pairing')")
+    expect(main).toContain("ipcMain.handle('mobile:open-pairing'")
+    expect(main).toContain("ipcMain.handle('mobile:status'")
+  })
+
   it('installs the source logo into the Harness static frontend', async () => {
     const packageJson = JSON.parse(
       await readFile(path.join(projectRoot, 'package.json'), 'utf8')
