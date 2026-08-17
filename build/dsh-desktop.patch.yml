@@ -11,12 +11,10 @@
     # DSH Desktop owns the fixed-target dsh-market installer and its lightweight
     # settings entry. After dshmarket is installed and Harness restarts, the
     # community plugin replaces the placeholder with its complete market UI.
-    # Disabled 2026-08-17 at user's request: the desktop-shell market entry /
-    # pnpm shim is no longer injected on launch. Community dshmarket plugin is
-    # unaffected (it lives in the profile's own dependencies).
-    - id: dsh-desktop-market-installer
-      name: dsh-desktop-market-installer
-      disabled: true
+    # Disabled 2026-08-17 at user's request; dependency removed from packaging
+    # 2026-08-18 (the desktop-shell market entry / pnpm shim no longer ships).
+    # Community dshmarket plugin is unaffected (it lives in the profile's own
+    # dependencies).
 
 # dsh-market normally offers to restart its own Node process after mutations.
 # The desktop shell has the real lifecycle authority, so keep that behavior off

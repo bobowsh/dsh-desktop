@@ -1,0 +1,12 @@
+ui-onboarding:
+  welcomeNoticeVersion: 2026-08-13.1
+mnemon:
+  displayMode: buildin
+dsh-desktop:
+  mode: compatibility
+ui-theme:
+  preference: system
+mnemon-ui:
+  turnBar: false
+dsh-better-sidebar:
+  openByDefault: false

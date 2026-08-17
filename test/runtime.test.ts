@@ -53,6 +53,7 @@ describe('Harness launch contract', () => {
       windowsHide: true,
       env: {
         NO_COLOR: '1',
+        DSH_HOME: 'C:\\Users\\tester\\AppData\\Roaming\\dsh-desktop\\harness',
         Path: 'windows-path'
       }
     })
@@ -77,6 +78,7 @@ describe('Harness launch contract', () => {
       windowsHide: true,
       env: {
         NO_COLOR: '1',
+        DSH_HOME: 'C:\\Users\\tester\\AppData\\Roaming\\dsh-desktop\\harness',
         ELECTRON_RUN_AS_NODE: '1',
         Path: 'windows-path'
       }

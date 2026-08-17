@@ -60,7 +60,6 @@
     "@deepseek-ai/dsh-subprocess": "0.1.0-rc.6",
     "@deepseek-ai/dsh-timeout": "0.1.0-rc.6",
     "@deepseek-ai/dsh-workflow": "0.1.0-rc.6",
-    "dsh-desktop-market-installer": "file:packages/dsh-desktop-market-installer",
     "chardet": "^2.2.0",
     "electron-updater": "^6.8.9",
     "node": "24.9.0",
@@ -101,7 +100,12 @@
       "node_modules/**/*",
       "package.json",
       "!**/*.map",
-      "!**/node_modules/@mistralai/mistralai/src/**"
+      "!**/node_modules/@mistralai/mistralai/src/**",
+      "!**/*.pdb",
+      "!**/prebuilds/win32-arm64/**",
+      "!**/prebuilds/darwin-*/**",
+      "!**/win10-arm64/**",
+      "!**/@img/sharp-wasm32/**"
     ],
     "extraResources": [
       {
@@ -121,8 +125,13 @@
         "to": "splash.html"
       },
       {
-        "from": "bundled-user-data",
-        "to": "bundled-user-data"
+        "from": "data",
+        "to": "data",
+        "filter": [
+          "settings.yaml",
+          "profiles/web/**",
+          "bin/**"
+        ]
       },
       {
         "from": "scripts/dsh.cmd",

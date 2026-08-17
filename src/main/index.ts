@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { existsSync, readFileSync } from 'node:fs'
 import { parse } from 'yaml'
 import {
@@ -486,7 +486,13 @@ async function bootstrap(): Promise<void> {
     useElectronRuntime: nodeRuntime.useElectronRuntime,
     nodeEntryPath: harnessNodeEntryPath(),
     dshPatchPath: desktopResourcePath('dsh-desktop.patch.yml'),
-    dshHome: join(app.getPath('userData'), 'harness'),
+    // Harness user-data root lives in a `data` directory next to the running
+    // program, so the profile stays portable beside the executable.
+    // - Packaged build: `dirname(process.execPath)/data` (beside the .exe).
+    // - Dev run: `app.getAppPath()/data` (project root), so the data dir does
+    //   not land next to node_modules/electron's electron.exe.
+    // (Was `~/.dsh` / userData/harness before; re-pointed here on the user's request.)
+    dshHome: join(app.isPackaged ? dirname(process.execPath) : app.getAppPath(), 'data'),
     logPath: join(app.getPath('logs'), 'harness.log'),
     launchProcess: (executablePath, args, options) => spawn(executablePath, args, options),
     onChanged: (snapshot) => {

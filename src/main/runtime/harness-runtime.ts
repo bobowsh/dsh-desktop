@@ -1,7 +1,8 @@
 import type { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio } from 'node:child_process'
-import { createWriteStream, existsSync, type WriteStream } from 'node:fs'
+import { createWriteStream, existsSync, readFileSync, writeFileSync, type WriteStream } from 'node:fs'
 import { mkdir } from 'node:fs/promises'
 import { createServer } from 'node:net'
+import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import type { RuntimePhase, RuntimeSnapshot } from '../../shared/contracts'
 
@@ -53,6 +54,16 @@ export function buildHarnessSpawnOptions(
     env: {
       ...parentEnvironment,
       NO_COLOR: '1',
+      // Point the Harness at the data directory living next to the running
+      // program so the whole profile (plugins, settings, credentials) stays
+      // portable beside the executable instead of in the user's home.
+      DSH_HOME: dshHome,
+      // Resolve the bundled Mnemon CLI relative to the data directory that sits
+      // next to the executable (dshHome/bin/mnemon.exe). The dsh-mnemon plugin
+      // prefers this env var over the settings `cliPath` field, which only
+      // supports `~` or absolute paths — so this keeps the CLI path portable
+      // without any hardcoded absolute path in the repo or the installer.
+      MNEMON_CLI_PATH: join(dshHome, 'bin', 'mnemon.exe'),
       // When the Harness child reuses the Electron binary as its Node.js runtime
       // it must opt back into "run as Node" mode so Electron does not boot a GUI.
       // When the child runs the standalone bundled Node.js runtime instead, the
@@ -125,6 +136,8 @@ export class HarnessRuntime {
     await mkdir(this.options.dshHome, { recursive: true })
     await mkdir(dirname(this.options.logPath), { recursive: true })
     this.logStream = createWriteStream(this.options.logPath, { flags: 'a' })
+
+    syncModulesMetadata(this.options.dshHome, (line) => this.writeLog(line))
 
     const port = await reservePort()
     const url = `http://127.0.0.1:${port}`
@@ -301,4 +314,59 @@ async function waitUntilReady(
     await new Promise((resolve) => setTimeout(resolve, 250))
   }
   return false
+}
+
+/**
+ * Keep the shipped plugin tree's pnpm metadata aligned with the CURRENT machine.
+ *
+ * The profile (data/profiles/web) is staged by a plain recursive copy
+ * (scripts/bundle-user-data.mjs), which leaves `node_modules/.modules.yaml` naming
+ * the SOURCE machine's absolute paths — or, after bundle normalization, no paths
+ * at all. pnpm's checkCompatibility then compares the recorded values against the
+ * tree it is actually running in and throws ERR_PNPM_UNEXPECTED_STORE /
+ * ERR_PNPM_UNEXPECTED_VIRTUAL_STORE on the first add/remove from the market UI.
+ *
+ * This rewrites the file for the machine that boots the harness:
+ * - `storeDir` must EXIST and exactly match the store pnpm resolves. The shipped
+ *   workspace pins `storeDir: ~/AppData/Local/pnpm/store` (expands to the current
+ *   user's home on any machine), so pnpm resolves `<home>\AppData\Local\pnpm\store\v11`
+ *   on Windows — we write that same absolute path here.
+ * - `virtualStoreDir` is an optional check, so it is dropped and pnpm recomputes
+ *   it from the tree location on its next run.
+ *
+ * Anything unexpected (missing file, non-JSON, read failure) is non-fatal: the
+ * harness still boots, and the worst case is a pnpm "unexpected store location"
+ * error surfacing again in the market UI.
+ */
+function syncModulesMetadata(dshHome: string, log: (line: string) => void): void {
+  try {
+    const modulesFile = join(dshHome, 'profiles', 'web', 'node_modules', '.modules.yaml')
+    if (!existsSync(modulesFile)) return
+    const parsed = JSON.parse(readFileSync(modulesFile, 'utf8')) as {
+      storeDir?: string
+      virtualStoreDir?: string
+    }
+    const localAppData =
+      process.env.LOCALAPPDATA ?? join(homedir(), 'AppData', 'Local')
+    // pnpm's STORE_VERSION for the bundled pnpm 11 (see pnpm-workspace.yaml's
+    // storeDir pin); keep in sync when the bundled pnpm major changes.
+    const storeDir = join(localAppData, 'pnpm', 'store', 'v11')
+    let changed = false
+    if (parsed.storeDir !== storeDir) {
+      parsed.storeDir = storeDir
+      changed = true
+    }
+    if (parsed.virtualStoreDir !== undefined) {
+      delete parsed.virtualStoreDir
+      changed = true
+    }
+    if (changed) {
+      writeFileSync(modulesFile, `${JSON.stringify(parsed, null, 2)}\n`)
+      log('[desktop] synced pnpm .modules.yaml storeDir for this machine')
+    }
+  } catch (error) {
+    log(
+      `[desktop] pnpm .modules.yaml sync skipped: ${error instanceof Error ? error.message : String(error)}`
+    )
+  }
 }
