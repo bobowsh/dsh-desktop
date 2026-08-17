@@ -109,7 +109,6 @@ describe('GitHub release contract', () => {
         provider: 'generic',
         url: 'https://github.com/bobowsh/dsh-desktop/releases/latest/download/'
       }
-      { provider: 'generic', url: 'https://dshdesktop.com/updates/latest/' }
     ])
     expect(packageJson.build.win.verifyUpdateCodeSignature).toBe(false)
     for (const asset of [
