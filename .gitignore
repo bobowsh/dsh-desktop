@@ -32,6 +32,7 @@ data/memory/
 data/bin/
 # Runtime check-marker files produced by profile tools on first use
 data/*.checked.json
+data/dsh-chat-import/scan-cache.json
 .env
 .env.*
 !.env.example
