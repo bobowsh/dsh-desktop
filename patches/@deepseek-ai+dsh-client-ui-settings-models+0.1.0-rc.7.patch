@@ -1,5 +1,5 @@
 diff --git a/node_modules/@deepseek-ai/dsh-client-ui-settings-models/lib/client.js b/node_modules/@deepseek-ai/dsh-client-ui-settings-models/lib/client.js
-index 02caaf7..935dceb 100644
+index 02caaf7..d849175 100644
 --- a/node_modules/@deepseek-ai/dsh-client-ui-settings-models/lib/client.js
 +++ b/node_modules/@deepseek-ai/dsh-client-ui-settings-models/lib/client.js
 @@ -66,6 +66,14 @@ window.__ModuleLoader__.load({
@@ -55,6 +55,15 @@ index 02caaf7..935dceb 100644
  					})
  				]
  			});
+@@ -1354,7 +1375,7 @@ window.__ModuleLoader__.load({
+ 		function layoutOf(ns) {
+ 			if (ns === "llm-deepseek") return "deepseek";
+ 			if (ns === "llm-pi-ai") return "pi-ai";
+-			return "unknown";
++			return "pi-ai";
+ 		}
+ 		/** The credential reference this profile resolves keys through. */
+ 		function refFor(namespace, path, provider) {
 @@ -1753,6 +1774,26 @@ window.__ModuleLoader__.load({
  		function providerCopy(template, target) {
  			return template.replace("{provider}", () => providerTargetLabel(target));
