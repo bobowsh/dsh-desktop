@@ -120,21 +120,46 @@ export async function ensurePnpmShim(home = dshHome()) {
   const executable = process.execPath
 
   if (process.platform === 'win32') {
-    const path = join(directory, 'pnpm.cmd')
-    await writeFile(path, `@\"${executable}\" \"${pnpmEntry}\" %*\r\n`, 'utf8')
-  } else {
-    const path = join(directory, 'pnpm')
+    const pnpmPath = join(directory, 'pnpm.cmd')
     await writeFile(
-      path,
+      pnpmPath,
+      `@chcp 65001 >nul\r\n@echo off\r\n\"${executable}\" \"${pnpmEntry}\" %*\r\n`,
+      'utf8'
+    )
+    const nodePath = join(directory, 'node.cmd')
+    await writeFile(
+      nodePath,
+      `@chcp 65001 >nul\r\n@echo off\r\n\"${executable}\" %*\r\n`,
+      'utf8'
+    )
+  } else {
+    const pnpmPath = join(directory, 'pnpm')
+    await writeFile(
+      pnpmPath,
       `#!/bin/sh\nexec ${shellQuote(executable)} ${shellQuote(pnpmEntry)} \"$@\"\n`,
       { encoding: 'utf8', mode: 0o755 }
     )
-    await chmod(path, 0o755)
+    await chmod(pnpmPath, 0o755)
+    const nodePath = join(directory, 'node')
+    await writeFile(
+      nodePath,
+      `#!/bin/sh\nexec ${shellQuote(executable)} \"$@\"\n`,
+      { encoding: 'utf8', mode: 0o755 }
+    )
+    await chmod(nodePath, 0o755)
   }
 
-  const current = process.env.PATH ?? ''
-  if (!current.split(delimiter).includes(directory)) {
-    process.env.PATH = current ? `${directory}${delimiter}${current}` : directory
+  const nodeDir = dirname(executable)
+  const pathKey = process.platform === 'win32' ? 'Path' : 'PATH'
+  const current = process.env[pathKey] ?? process.env.PATH ?? process.env.Path ?? ''
+  const parts = current.split(delimiter).filter(Boolean)
+  const additions = [directory, nodeDir].filter((dir) => !parts.includes(dir))
+  if (additions.length > 0) {
+    const updated = [...additions, current].filter(Boolean).join(delimiter)
+    process.env.PATH = updated
+    if (process.platform === 'win32') {
+      process.env.Path = updated
+    }
   }
   return directory
 }
@@ -258,9 +283,17 @@ export function apply(ctx) {
       if (error?.code !== 'ENOENT') throw error
     }
 
+    const pathKey = process.platform === 'win32' ? 'Path' : 'PATH'
+    const envPath = process.env[pathKey] ?? process.env.PATH ?? process.env.Path ?? ''
     const child = spawn(process.execPath, buildInstallArguments(), {
       cwd: directory,
-      env: { ...process.env, CI: 'true', NO_COLOR: '1' },
+      env: {
+        ...process.env,
+        PATH: envPath,
+        Path: envPath,
+        CI: 'true',
+        NO_COLOR: '1'
+      },
       stdio: ['ignore', 'pipe', 'pipe'],
       windowsHide: true,
       detached: process.platform !== 'win32'
@@ -334,9 +367,17 @@ export function apply(ctx) {
       if (error?.code !== 'ENOENT') throw error
     }
 
+    const pathKey = process.platform === 'win32' ? 'Path' : 'PATH'
+    const envPath = process.env[pathKey] ?? process.env.PATH ?? process.env.Path ?? ''
     const child = spawn(process.execPath, buildUninstallArguments(), {
       cwd: directory,
-      env: { ...process.env, CI: 'true', NO_COLOR: '1' },
+      env: {
+        ...process.env,
+        PATH: envPath,
+        Path: envPath,
+        CI: 'true',
+        NO_COLOR: '1'
+      },
       stdio: ['ignore', 'pipe', 'pipe'],
       windowsHide: true,
       detached: process.platform !== 'win32'

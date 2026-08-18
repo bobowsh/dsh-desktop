@@ -6,21 +6,10 @@ import { fileURLToPath } from 'node:url'
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const buildDirectory = path.join(projectRoot, 'build')
-const source = path.join(buildDirectory, 'app-icon.svg')
-const pngDestination = path.join(buildDirectory, 'app-icon.png')
+const source = path.join(buildDirectory, 'app-icon.png')
 const iconsetDirectory = path.join(buildDirectory, 'app-icon.iconset')
 const icnsDestination = path.join(buildDirectory, 'icon.icns')
 const icoDestination = path.join(buildDirectory, 'icon.ico')
-
-execFileSync('rsvg-convert', [
-  '--width',
-  '1024',
-  '--height',
-  '1024',
-  '--output',
-  pngDestination,
-  source
-])
 
 await rm(iconsetDirectory, { recursive: true, force: true })
 await mkdir(iconsetDirectory, { recursive: true })
@@ -30,7 +19,7 @@ for (const size of [16, 32, 128, 256, 512]) {
     '-z',
     String(size),
     String(size),
-    pngDestination,
+    source,
     '--out',
     path.join(iconsetDirectory, `icon_${size}x${size}.png`)
   ])
@@ -38,7 +27,7 @@ for (const size of [16, 32, 128, 256, 512]) {
     '-z',
     String(size * 2),
     String(size * 2),
-    pngDestination,
+    source,
     '--out',
     path.join(iconsetDirectory, `icon_${size}x${size}@2x.png`)
   ])
@@ -55,7 +44,7 @@ for (const size of icoSizes) {
     '-z',
     String(size),
     String(size),
-    pngDestination,
+    source,
     '--out',
     destination
   ])
@@ -84,5 +73,5 @@ for (let index = 0; index < icoImages.length; index += 1) {
 await writeFile(icoDestination, Buffer.concat([header, ...icoImages]))
 await rm(icoDirectory, { recursive: true, force: true })
 
-const icon = await readFile(pngDestination)
+const icon = await readFile(source)
 console.log(`Generated app icons from ${path.relative(projectRoot, source)} (${icon.length} bytes PNG).`)

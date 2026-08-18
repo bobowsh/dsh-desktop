@@ -6,7 +6,7 @@ const projectRoot = path.resolve(import.meta.dirname, '..')
 const patchPath = path.join(
   projectRoot,
   'patches',
-  '@deepseek-ai+dsh-client-ui-settings-models+0.1.0-rc.6.patch'
+  '@deepseek-ai+dsh-client-ui-settings-models+0.1.0-rc.7.patch'
 )
 
 describe('DSH Desktop available-model picker', () => {

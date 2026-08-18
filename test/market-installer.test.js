@@ -10,6 +10,7 @@ import {
   UNINSTALL_PATH,
   buildInstallArguments,
   buildUninstallArguments,
+  ensurePnpmShim,
   isTrustedRequest,
   readMarketInstallation,
   resolvePnpmEntry
@@ -43,6 +44,26 @@ describe('desktop plugin market installer', () => {
 
   it('ships a resolvable pnpm binary instead of relying on the user PATH', () => {
     expect(resolvePnpmEntry()).toMatch(/node_modules[/\\]pnpm[/\\]bin[/\\]pnpm\.(c|m)js$/u)
+  })
+
+  it('generates packaged node and pnpm shims in desktop-bin', async () => {
+    const home = await mkdtemp(join(tmpdir(), 'dsh-market-shim-'))
+    const binDir = await ensurePnpmShim(home)
+    expect(binDir).toBe(join(home, '.desktop-bin'))
+
+    if (process.platform === 'win32') {
+      const pnpmCmd = await readFile(join(binDir, 'pnpm.cmd'), 'utf8')
+      const nodeCmd = await readFile(join(binDir, 'node.cmd'), 'utf8')
+      expect(pnpmCmd).toContain(process.execPath)
+      expect(pnpmCmd).toContain('pnpm')
+      expect(nodeCmd).toContain(process.execPath)
+    } else {
+      const pnpmScript = await readFile(join(binDir, 'pnpm'), 'utf8')
+      const nodeScript = await readFile(join(binDir, 'node'), 'utf8')
+      expect(pnpmScript).toContain(process.execPath)
+      expect(pnpmScript).toContain('pnpm')
+      expect(nodeScript).toContain(process.execPath)
+    }
   })
 
   it('reports both the requested dependency and installed package version', async () => {

@@ -46,7 +46,7 @@ describe('GitHub release contract', () => {
         artifactName: string
         extraResources: Array<{ from: string; to: string }>
         win: { target: Array<{ target: string; arch: string[] }> }
-        nsis: { artifactName: string }
+        nsis: { artifactName: string; include: string }
         portable?: unknown
       }
     }
@@ -67,8 +67,22 @@ describe('GitHub release contract', () => {
     expect(packageJson.build.nsis.artifactName).toBe(
       'dsh-desktop-windows-${arch}-setup.${ext}'
     )
+    expect(packageJson.build.nsis.include).toBe('build/installer.nsh')
     expect(packageJson.build.win.target).toEqual([{ target: 'nsis', arch: ['x64'] }])
     expect(packageJson.build.portable).toBeUndefined()
+  })
+
+  it('turns a selected Windows drive root into an application directory', async () => {
+    const installer = await readFile(
+      path.join(projectRoot, 'build', 'installer.nsh'),
+      'utf8'
+    )
+
+    expect(installer).toContain('!define MUI_PAGE_CUSTOMFUNCTION_SHOW DshDirectoryPageShow')
+    expect(installer).toContain('${NSD_OnChange} $DshDirectoryEdit DshDirectoryChanged')
+    expect(installer).toContain('StrCpy $3 "$0\\${APP_FILENAME}"')
+    expect(installer).toContain('StrCpy $3 "$0${APP_FILENAME}"')
+    expect(installer).toContain('${NSD_SetText} $DshDirectoryEdit $3')
   })
 
   it('shows a packaged startup surface and pins the Electron directory picker surface', async () => {
