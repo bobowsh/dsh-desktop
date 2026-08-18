@@ -6,6 +6,7 @@
 import type { Context } from '@deepseek-ai/cordis'
 import { createDesktopPluginRuntime, type DesktopPnpmLike } from './dsh-cli.ts'
 import { mountMarketRoutes, type MarketConfig, type MarketHost } from './routes.ts'
+import { installMarketSettings } from './settings.ts'
 
 export const name = 'dsh-market'
 
@@ -53,6 +54,11 @@ export function apply(ctx: Context, config?: Config): void {
         profile: config?.profile ?? argvProfile() ?? 'web',
         allowRestart: config?.allowRestart ?? true,
       }
+      // Offer allowRestart as a switch on the settings page. Deliberately
+      // NOT in the Desktop branch below: there the shell owns the process
+      // lifecycle and the value is forced false, so it is not the user's to
+      // choose. No-ops on a host without a settings service.
+      installMarketSettings(ctx, resolved)
       host.effect(() => mountMarketRoutes(host, resolved), 'dsh-market: http routes')
       return
     }

@@ -13,25 +13,25 @@ importers:
         version: 0.1.1
       '@dsh-external/dsh-automation':
         specifier: github:titanwings/dsh-automation
-        version: https://codeload.github.com/titanwings/dsh-automation/tar.gz/a622b1b1758c6dc6bd476dc66d74a20a4b6762a3(react@18.3.1)
+        version: https://codeload.github.com/titanwings/dsh-automation/tar.gz/f8f43b2873a3f9dd57d86d61eb401770b2bc9ca5(react@18.3.1)
       '@dsh-external/dsh-visualize':
         specifier: github:Nagi-ovo/dsh-visualize
-        version: https://codeload.github.com/Nagi-ovo/dsh-visualize/tar.gz/e3254f762cbe4dbf796eca05d73a293f0e8e4a87(react@18.3.1)
+        version: https://codeload.github.com/Nagi-ovo/dsh-visualize/tar.gz/e86f68fe66b980a0ebeed8ef7409522b0b720bed(react@18.3.1)
       '@dsh-external/workflow':
-        specifier: github:icetomoyo/dsh_workflow
-        version: https://codeload.github.com/icetomoyo/dsh_workflow/tar.gz/44b83c182aa02d1be8a0803e8446cb495f93cd8f
+        specifier: git+https://github.com/icetomoyo/dsh_workflow.git
+        version: git+https://github.com/icetomoyo/dsh_workflow.git#44b83c182aa02d1be8a0803e8446cb495f93cd8f
       '@huanlin/dsh-plugin-session-delete':
         specifier: github:lsz-asd/dsh-plugin-session-delete
         version: https://codeload.github.com/lsz-asd/dsh-plugin-session-delete/tar.gz/352510e552983dcfcb993cf9124181c55e2070f5
       '@liustack/modlens':
-        specifier: ^3.18.1
-        version: 3.18.1
+        specifier: ^3.20.0
+        version: 3.20.0
       '@nanmicoder/dsh-agent-teams':
-        specifier: ^0.1.6
-        version: 0.1.6(react@18.3.1)
+        specifier: ^0.1.7
+        version: 0.1.7(react@18.3.1)
       '@omdsh-dev/dsh-genui':
         specifier: github:omdsh-dev/dsh-genui
-        version: https://codeload.github.com/omdsh-dev/dsh-genui/tar.gz/0e756efb7671e6b8413dde3d8e199c68fa89cbeb
+        version: https://codeload.github.com/omdsh-dev/dsh-genui/tar.gz/dab48fae600edb97859591ff6a25feb363d10721
       '@yejiming/dsh-gomoku':
         specifier: ^0.0.1
         version: 0.0.1(react@18.3.1)
@@ -39,41 +39,41 @@ importers:
         specifier: ^1.5.1
         version: 1.5.1
       dsh-better-sidebar:
-        specifier: ^0.12.3
-        version: 0.12.3(react@18.3.1)
+        specifier: ^0.13.0
+        version: 0.13.0(react@18.3.1)
       dsh-bookmarks:
         specifier: ^0.1.1
         version: 0.1.1
       dsh-chat-import:
-        specifier: ^0.6.0
-        version: 0.6.0(react@18.3.1)
+        specifier: ^0.6.1
+        version: 0.6.1(react@18.3.1)
       dsh-client-auto-continue:
-        specifier: ^0.6.0
-        version: 0.6.0(react@18.3.1)
+        specifier: ^0.6.2
+        version: 0.6.2(react@18.3.1)
       dsh-context:
-        specifier: ^0.11.2
-        version: 0.11.2
+        specifier: ^0.12.1
+        version: 0.12.1
       dsh-files:
         specifier: github:taxueseek/dsh-files
-        version: https://codeload.github.com/taxueseek/dsh-files/tar.gz/43887e2dca25fad9d7b23049fe1674f0af00c5cf(react@18.3.1)
+        version: https://codeload.github.com/taxueseek/dsh-files/tar.gz/2c453ab3f74659f91a84a35f71ff270eea77e674(react@18.3.1)
       dsh-mnemon:
-        specifier: ^0.2.5
-        version: 0.2.5(react@18.3.1)
+        specifier: ^0.2.9
+        version: 0.2.9(react@18.3.1)
       dsh-notification:
         specifier: github:omdsh-dev/dsh-notification
-        version: https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/3e33100f51f25f24cece20bfd3d50cfbde0cbca5(react@18.3.1)
+        version: https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/2399457a1f96ed86f761f3bc771539d131eb684f(react@18.3.1)
       dsh-plugin-search:
         specifier: github:shinjiyu/dsh-plugin-search
         version: https://codeload.github.com/shinjiyu/dsh-plugin-search/tar.gz/0ceaa1985ad2e7774cd8f06890c4a9b1a7125955
       dsh-prompt-enhancer:
         specifier: github:Fishsb/dsh-prompt-enhancer
-        version: https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/668880a0efb07535ab8731e845d3d5bc9f664412
+        version: https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/e0e39ed2efd8410dd54a052dbf9bcde6022a5e3b
       dsh-prompt-manager:
         specifier: ^1.4.1
         version: 1.4.1
       dsh-queue-plus:
         specifier: github:starslittle/dsh-queue-plus
-        version: https://codeload.github.com/starslittle/dsh-queue-plus/tar.gz/ee93da210fdade915dc56ebabcc409b8d7611678(react@18.3.1)
+        version: https://codeload.github.com/starslittle/dsh-queue-plus/tar.gz/ed6448d4828d5fd5c3933dc3c1e08340b9fbc2f9(react@18.3.1)
       dsh-session-doctor:
         specifier: github:mayf3/dsh-session-doctor
         version: https://codeload.github.com/mayf3/dsh-session-doctor/tar.gz/8147c144075ad7f7d86541f1393193cf3d522224
@@ -85,16 +85,16 @@ importers:
         version: https://codeload.github.com/KinGao294/dsh-skin/tar.gz/65c79b09d4c5f23e72076ff6b6b6b26c883f935c(react@18.3.1)
       dsh-status-rotator:
         specifier: github:01Virex/dsh-status-rotator
-        version: https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/09836ff04330a17fc670c27a4bed6855547c88ad
+        version: https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/2faa2a62fa2432c2ab29663ec089734989c0bcd5
       dsh-sticky-note:
         specifier: github:Meredith2328/dsh-sticky-note
-        version: https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/4507cef117ef3b039b1d9106c93eccdb69567a15(react@18.3.1)
+        version: https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/5c1ee970e6af5cb6168eeb9ef2d90774d31b6c60(react@18.3.1)
       dsh-web-archive:
         specifier: github:renat3u/dsh-web-archive
-        version: https://codeload.github.com/renat3u/dsh-web-archive/tar.gz/e106daf623fef5b1b4e3fc375ace130253e38243
+        version: https://codeload.github.com/renat3u/dsh-web-archive/tar.gz/777ae5ec25d391dee8ea2087b6db67cb89e8a378
       dshmarket:
-        specifier: ^1.11.3
-        version: 1.11.3
+        specifier: ^1.13.1
+        version: 1.13.1
 
 packages:
 
@@ -107,8 +107,8 @@ packages:
   '@codemirror/autocomplete@6.20.3':
     resolution: {integrity: sha512-tlosUqb+3BbxCxZdu4tKeRghPFC+QM7q4X5YhKV2eCmPG+1r2F3f4AaSz5sCrFqUtX4Jh20VFTKecl16MgiV9g==}
 
-  '@codemirror/commands@6.10.4':
-    resolution: {integrity: sha512-Ryk9y9T0FFVF0cUGhAknveAyUOl/A1qReTFi+qPKtOh2Z9F4AUBz3XOrYD4ZEgZirdugVzHvd/2/Wcwy5OliTg==}
+  '@codemirror/commands@6.11.0':
+    resolution: {integrity: sha512-/K4Rl5BN0OtTiPWmJCdqODu38XnDMsDxKY5rgrPnCkutPTJf2wVbkoixLfealF5Kwse/s8P8M5jAiURiwSwnFA==}
 
   '@codemirror/lang-cpp@6.0.3':
     resolution: {integrity: sha512-URM26M3vunFFn9/sm6rzqrBzDgfWuDixp85uTY49wKudToc2jTHUrKIGGKs+QWND+YLofNNZpxcNGRynFJfvgA==}
@@ -167,12 +167,12 @@ packages:
   '@codemirror/state@6.7.1':
     resolution: {integrity: sha512-9QzNDgE4EYDnAHfrTlR2lwiPciiOymLtwKK+8yHQzCc7GXhAP9xdEbEJFy2IWB1j9UGUl9BsgMmTo/ImA02T7A==}
 
-  '@codemirror/view@6.43.8':
-    resolution: {integrity: sha512-qtItTDssZ/5GFfi94hrILu9j/VUeFPDPkhovEfmWFj2ipTxnzPB8DdHgfbb8HYTzLTYhrndKmyQxXUz/PDLenw==}
+  '@codemirror/view@6.43.9':
+    resolution: {integrity: sha512-sTuUzTpPMFebRhg6dawChoKKgndIwfjmJgKVxBefPElcU2NwQ6AFroupk0SFqEerQyZOGRfDNnSN8Dw/lMAsXw==}
 
-  '@dsh-external/dsh-automation@https://codeload.github.com/titanwings/dsh-automation/tar.gz/a622b1b1758c6dc6bd476dc66d74a20a4b6762a3':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/titanwings/dsh-automation/tar.gz/a622b1b1758c6dc6bd476dc66d74a20a4b6762a3}
-    version: 0.1.5
+  '@dsh-external/dsh-automation@https://codeload.github.com/titanwings/dsh-automation/tar.gz/f8f43b2873a3f9dd57d86d61eb401770b2bc9ca5':
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/titanwings/dsh-automation/tar.gz/f8f43b2873a3f9dd57d86d61eb401770b2bc9ca5}
+    version: 0.1.6
     engines: {node: ^22.19.0 || >=24.0.0}
     peerDependencies:
       react: ^18.2.0
@@ -180,8 +180,8 @@ packages:
       react:
         optional: true
 
-  '@dsh-external/dsh-visualize@https://codeload.github.com/Nagi-ovo/dsh-visualize/tar.gz/e3254f762cbe4dbf796eca05d73a293f0e8e4a87':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/Nagi-ovo/dsh-visualize/tar.gz/e3254f762cbe4dbf796eca05d73a293f0e8e4a87}
+  '@dsh-external/dsh-visualize@https://codeload.github.com/Nagi-ovo/dsh-visualize/tar.gz/e86f68fe66b980a0ebeed8ef7409522b0b720bed':
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/Nagi-ovo/dsh-visualize/tar.gz/e86f68fe66b980a0ebeed8ef7409522b0b720bed}
     version: 0.1.2
     peerDependencies:
       '@deepseek-ai/cordis': ^4.0.1
@@ -194,8 +194,8 @@ packages:
       '@deepseek-ai/schemastery': ^3.18.1
       react: ^18.2.0
 
-  '@dsh-external/workflow@https://codeload.github.com/icetomoyo/dsh_workflow/tar.gz/44b83c182aa02d1be8a0803e8446cb495f93cd8f':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/icetomoyo/dsh_workflow/tar.gz/44b83c182aa02d1be8a0803e8446cb495f93cd8f}
+  '@dsh-external/workflow@git+https://github.com/icetomoyo/dsh_workflow.git#44b83c182aa02d1be8a0803e8446cb495f93cd8f':
+    resolution: {commit: 44b83c182aa02d1be8a0803e8446cb495f93cd8f, repo: https://github.com/icetomoyo/dsh_workflow.git, type: git}
     version: 0.1.2
     engines: {node: ^22.19.0 || >=24.0.0}
     peerDependencies:
@@ -283,16 +283,16 @@ packages:
   '@lezer/yaml@1.0.4':
     resolution: {integrity: sha512-2lrrHqxalACEbxIbsjhqGpSW8kWpUKuY6RHgnSAFZa6qK62wvnPxA8hGOwOoDbwHcOFs5M4o27mjGu+P7TvBmw==}
 
-  '@liustack/modlens@3.18.1':
-    resolution: {integrity: sha512-Mn/ZR7H0CkA5ShN29aDLwp6oH6lLz4VpKHyLZmkYnW3v/L5JZbm3JWiCXxy7nvhEGPjxi2QPHmX0lJAx1wJjTg==}
+  '@liustack/modlens@3.20.0':
+    resolution: {integrity: sha512-TLOKTOtHVeSoip8Nl43WTvT5icshwdSgp7zhEK+Uee89LCP6jwVbQ+Ef77WYrwl4DQCG79nvaj/yNGXMbf4gpg==}
     engines: {node: '>=22.19'}
     hasBin: true
 
   '@marijn/find-cluster-break@1.0.3':
     resolution: {integrity: sha512-FY+MKLBoTsLNJF/eLWaOsXGdz6uh3Iu1axjPf6TUq92IYumcTcXWHoS747JARLkcdlJ/Waiaxc5wQfFO8jC6NA==}
 
-  '@nanmicoder/dsh-agent-teams@0.1.6':
-    resolution: {integrity: sha512-bqB3CxGxFd7DOxGXUF4iH3K0q5Qdr4Tp5S4SZq7dZxRBUS/sayJ6h9goHAK2WD51rrPsimtAcF6IwZPKY9xhhw==}
+  '@nanmicoder/dsh-agent-teams@0.1.7':
+    resolution: {integrity: sha512-J7+wXF1xKcxaVvem9DYMXu+GxRvZrex9UAdA06ZUcsTuDv4v8eMeImIEbgNOwGf79nccGPDW60P/hPJ+DUUYUA==}
     engines: {node: ^22.19.0 || >=24}
     peerDependencies:
       '@deepseek-ai/cordis': ^4.0.1-rc.1
@@ -414,9 +414,9 @@ packages:
     resolution: {integrity: sha512-xglYA6q3XO5P3BNJYxVZ1IV7DLVjp1Py6nwag88YntrS+3vKHyYcMqXVS4ZztJmwz2uGvz1FWhI/4LgbR5uQDA==}
     engines: {node: '>= 10'}
 
-  '@omdsh-dev/dsh-genui@https://codeload.github.com/omdsh-dev/dsh-genui/tar.gz/0e756efb7671e6b8413dde3d8e199c68fa89cbeb':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/omdsh-dev/dsh-genui/tar.gz/0e756efb7671e6b8413dde3d8e199c68fa89cbeb}
-    version: 0.8.3
+  '@omdsh-dev/dsh-genui@https://codeload.github.com/omdsh-dev/dsh-genui/tar.gz/dab48fae600edb97859591ff6a25feb363d10721':
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/omdsh-dev/dsh-genui/tar.gz/dab48fae600edb97859591ff6a25feb363d10721}
+    version: 0.8.7
     engines: {node: ^22.19.0 || >=24.0.0, pnpm: '>=11.7.0 <12'}
     peerDependencies:
       '@deepseek-ai/cordis': ^4.0.1
@@ -451,8 +451,8 @@ packages:
       cordis: ^4.0.0-rc.7
       react: ^18.2.0
 
-  argparse@1.0.3:
-    resolution: {integrity: sha512-W3ljhM0j9lduyssD8+dPR0P0HWCSCGrflhsgIVFzNQpx8TDQGN/dcqcb0hOuOWsf0TNZ8OIVgKXC7Rb2vpUp+Q==}
+  argparse@1.0.10:
+    resolution: {integrity: sha512-o5Roy6tNG4SL/FOkCAN6RzjiakZS25RLYFrcMttJqbdd8BWrnA+fGz57iN5Pb06pvBGvl5gQ0B48dJlslXvoTg==}
 
   argparse@2.0.1:
     resolution: {integrity: sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==}
@@ -494,8 +494,8 @@ packages:
       '@deepseek-ai/dsh-llm': '>=0.1.0-rc.6 <0.2.0'
       '@deepseek-ai/dsh-tools': '>=0.1.0-rc.6 <0.2.0'
 
-  dsh-better-sidebar@0.12.3:
-    resolution: {integrity: sha512-ui+ouxw81TOZxZOZI41EuGcqXSzmkmT0bQmzt5hQl9lRqnKN5nIKJ/Qtm8h3nbBL7wU+c3tR1N57Vm4C+zN/LQ==}
+  dsh-better-sidebar@0.13.0:
+    resolution: {integrity: sha512-3A15cJSzjuAYuH5ZmjycALGevsx7qnupI9zbjUSstY+PYAVJZsvxeJ9aJ9G5AKFj4Jv67872uCdSwesmY0x3DQ==}
     engines: {node: '>=20'}
     peerDependencies:
       '@deepseek-ai/cordis': ^4.0.1
@@ -530,8 +530,8 @@ packages:
       '@deepseek-ai/dsh-storage-domain': ^0.1.0-rc.6
       '@deepseek-ai/dsh-typert-protocol': ^0.1.0-rc.6
 
-  dsh-chat-import@0.6.0:
-    resolution: {integrity: sha512-kN7QM4kiOssGHkTlWHuKd+IAaJsrmYupkySF5noTAm6F6LaYYWZflannH3LEDZUtTY6lUpJJUh7nvgOE/WdPuQ==}
+  dsh-chat-import@0.6.1:
+    resolution: {integrity: sha512-xUuD4E8aYn4Dk0/cMW5XvoMXBSiZqaU+GLn+wMJWlntgZ5dcpgIjpxQrkLXvwrJHi79Y0o5J7LjRd1l6bA5A/g==}
     engines: {node: '>=22.13'}
     hasBin: true
     peerDependencies:
@@ -540,20 +540,20 @@ packages:
       '@deepseek-ai/dsh-tools': ^0.1.0-rc.6
       react: '>=18.0.0'
 
-  dsh-client-auto-continue@0.6.0:
-    resolution: {integrity: sha512-5zKg1PTu5jf/td7dUPqKlsRgMcMBcr7DLzKHJetrSa1AjMCvm7rYTqzs6J79TYbQMn8I7gGp2zfXyGGR1lCDOQ==}
+  dsh-client-auto-continue@0.6.2:
+    resolution: {integrity: sha512-0E+deI+/J93JbmdHDPURC+86Oc68y+3K2x7rmzUkL3Om1r3ttsV+mer7a3xSTMQypPOsjUMV9SF4Ldmi/UlReg==}
     hasBin: true
     peerDependencies:
       '@deepseek-ai/cordis': ^4.0.1
-      '@deepseek-ai/dsh-settings': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-settings': ^0.1.0-rc.7
       '@deepseek-ai/schemastery': ^3.18.1
       react: ^18.2.0
 
-  dsh-context@0.11.2:
-    resolution: {integrity: sha512-PBF8sGjXhlY9XKXdOFIuh4C/Mh7s1uiWlacu067ses9WHLdWkTFmD65JhQiYDOSA67d3i+Y9su67J5Cdd5dvNA==}
+  dsh-context@0.12.1:
+    resolution: {integrity: sha512-qvX5FQWXBvZ85/oV4jbCXrX5mGCPFdDeStdld44y4NXqskZBOhN3KyHO0HPeEWIss/3oeQf+49zvhEi4mNaC8w==}
 
-  dsh-files@https://codeload.github.com/taxueseek/dsh-files/tar.gz/43887e2dca25fad9d7b23049fe1674f0af00c5cf:
-    resolution: {gitHosted: true, integrity: sha512-WRUlvBgU1CBKzWb67EnjCi308w/qu5zsSIqDAPR6c7sTjkcaUI6QA0XRVfWOEwcMY0jd2aJ8GPemd6v7pJJF8w==, tarball: https://codeload.github.com/taxueseek/dsh-files/tar.gz/43887e2dca25fad9d7b23049fe1674f0af00c5cf}
+  dsh-files@https://codeload.github.com/taxueseek/dsh-files/tar.gz/2c453ab3f74659f91a84a35f71ff270eea77e674:
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/taxueseek/dsh-files/tar.gz/2c453ab3f74659f91a84a35f71ff270eea77e674}
     version: 0.2.0
     peerDependencies:
       '@deepseek-ai/cordis': '*'
@@ -562,17 +562,17 @@ packages:
       '@deepseek-ai/schemastery': ^3.18.1
       react: ^18.2.0
 
-  dsh-mnemon@0.2.5:
-    resolution: {integrity: sha512-QOK4g+doW6/Fe+h44c8kMft1cEd8264KnngRStYoPFF+A7vGxwmp6E6RlggpreBrETxheIHkWCuQpTbTPhurXg==}
+  dsh-mnemon@0.2.9:
+    resolution: {integrity: sha512-xwCIMuEkoJNhUtm4Lwtbpqu83ELmxYuhtEcVHwz5q2kbRHjNzZqkfJmCO6wt5HPCH1+Y932rr425mHteVwI9Jw==}
     engines: {node: '>=20'}
     peerDependencies:
       '@deepseek-ai/dsh-client-ui-primitives': ^0.1.0-rc.6
       react: ^18.2.0
       react-dom: ^18.2.0
 
-  dsh-notification@https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/3e33100f51f25f24cece20bfd3d50cfbde0cbca5:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/3e33100f51f25f24cece20bfd3d50cfbde0cbca5}
-    version: 0.1.1
+  dsh-notification@https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/2399457a1f96ed86f761f3bc771539d131eb684f:
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/2399457a1f96ed86f761f3bc771539d131eb684f}
+    version: 0.1.2
     peerDependencies:
       '@deepseek-ai/cordis': '*'
       '@deepseek-ai/dsh-client-locale': '*'
@@ -608,9 +608,9 @@ packages:
     version: 0.1.0
     engines: {node: '>=18'}
 
-  dsh-prompt-enhancer@https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/668880a0efb07535ab8731e845d3d5bc9f664412:
-    resolution: {gitHosted: true, integrity: sha512-KePaa98MsKxIV3RL582L3AgUHfzPM4ha+DXqxaMD1WC3CofAiy+lM9M9sTBpjjbQQPkO+Qmq8fh3K3ukdJ0h9w==, tarball: https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/668880a0efb07535ab8731e845d3d5bc9f664412}
-    version: 2.7.1
+  dsh-prompt-enhancer@https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/e0e39ed2efd8410dd54a052dbf9bcde6022a5e3b:
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/e0e39ed2efd8410dd54a052dbf9bcde6022a5e3b}
+    version: 3.2.0
     peerDependencies:
       '@deepseek-ai/dsh-client-locale': ^0.1.0-rc.6
       '@deepseek-ai/dsh-client-runtime': ^0.1.0-rc.6
@@ -621,9 +621,9 @@ packages:
     peerDependencies:
       '@deepseek-ai/cordis': ^4.0.1
 
-  dsh-queue-plus@https://codeload.github.com/starslittle/dsh-queue-plus/tar.gz/ee93da210fdade915dc56ebabcc409b8d7611678:
-    resolution: {gitHosted: true, integrity: sha512-LFmshvAKDdg1YCZwvL1E7xWcVIaXF6bRXasn2F4gN1D8yYLfTN+kc+Ntl4ggveYvs9CPLpncAOFc+C/r5Y/ncg==, tarball: https://codeload.github.com/starslittle/dsh-queue-plus/tar.gz/ee93da210fdade915dc56ebabcc409b8d7611678}
-    version: 0.2.0
+  dsh-queue-plus@https://codeload.github.com/starslittle/dsh-queue-plus/tar.gz/ed6448d4828d5fd5c3933dc3c1e08340b9fbc2f9:
+    resolution: {gitHosted: true, integrity: sha512-hZtNXTuTUDuUOENVzPBICG1Efq5Lt9Tzfdu0ey12tJOdxjhYV5f7NH2WKlf8I2E6EKHWH5QtFnet+7H4Enc+/w==, tarball: https://codeload.github.com/starslittle/dsh-queue-plus/tar.gz/ed6448d4828d5fd5c3933dc3c1e08340b9fbc2f9}
+    version: 0.3.0
     engines: {node: ^22.19.0 || >=24.0.0}
     peerDependencies:
       '@deepseek-ai/cordis': ^4.0.1
@@ -665,13 +665,13 @@ packages:
       '@deepseek-ai/dsh-client-ui-theme': ^0.1.0-rc.6
       react: ^18.2.0
 
-  dsh-status-rotator@https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/09836ff04330a17fc670c27a4bed6855547c88ad:
-    resolution: {gitHosted: true, integrity: sha512-b3HhdehRU1iDyQpMsJwkOFitTfWPQOO609iH+PAFBTG4nVZM0ZdvoMZj1VWBM6j4oU9J0pA9IvHhzcRERQe03w==, tarball: https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/09836ff04330a17fc670c27a4bed6855547c88ad}
-    version: 0.2.0
+  dsh-status-rotator@https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/2faa2a62fa2432c2ab29663ec089734989c0bcd5:
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/2faa2a62fa2432c2ab29663ec089734989c0bcd5}
+    version: 0.3.0
 
-  dsh-sticky-note@https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/4507cef117ef3b039b1d9106c93eccdb69567a15:
-    resolution: {gitHosted: true, integrity: sha512-V9d5GEhnR6Ui/AA0BGjAdrFUddmBTQhS5gV1LMiGGe8Yb8iT7Cv6MTL+Ch7IgR2TO9+xmaa68pRlD3eGZP1kLQ==, tarball: https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/4507cef117ef3b039b1d9106c93eccdb69567a15}
-    version: 0.2.0
+  dsh-sticky-note@https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/5c1ee970e6af5cb6168eeb9ef2d90774d31b6c60:
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/5c1ee970e6af5cb6168eeb9ef2d90774d31b6c60}
+    version: 0.2.2
     peerDependencies:
       '@deepseek-ai/cordis': ^4.0.1-rc.1
       '@deepseek-ai/dsh-client-connection': '*'
@@ -690,14 +690,18 @@ packages:
       react:
         optional: true
 
-  dsh-web-archive@https://codeload.github.com/renat3u/dsh-web-archive/tar.gz/e106daf623fef5b1b4e3fc375ace130253e38243:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/renat3u/dsh-web-archive/tar.gz/e106daf623fef5b1b4e3fc375ace130253e38243}
+  dsh-web-archive@https://codeload.github.com/renat3u/dsh-web-archive/tar.gz/777ae5ec25d391dee8ea2087b6db67cb89e8a378:
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/renat3u/dsh-web-archive/tar.gz/777ae5ec25d391dee8ea2087b6db67cb89e8a378}
     version: 0.1.1
 
-  dshmarket@1.11.3:
-    resolution: {integrity: sha512-N2P5K3NIECUj0ERNihYOjXGODzPurMzIKBUUuzvtvZhaabp2gW+I/xZAF0OLkF36fCRNdvR69DXe6vA8p2f8zg==}
+  dshmarket@1.13.1:
+    resolution: {integrity: sha512-CmDQe22x5p6WgAvFtcgKf+f1SzwrnEV8rLgO+g9DoZ0iVJodY+/4n8v2gbg2F1sM0a3qK4JqLIsOpUjX/PqC9w==}
     peerDependencies:
       '@deepseek-ai/cordis': ^4.0.1
+      '@deepseek-ai/dsh-settings': ^0.1.0-rc.7
+    peerDependenciesMeta:
+      '@deepseek-ai/dsh-settings':
+        optional: true
 
   duck@0.1.12:
     resolution: {integrity: sha512-wkctla1O6VfP89gQ+J/yDesM0S7B7XLXjKGzXxMDVFg7uEn706niAtyYovKbyq1oT9YwDcly721/iUWoc8MVRg==}
@@ -746,9 +750,6 @@ packages:
   lie@3.3.0:
     resolution: {integrity: sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ==}
 
-  lodash@3.2.0:
-    resolution: {integrity: sha512-pg876Sz2B6iut18K5PlFGZUxagOP9LACajQ4nzQHPZ8JcU15tviPV6q/u/dEQMV64TzKu8yJM3NprFxqRb3oHA==}
-
   loose-envify@1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
@@ -774,9 +775,8 @@ packages:
       react:
         optional: true
 
-  node-addon-api@7.1.0:
-    resolution: {integrity: sha512-mNcltoe1R8o7STTegSOHdnJNN7s5EUvhoS7ShnTHDyOSd+8H+UdWODq6qSv67PjC8Zc5JRT8+oLAMCr0SIXw7g==}
-    engines: {node: ^16 || ^18 || >= 20}
+  node-addon-api@7.1.1:
+    resolution: {integrity: sha512-5m3bsyrjFWE1xf7nz7YXdN4udnVtXK6/Yfgn5qnahL6bCkf2yKt4k3nuTKAtT4r3IG8JNR2ncsIMdZuAzJjHQQ==}
 
   node-int64@0.4.0:
     resolution: {integrity: sha512-O5lz91xSOeoXP6DulyHfllpq+Eg00MWitZIbtPfoSEvqIHdl5gfcY6hYzDWnj0qD5tz52PI08u9qUvSVeUBeHw==}
@@ -787,8 +787,8 @@ packages:
   option@0.2.4:
     resolution: {integrity: sha512-pkEqbDyl8ou5cpq+VsnQbe/WlEy5qS7xPzMS1U55OCG9KPvwFD46zDbxQIj3egJSFc3D+XhYOPUzz49zQAVy7A==}
 
-  pako@1.0.2:
-    resolution: {integrity: sha512-qCaDHl8pk5JSbz5k1Bi5zTZf430DUuV13pmcFEHHan4fW++WIwm2HXUirpzfciBRyFUN+eeZW11bfIM/Y4Zeog==}
+  pako@1.0.11:
+    resolution: {integrity: sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==}
 
   path-is-absolute@1.0.1:
     resolution: {integrity: sha512-AVbw3UJ2e9bq64vSaS9Am0fje1Pa8pbGqTTsmXfaIiMpnr5DlDhfJOuLj9Sf95ZPVDAUerDfEk88MPmPe7UCQg==}
@@ -797,6 +797,11 @@ packages:
   pdfjs-dist@4.10.38:
     resolution: {integrity: sha512-/Y3fcFrXEAsMjJXeL9J8+ZG9U01LbuWaYypvDW2ycW1jL269L3js3DVBjDJ0Up9Np1uqDXsDrRihHANhZOlwdQ==}
     engines: {node: '>=20'}
+
+  playwright-core@1.62.1:
+    resolution: {integrity: sha512-wPYSwEBJY9GHraISXqyqtx0na0LpO3XEX7jNDhntbex7tzUS7kLnZsOlFruFJB4Hi/rhDMjXGqHewDZ68nYZVw==}
+    engines: {node: '>=20'}
+    hasBin: true
 
   process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
@@ -812,8 +817,8 @@ packages:
     resolution: {integrity: sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==}
     engines: {node: '>=0.10.0'}
 
-  read-excel-file@5.8.7:
-    resolution: {integrity: sha512-8WN95syld/luKYXPMytJ7MIfLoB8PpifK0bJaaYAia79+Sw7LM198Q0I3Sr+7sr44MzMDRzTcPqjAxNB9rSUSw==}
+  read-excel-file@5.8.8:
+    resolution: {integrity: sha512-Jb3g7wYe3NU7k52q5xs16swqsl47xIxc/CvHuJy49Elzp6+G6bg56Lds4s57FayosuCYm+TTU0ROpMMuM7WE0A==}
 
   readable-stream@2.3.8:
     resolution: {integrity: sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==}
@@ -889,14 +894,14 @@ snapshots:
     dependencies:
       '@codemirror/language': 6.12.4
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.8
+      '@codemirror/view': 6.43.9
       '@lezer/common': 1.5.2
 
-  '@codemirror/commands@6.10.4':
+  '@codemirror/commands@6.11.0':
     dependencies:
       '@codemirror/language': 6.12.4
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.8
+      '@codemirror/view': 6.43.9
       '@lezer/common': 1.5.2
 
   '@codemirror/lang-cpp@6.0.3':
@@ -927,7 +932,7 @@ snapshots:
       '@codemirror/lang-javascript': 6.2.5
       '@codemirror/language': 6.12.4
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.8
+      '@codemirror/view': 6.43.9
       '@lezer/common': 1.5.2
       '@lezer/css': 1.3.6
       '@lezer/html': 1.3.13
@@ -943,7 +948,7 @@ snapshots:
       '@codemirror/language': 6.12.4
       '@codemirror/lint': 6.9.7
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.8
+      '@codemirror/view': 6.43.9
       '@lezer/common': 1.5.2
       '@lezer/javascript': 1.5.4
 
@@ -958,7 +963,7 @@ snapshots:
       '@codemirror/lang-html': 6.4.12
       '@codemirror/language': 6.12.4
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.8
+      '@codemirror/view': 6.43.9
       '@lezer/common': 1.5.2
       '@lezer/markdown': 1.7.2
 
@@ -997,7 +1002,7 @@ snapshots:
       '@codemirror/autocomplete': 6.20.3
       '@codemirror/language': 6.12.4
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.8
+      '@codemirror/view': 6.43.9
       '@lezer/common': 1.5.2
       '@lezer/xml': 1.0.6
 
@@ -1014,7 +1019,7 @@ snapshots:
   '@codemirror/language@6.12.4':
     dependencies:
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.8
+      '@codemirror/view': 6.43.9
       '@lezer/common': 1.5.2
       '@lezer/highlight': 1.2.3
       '@lezer/lr': 1.4.10
@@ -1027,38 +1032,38 @@ snapshots:
   '@codemirror/lint@6.9.7':
     dependencies:
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.8
+      '@codemirror/view': 6.43.9
       crelt: 1.0.7
 
   '@codemirror/search@6.7.1':
     dependencies:
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.8
+      '@codemirror/view': 6.43.9
       crelt: 1.0.7
 
   '@codemirror/state@6.7.1':
     dependencies:
       '@marijn/find-cluster-break': 1.0.3
 
-  '@codemirror/view@6.43.8':
+  '@codemirror/view@6.43.9':
     dependencies:
       '@codemirror/state': 6.7.1
       crelt: 1.0.7
       style-mod: 4.1.3
       w3c-keyname: 2.2.8
 
-  '@dsh-external/dsh-automation@https://codeload.github.com/titanwings/dsh-automation/tar.gz/a622b1b1758c6dc6bd476dc66d74a20a4b6762a3(react@18.3.1)':
+  '@dsh-external/dsh-automation@https://codeload.github.com/titanwings/dsh-automation/tar.gz/f8f43b2873a3f9dd57d86d61eb401770b2bc9ca5(react@18.3.1)':
     dependencies:
       luxon: 3.7.2
       zod: 4.4.3
     optionalDependencies:
       react: 18.3.1
 
-  '@dsh-external/dsh-visualize@https://codeload.github.com/Nagi-ovo/dsh-visualize/tar.gz/e3254f762cbe4dbf796eca05d73a293f0e8e4a87(react@18.3.1)':
+  '@dsh-external/dsh-visualize@https://codeload.github.com/Nagi-ovo/dsh-visualize/tar.gz/e86f68fe66b980a0ebeed8ef7409522b0b720bed(react@18.3.1)':
     dependencies:
       react: 18.3.1
 
-  '@dsh-external/workflow@https://codeload.github.com/icetomoyo/dsh_workflow/tar.gz/44b83c182aa02d1be8a0803e8446cb495f93cd8f':
+  '@dsh-external/workflow@git+https://github.com/icetomoyo/dsh_workflow.git#44b83c182aa02d1be8a0803e8446cb495f93cd8f':
     dependencies:
       quickjs-emscripten: 0.32.0
 
@@ -1169,14 +1174,14 @@ snapshots:
       '@lezer/highlight': 1.2.3
       '@lezer/lr': 1.4.10
 
-  '@liustack/modlens@3.18.1':
+  '@liustack/modlens@3.20.0':
     dependencies:
       commander: 13.1.0
       undici: 8.10.0
 
   '@marijn/find-cluster-break@1.0.3': {}
 
-  '@nanmicoder/dsh-agent-teams@0.1.6(react@18.3.1)':
+  '@nanmicoder/dsh-agent-teams@0.1.7(react@18.3.1)':
     optionalDependencies:
       react: 18.3.1
 
@@ -1228,7 +1233,7 @@ snapshots:
       '@napi-rs/canvas-win32-x64-msvc': 0.1.100
     optional: true
 
-  '@omdsh-dev/dsh-genui@https://codeload.github.com/omdsh-dev/dsh-genui/tar.gz/0e756efb7671e6b8413dde3d8e199c68fa89cbeb':
+  '@omdsh-dev/dsh-genui@https://codeload.github.com/omdsh-dev/dsh-genui/tar.gz/dab48fae600edb97859591ff6a25feb363d10721':
     dependencies:
       react: 18.3.1
 
@@ -1241,9 +1246,8 @@ snapshots:
       react: 18.3.1
       schemastery: 3.18.0
 
-  argparse@1.0.3:
+  argparse@1.0.10:
     dependencies:
-      lodash: 3.2.0
       sprintf-js: 1.0.3
 
   argparse@2.0.1: {}
@@ -1268,9 +1272,9 @@ snapshots:
 
   dsh-agent-message@1.5.1: {}
 
-  dsh-better-sidebar@0.12.3(react@18.3.1):
+  dsh-better-sidebar@0.13.0(react@18.3.1):
     dependencies:
-      '@codemirror/commands': 6.10.4
+      '@codemirror/commands': 6.11.0
       '@codemirror/lang-cpp': 6.0.3
       '@codemirror/lang-css': 6.3.1
       '@codemirror/lang-go': 6.0.1
@@ -1289,7 +1293,7 @@ snapshots:
       '@codemirror/legacy-modes': 6.5.3
       '@codemirror/search': 6.7.1
       '@codemirror/state': 6.7.1
-      '@codemirror/view': 6.43.8
+      '@codemirror/view': 6.43.9
       '@lezer/highlight': 1.2.3
       clsx: 2.1.1
       node-pty: 1.1.0
@@ -1305,34 +1309,35 @@ snapshots:
     dependencies:
       zod: 4.4.3
 
-  dsh-chat-import@0.6.0(react@18.3.1):
+  dsh-chat-import@0.6.1(react@18.3.1):
     dependencies:
       fzstd: 0.1.1
       react: 18.3.1
 
-  dsh-client-auto-continue@0.6.0(react@18.3.1):
+  dsh-client-auto-continue@0.6.2(react@18.3.1):
     dependencies:
       react: 18.3.1
 
-  dsh-context@0.11.2:
+  dsh-context@0.12.1:
     dependencies:
+      playwright-core: 1.62.1
       zod: 4.4.3
 
-  dsh-files@https://codeload.github.com/taxueseek/dsh-files/tar.gz/43887e2dca25fad9d7b23049fe1674f0af00c5cf(react@18.3.1):
+  dsh-files@https://codeload.github.com/taxueseek/dsh-files/tar.gz/2c453ab3f74659f91a84a35f71ff270eea77e674(react@18.3.1):
     dependencies:
       mammoth: 1.12.1
       pdfjs-dist: 4.10.38
       react: 18.3.1
-      read-excel-file: 5.8.7
+      read-excel-file: 5.8.8
 
-  dsh-mnemon@0.2.5(react@18.3.1):
+  dsh-mnemon@0.2.9(react@18.3.1):
     dependencies:
       fflate: 0.8.3
       markdown-to-jsx: 7.7.17(react@18.3.1)
       react: 18.3.1
       schemastery: 3.18.0
 
-  dsh-notification@https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/3e33100f51f25f24cece20bfd3d50cfbde0cbca5(react@18.3.1):
+  dsh-notification@https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/2399457a1f96ed86f761f3bc771539d131eb684f(react@18.3.1):
     dependencies:
       zod: 4.4.3
     optionalDependencies:
@@ -1340,11 +1345,11 @@ snapshots:
 
   dsh-plugin-search@https://codeload.github.com/shinjiyu/dsh-plugin-search/tar.gz/0ceaa1985ad2e7774cd8f06890c4a9b1a7125955: {}
 
-  dsh-prompt-enhancer@https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/668880a0efb07535ab8731e845d3d5bc9f664412: {}
+  dsh-prompt-enhancer@https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/e0e39ed2efd8410dd54a052dbf9bcde6022a5e3b: {}
 
   dsh-prompt-manager@1.4.1: {}
 
-  dsh-queue-plus@https://codeload.github.com/starslittle/dsh-queue-plus/tar.gz/ee93da210fdade915dc56ebabcc409b8d7611678(react@18.3.1):
+  dsh-queue-plus@https://codeload.github.com/starslittle/dsh-queue-plus/tar.gz/ed6448d4828d5fd5c3933dc3c1e08340b9fbc2f9(react@18.3.1):
     dependencies:
       react: 18.3.1
 
@@ -1356,15 +1361,15 @@ snapshots:
     dependencies:
       react: 18.3.1
 
-  dsh-status-rotator@https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/09836ff04330a17fc670c27a4bed6855547c88ad: {}
+  dsh-status-rotator@https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/2faa2a62fa2432c2ab29663ec089734989c0bcd5: {}
 
-  dsh-sticky-note@https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/4507cef117ef3b039b1d9106c93eccdb69567a15(react@18.3.1):
+  dsh-sticky-note@https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/5c1ee970e6af5cb6168eeb9ef2d90774d31b6c60(react@18.3.1):
     optionalDependencies:
       react: 18.3.1
 
-  dsh-web-archive@https://codeload.github.com/renat3u/dsh-web-archive/tar.gz/e106daf623fef5b1b4e3fc375ace130253e38243: {}
+  dsh-web-archive@https://codeload.github.com/renat3u/dsh-web-archive/tar.gz/777ae5ec25d391dee8ea2087b6db67cb89e8a378: {}
 
-  dshmarket@1.11.3:
+  dshmarket@1.13.1:
     dependencies:
       js-yaml: 4.3.1
 
@@ -1411,15 +1416,13 @@ snapshots:
   jszip@3.10.1:
     dependencies:
       lie: 3.3.0
-      pako: 1.0.2
+      pako: 1.0.11
       readable-stream: 2.3.8
       setimmediate: 1.0.5
 
   lie@3.3.0:
     dependencies:
       immediate: 3.0.6
-
-  lodash@3.2.0: {}
 
   loose-envify@1.4.0:
     dependencies:
@@ -1436,7 +1439,7 @@ snapshots:
   mammoth@1.12.1:
     dependencies:
       '@xmldom/xmldom': 0.8.14
-      argparse: 1.0.3
+      argparse: 1.0.10
       base64-js: 1.5.1
       bluebird: 3.4.7
       dingbat-to-unicode: 1.0.1
@@ -1450,23 +1453,25 @@ snapshots:
     optionalDependencies:
       react: 18.3.1
 
-  node-addon-api@7.1.0: {}
+  node-addon-api@7.1.1: {}
 
   node-int64@0.4.0: {}
 
   node-pty@1.1.0:
     dependencies:
-      node-addon-api: 7.1.0
+      node-addon-api: 7.1.1
 
   option@0.2.4: {}
 
-  pako@1.0.2: {}
+  pako@1.0.11: {}
 
   path-is-absolute@1.0.1: {}
 
   pdfjs-dist@4.10.38:
     optionalDependencies:
       '@napi-rs/canvas': 0.1.100
+
+  playwright-core@1.62.1: {}
 
   process-nextick-args@2.0.1: {}
 
@@ -1486,7 +1491,7 @@ snapshots:
     dependencies:
       loose-envify: 1.4.0
 
-  read-excel-file@5.8.7:
+  read-excel-file@5.8.8:
     dependencies:
       '@xmldom/xmldom': 0.8.14
       fflate: 0.7.5

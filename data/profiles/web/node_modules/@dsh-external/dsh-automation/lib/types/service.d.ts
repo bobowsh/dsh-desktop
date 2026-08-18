@@ -7,6 +7,7 @@ export interface AutomationConfig {
     readonly runTimeoutMs: number;
     readonly misfireGraceMs: number;
     readonly historyLimit: number;
+    readonly archiveRunSessions: boolean;
 }
 export interface CreateRequest {
     readonly name: string;
@@ -26,11 +27,14 @@ export interface AutomationSnapshot {
         readonly path: string;
     };
     readonly definitions: readonly AutomationDefinitionView[];
-    readonly runs: readonly AutomationRun[];
+    readonly runs: readonly AutomationRunView[];
 }
 export interface AutomationDefinitionView extends AutomationDefinition {
     readonly nextRunAt: string | null;
     readonly lastRun: AutomationRun | null;
+}
+export interface AutomationRunView extends AutomationRun {
+    readonly sessionArchived: boolean;
 }
 interface SessionEventLike {
     readonly type: string;
@@ -65,6 +69,7 @@ export declare class AutomationService {
     create(scope: AutomationScope, request: CreateRequest, signal?: AbortSignal): Promise<AutomationDefinition>;
     update(scope: AutomationScope, id: string, input: Omit<UpdateAutomationInput, 'now'> & {
         readonly status?: 'active' | 'paused';
+        readonly expectedRevision?: number;
     }, signal?: AbortSignal): Promise<AutomationDefinition>;
     delete(scope: AutomationScope, id: string, signal?: AbortSignal): Promise<{
         readonly id: string;
@@ -86,6 +91,10 @@ export declare class AutomationService {
     /** Serialize service-level mutations and scheduler admission around domain writes. */
     private serialize;
     private recoverInterruptedRuns;
+    /** Archive terminal run Sessions without changing their durable run result. */
+    private archiveRunSession;
+    /** Retry terminal Session archival on startup before bounded run pruning. */
+    private archiveTerminalRunSessions;
     /** Keep every active record plus the configured newest terminal records per automation. */
     private pruneWorkspaceHistory;
     private pruneAllHistory;

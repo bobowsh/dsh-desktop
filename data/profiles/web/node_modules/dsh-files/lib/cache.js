@@ -64,6 +64,6 @@ export class ParseCache {
         return text.length * 2;
     }
     keyOf(key) {
-        return `${key.targetKey}\u0000${key.version}\u0000${key.format}`;
+        return `${key.targetKey}\u0000${key.version}\u0000${key.format}\u0000${key.sheet ?? ''}\u0000${key.listSheets === true ? 'list' : ''}`;
     }
 }

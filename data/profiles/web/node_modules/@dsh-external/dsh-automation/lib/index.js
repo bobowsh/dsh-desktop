@@ -26,6 +26,11 @@ function integer(value, label) {
   if (typeof value !== "number" || !Number.isSafeInteger(value)) throw new Error(`${label} must be an integer`);
   return value;
 }
+function positiveInteger(value, label) {
+  const result = integer(value, label);
+  if (result < 1) throw new Error(`${label} must be a positive integer`);
+  return result;
+}
 function toDomainSchedule(raw, timeZone2) {
   const schedule = record(raw, "schedule");
   const kind = string(schedule.kind, "schedule.kind");
@@ -72,7 +77,7 @@ function errorResult(error51, aborted2 = false) {
     };
   }
   const message = error51 instanceof Error ? error51.message : String(error51);
-  const badRequest = /must|required|unknown automation|another workspace|scheduled in the future|already has a queued or running run|not registered|requires a live source session|has no workspace|request was cancelled/.test(message);
+  const badRequest = /must|required|unknown automation|another workspace|scheduled in the future|already has a queued or running run|not registered|requires a live source session|has no workspace|request was cancelled|changed since it was opened/.test(message);
   return {
     ok: false,
     error: {
@@ -123,6 +128,7 @@ async function snapshotValue(service, payload, signal) {
       ...run.startedAt === null ? {} : { startedAt: run.startedAt },
       ...run.finishedAt === null ? {} : { finishedAt: run.finishedAt },
       ...run.sessionId === null ? {} : { sessionId: run.sessionId },
+      sessionArchived: run.sessionArchived,
       ...run.summary === null ? {} : { summary: run.summary },
       ...run.error === null ? {} : { error: run.error.message },
       unread: run.unread
@@ -152,6 +158,30 @@ function registerAutomationRpc(ctx, service) {
             permissionPreset: permission
           }, signal);
           return { ok: true, value: { id: value.id, revision: value.revision } };
+        }
+        case "update": {
+          const id = string(payload.automationId, "automationId");
+          const input = record(payload.input, "input");
+          const value = {
+            expectedRevision: positiveInteger(payload.expectedRevision, "expectedRevision")
+          };
+          if (input.name !== void 0) value.name = string(input.name, "input.name");
+          if (input.prompt !== void 0) value.prompt = string(input.prompt, "input.prompt");
+          if (input.schedule !== void 0) {
+            const timeZone2 = string(input.timeZone, "input.timeZone");
+            value.schedule = toDomainSchedule(input.schedule, timeZone2);
+          } else if (input.timeZone !== void 0) {
+            throw new Error("input.timeZone requires input.schedule");
+          }
+          if (input.permission !== void 0) {
+            const permission = string(input.permission, "input.permission");
+            if (permission !== "read-only" && permission !== "workspace-write") {
+              throw new Error("input.permission must be read-only or workspace-write");
+            }
+            value.permissionPreset = permission;
+          }
+          const updated = await service.update(scopeOf(payload), id, value, signal);
+          return { ok: true, value: { id: updated.id, revision: updated.revision } };
         }
         case "mutate": {
           const id = string(payload.automationId, "automationId");
@@ -21518,7 +21548,7 @@ function deleteDefinition(current) {
   return { id: current.id, preserveRunHistory: true };
 }
 function occurrenceKey(automationId, definitionRevision, scheduledFor) {
-  return `${requireNonBlank(automationId, "automationId")}:${positiveInteger(definitionRevision, "definitionRevision")}:${parseInstant2(scheduledFor, "scheduledFor")}`;
+  return `${requireNonBlank(automationId, "automationId")}:${positiveInteger2(definitionRevision, "definitionRevision")}:${parseInstant2(scheduledFor, "scheduledFor")}`;
 }
 function runIdForOccurrence(key) {
   return `run_${createHash("sha256").update(requireNonBlank(key, "occurrenceKey")).digest("hex").slice(0, 32)}`;
@@ -21572,7 +21602,7 @@ function parseInstant2(value, field) {
   if (!result.success) throw new Error(`${field} must be an ISO-8601 instant with an explicit offset`);
   return new Date(result.data).toISOString();
 }
-function positiveInteger(value, field) {
+function positiveInteger2(value, field) {
   if (!Number.isInteger(value) || value < 1) throw new Error(`${field} must be a positive integer`);
   return value;
 }
@@ -21804,6 +21834,7 @@ var AutomationService = class _AutomationService {
       service.definitions = domain2.table("definitions");
       service.runs = domain2.table("runs");
       await service.recoverInterruptedRuns();
+      await service.archiveTerminalRunSessions();
       await service.pruneAllHistory();
       return service;
     } catch (error51) {
@@ -21849,7 +21880,11 @@ var AutomationService = class _AutomationService {
       throwIfCancelled(signal);
       const definitions = [...this.definitions.entries()].map(([, definition]) => definition).filter((definition) => definition.workspaceId === resolved.workspace.id).sort((left, right) => Date.parse(right.updatedAt) - Date.parse(left.updatedAt));
       const workspaceRuns = [...this.runs.entries()].map(([, run]) => run).filter((run) => run.targetSnapshot.workspaceId === resolved.workspace.id).sort(compareRuns);
-      const runs = workspaceRuns.slice(0, this.config.historyLimit);
+      const archivedSessionIds = new Set(this.ctx.workspaceRegistry.archivedSessionIds.map(String));
+      const runs = workspaceRuns.slice(0, this.config.historyLimit).map((run) => ({
+        ...run,
+        sessionArchived: run.sessionId !== null && archivedSessionIds.has(run.sessionId)
+      }));
       const generatedAt = toIso();
       return {
         generatedAt,
@@ -21899,7 +21934,10 @@ var AutomationService = class _AutomationService {
       const current = await this.ownedDefinition(scope, id);
       throwIfCancelled(signal);
       const now2 = toIso();
-      const { status, ...fields } = input;
+      const { status, expectedRevision, ...fields } = input;
+      if (expectedRevision !== void 0 && current.revision !== expectedRevision) {
+        throw new Error("The automation changed since it was opened. Close and reopen the editor before saving again.");
+      }
       if (fields.schedule?.kind === "once" && nextOccurrence(fields.schedule, now2) === null) {
         throw new Error("A one-time automation must be scheduled in the future.");
       }
@@ -22048,13 +22086,15 @@ var AutomationService = class _AutomationService {
       try {
         const current = this.runs.get(run.id);
         if (current !== void 0 && (current.status === "queued" || current.status === "running")) {
-          await this.runs.put(run.id, {
+          const failed = {
             ...current,
             status: "failed",
             finishedAt: toIso(),
             error: { code: "persistence_error", message: "The run could not persist its execution state." },
             unread: true
-          });
+          };
+          await this.runs.put(run.id, failed);
+          await this.archiveRunSession(failed);
           await this.pruneWorkspaceHistory(current.targetSnapshot.workspaceId);
         }
       } catch (recordError) {
@@ -22088,7 +22128,7 @@ var AutomationService = class _AutomationService {
       signal
     });
     const finishedAt = toIso();
-    await this.runs.put(run.id, {
+    const completed = {
       ...running,
       status: completion.status,
       sessionId: completion.sessionId ?? null,
@@ -22096,7 +22136,9 @@ var AutomationService = class _AutomationService {
       summary: completion.summary ?? null,
       error: completion.error ?? null,
       unread: true
-    });
+    };
+    await this.runs.put(run.id, completed);
+    await this.archiveRunSession(completed);
     await this.pruneWorkspaceHistory(run.targetSnapshot.workspaceId);
   }
   armNextTimer(now2) {
@@ -22157,6 +22199,19 @@ var AutomationService = class _AutomationService {
         unread: true
       });
     }
+  }
+  /** Archive terminal run Sessions without changing their durable run result. */
+  async archiveRunSession(run) {
+    if (!this.config.archiveRunSessions || run.sessionId === null || run.status === "queued" || run.status === "running") return;
+    try {
+      await this.ctx.workspaceRegistry.archiveSession(SessionId2(run.sessionId));
+    } catch (error51) {
+      this.ctx.logger.warn(`dsh-automation: could not archive Session '${run.sessionId}': ${asMessage(error51)}`);
+    }
+  }
+  /** Retry terminal Session archival on startup before bounded run pruning. */
+  async archiveTerminalRunSessions() {
+    for (const [, run] of this.runs.entries()) await this.archiveRunSession(run);
   }
   /** Keep every active record plus the configured newest terminal records per automation. */
   async pruneWorkspaceHistory(workspaceId) {
@@ -22395,7 +22450,8 @@ var Config = z2.object({
   maxConcurrentRuns: z2.number().step(1).min(1).max(32).default(2),
   runTimeoutMinutes: z2.number().step(1).min(1).max(1440).default(60),
   misfireGraceMinutes: z2.number().step(1).min(0).max(10080).default(15),
-  historyLimit: z2.number().step(1).min(1).max(5e3).default(200)
+  historyLimit: z2.number().step(1).min(1).max(5e3).default(200),
+  archiveRunSessions: z2.boolean().default(false)
 });
 var MUTATING_TOOLS = /* @__PURE__ */ new Set([
   "automation_create",
@@ -22420,7 +22476,8 @@ async function apply(ctx, rawConfig) {
       maxConcurrentRuns: config2.maxConcurrentRuns,
       runTimeoutMs: config2.runTimeoutMinutes * 6e4,
       misfireGraceMs: config2.misfireGraceMinutes * 6e4,
-      historyLimit: config2.historyLimit
+      historyLimit: config2.historyLimit,
+      archiveRunSessions: config2.archiveRunSessions
     });
     const agentTools = /* @__PURE__ */ new Map();
     let cleaned = false;

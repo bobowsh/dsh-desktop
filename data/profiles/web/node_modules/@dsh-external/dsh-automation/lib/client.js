@@ -57,6 +57,28 @@ function defaultFormState(now = /* @__PURE__ */ new Date()) {
     permission: "read-only"
   };
 }
+function exactLocalDateTimeValue(iso) {
+  const date = new Date(iso);
+  const offset = date.getTimezoneOffset() * 6e4;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+}
+function formStateFromAutomation(automation) {
+  const defaults = defaultFormState();
+  const schedule = automation.schedule;
+  return {
+    ...defaults,
+    name: automation.name,
+    prompt: automation.prompt,
+    scheduleKind: schedule.kind,
+    onceAt: schedule.kind === "once" ? exactLocalDateTimeValue(schedule.at) : defaults.onceAt,
+    everyMinutes: schedule.kind === "interval" ? String(schedule.everyMinutes) : defaults.everyMinutes,
+    ...schedule.kind === "interval" && schedule.anchor !== void 0 ? { intervalAnchor: schedule.anchor } : {},
+    time: schedule.kind === "daily" || schedule.kind === "weekly" ? schedule.time : defaults.time,
+    weekdays: schedule.kind === "weekly" ? [...schedule.weekdays] : defaults.weekdays,
+    timeZone: automation.timeZone,
+    permission: automation.permission
+  };
+}
 function buildCreateInput(form, now = /* @__PURE__ */ new Date()) {
   const name2 = form.name.trim();
   const prompt = form.prompt.trim();
@@ -77,7 +99,12 @@ function buildCreateInput(form, now = /* @__PURE__ */ new Date()) {
       if (!Number.isInteger(everyMinutes) || everyMinutes < 5 || everyMinutes > 43200) {
         throw new AutomationFormError("form.error.interval");
       }
-      schedule = { kind: "interval", everyMinutes, anchor: now.toISOString(), timeZone: form.timeZone };
+      schedule = {
+        kind: "interval",
+        everyMinutes,
+        anchor: form.intervalAnchor ?? now.toISOString(),
+        timeZone: form.timeZone
+      };
       break;
     }
     case "daily":
@@ -89,6 +116,37 @@ function buildCreateInput(form, now = /* @__PURE__ */ new Date()) {
       break;
   }
   return { name: name2, prompt, schedule, timeZone: form.timeZone, permission: form.permission };
+}
+function scheduleMatchesDraft(form, automation) {
+  const schedule = automation.schedule;
+  if (form.scheduleKind !== schedule.kind || form.timeZone !== automation.timeZone) return false;
+  switch (schedule.kind) {
+    case "once":
+      return form.onceAt === exactLocalDateTimeValue(schedule.at);
+    case "interval":
+      return form.everyMinutes === String(schedule.everyMinutes) && form.intervalAnchor === schedule.anchor;
+    case "daily":
+      return form.time === schedule.time;
+    case "weekly":
+      return form.time === schedule.time && [...form.weekdays].sort((a, b) => a - b).join(",") === [...schedule.weekdays].sort((a, b) => a - b).join(",");
+  }
+}
+function buildUpdateInput(form, automation, now = /* @__PURE__ */ new Date()) {
+  const name2 = form.name.trim();
+  const prompt = form.prompt.trim();
+  if (name2 === "") throw new AutomationFormError("form.error.name");
+  if (prompt === "") throw new AutomationFormError("form.error.prompt");
+  const scheduleChanged = !scheduleMatchesDraft(form, automation);
+  const replacement = scheduleChanged ? buildCreateInput(form, now) : void 0;
+  return {
+    ...name2 === automation.name ? {} : { name: name2 },
+    ...prompt === automation.prompt ? {} : { prompt },
+    ...replacement === void 0 ? {} : {
+      schedule: replacement.schedule,
+      timeZone: replacement.timeZone
+    },
+    ...form.permission === automation.permission ? {} : { permission: form.permission }
+  };
 }
 var ATTENTION_STATUSES = /* @__PURE__ */ new Set(["failed", "interrupted"]);
 function deriveOverview(snapshot) {
@@ -169,6 +227,12 @@ function PauseIcon(props) {
 function TrashIcon(props) {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(IconFrame, { ...props, children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M5.5 7.5h13M9 7.5V5.7h6v1.8M8 10.5l.5 7h7l.5-7" }) });
 }
+function PencilIcon(props) {
+  return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(IconFrame, { ...props, children: [
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "m5 16.5-.7 3.2 3.2-.7L18 8.5 15.5 6 5 16.5Z" }),
+    /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "m13.8 7.7 2.5 2.5" })
+  ] });
+}
 function ShieldIcon(props) {
   return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)(IconFrame, { ...props, children: [
     /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M12 3.8 19 6v5.1c0 4.3-2.6 7.4-7 9.1-4.4-1.7-7-4.8-7-9.1V6l7-2.2Z" }),
@@ -214,8 +278,9 @@ function RunStatusBadge({ status, t }) {
     statusLabel(t, status)
   ] });
 }
-function CreateAutomationForm({ t, busy, onCancel, onSubmit }) {
-  const [form, setForm] = (0, import_react.useState)(() => defaultFormState());
+function AutomationForm(props) {
+  const { t, busy, onCancel } = props;
+  const [form, setForm] = (0, import_react.useState)(() => props.mode === "create" ? defaultFormState() : formStateFromAutomation(props.automation));
   const [validationError, setValidationError] = (0, import_react.useState)();
   const update = (key, value) => {
     setForm((current) => ({ ...current, [key]: value }));
@@ -227,9 +292,12 @@ function CreateAutomationForm({ t, busy, onCancel, onSubmit }) {
   const submit = (event) => {
     event.preventDefault();
     try {
-      const input = buildCreateInput(form);
       setValidationError(void 0);
-      void onSubmit(input);
+      if (props.mode === "create") {
+        void props.onSubmit(buildCreateInput(form));
+      } else {
+        void props.onSubmit(buildUpdateInput(form, props.automation));
+      }
     } catch (error) {
       if (error instanceof AutomationFormError) {
         setValidationError(t(error.key));
@@ -242,8 +310,8 @@ function CreateAutomationForm({ t, busy, onCancel, onSubmit }) {
     /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "dsh-automation-create-heading", children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "dsh-automation-kicker", children: t("header.eyebrow") }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h2", { children: t("form.title") }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: t("form.subtitle") })
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h2", { children: t(props.mode === "create" ? "form.title" : "form.editTitle") }),
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: t(props.mode === "create" ? "form.subtitle" : "form.editSubtitle") })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "dsh-automation-button dsh-automation-button--ghost", type: "button", onClick: onCancel, disabled: busy, children: t("form.cancel") })
     ] }),
@@ -254,7 +322,7 @@ function CreateAutomationForm({ t, busy, onCancel, onSubmit }) {
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("label", { className: "dsh-automation-field dsh-automation-field--wide", children: [
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: t("form.prompt") }),
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("textarea", { value: form.prompt, maxLength: 12e3, rows: 4, placeholder: t("form.promptPlaceholder"), onChange: (event) => update("prompt", event.currentTarget.value) })
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("textarea", { value: form.prompt, maxLength: 12e3, rows: props.mode === "edit" ? 8 : 4, placeholder: t("form.promptPlaceholder"), onChange: (event) => update("prompt", event.currentTarget.value) })
       ] }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("fieldset", { className: "dsh-automation-fieldset dsh-automation-field--wide", children: [
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("legend", { children: t("form.schedule") }),
@@ -310,14 +378,14 @@ function CreateAutomationForm({ t, busy, onCancel, onSubmit }) {
     /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "dsh-automation-form-footer", children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "dsh-automation-form-error", role: "alert", children: validationError }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "dsh-automation-button dsh-automation-button--primary", type: "submit", disabled: busy, children: [
-        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(PlusIcon, {}),
-        busy ? t("form.submitting") : t("form.submit")
+        props.mode === "create" ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(PlusIcon, {}) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(PencilIcon, {}),
+        busy ? t(props.mode === "create" ? "form.submitting" : "form.saving") : t(props.mode === "create" ? "form.submit" : "form.save")
       ] })
     ] })
   ] });
 }
 function AutomationCard(props) {
-  const { automation, now, t, busyKey, confirmingDelete, onConfirmDelete, onMutate, onRun } = props;
+  const { automation, now, t, busyKey, confirmingDelete, onConfirmDelete, onEdit, onMutate, onRun } = props;
   const isBusy = busyKey?.endsWith(`:${automation.id}`) === true;
   return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("article", { className: "dsh-automation-card", children: [
     /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "dsh-automation-card-top", children: [
@@ -340,6 +408,10 @@ function AutomationCard(props) {
       ] })
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: "dsh-automation-prompt", children: automation.prompt }),
+    /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("details", { className: "dsh-automation-prompt-details", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("summary", { children: t("card.viewPrompt") }),
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("pre", { children: automation.prompt })
+    ] }),
     /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "dsh-automation-schedule-line", children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(CalendarIcon, {}),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("strong", { children: formatSchedule(automation.schedule, t) }),
@@ -371,6 +443,10 @@ function AutomationCard(props) {
         ] })
       ] })
     ] }) : /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "dsh-automation-card-actions", children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "dsh-automation-button dsh-automation-button--ghost", type: "button", onClick: () => onEdit(automation), disabled: isBusy, children: [
+        /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(PencilIcon, {}),
+        t("card.edit")
+      ] }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "dsh-automation-button dsh-automation-button--ghost", type: "button", onClick: () => onRun(automation.id), disabled: isBusy, children: [
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(PlayIcon, {}),
         t("card.runNow")
@@ -396,7 +472,8 @@ function RecentRun({ run, now, t, busy, onOpen, onMarkRead }) {
     ] }),
     /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(RunStatusBadge, { status: run.status, t }),
     (run.summary !== void 0 || run.error !== void 0) && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { className: run.error === void 0 ? "" : "is-error", children: run.error ?? run.summary }),
-    run.sessionId !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "dsh-automation-session-id", type: "button", onClick: () => onOpen(run.id, run.sessionId), children: t("run.openSession", { id: shortSessionId(run.sessionId) }) }),
+    run.sessionId !== void 0 && run.sessionArchived && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "dsh-automation-session-id dsh-automation-session-id--archived", title: run.sessionId, children: t("run.sessionArchived", { id: shortSessionId(run.sessionId) }) }),
+    run.sessionId !== void 0 && !run.sessionArchived && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("button", { className: "dsh-automation-session-id", type: "button", onClick: () => onOpen(run.id, run.sessionId), children: t("run.openSession", { id: shortSessionId(run.sessionId) }) }),
     canMarkRead && /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "dsh-automation-run-review", type: "button", onClick: () => onMarkRead(run.id), disabled: busy, children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(CheckIcon, {}),
       t("run.markRead")
@@ -408,6 +485,7 @@ function AutomationView({
   useAutomationState,
   refresh,
   createAutomation,
+  updateAutomation,
   mutateAutomation,
   runNow,
   markRunRead,
@@ -415,6 +493,7 @@ function AutomationView({
 }) {
   const state = useAutomationState((value) => value);
   const [showCreate, setShowCreate] = (0, import_react.useState)(false);
+  const [editingAutomation, setEditingAutomation] = (0, import_react.useState)();
   const [busyKey, setBusyKey] = (0, import_react.useState)();
   const [actionError, setActionError] = (0, import_react.useState)();
   const [confirmDeleteId, setConfirmDeleteId] = (0, import_react.useState)();
@@ -444,7 +523,10 @@ function AutomationView({
   const onMutate = (id, mutation) => {
     void perform(actionKey(mutation, id), async () => {
       await mutateAutomation(id, mutation);
-      if (mutation === "delete") setConfirmDeleteId(void 0);
+      if (mutation === "delete") {
+        setConfirmDeleteId(void 0);
+        if (editingAutomation?.id === id) setEditingAutomation(void 0);
+      }
     });
   };
   const onRun = (id) => {
@@ -462,14 +544,27 @@ function AutomationView({
       setShowCreate(false);
     });
   };
+  const onUpdate = async (input) => {
+    const automation = editingAutomation;
+    if (automation === void 0) return;
+    await perform(actionKey("update", automation.id), async () => {
+      await updateAutomation(automation.id, automation.revision, input);
+      setEditingAutomation(void 0);
+    });
+  };
+  const onEdit = (automation) => {
+    setShowCreate(false);
+    setConfirmDeleteId(void 0);
+    setEditingAutomation(automation);
+  };
   if (snapshot === void 0 && (state.phase === "idle" || state.phase === "loading")) {
-    return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "dsh-automation-shell dsh-automation-centered", role: "status", children: [
+    return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "dsh-automation-shell dsh-automation-centered", "data-conversation-composer-overlay": "", role: "status", children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "dsh-automation-loader", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(AutomationIcon, {}) }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: t("loading") })
     ] });
   }
   if (snapshot === void 0) {
-    return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "dsh-automation-shell dsh-automation-centered", children: [
+    return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "dsh-automation-shell dsh-automation-centered", "data-conversation-composer-overlay": "", children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "dsh-automation-error-icon", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(AlertIcon, {}) }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("h2", { children: t("error.title") }),
       /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: state.error }),
@@ -481,7 +576,7 @@ function AutomationView({
       ] })
     ] });
   }
-  return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "dsh-automation-shell", children: [
+  return /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "dsh-automation-shell", "data-conversation-composer-overlay": "", children: [
     /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("header", { className: "dsh-automation-header", children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { className: "dsh-automation-heading", children: [
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { className: "dsh-automation-logo", children: /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(AutomationIcon, {}) }),
@@ -491,7 +586,10 @@ function AutomationView({
           /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("p", { children: t("header.subtitle") })
         ] })
       ] }),
-      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "dsh-automation-button dsh-automation-button--primary", type: "button", onClick: () => setShowCreate((value) => !value), children: [
+      /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("button", { className: "dsh-automation-button dsh-automation-button--primary", type: "button", onClick: () => {
+        setEditingAutomation(void 0);
+        setShowCreate((value) => !value);
+      }, children: [
         showCreate ? /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(PauseIcon, {}) : /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(PlusIcon, {}),
         showCreate ? t("header.closeCreate") : t("header.create")
       ] })
@@ -506,7 +604,19 @@ function AutomationView({
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("code", { children: snapshot.scope.cwd })
       ] })
     ] }),
-    showCreate && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(CreateAutomationForm, { t, busy: busyKey === actionKey("create"), onCancel: () => setShowCreate(false), onSubmit: onCreate }),
+    showCreate && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(AutomationForm, { mode: "create", t, busy: busyKey === actionKey("create"), onCancel: () => setShowCreate(false), onSubmit: onCreate }),
+    editingAutomation !== void 0 && /* @__PURE__ */ (0, import_jsx_runtime2.jsx)(
+      AutomationForm,
+      {
+        mode: "edit",
+        automation: editingAutomation,
+        t,
+        busy: busyKey === actionKey("update", editingAutomation.id),
+        onCancel: () => setEditingAutomation(void 0),
+        onSubmit: onUpdate
+      },
+      `${editingAutomation.id}:${editingAutomation.revision}`
+    ),
     /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("section", { className: "dsh-automation-stats", "aria-label": t("header.title"), children: [
       /* @__PURE__ */ (0, import_jsx_runtime2.jsxs)("div", { children: [
         /* @__PURE__ */ (0, import_jsx_runtime2.jsx)("span", { children: t("stats.total") }),
@@ -557,6 +667,7 @@ function AutomationView({
             busyKey,
             confirmingDelete: confirmDeleteId === automation.id,
             onConfirmDelete: setConfirmDeleteId,
+            onEdit,
             onMutate,
             onRun
           },
@@ -613,6 +724,8 @@ var en = {
   "runs.empty": "No runs yet. Trigger an automation now or wait for its schedule.",
   "form.title": "Create an automation",
   "form.subtitle": "Write a self-contained prompt: scheduled runs do not inherit this conversation.",
+  "form.editTitle": "Edit automation",
+  "form.editSubtitle": "Review the complete prompt, schedule, and permission boundary before saving.",
   "form.name": "Name",
   "form.namePlaceholder": "Daily regression triage",
   "form.prompt": "Task prompt",
@@ -636,6 +749,8 @@ var en = {
   "form.cancel": "Cancel",
   "form.submit": "Create automation",
   "form.submitting": "Creating\u2026",
+  "form.save": "Save changes",
+  "form.saving": "Saving\u2026",
   "form.error.name": "Enter a name.",
   "form.error.prompt": "Enter a self-contained task prompt.",
   "form.error.once": "Choose a valid future date and time.",
@@ -669,6 +784,8 @@ var en = {
   "card.pause": "Pause",
   "card.resume": "Resume",
   "card.runNow": "Run now",
+  "card.edit": "Edit",
+  "card.viewPrompt": "View complete prompt",
   "card.delete": "Delete",
   "card.confirmDelete": "Delete automation?",
   "card.confirmDeleteHint": "Run history is retained for audit.",
@@ -678,6 +795,7 @@ var en = {
   "run.trigger.manual": "Manual",
   "run.trigger.catch-up": "Catch-up",
   "run.openSession": "Session {id}",
+  "run.sessionArchived": "Session archived \xB7 {id}",
   "run.markRead": "Mark reviewed",
   "loading": "Loading automations\u2026",
   "error.title": "Automations could not be loaded",
@@ -717,6 +835,8 @@ var zh = {
   "runs.empty": "\u8FD8\u6CA1\u6709\u8FD0\u884C\u8BB0\u5F55\u3002\u4F60\u53EF\u4EE5\u7ACB\u5373\u8FD0\u884C\u4E00\u6B21\uFF0C\u6216\u7B49\u5F85\u8BA1\u5212\u89E6\u53D1\u3002",
   "form.title": "\u521B\u5EFA\u81EA\u52A8\u5316",
   "form.subtitle": "\u8BF7\u5199\u5B8C\u6574\u3001\u72EC\u7ACB\u7684\u4EFB\u52A1\u8BF4\u660E\uFF1A\u5B9A\u65F6\u8FD0\u884C\u4E0D\u4F1A\u7EE7\u627F\u5F53\u524D\u5BF9\u8BDD\u3002",
+  "form.editTitle": "\u7F16\u8F91\u81EA\u52A8\u5316",
+  "form.editSubtitle": "\u4FDD\u5B58\u524D\u53EF\u4EE5\u67E5\u770B\u5E76\u4FEE\u6539\u5B8C\u6574\u6307\u4EE4\u3001\u8FD0\u884C\u8BA1\u5212\u548C\u6743\u9650\u8FB9\u754C\u3002",
   "form.name": "\u540D\u79F0",
   "form.namePlaceholder": "\u6BCF\u65E5\u56DE\u5F52\u6D4B\u8BD5\u5206\u8BCA",
   "form.prompt": "\u4EFB\u52A1\u6307\u4EE4",
@@ -740,6 +860,8 @@ var zh = {
   "form.cancel": "\u53D6\u6D88",
   "form.submit": "\u521B\u5EFA\u81EA\u52A8\u5316",
   "form.submitting": "\u521B\u5EFA\u4E2D\u2026",
+  "form.save": "\u4FDD\u5B58\u4FEE\u6539",
+  "form.saving": "\u4FDD\u5B58\u4E2D\u2026",
   "form.error.name": "\u8BF7\u8F93\u5165\u540D\u79F0\u3002",
   "form.error.prompt": "\u8BF7\u8F93\u5165\u5B8C\u6574\u3001\u72EC\u7ACB\u7684\u4EFB\u52A1\u6307\u4EE4\u3002",
   "form.error.once": "\u8BF7\u9009\u62E9\u6709\u6548\u7684\u672A\u6765\u65E5\u671F\u548C\u65F6\u95F4\u3002",
@@ -773,6 +895,8 @@ var zh = {
   "card.pause": "\u6682\u505C",
   "card.resume": "\u6062\u590D",
   "card.runNow": "\u7ACB\u5373\u8FD0\u884C",
+  "card.edit": "\u7F16\u8F91",
+  "card.viewPrompt": "\u67E5\u770B\u5B8C\u6574\u6307\u4EE4",
   "card.delete": "\u5220\u9664",
   "card.confirmDelete": "\u786E\u8BA4\u5220\u9664\u8FD9\u4E2A\u81EA\u52A8\u5316\uFF1F",
   "card.confirmDeleteHint": "\u8FD0\u884C\u5386\u53F2\u4F1A\u4FDD\u7559\u7528\u4E8E\u5BA1\u8BA1\u3002",
@@ -782,6 +906,7 @@ var zh = {
   "run.trigger.manual": "\u624B\u52A8",
   "run.trigger.catch-up": "\u8865\u507F\u8FD0\u884C",
   "run.openSession": "Session {id}",
+  "run.sessionArchived": "Session \u5DF2\u5F52\u6863 \xB7 {id}",
   "run.markRead": "\u6807\u8BB0\u5DF2\u5904\u7406",
   loading: "\u6B63\u5728\u52A0\u8F7D\u81EA\u52A8\u5316\u2026",
   "error.title": "\u65E0\u6CD5\u52A0\u8F7D\u81EA\u52A8\u5316",
@@ -875,6 +1000,10 @@ function createAutomationRuntime(rpc, sessionId) {
       const payload = { sessionId, input };
       await mutateThenRefresh("create", payload);
     },
+    async updateAutomation(automationId, expectedRevision, input) {
+      const payload = { sessionId, automationId, expectedRevision, input };
+      await mutateThenRefresh("update", payload);
+    },
     async mutateAutomation(automationId, mutation) {
       const payload = { sessionId, automationId, mutation };
       await mutateThenRefresh("mutate", payload);
@@ -910,6 +1039,7 @@ var CSS_TEXT = String.raw`
 .dsh-automation-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.dsh-automation-card-title{display:flex;min-width:0;align-items:flex-start;gap:10px}.dsh-automation-card-title>div{min-width:0}.dsh-automation-card-title h3{overflow:hidden;margin:0 0 6px;font-size:14px;line-height:20px;text-overflow:ellipsis;white-space:nowrap}.dsh-automation-card-icon{display:inline-flex;width:34px;height:34px;flex:none;align-items:center;justify-content:center;border-radius:10px;background:var(--dsw-alias-state-business-tertiary);color:var(--dsw-alias-state-business-primary)}.dsh-automation-card-icon svg{width:18px;height:18px}.dsh-automation-revision{padding:2px 6px;border-radius:5px;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-tertiary);font:10px/15px ui-monospace,SFMono-Regular,Menlo,monospace}
 .dsh-automation-card-badges{display:flex;flex-wrap:wrap;align-items:center;gap:5px}.dsh-automation-badge,.dsh-automation-permission-badge{display:inline-flex;align-items:center;gap:5px;padding:2px 7px;border:1px solid var(--dsw-alias-border-l2);border-radius:999px;color:var(--dsw-alias-label-secondary);font-size:10px;font-weight:600;line-height:15px}.dsh-automation-status-dot{width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-label-tertiary)}.dsh-automation-badge--active{border-color:color-mix(in srgb,var(--dsw-alias-state-success-primary) 30%,var(--dsw-alias-border-l2));background:var(--dsw-alias-state-success-tertiary);color:var(--dsw-alias-state-success-primary)}.dsh-automation-badge--active .dsh-automation-status-dot{background:var(--dsw-alias-state-success-primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--dsw-alias-state-success-primary) 12%,transparent)}.dsh-automation-badge--paused{background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-tertiary)}.dsh-automation-permission-badge svg{width:12px;height:12px}
 .dsh-automation-prompt{display:-webkit-box;overflow:hidden;margin:13px 0 12px;color:var(--dsw-alias-label-secondary);font-size:12px;line-height:19px;-webkit-box-orient:vertical;-webkit-line-clamp:2}.dsh-automation-schedule-line{display:flex;min-width:0;align-items:center;gap:7px;padding:8px 9px;border-radius:8px;background:var(--dsw-alias-state-business-tertiary);color:var(--dsw-alias-state-business-primary);font-size:11px;line-height:17px}.dsh-automation-schedule-line svg{width:14px;height:14px;flex:none}.dsh-automation-schedule-line strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dsh-automation-schedule-line span{margin-left:auto;color:var(--dsw-alias-label-secondary);font:10px/16px ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap}
+.dsh-automation-prompt-details{margin:-7px 0 12px;color:var(--dsw-alias-label-secondary);font-size:10px;line-height:16px}.dsh-automation-prompt-details summary{width:max-content;color:var(--dsw-alias-state-business-primary);font-weight:650;cursor:pointer}.dsh-automation-prompt-details pre{max-height:320px;overflow:auto;margin:8px 0 0;padding:10px;border:1px solid var(--dsw-alias-border-l2);border-radius:8px;background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);font:11px/18px ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
 .dsh-automation-card-times{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.dsh-automation-card-times>div{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-right:10px;border-right:1px solid var(--dsw-alias-border-l2)}.dsh-automation-card-times>div:last-child{padding-right:0;border-right:0}.dsh-automation-card-times dt{color:var(--dsw-alias-label-tertiary);font-size:10px;line-height:16px}.dsh-automation-card-times dd{display:flex;align-items:center;gap:5px;margin:0;color:var(--dsw-alias-label-secondary);font-size:11px;font-weight:600;line-height:16px}.dsh-automation-mini-dot{width:6px;height:6px;border-radius:50%;background:var(--dsw-alias-label-tertiary)}.dsh-automation-mini-dot--succeeded{background:var(--dsw-alias-state-success-primary)}.dsh-automation-mini-dot--failed,.dsh-automation-mini-dot--interrupted{background:var(--dsw-alias-state-error-primary)}.dsh-automation-mini-dot--running,.dsh-automation-mini-dot--queued{background:var(--dsw-alias-state-business-primary)}
 .dsh-automation-card-actions{display:flex;align-items:center;justify-content:flex-end;gap:7px;padding-top:12px;border-top:1px solid var(--dsw-alias-border-l2)}.dsh-automation-delete-confirm{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px;border:1px solid color-mix(in srgb,var(--dsw-alias-state-error-primary) 35%,var(--dsw-alias-border-l2));border-radius:9px;background:var(--dsw-alias-state-error-secondary)}.dsh-automation-delete-confirm>div:first-child{display:flex;flex-direction:column}.dsh-automation-delete-confirm strong{font-size:11px;line-height:17px}.dsh-automation-delete-confirm span{color:var(--dsw-alias-label-secondary);font-size:10px;line-height:15px}.dsh-automation-delete-confirm>div:last-child{display:flex;gap:6px}
 .dsh-automation-run-list{display:flex;overflow:hidden;flex-direction:column;border:1px solid var(--dsw-alias-border-l2);border-radius:14px;background:var(--dsw-alias-bg-layer-1);box-shadow:var(--dsw-shadow-lv1)}.dsh-automation-run{padding:13px 14px;border-bottom:1px solid var(--dsw-alias-border-l2)}.dsh-automation-run:last-child{border-bottom:0}.dsh-automation-run-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.dsh-automation-run-head>div{display:flex;min-width:0;flex-direction:column}.dsh-automation-run-name{overflow:hidden;font-size:12px;font-weight:650;line-height:18px;text-overflow:ellipsis;white-space:nowrap}.dsh-automation-run-trigger,.dsh-automation-run-head time{color:var(--dsw-alias-label-tertiary);font-size:10px;line-height:15px;white-space:nowrap}.dsh-automation-run-status{display:inline-flex;align-items:center;gap:5px;margin-top:8px;color:var(--dsw-alias-label-secondary);font-size:10px;font-weight:650;line-height:16px}.dsh-automation-run-status svg{width:13px;height:13px}.dsh-automation-run-status--succeeded{color:var(--dsw-alias-state-success-primary)}.dsh-automation-run-status--failed,.dsh-automation-run-status--interrupted{color:var(--dsw-alias-state-error-primary)}.dsh-automation-run-status--running,.dsh-automation-run-status--queued{color:var(--dsw-alias-state-business-primary)}.dsh-automation-run-status--running svg{animation:dsh-automation-spin 1.6s linear infinite}.dsh-automation-run p{display:-webkit-box;overflow:hidden;margin:7px 0 0;color:var(--dsw-alias-label-secondary);font-size:11px;line-height:17px;-webkit-box-orient:vertical;-webkit-line-clamp:3}.dsh-automation-run p.is-error{color:var(--dsw-alias-state-error-primary)}.dsh-automation-session-id{display:block;overflow:hidden;margin-top:6px;color:var(--dsw-alias-label-tertiary);font:9px/14px ui-monospace,SFMono-Regular,Menlo,monospace;text-overflow:ellipsis;white-space:nowrap}
@@ -919,7 +1049,7 @@ var CSS_TEXT = String.raw`
 .dsh-automation-permission-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.dsh-automation-permission-grid label{display:flex;min-width:0;align-items:flex-start;gap:9px;padding:11px;border:1px solid var(--dsw-alias-border-l2);border-radius:9px;background:var(--dsw-alias-bg-base);cursor:pointer}.dsh-automation-permission-grid label.is-selected{border-color:var(--dsw-alias-state-business-primary);box-shadow:0 0 0 2px color-mix(in srgb,var(--dsw-alias-state-business-primary) 10%,transparent)}.dsh-automation-permission-grid input{position:absolute;opacity:0;pointer-events:none}.dsh-automation-permission-grid svg{width:17px;height:17px;flex:none;color:var(--dsw-alias-state-business-primary)}.dsh-automation-permission-grid label>span{display:flex;min-width:0;flex-direction:column}.dsh-automation-permission-grid strong{font-size:11px;line-height:17px}.dsh-automation-permission-grid small{color:var(--dsw-alias-label-secondary);font-size:10px;line-height:15px}
 .dsh-automation-form-footer{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-top:15px;padding-top:13px;border-top:1px solid var(--dsw-alias-border-l2)}.dsh-automation-form-error{flex:1;color:var(--dsw-alias-state-error-primary);font-size:11px;line-height:17px}.dsh-automation-inline-error{display:flex;max-width:1440px;align-items:center;gap:8px;margin:0 auto 14px;padding:9px 11px;border:1px solid color-mix(in srgb,var(--dsw-alias-state-error-primary) 32%,var(--dsw-alias-border-l2));border-radius:9px;background:var(--dsw-alias-state-error-secondary);color:var(--dsw-alias-state-error-primary);font-size:11px;line-height:17px}.dsh-automation-inline-error svg{width:15px;height:15px;flex:none}
 .dsh-automation-centered{display:flex;min-height:420px;flex-direction:column;align-items:center;justify-content:center;gap:9px;text-align:center;color:var(--dsw-alias-label-secondary);font-size:12px}.dsh-automation-centered h2{margin:3px 0 0;color:var(--dsw-alias-label-primary);font-size:15px}.dsh-automation-centered p{max-width:480px;margin:0 0 8px;color:var(--dsw-alias-label-secondary)}.dsh-automation-loader,.dsh-automation-error-icon{display:inline-flex;width:46px;height:46px;align-items:center;justify-content:center;border-radius:14px;background:var(--dsw-alias-state-business-tertiary);color:var(--dsw-alias-state-business-primary)}.dsh-automation-loader svg{animation:dsh-automation-spin 1.6s linear infinite}.dsh-automation-error-icon{background:var(--dsw-alias-state-error-secondary);color:var(--dsw-alias-state-error-primary)}
-.dsh-automation-session-id{max-width:100%;padding:0;border:0;background:transparent;color:var(--dsw-alias-state-business-primary);text-align:left;cursor:pointer}.dsh-automation-session-id:hover{text-decoration:underline}
+.dsh-automation-session-id{max-width:100%;padding:0;border:0;background:transparent;color:var(--dsw-alias-state-business-primary);text-align:left;cursor:pointer}.dsh-automation-session-id:hover{text-decoration:underline}.dsh-automation-session-id--archived{color:var(--dsw-alias-label-tertiary);cursor:default}.dsh-automation-session-id--archived:hover{text-decoration:none}
 .dsh-automation-run-review{display:inline-flex;align-items:center;gap:4px;margin-top:7px;padding:2px 7px;border:1px solid var(--dsw-alias-border-l2);border-radius:6px;background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-secondary);font:600 9px/14px var(--dsw-font-family,system-ui);cursor:pointer}.dsh-automation-run-review svg{width:11px;height:11px}.dsh-automation-run-review:hover:not(:disabled){border-color:color-mix(in srgb,var(--dsw-alias-state-business-primary) 38%,var(--dsw-alias-border-l2));color:var(--dsw-alias-state-business-primary)}.dsh-automation-run-review:disabled{cursor:not-allowed;opacity:.45}
 .dsh-automation-shell button:focus-visible,.dsh-automation-shell input:focus-visible,.dsh-automation-shell textarea:focus-visible{outline:2px solid var(--dsw-alias-state-business-primary);outline-offset:2px}
 @keyframes dsh-automation-spin{to{transform:rotate(360deg)}}
@@ -967,6 +1097,7 @@ function apply(ctx) {
         hooks: { automationState: runtime.source },
         refresh: runtime.refresh,
         createAutomation: runtime.createAutomation,
+        updateAutomation: runtime.updateAutomation,
         mutateAutomation: runtime.mutateAutomation,
         runNow: runtime.runNow,
         markRunRead: runtime.markRunRead,

@@ -32,7 +32,12 @@ window.__ModuleLoader__.load({ id: "dsh-files", factory: (require) => { var modu
     uploadError = null;
     for (const listener of errorListeners) listener();
   }
-  function badgeStyle(name) {
+  function badgeStyle(name, sniffed) {
+    if (sniffed === "pdf") return { bg: "#C93B2E", ext: "PDF" };
+    if (sniffed === "docx") return { bg: "#2B579A", ext: "DOC" };
+    if (sniffed === "xlsx") return { bg: "#217346", ext: "XLS" };
+    if (sniffed === "text") return { bg: "#757575", ext: "TXT" };
+    if (sniffed === null) return { bg: "#5B7DB1", ext: "FILE" };
     const ext = name.slice(name.lastIndexOf(".") + 1).toUpperCase().slice(0, 4);
     const lower = ext.toLowerCase();
     if (lower === "pdf") return { bg: "#C93B2E", ext: "PDF" };
@@ -72,6 +77,7 @@ window.__ModuleLoader__.load({ id: "dsh-files", factory: (require) => { var modu
 .dsh-files-error{display:inline-flex;align-items:center;gap:8px;max-width:100%;border:1px solid var(--dsw-alias-border-l2-darkmode-thin,rgba(127,127,127,.22));background:var(--dsw-alias-interactive-bg-hover-danger,rgba(216,97,97,.14));color:var(--dsw-alias-state-error-primary,#d86161);border-radius:10px;padding:6px 8px 6px 10px;font-size:13px}
 .dsh-files-error-text{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:420px}
 .uV2eYG_chip:has(> .uV2eYG_chipLabel:empty){visibility:hidden}
+body.dsh-files-dragging:after{content:'\u677E\u5F00\u4EE5\u4E0A\u4F20\u6587\u4EF6';position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:#fff;background:rgba(0,0,0,.45);z-index:9999;pointer-events:none;text-shadow:0 1px 4px rgba(0,0,0,.5)}
 `;
     document.head.appendChild(tag);
   }
@@ -80,12 +86,31 @@ window.__ModuleLoader__.load({ id: "dsh-files", factory: (require) => { var modu
     if (status === 415) return "\u6587\u4EF6\u7C7B\u578B\u4E0D\u88AB\u5141\u8BB8";
     if (status === 403) return "\u4F1A\u8BDD\u6821\u9A8C\u5931\u8D25\uFF0C\u8BF7\u5237\u65B0\u9875\u9762\u91CD\u8BD5";
     if (status === 429) return "\u4E0A\u4F20\u592A\u9891\u7E41\uFF0C\u8BF7\u7A0D\u540E\u518D\u8BD5";
+    if (status === 507) return "\u4F1A\u8BDD\u5B58\u50A8\u914D\u989D\u5DF2\u6EE1\uFF0C\u8BF7\u5220\u9664\u4E00\u4E9B\u6587\u4EF6";
     return `HTTP ${status}`;
   }
-  async function attachFile(actx, file, sessionId) {
+  async function insertReference(actx, ref, label) {
     const conversation = actx.get("conversation");
     if (conversation === void 0) throw new Error("conversation service unavailable");
     const input = conversation.input.for(actx);
+    const state = input.state.getSnapshot();
+    actx.emit("slash/input-insert-reference", {
+      reference: {
+        source: SOURCE_NAME,
+        ref,
+        label,
+        clipboardText: ref
+      },
+      span: {
+        start: state.draft.length,
+        end: state.draft.length,
+        draftRev: state.draftRev
+      }
+    });
+    const after = input.state.getSnapshot();
+    return after.occurrences.some((o) => o.source === SOURCE_NAME && o.ref === ref);
+  }
+  async function attachFile(actx, file, sessionId) {
     const res = await fetch("/api/upload", {
       method: "POST",
       headers: {
@@ -106,24 +131,13 @@ window.__ModuleLoader__.load({ id: "dsh-files", factory: (require) => { var modu
     const payload = await res.json();
     if (typeof payload.path !== "string") throw new Error("missing path in response");
     const name = payload.name ?? file.name;
-    uploadMeta.set(payload.path, { name, bytes: payload.bytes ?? file.size });
-    clearUploadError();
-    const state = input.state.getSnapshot();
-    actx.emit("slash/input-insert-reference", {
-      reference: {
-        source: SOURCE_NAME,
-        ref: payload.path,
-        label: "",
-        clipboardText: payload.path
-      },
-      span: {
-        start: state.draft.length,
-        end: state.draft.length,
-        draftRev: state.draftRev
-      }
+    uploadMeta.set(payload.path, {
+      name,
+      bytes: payload.bytes ?? file.size,
+      sniffed: "sniffedFormat" in payload ? payload.sniffedFormat ?? null : void 0
     });
-    const after = input.state.getSnapshot();
-    const inserted = after.occurrences.some((o) => o.source === SOURCE_NAME && o.ref === payload.path);
+    clearUploadError();
+    const inserted = await insertReference(actx, payload.path, "");
     if (!inserted) {
       setUploadError(`\u6587\u4EF6\u5DF2\u4E0A\u4F20\u4F46\u672A\u80FD\u52A0\u5165\u8F93\u5165\u6846: ${payload.path}`);
     }
@@ -131,6 +145,56 @@ window.__ModuleLoader__.load({ id: "dsh-files", factory: (require) => { var modu
   function UploadButton({ attach }) {
     const [busy, setBusy] = (0, import_react.useState)(false);
     const inputRef = (0, import_react.useRef)(null);
+    const attachRef = (0, import_react.useRef)(attach);
+    attachRef.current = attach;
+    (0, import_react.useEffect)(() => {
+      let dragDepth = 0;
+      const isFileDrag = (e) => e.dataTransfer?.types.includes("Files") ?? false;
+      const onDragOver = (e) => {
+        if (!isFileDrag(e)) return;
+        e.preventDefault();
+        dragDepth += 1;
+        document.body.classList.add("dsh-files-dragging");
+      };
+      const onDragLeave = (e) => {
+        if (!isFileDrag(e)) return;
+        if (e.relatedTarget !== null) return;
+        dragDepth = Math.max(0, dragDepth - 1);
+        if (dragDepth === 0) document.body.classList.remove("dsh-files-dragging");
+      };
+      const onDrop = (e) => {
+        const files = Array.from(e.dataTransfer?.files ?? []);
+        if (files.length === 0) return;
+        e.preventDefault();
+        dragDepth = 0;
+        document.body.classList.remove("dsh-files-dragging");
+        setBusy(true);
+        void (async () => {
+          for (const file of files) {
+            try {
+              await attachRef.current(file);
+            } catch {
+            }
+          }
+          setBusy(false);
+        })();
+      };
+      const onDragEnd = () => {
+        dragDepth = 0;
+        document.body.classList.remove("dsh-files-dragging");
+      };
+      document.addEventListener("dragover", onDragOver);
+      document.addEventListener("dragleave", onDragLeave);
+      document.addEventListener("drop", onDrop);
+      document.addEventListener("dragend", onDragEnd);
+      return () => {
+        document.removeEventListener("dragover", onDragOver);
+        document.removeEventListener("dragleave", onDragLeave);
+        document.removeEventListener("drop", onDrop);
+        document.removeEventListener("dragend", onDragEnd);
+        document.body.classList.remove("dsh-files-dragging");
+      };
+    }, []);
     const pick = () => {
       const input = document.createElement("input");
       input.type = "file";
@@ -164,15 +228,17 @@ window.__ModuleLoader__.load({ id: "dsh-files", factory: (require) => { var modu
     const ours = (state?.occurrences ?? []).filter((o) => o.source === SOURCE_NAME);
     const refs = ours.map((o) => o.ref).join("\n");
     (0, import_react.useEffect)(() => {
-      const live = new Set(ours.map((o) => o.ref));
+      const live = new Set(refs.split("\n").filter((r) => r !== ""));
       for (const key of [...uploadMeta.keys()]) {
         if (!live.has(key)) uploadMeta.delete(key);
       }
-    }, [refs, ours]);
+    }, [refs]);
     if (ours.length === 0 && error === null) return null;
-    const removeCard = (_occurrenceId, ref, offset) => {
+    const removeCard = (ref, offset) => {
       const draft = state?.draft ?? "";
-      const next = draft.slice(0, offset) + draft.slice(offset + 1);
+      let end = offset;
+      while (end < draft.length && !/\s/.test(draft[end])) end += 1;
+      const next = draft.slice(0, offset) + draft.slice(end);
       inputActions?.setDraft(next);
       uploadMeta.delete(ref);
       void fetch(`/api/upload?path=${encodeURIComponent(ref)}`, { method: "DELETE" }).catch(() => {
@@ -186,7 +252,7 @@ window.__ModuleLoader__.load({ id: "dsh-files", factory: (require) => { var modu
       ours.map((occ) => {
         const meta = uploadMeta.get(occ.ref);
         const name = meta?.name ?? nameFromPath(occ.ref);
-        const { bg, ext } = badgeStyle(name);
+        const { bg, ext } = badgeStyle(name, meta?.sniffed);
         return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", { className: "dsh-files-card", children: [
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "dsh-files-badge", style: { background: bg }, children: ext }),
           /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", { className: "dsh-files-name", title: occ.ref, children: name }),
@@ -197,7 +263,7 @@ window.__ModuleLoader__.load({ id: "dsh-files", factory: (require) => { var modu
               type: "button",
               className: "dsh-files-remove",
               "aria-label": "\u79FB\u9664",
-              onClick: () => removeCard(occ.occurrenceId, occ.ref, occ.offset),
+              onClick: () => removeCard(occ.ref, occ.offset),
               children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_dsh_client_ui_primitives.IconCloseOutline16, { size: 12 })
             }
           ) })

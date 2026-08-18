@@ -5,7 +5,7 @@
 ### *Run coding tasks on schedule. Manage them from Web or Agent.*
 
 [![DeepSeek Harness](https://img.shields.io/badge/DeepSeek%20Harness-plugin-4D6BFE)](https://github.com/deepseek-ai)
-[![Version](https://img.shields.io/badge/version-0.1.5-4D6BFE)](package.json)
+[![Version](https://img.shields.io/badge/version-0.1.6-4D6BFE)](package.json)
 [![Node.js](https://img.shields.io/badge/Node.js-22.19%2B-4D6BFE)](package.json)
 [![License: MIT](https://img.shields.io/badge/license-MIT-4D6BFE)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/titanwings/dsh-automation?style=social)](https://github.com/titanwings/dsh-automation/stargazers)
@@ -99,6 +99,8 @@ Runs progress through `queued`, `running`, and a terminal state such as `succeed
 
 Updating a definition increments its revision, so each retained run still identifies what it executed. Deleting the definition does not immediately erase those run records. Retention removes only the oldest terminal records; queued and running records are never pruned.
 
+Set `archiveRunSessions: true` in the Cordis plugin config to archive completed, failed, cancelled, and other terminal run Sessions from the ordinary DSH conversation list. Their logs are not deleted: the Automations run history keeps the Session ID, summary, and error as an auditable inbox. Current Harness releases do not expose an unarchive API, so an archived result is labeled instead of offering a broken Session-open action. The default is `false` and preserves ordinary Session navigation.
+
 ---
 
 <a id="install"></a>
@@ -108,7 +110,7 @@ Updating a definition increments its revision, so each retained run still identi
 Install the GitHub bundle into the DSH Web profile, then restart `dsh web`:
 
 ```bash
-dsh plugin --profile web add github:titanwings/dsh-automation#v0.1.5
+dsh plugin --profile web add github:titanwings/dsh-automation#v0.1.6
 ```
 
 The version tag keeps the install reproducible; a reviewed commit SHA is equally valid. If you run DSH from its source checkout, use `pnpm dsh` in place of `dsh`.
@@ -220,6 +222,7 @@ These boundaries do not turn every third-party DSH tool into a sandbox. Foregrou
 | Host restarts late | Within the grace window (15 minutes by default), only the latest due occurrence can catch up. Older work is not replayed as a write backlog. |
 | Run timeout | The Agent is cancelled after 60 minutes by default and the run is recorded as failed. |
 | Host crash | Persisted `queued` or `running` records become `failed(host_interrupted)` on recovery; they are not secretly re-executed. |
+| Session list | With `archiveRunSessions` enabled, terminal run Sessions are durably archived after their run record is saved. Startup retries archival for an interrupted terminal record, and an archive failure never changes the run outcome. |
 | Retry | Manual **Run now** only. There is no automatic side-effect retry. |
 
 A deterministic occurrence key prevents the scheduler from dispatching the same recorded occurrence twice. This is an **at-most-once dispatch policy**, not a claim that external side effects are exactly once.
@@ -268,6 +271,7 @@ The included `cordis.patch.yml` uses conservative defaults:
 | `runTimeoutMinutes` | `60` | Maximum wall-clock time for one fresh Agent run. |
 | `misfireGraceMinutes` | `15` | How late the latest due occurrence may catch up after downtime. |
 | `historyLimit` | `200` | Durable terminal-run retention per automation; active records are always kept. |
+| `archiveRunSessions` | `false` | Opt in to archiving terminal run Sessions from the ordinary conversation list while preserving their logs and durable Automation result metadata. Current Harness releases cannot directly reopen an archived Session. |
 
 Edit the plugin row in the deployment profile if you need different values. Increasing concurrency or timeout expands the amount of unattended work; treat those changes as policy decisions.
 

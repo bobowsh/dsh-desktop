@@ -1,3 +1,9 @@
+## 6.43.9 (2026-08-16)
+
+### Bug fixes
+
+Fix an issue where the scroll position would incorrectly be moved up when a document scrolled to the bottom would lose height.
+
 ## 6.43.8 (2026-08-04)
 
 ### Bug fixes

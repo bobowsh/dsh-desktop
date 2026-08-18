@@ -98,9 +98,10 @@ function looksLikeGb18030(bytes) {
 }
 function looksLikeUtf8(bytes) {
     const n = Math.min(bytes.length, SNIFF_BYTES);
-    // Too short to judge; a 1-3 byte "text" claim is not evidence.
-    if (n < 4)
-        return false;
+    // 空文件与极短纯 ASCII 是合法文本：拒绝它们会让 0-3 字节的
+    // txt/csv/md 全部读不了（"unrecognized file content"）。
+    if (n === 0)
+        return true;
     let i = 0;
     while (i < n) {
         const b = bytes[i];

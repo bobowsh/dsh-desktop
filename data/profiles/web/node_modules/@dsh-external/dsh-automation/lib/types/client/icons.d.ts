@@ -6,6 +6,7 @@ export declare function RefreshIcon(props: IconProps): JSX.Element;
 export declare function PlayIcon(props: IconProps): JSX.Element;
 export declare function PauseIcon(props: IconProps): JSX.Element;
 export declare function TrashIcon(props: IconProps): JSX.Element;
+export declare function PencilIcon(props: IconProps): JSX.Element;
 export declare function ShieldIcon(props: IconProps): JSX.Element;
 export declare function CalendarIcon(props: IconProps): JSX.Element;
 export declare function CheckIcon(props: IconProps): JSX.Element;

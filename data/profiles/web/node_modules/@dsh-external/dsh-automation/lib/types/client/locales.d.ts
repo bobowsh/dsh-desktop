@@ -25,6 +25,8 @@ export declare const en: {
     readonly 'runs.empty': "No runs yet. Trigger an automation now or wait for its schedule.";
     readonly 'form.title': "Create an automation";
     readonly 'form.subtitle': "Write a self-contained prompt: scheduled runs do not inherit this conversation.";
+    readonly 'form.editTitle': "Edit automation";
+    readonly 'form.editSubtitle': "Review the complete prompt, schedule, and permission boundary before saving.";
     readonly 'form.name': "Name";
     readonly 'form.namePlaceholder': "Daily regression triage";
     readonly 'form.prompt': "Task prompt";
@@ -48,6 +50,8 @@ export declare const en: {
     readonly 'form.cancel': "Cancel";
     readonly 'form.submit': "Create automation";
     readonly 'form.submitting': "Creating…";
+    readonly 'form.save': "Save changes";
+    readonly 'form.saving': "Saving…";
     readonly 'form.error.name': "Enter a name.";
     readonly 'form.error.prompt': "Enter a self-contained task prompt.";
     readonly 'form.error.once': "Choose a valid future date and time.";
@@ -81,6 +85,8 @@ export declare const en: {
     readonly 'card.pause': "Pause";
     readonly 'card.resume': "Resume";
     readonly 'card.runNow': "Run now";
+    readonly 'card.edit': "Edit";
+    readonly 'card.viewPrompt': "View complete prompt";
     readonly 'card.delete': "Delete";
     readonly 'card.confirmDelete': "Delete automation?";
     readonly 'card.confirmDeleteHint': "Run history is retained for audit.";
@@ -90,6 +96,7 @@ export declare const en: {
     readonly 'run.trigger.manual': "Manual";
     readonly 'run.trigger.catch-up': "Catch-up";
     readonly 'run.openSession': "Session {id}";
+    readonly 'run.sessionArchived': "Session archived · {id}";
     readonly 'run.markRead': "Mark reviewed";
     readonly loading: "Loading automations…";
     readonly 'error.title': "Automations could not be loaded";

@@ -9,12 +9,43 @@
 import { createHash } from 'node:crypto';
 import { mkdir, readdir, rmdir, stat, unlink, writeFile } from 'node:fs/promises';
 import { join, resolve, sep } from 'node:path';
-const LOOPBACK_HOST = /^(127\.0\.0\.1|localhost|\[::1\])(:\d+)?$/i;
-/** Control chars, path separators, dot segments and leading dots stripped. */
+import { sniffFormat } from "./detect.js";
+import { networkGuard } from "./guard.js";
+/**
+ * Control chars, path separators, dot segments and leading dots stripped;
+ * then truncated by UTF-8 BYTES, not characters, with the extension
+ * preserved: 120 CJK characters are 360 bytes and exceed the common 255-byte
+ * filename limit, so writeFile would fail with ENAMETOOLONG on long Chinese
+ * names — but cutting the stem must not also cut ".pdf"/".xlsx", or the
+ * extension allowlist and client badge would see a nameless file.
+ */
 export function sanitizeFileName(raw) {
     const cleaned = raw.replace(/[\u0000-\u001f\u007f]/g, '');
     const segments = cleaned.split(/[\\/]/).filter((s) => s !== '' && s !== '.' && s !== '..');
-    const name = segments.join('_').replace(/^\.+/, '').trim().slice(0, 120);
+    const joined = segments.join('_').replace(/^\.+/, '').trim();
+    // 分离扩展名：最后一个点之后的 1-8 个字符（无空格）。
+    // 注意 joined 已剥掉前导点，但 ".foo" 会变成 "foo"（无点），
+    // 而 "..." 会被剥成空串，走 upload.bin 兜底。
+    const dot = joined.lastIndexOf('.');
+    const ext = dot > 0 && dot < joined.length - 1 ? joined.slice(dot) : '';
+    const stem = dot > 0 ? joined.slice(0, dot) : joined;
+    // 纯点串（"." / ".."）不是合法文件名。
+    if (/^\.+$/.test(stem))
+        return 'upload.bin';
+    const MAX_BYTES = 120;
+    const extBytes = Buffer.byteLength(ext);
+    let bytes = 0;
+    let cut = stem.length;
+    for (let i = 0; i < stem.length; i++) {
+        const code = stem.codePointAt(i) ?? 0;
+        const width = code > 0xffff ? 4 : code > 0x7ff ? 3 : code > 0x7f ? 2 : 1;
+        if (bytes + width > MAX_BYTES - extBytes) {
+            cut = i;
+            break;
+        }
+        bytes += width;
+    }
+    const name = stem.slice(0, cut) + ext;
     return name === '' ? 'upload.bin' : name;
 }
 /** Session ids are opaque tokens; still constrain them to a safe alphabet. */
@@ -22,8 +53,19 @@ export function sanitizeSessionId(id) {
     const cleaned = id.replace(/[^A-Za-z0-9_-]+/g, '_').slice(0, 80);
     return cleaned === '' ? 'anonymous' : cleaned;
 }
+/** Whether any file in `dir` starts with `prefix` (the sha256 content digest). */
+async function fileWithPrefixExists(dir, prefix) {
+    try {
+        const entries = await readdir(dir);
+        return entries.some((entry) => entry.startsWith(prefix));
+    }
+    catch {
+        // dir not created yet — nothing stored
+        return false;
+    }
+}
 export function createUploadHandler(options) {
-    const { maxBytes, allowedExtensions, ttlMs, maxConcurrent, sessionCwd, defaultDir, now = () => Date.now() } = options;
+    const { maxBytes, allowedExtensions, ttlMs, maxConcurrent, maxSessionBytes = 0, sessionCwd, defaultDir, now = () => Date.now() } = options;
     let inflight = 0;
     async function storageDirFor(req) {
         const raw = req.headers['x-session-id'];
@@ -92,25 +134,66 @@ export function createUploadHandler(options) {
                 return;
             }
             const data = Buffer.concat(chunks);
+            // 会话配额：TTL 周期内每会话文件数有限，readdir+stat 统计可接受。
+            // 检查放在 inflight 内，两个并发请求仍可能同时通过（低风险，TTL 会回收）。
+            if (maxSessionBytes > 0) {
+                let used = 0;
+                try {
+                    const entries = await readdir(storage.dir);
+                    for (const entry of entries) {
+                        try {
+                            used += (await stat(join(storage.dir, entry))).size;
+                        }
+                        catch {
+                            // raced with a DELETE or sweep
+                        }
+                    }
+                }
+                catch {
+                    // dir not created yet — nothing stored
+                }
+                if (used + data.length > maxSessionBytes) {
+                    res.writeHead(507, { 'content-type': 'application/json' });
+                    res.end(JSON.stringify({ error: `session upload quota exceeded (${maxSessionBytes} bytes)` }));
+                    return;
+                }
+            }
             await mkdir(storage.dir, { recursive: true });
             const digest = createHash('sha256').update(data).digest('hex').slice(0, 12);
             const dest = join(storage.dir, `${digest}-${name}`);
             let deduplicated = false;
-            try {
-                await writeFile(dest, data, { flag: 'wx' });
+            // 去重键是内容 digest：同内容不同名只存一份。writeFile 的 wx 旗标
+            // 只对同名生效，所以先按 digest 前缀找已存在的同内容文件，
+            // 命中时返回已存在文件的真实路径（模型读它不会 404）。
+            let path = dest;
+            if (!(await fileWithPrefixExists(storage.dir, digest))) {
+                try {
+                    await writeFile(dest, data, { flag: 'wx' });
+                }
+                catch (err) {
+                    if (err?.code === 'EEXIST')
+                        deduplicated = true;
+                    else
+                        throw err;
+                }
             }
-            catch (err) {
-                if (err?.code === 'EEXIST')
-                    deduplicated = true;
-                else
-                    throw err;
+            else {
+                deduplicated = true;
+                const entries = await readdir(storage.dir);
+                const existing = entries.find((entry) => entry.startsWith(digest));
+                if (existing !== undefined)
+                    path = join(storage.dir, existing);
             }
+            // 嗅探前移：上传时字节已在内存，顺手判定真实格式（不信任扩展名），
+            // 客户端据此显示真实格式徽章，伪装文件一上传就暴露。
+            const sniffedFormat = sniffFormat(data);
             res.writeHead(200, { 'content-type': 'application/json' });
             res.end(JSON.stringify({
-                path: dest,
+                path,
                 name,
                 bytes: data.length,
                 sessionId: storage.sessionId,
+                sniffedFormat,
                 ...(deduplicated ? { deduplicated: true } : {})
             }));
         }
@@ -160,25 +243,10 @@ export function createUploadHandler(options) {
             res.end('method not allowed');
             return;
         }
-        const host = String(req.headers?.host ?? '');
-        if (!LOOPBACK_HOST.test(host)) {
+        const denied = networkGuard(req);
+        if (denied !== null) {
             res.writeHead(403);
-            res.end('forbidden: non-loopback host');
-            return;
-        }
-        const origin = req.headers?.origin;
-        if (origin !== undefined) {
-            const scheme = req.socket?.encrypted ? 'https' : 'http';
-            if (origin !== `${scheme}://${host}`) {
-                res.writeHead(403);
-                res.end('forbidden: cross-origin');
-                return;
-            }
-        }
-        const secFetchSite = req.headers?.['sec-fetch-site'];
-        if (secFetchSite !== undefined && secFetchSite !== 'same-origin' && secFetchSite !== 'none') {
-            res.writeHead(403);
-            res.end('forbidden: cross-site');
+            res.end(denied);
             return;
         }
         if (req.method === 'DELETE') {

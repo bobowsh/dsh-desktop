@@ -16,3 +16,10 @@
         remoteAccess: read-only
         timeoutMs: 10000
         defaultRecallLimit: 10
+        recallQuality:
+          policy: strict-v1
+          lowScoreThreshold: 0.25
+          highScoreThreshold: 0.6
+          candidateMultiplier: 3
+          maxMediumResults: 4
+          maxUnknownResults: 2

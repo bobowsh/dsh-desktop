@@ -7,6 +7,7 @@ export interface Config {
     readonly runTimeoutMinutes?: number;
     readonly misfireGraceMinutes?: number;
     readonly historyLimit?: number;
+    readonly archiveRunSessions?: boolean;
 }
 export declare const Config: any;
 export declare function needsHumanApproval(exec: {

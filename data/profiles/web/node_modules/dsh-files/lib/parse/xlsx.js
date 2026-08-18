@@ -9,17 +9,40 @@ function cellText(value) {
     if (value === null || value === undefined)
         return '';
     if (value instanceof Date) {
-        return value.toISOString().slice(0, 10);
+        // read-excel-file 返回 UTC 的 Date；输出干净格式：
+        // 有非零时间分量才带时间，去掉 .000Z 噪音。
+        const iso = value.toISOString().replace('T', ' ').slice(0, 19);
+        return iso.endsWith(' 00:00:00') ? iso.slice(0, 10) : iso;
     }
-    return String(value);
+    // 单元格内换行会破坏表格行对齐（行与列以 \n 和 \t 分隔），替换为空格。
+    return String(value).replace(/\r?\n/g, ' ');
 }
 function rowsToText(rows) {
     return rows.map((row) => row.map(cellText).join('\t').replace(/\s+$/, '')).join('\n');
 }
 export async function parseXlsx(bytes, options) {
-    const maxSheets = options.maxSheets ?? 5;
     const buf = Buffer.from(bytes);
     const sheetNames = await readSheetNames(buf);
+    // 只列 sheet 名：模型先看有哪些 sheet，再决定读哪个（sheet 参数）。
+    if (options.listOnly === true) {
+        if (sheetNames.length === 0)
+            return '(empty workbook)';
+        return `### Sheets (${sheetNames.length})\n${sheetNames.map((s, i) => `${i + 1}. ${String(s)}`).join('\n')}`;
+    }
+    // sheet 级读取：截断发生在解析期，offset 翻页翻不回来；
+    // 指定 sheet 时返回该 sheet 全量，由工具层分页控制输出。
+    if (options.sheet !== undefined) {
+        const idx = options.sheet;
+        if (idx < 1 || idx > sheetNames.length) {
+            // 越界错误带上可用列表，模型能自纠正而不是瞎猜。
+            const list = sheetNames.map((s, i) => `${i + 1}. ${String(s)}`).join(', ');
+            throw new Error(`sheet ${idx} out of range: workbook has ${sheetNames.length} sheet(s) — ${list}`);
+        }
+        const sheet = sheetNames[idx - 1];
+        const rows = await readXlsxFile(buf, { sheet });
+        return [`### Sheet: ${String(sheet)}（全量，共 ${rows.length} 行）`, rowsToText(rows)].join('\n\n');
+    }
+    const maxSheets = options.maxSheets ?? 5;
     const sheets = sheetNames.length > 0 ? sheetNames.slice(0, maxSheets) : [1];
     const parts = [];
     let totalRows = 0;

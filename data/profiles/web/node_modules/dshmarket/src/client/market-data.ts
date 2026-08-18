@@ -499,3 +499,39 @@ export function pluginScreenshots(plugin: RegistryPlugin): Promise<string[]> {
   readmeShotsCache.set(cacheKey, task)
   return task
 }
+
+/**
+ * The human-readable part of a failed command's output.
+ *
+ * pnpm's ndjson reporter writes one JSON object per progress tick, and a
+ * large `github:` download emits thousands of them. When a failure matches
+ * none of the known signatures there is no diagnosis to show, so the UI
+ * falls back to the tail of stdout/stderr — which for exactly that case is
+ * 600 characters of `{"name":"pnpm:fetching-progress","downloaded":…}`.
+ * The user is handed machine noise at the one moment they need a sentence
+ * (#148, and the same shape behind #161).
+ *
+ * Progress objects are dropped; anything else — including JSON carrying a
+ * real message — is kept, because an unrecognized failure is precisely when
+ * throwing information away is most expensive.
+ */
+export function humanOutput(raw: string): string {
+  const lines = raw.split(/\r?\n/)
+  const kept: string[] = []
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (trimmed === '') continue
+    if (!trimmed.startsWith('{')) { kept.push(line); continue }
+    try {
+      const parsed = JSON.parse(trimmed) as { name?: unknown; err?: unknown; message?: unknown }
+      const name = typeof parsed.name === 'string' ? parsed.name : ''
+      // Keep anything that carries a diagnosis, drop pure progress chatter.
+      if (parsed.err !== undefined || typeof parsed.message === 'string') { kept.push(line); continue }
+      if (name.startsWith('pnpm:')) continue
+      kept.push(line)
+    } catch {
+      kept.push(line)
+    }
+  }
+  return kept.join('\n').trim()
+}

@@ -11,6 +11,7 @@ export interface AutomationViewProps {
     readonly useAutomationState: SelectorHook<AutomationClientState>;
     readonly refresh: AutomationRuntime['refresh'];
     readonly createAutomation: AutomationRuntime['createAutomation'];
+    readonly updateAutomation: AutomationRuntime['updateAutomation'];
     readonly mutateAutomation: AutomationRuntime['mutateAutomation'];
     readonly runNow: AutomationRuntime['runNow'];
     readonly markRunRead: AutomationRuntime['markRunRead'];
@@ -49,6 +50,7 @@ export interface ClientContext {
                 };
                 readonly refresh: AutomationRuntime['refresh'];
                 readonly createAutomation: AutomationRuntime['createAutomation'];
+                readonly updateAutomation: AutomationRuntime['updateAutomation'];
                 readonly mutateAutomation: AutomationRuntime['mutateAutomation'];
                 readonly runNow: AutomationRuntime['runNow'];
                 readonly markRunRead: AutomationRuntime['markRunRead'];

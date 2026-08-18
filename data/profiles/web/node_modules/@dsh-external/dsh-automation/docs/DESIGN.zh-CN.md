@@ -157,6 +157,8 @@ Definitions 和 runs 分表：删除规则不会抹掉历史；通知偏好不�
 
 Terminal run history 按 automation 做有界持久化（默认每条保留 200 条），queued/running 记录永不因 retention 被裁剪。Automation Session 使用插件保留的稳定 SessionId 前缀；第一条消息还携带 `source.kind = 'automation'`。即使 Agent 在写入 prompt 前失败，或旧 run record 后来被裁剪，恢复该 Session 时也不会错误获得 automation 管理工具。
 
+Terminal run record 先写入 domain；部署显式设置 `archiveRunSessions: true` 后，插件再通过 DSH 正式的 `workspaceRegistry.archiveSession` API 将结果 Session 从普通会话列表归档。归档只修改 registry-global archive set，不删除 Session Log，也不移除 workspace accounting；AutomationRun 持续保存 SessionId、summary 与 error 作为审计入口。归档失败只记录 warning，不把已经完成的 Agent turn 改写成 failed；Host 启动恢复会在 history pruning 前再次尝试归档所有仍有 SessionId 的 terminal records。当前 Harness 尚无 unarchive API，Client 因此把已归档结果显示为不可点击状态；默认 `archiveRunSessions: false` 保留完整 Session 打开行为。
+
 ## 5. 调度语义（MVP 明确承诺）
 
 ### 5.1 Cadence

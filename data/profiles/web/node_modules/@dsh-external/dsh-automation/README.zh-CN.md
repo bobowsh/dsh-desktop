@@ -5,7 +5,7 @@
 ### *让 Coding 任务按计划在全新 Agent Session 中运行，并随时管理定时任务。*
 
 [![DeepSeek Harness](https://img.shields.io/badge/DeepSeek%20Harness-plugin-4D6BFE)](https://github.com/deepseek-ai)
-[![Version](https://img.shields.io/badge/version-0.1.5-4D6BFE)](package.json)
+[![Version](https://img.shields.io/badge/version-0.1.6-4D6BFE)](package.json)
 [![Node.js](https://img.shields.io/badge/Node.js-22.19%2B-4D6BFE)](package.json)
 [![License: MIT](https://img.shields.io/badge/license-MIT-4D6BFE)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/titanwings/dsh-automation?style=social)](https://github.com/titanwings/dsh-automation/stargazers)
@@ -98,6 +98,8 @@ Run 会经历 `queued`、`running`，最终进入 `succeeded`、`failed`、`skip
 
 修改 definition 会递增 revision，因此每条保留的 run 仍能说明自己执行了什么。删除 definition 不会立刻抹掉这些 run records。Retention 只会清理最旧的 terminal records；queued/running 永远不会被裁掉。
 
+在 Cordis plugin config 中设置 `archiveRunSessions: true` 后，成功、失败、取消等 terminal run Session 会从 DSH 普通会话列表归档，但不会删除 Session Log。Automation 运行历史仍保留 Session ID、summary 和 error，作为可审计的收件箱。当前 Harness 尚未提供 unarchive API，因此已归档结果只显示归档状态，不提供一个无法工作的 Session 打开按钮。默认值为 `false`，会保留普通 Session 导航。
+
 ---
 
 <a id="安装"></a>
@@ -107,7 +109,7 @@ Run 会经历 `queued`、`running`，最终进入 `succeeded`、`failed`、`skip
 把 GitHub bundle 安装进 DSH Web profile，然后重启 `dsh web`：
 
 ```bash
-dsh plugin --profile web add github:titanwings/dsh-automation#v0.1.5
+dsh plugin --profile web add github:titanwings/dsh-automation#v0.1.6
 ```
 
 版本 tag 可以保证可重复部署；使用已经审阅的 commit SHA 也可以。如果你从 DSH 源码目录运行，请用 `pnpm dsh` 代替 `dsh`。
@@ -219,6 +221,7 @@ pnpm dsh plugin --profile web add /absolute/path/to/dsh-automation
 | Host 延迟重启 | 在 grace window 内（默认 15 分钟）最多 catch up 最新一次，不会把旧任务重放成写入 backlog。 |
 | Run timeout | 默认 60 分钟后取消 Agent，并把 run 记录为失败。 |
 | Host crash | 重启恢复时，持久化的 `queued`/`running` 会变成 `failed(host_interrupted)`，不会偷偷重新执行。 |
+| 会话列表 | 启用 `archiveRunSessions` 后，terminal run record 持久化完成才会耐久归档结果 Session；启动恢复会为中断后的 terminal record 重试归档，归档失败不会改变 run 结果。 |
 | Retry | 只能手动点**立即运行**；没有可能重复副作用的自动重试。 |
 
 确定性的 occurrence key 会阻止 scheduler 对同一条已记录 occurrence dispatch 两次。这是 **at-most-once dispatch policy**，不是“外部副作用 exactly once”的承诺。
@@ -267,6 +270,7 @@ Cordis dispose 会停止 clock、取消插件拥有的 live handle、移除 tool
 | `runTimeoutMinutes` | `60` | 一次 fresh Agent run 的最大 wall-clock 时间。 |
 | `misfireGraceMinutes` | `15` | Host 停机后，最新到期 occurrence 允许 catch up 的最大延迟。 |
 | `historyLimit` | `200` | 每条 automation 持久保留的 terminal runs；active records 始终保留。 |
+| `archiveRunSessions` | `false` | 可选地从普通会话列表归档 terminal run Session，同时保留日志和 Automation 结果元数据；当前 Harness 无法直接重新打开已归档 Session。 |
 
 需要不同数值时，请修改 deployment profile 中的 plugin row。提高 concurrency 或 timeout 会扩大无人值守工作量，应把它当成 policy decision，而不是纯性能参数。
 

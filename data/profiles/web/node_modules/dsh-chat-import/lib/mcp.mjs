@@ -121,13 +121,33 @@ export function buildMcpPlan(serverLists) {
   return rows
 }
 
-/** 生成可人工合并的 YAML 片段（dsh-mcp-client 行，未验证 schema，仅供参考）。 */
+/** YAML 单引号标量转义（`'` → `''`）。纯函数。 */
+export function yamlSingleQuote(value) {
+  return `'${String(value).replace(/'/g, "''")}'`
+}
+
+/** 生成可人工合并的 YAML 片段（dsh-mcp-client 行，未验证 schema，仅供参考）。
+ * issue #14：env 值统一单引号转义（防 `: ` / `#` 破坏 YAML）；组件 id 按
+ * source+name 生成并保证同计划内唯一（safeId 压缩可能撞名）。 */
 export function renderMcpPlan(rows) {
   if (rows.length === 0) return '# No MCP servers found\n'
-  const lines = ['# dsh-chat-import MCP mirror (generated, review before merging)', '# Source: Claude .mcp.json / Codex config.toml', '- insert:']
+  const lines = [
+    '# dsh-chat-import MCP mirror (generated, review before merging)',
+    '# Source: Claude .mcp.json / Codex config.toml',
+    '# NOTE: verify the profile already has the dsh-mcp-client package installed before merging',
+    '# NOTE: env values below are copied verbatim from the source config — replace secrets with ${VAR} references and review before merging',
+    '- insert:',
+  ]
+  const usedIds = new Set()
   for (const row of rows) {
     const safeId = row.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'mcp'
-    lines.push(`    - id: mcp-mirror-${safeId}`)
+    let id = `mcp-mirror-${row.source}-${safeId}`
+    let n = 2
+    while (usedIds.has(id)) {
+      id = `mcp-mirror-${row.source}-${safeId}-${n++}`
+    }
+    usedIds.add(id)
+    lines.push(`    - id: ${id}`)
     lines.push(`      name: dsh-mcp-client`)
     lines.push(`      config:`)
     lines.push(`        servers:`)
@@ -139,7 +159,7 @@ export function renderMcpPlan(rows) {
     if (Object.keys(row.env || {}).length > 0) {
       lines.push(`            env:`)
       for (const [k, v] of Object.entries(row.env)) {
-        lines.push(`              ${k}: ${v}`)
+        lines.push(`              ${k}: ${yamlSingleQuote(v)}`)
       }
     }
   }
