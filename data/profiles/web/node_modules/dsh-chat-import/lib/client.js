@@ -182,12 +182,12 @@ window.__ModuleLoader__.load({
     // claude）。chatgpt 无默认数据根，仅显式 path 可发现。
     const SOURCES = [
       "", "claude-code", "codex", "chatgpt", "cursor", "gemini", "reasonix",
-      "opencode", "zcode", "grokbuild", "openclaw", "pi", "hermes", "kimi", "qoder", "dsh",
+      "opencode", "mimocode", "zcode", "grokbuild", "openclaw", "pi", "hermes", "kimi", "qoder", "dsh",
     ];
     // discovery format 短名 → 客户端来源 id（构建 /api-import/import 的 items）。
     const FORMAT_SOURCE = {
       claude: "claude-code", codex: "codex", chatgpt: "chatgpt", cursor: "cursor",
-      gemini: "gemini", reasonix: "reasonix", opencode: "opencode", zcode: "zcode",
+      gemini: "gemini", reasonix: "reasonix", opencode: "opencode", mimocode: "mimocode", zcode: "zcode",
       grokbuild: "grokbuild", openclaw: "openclaw", pi: "pi", hermes: "hermes",
       kimi: "kimi", qoder: "qoder", dsh: "dsh",
     };
