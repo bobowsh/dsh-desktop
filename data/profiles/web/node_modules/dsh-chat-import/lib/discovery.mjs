@@ -56,7 +56,7 @@ import { readFileSync, statSync } from 'node:fs'
 import { decompress } from 'fzstd'
 
 export const FORMATS = [
-  'claude', 'codex', 'cursor', 'gemini', 'reasonix', 'opencode',
+  'claude', 'codex', 'cursor', 'gemini', 'reasonix', 'opencode', 'mimocode',
   'zcode', 'grokbuild', 'openclaw', 'pi', 'hermes', 'kimi', 'qoder', 'chatgpt', 'dsh',
 ]
 
@@ -84,6 +84,7 @@ export function defaultRoots({ home = homedir() } = {}) {
       ? [join(home, '.reasonix', 'sessions'), reasonixDesktop]
       : join(home, '.reasonix', 'sessions'),
     opencode: join(home, '.local', 'share', 'opencode', 'opencode.db'),
+    mimocode: join(home, '.local', 'share', 'mimocode', 'mimocode.db'),
     zcode: join(home, '.zcode', 'cli', 'db', 'db.sqlite'),
     grokbuild: [join(home, '.grok', 'sessions'), join(home, '.grok', 'archived_sessions')],
     openclaw: join(home, '.openclaw', 'agents'),
@@ -725,6 +726,7 @@ async function scanSqlite(host, format, target, dbName, bm) {
   })
 }
 function scanOpencode(host, target, bm) { return scanSqlite(host, 'opencode', target, 'opencode.db', bm) }
+function scanMimocode(host, target, bm) { return scanSqlite(host, 'mimocode', target, 'mimocode.db', bm) }
 function scanZcode(host, target, bm) { return scanSqlite(host, 'zcode', target, 'db.sqlite', bm) }
 
 // grokbuild：~/.grok/sessions/<project>/<session_id>/（含 archived_sessions/），
@@ -1220,6 +1222,7 @@ const SCANNERS = {
   gemini: scanGemini,
   reasonix: scanReasonix,
   opencode: scanOpencode,
+  mimocode: scanMimocode,
   zcode: scanZcode,
   grokbuild: scanGrokbuild,
   openclaw: scanOpenclaw,
@@ -1268,6 +1271,7 @@ function fileFormatsForPath(path) {
   if (/\.json$/i.test(lower)) return ['gemini', 'chatgpt']
   if (/\.db$/i.test(lower)) {
     if (/opencode\.db$/i.test(lower)) return ['opencode']
+    if (/mimocode\.db$/i.test(lower)) return ['mimocode']
     if (/db\.sqlite$/i.test(lower)) return ['zcode']
     if (/state\.db$/i.test(lower)) return ['hermes']
     return ['opencode', 'zcode', 'hermes']

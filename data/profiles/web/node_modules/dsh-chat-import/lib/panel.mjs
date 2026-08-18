@@ -32,6 +32,7 @@ const SOURCE_FORMAT = {
   gemini: 'gemini',
   reasonix: 'reasonix',
   opencode: 'opencode',
+  mimocode: 'mimocode',
   zcode: 'zcode',
   grokbuild: 'grokbuild',
   openclaw: 'openclaw',
@@ -58,7 +59,7 @@ export async function importDiscoveryItem(ctx, format, sourcePath, sessionIds, {
   const importBatch = io.dir
     || ((c, d, a) => importDirectory(c, d, a, { convert: spec.convert, sourceLabel: spec.sourceLabel, deriveArgs, collect: spec.derive && spec.derive.collect, registryDir: reg.dir, fingerprintKeys: reg.fingerprintKeys || [] }))
   const args = { path: sourcePath, force: force === true, budget, budgetSource }
-  if (Array.isArray(sessionIds) && sessionIds.length > 0 && (format === 'opencode' || format === 'zcode')) {
+  if (Array.isArray(sessionIds) && sessionIds.length > 0 && (format === 'opencode' || format === 'mimocode' || format === 'zcode')) {
     args.sessionIds = [...new Set(sessionIds)]
   }
   const target = await ctx.fs.resolve(sourcePath)
@@ -188,7 +189,7 @@ export function registerPanelRoutes(ctx, ws, registryDir) {
             group = { format, sourcePath, sessionIds: [] }
             byPath.set(sourcePath, group)
           }
-          if ((format === 'opencode' || format === 'zcode') && typeof item.sessionId === 'string' && item.sessionId) {
+          if ((format === 'opencode' || format === 'mimocode' || format === 'zcode') && typeof item.sessionId === 'string' && item.sessionId) {
             group.sessionIds.push(item.sessionId)
           }
         }

@@ -33,6 +33,7 @@ const TOOL_FORMAT = {
   gemini: 'gemini', import_gemini: 'gemini',
   reasonix: 'reasonix', import_reasonix: 'reasonix',
   opencode: 'opencode', import_opencode: 'opencode',
+  mimocode: 'mimocode', import_mimocode: 'mimocode',
   zcode: 'zcode', import_zcode: 'zcode',
   grokbuild: 'grokbuild', import_grokbuild: 'grokbuild',
   openclaw: 'openclaw', import_openclaw: 'openclaw',
@@ -43,7 +44,7 @@ const TOOL_FORMAT = {
   dsh: 'dsh', import_dsh: 'dsh',
 }
 
-const SOURCE_NAMES = 'claude/codex/chatgpt/cursor/gemini/reasonix/opencode/zcode/grokbuild/openclaw/pi/hermes/kimi/qoder/dsh'
+const SOURCE_NAMES = 'claude/codex/chatgpt/cursor/gemini/reasonix/opencode/mimocode/zcode/grokbuild/openclaw/pi/hermes/kimi/qoder/dsh'
 
 // 把导入结果压成人类可读文本（对齐 import_* 工具 render 的语义：批量计数 +
 // 前 5 条失败/跳过明细；单文件按 status 区分）。
