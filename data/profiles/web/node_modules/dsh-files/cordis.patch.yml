@@ -1,0 +1,14 @@
+# dsh-upload bundle patch: one insert registering the dual-face plugin.
+# The row id must match the node half's exported cordis `name`.
+- insert:
+    - id: files-toolkit
+      name: 'dsh-files'
+      config:
+        maxFileBytes: 25165824
+        readLimit: 2000
+        sheetRowLimit: 200
+        maxSheets: 5
+        cacheEntries: 16
+        cacheMaxBytes: 67108864
+        uploadMaxBytes: 25165824
+        uploadTtlMs: 604800000

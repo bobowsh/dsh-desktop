@@ -1,0 +1,3 @@
+- insert:
+    - id: import-claude
+      name: dsh-chat-import

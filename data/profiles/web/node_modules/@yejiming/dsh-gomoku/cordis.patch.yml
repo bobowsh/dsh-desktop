@@ -1,0 +1,9 @@
+# The dsh-gomoku bundle patch: activates the plugin as a profile layer.
+# The single row covers both halves of this package: the node half runs in
+# the host, and the browser half (lib/client.js) ships in the same package,
+# loading under this same id through the dshClient declaration in
+# package.json. There is no separate ui-gomoku package, so no second row
+# belongs here (duplicate ids fail the load).
+- insert:
+    - id: gomoku
+      name: '@yejiming/dsh-gomoku'

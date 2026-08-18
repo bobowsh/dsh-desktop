@@ -1,0 +1,11 @@
+# Keep the model-facing web_search tool. Point it at this provider.
+# Turn off the shipped DeepSeek search so a missing official key no longer 401s.
+- insert:
+    - id: dsh-plugin-search
+      name: dsh-plugin-search
+      inject: [web]
+- id: web
+  config:
+    searchProvider: simple-search
+- id: web-search-deepseek
+  disabled: true
