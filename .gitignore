@@ -16,7 +16,8 @@ build/icon-1024.png
 #             (data/settings.yaml is GENERATED from data/settings.template.yaml
 #              by the bundle script, so it is git-ignored rather than tracked;
 #              data/settings.template.yaml IS the tracked baseline template)
-#   ignored:   node_modules (per global rule above) + the prebuilt mnemon CLI (data/bin)
+#   ignored:   the prebuilt mnemon CLI (data/bin); the web profile's node_modules
+#              is TRACKED for offline use (see the ! re-include rules near the top)
 # Runtime/secret user data created by the app at $INSTDIR\data must never be
 # committed or shipped — the installer only seeds the artifacts above.
 data/.credentials.yaml
@@ -34,3 +35,12 @@ data/*.checked.json
 .env
 .env.*
 !.env.example
+
+# ==== node_modules 恢复规则（必须保持在文件末尾：git 按「最后匹配的规则」生效）====
+# 离线部署：data/profiles/web 的 node_modules 整体纳入 git 管理
+# （该目录会随安装包分发，必须自带依赖才能离线运行；
+#   用 ! 恢复而非 git add -f，否则后续 pnpm install 新增的包不会被跟踪）
+!data/profiles/web/node_modules/
+!data/profiles/web/node_modules/**/
+# 包内 dist/ 常是 main 入口（@codemirror/@lezer/quickjs 等），离线必须保留
+!data/profiles/web/node_modules/**/dist/
