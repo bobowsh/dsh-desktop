@@ -8,6 +8,7 @@
     - dev 态：`app.getAppPath()` = 项目根目录，故 `data` 落在项目根，避免落入 `node_modules/electron/dist/` 旁。
   - `src/main/runtime/harness-runtime.ts` 的 `buildHarnessSpawnOptions` 在 env 里重新注入 `DSH_HOME: dshHome`（之前 08-16 那次把注入删了，`dshHome` 形参成了死参数；现在恢复注入）。
   - harness 子进程 `mkdir(dshHome, recursive)` 保证目录存在。
+  - 安装器（2026-08-18 新增）：`build/installer.nsh` 的 `customInstall` 在安装完成时把**用户环境变量** `DSH_HOME` 写为 `$INSTDIR\data`（`HKCU\Environment` + `WM_SETTINGCHANGE` 广播，新进程立即可读，无需重启）；`customUnInstall` 仅在当前值仍等于 `$INSTDIR\data` 时删除（用户改指别处则保留）。目的：桌面壳外启动的进程（CLI/编辑器/脚本）也能解析到同一 harness home。语法已用 makensis 3.0.4.1 最小脚本验证通过。
 - ⚠️ **副作用（重要）**：DSH_HOME 一旦指向程序目录/data，harness 就不再读 `~/.dsh`：
   - 现有 `~/.dsh`（30+ 插件、`settings.yaml`、`.credentials.yaml` 里的 API Key）**全部失效**，harness 启动后读写的是全新的空 `data` 目录 → 相当于"全新空 harness"。
   - 安装器捆绑的 profile（`bundled-user-data` → `~/.dsh`，见下"插件注册"）**不会被 harness 读到**，除非把安装器释放目标也改到程序目录/data。要做便携安装包且保留预装插件，需同步改 `scripts/bundle-user-data.mjs` 的目标 + `build/install-user-data.nsh` 的释放路径。

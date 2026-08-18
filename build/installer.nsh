@@ -9,11 +9,20 @@
 ;
 ; Part 1 originated upstream (fix: allow Windows drive-root installation),
 ; part 2 was merged from build/install-user-data.nsh (portable data layout).
+; Part 3: record DSH_HOME as a user environment variable so processes spawned
+; outside the desktop shell (CLI, editors) resolve the same harness home.
 ; ============================================================================
+
+!include "LogicLib.nsh"
+
+; --- DSH_HOME user environment variable (install + uninstall) ---------------
+; WM_SETTINGCHANGE broadcast makes Explorer / newly spawned processes pick up
+; the change immediately without a reboot.
+!define DSH_WM_SETTINGCHANGE 0x001A
+!define DSH_HWND_BROADCAST 0xFFFF
 
 !ifndef BUILD_UNINSTALLER
   !ifndef ONE_CLICK
-    !include "LogicLib.nsh"
     !include "nsDialogs.nsh"
 
     Var DshDirectoryPage
@@ -113,10 +122,27 @@
     CreateShortcut "$INSTDIR\dsh.lnk" "$INSTDIR\resources\app\node_modules\node\bin\dsh.cmd" "" "$INSTDIR\resources\icon.png"
     DetailPrint "Created shortcut: $INSTDIR\dsh.lnk"
   ${EndIf}
+
+  ; --- DSH_HOME user environment variable -----------------------------------
+  ; Point DSH_HOME at the harness data dir shipped next to the executable so
+  ; external processes (shell, CLI shims, editor integrations) resolve the
+  ; same harness home as the desktop shell.
+  WriteRegStr HKCU "Environment" "DSH_HOME" "$INSTDIR\data"
+  SendMessage ${DSH_HWND_BROADCAST} ${DSH_WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
+  DetailPrint "DSH_HOME set to $INSTDIR\data (user environment variable)"
 !macroend
 
 !macro customUnInstall
   ; Remove the root CLI shortcut only. $INSTDIR\data holds the user's runtime
   ; data (sessions, credentials, ...) and must survive uninstall.
   Delete "$INSTDIR\dsh.lnk"
+
+  ; Remove DSH_HOME only when it still points at this installation's data dir
+  ; (never clobber a value the user has re-pointed elsewhere).
+  ReadRegStr $0 HKCU "Environment" "DSH_HOME"
+  ${If} $0 == "$INSTDIR\data"
+    DeleteRegValue HKCU "Environment" "DSH_HOME"
+    SendMessage ${DSH_HWND_BROADCAST} ${DSH_WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
+    DetailPrint "Removed DSH_HOME user environment variable"
+  ${EndIf}
 !macroend
