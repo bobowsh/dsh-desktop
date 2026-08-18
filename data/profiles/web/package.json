@@ -12,11 +12,11 @@
     "@omdsh-dev/dsh-genui": "github:omdsh-dev/dsh-genui",
     "@yejiming/dsh-gomoku": "^0.0.1",
     "dsh-agent-message": "^1.5.1",
-    "dsh-better-sidebar": "^0.13.0",
+    "dsh-better-sidebar": "^0.13.1",
     "dsh-bookmarks": "^0.1.1",
     "dsh-chat-import": "^0.6.1",
     "dsh-client-auto-continue": "^0.6.2",
-    "dsh-context": "^0.12.1",
+    "dsh-context": "^0.12.2",
     "dsh-files": "github:taxueseek/dsh-files",
     "dsh-mnemon": "^0.2.9",
     "dsh-notification": "github:omdsh-dev/dsh-notification",
@@ -24,6 +24,7 @@
     "dsh-prompt-enhancer": "github:Fishsb/dsh-prompt-enhancer",
     "dsh-prompt-manager": "^1.4.1",
     "dsh-queue-plus": "github:starslittle/dsh-queue-plus",
+    "dsh-rule-manager": "^0.1.0",
     "dsh-session-doctor": "github:mayf3/dsh-session-doctor",
     "dsh-skill-manager-ytxue": "github:YTxue/dsh-skill-manager-ytxue",
     "dsh-skin": "github:KinGao294/dsh-skin",
@@ -65,7 +66,8 @@
         "dsh-skin",
         "dsh-bookmarks",
         "dsh-agent-message",
-        "dsh-prompt-manager"
+        "dsh-prompt-manager",
+        "dsh-rule-manager"
       ]
     }
   }

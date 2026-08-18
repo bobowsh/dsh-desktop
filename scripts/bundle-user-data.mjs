@@ -1,7 +1,6 @@
-// Stages the developer's installed harness user-data (~/.dsh) and memory
-// system (~/.mnemon) into ./data as a FLAT layout, so the desktop shell can
-// point DSH_HOME at <program-dir>/data and read it directly — there is no
-// per-user release step at install time (see build/install-user-data.nsh).
+// Stages the memory system (~/.mnemon) into ./data as a FLAT layout, so the
+// desktop shell can point DSH_HOME at <program-dir>/data and read it directly —
+// there is no per-user release step at install time (see build/install-user-data.nsh).
 //
 // Shipped flat layout produced here:
 //   data/
@@ -9,8 +8,15 @@
 //                         a clean, portable template that never reads the user's
 //                         live ~/.dsh/settings.yaml; no personal model/provider
 //                         config and no machine-specific cliPath)
-//     profiles/web/...    (the only shipped profile + its self-contained node_modules)
+//     profiles/web/...    (packaged DIRECTLY from ./data — the dev DSH_HOME is the
+//                         single source of truth; NO copy from live ~/.dsh anymore)
 //     bin/                (mnemon.exe memory CLI + its runtime DLLs)
+//
+// `data/profiles/web` is both the dev runtime profile AND the build input. It is
+// installed/updated in place (market UI, `pnpm add/update` inside it) and must
+// never be deleted or re-staged from live ~/.dsh. The build only runs in-place
+// normalization (strip machine paths from .modules.yaml) and trimming (native
+// prebuilds, pdfjs) on it. `bin/` is still refreshed from the live mnemon CLI.
 //
 // Strict ALLOW-lists: everything else (sessions, memory db, .credentials.yaml,
 // cache, other profiles, …) is user runtime data / sensitive and is NEVER shipped.
@@ -32,12 +38,13 @@ const destRoot = join(projectRoot, 'data')
 // `filter` (see package.json) is the single source of truth for what actually ships
 // — so any leftover runtime dir in `data/` is simply never packaged.
 //
-// To keep the plugin tree / binary tree clean we refresh them by removing *only*
-// these two build-input dirs (regenerated from the canonical live profile every
-// run). This is NOT user data and is safe to recreate.
+// To keep the binary tree clean we refresh it by removing *only* `bin/`
+// (regenerated from the canonical live ~/.mnemon every run — a build input, not
+// user data, safe to recreate). `data/profiles/web` is the dev DSH_HOME profile
+// and is NEVER deleted here: it is the single source of truth for packaging.
 mkdirSync(destRoot, { recursive: true })
 
-for (const name of ['profiles', 'bin']) {
+for (const name of ['bin']) {
   const p = join(destRoot, name)
   if (existsSync(p)) {
     try {
@@ -69,23 +76,27 @@ if (existsSync(settingsTemplate)) {
   console.warn(`[bundle-user-data] skip: settings template not found at ${settingsTemplate}`)
 }
 
-// 2) profiles/web — the only shipped profile (+ its self-contained node_modules).
-const webSrc = join(homedir(), '.dsh', 'profiles', 'web')
+// 2) profiles/web — packaged DIRECTLY from ./data (the dev DSH_HOME).
+//    Single source of truth: whatever is staged under data/profiles/web
+//    (installed/updated via the market UI or `pnpm add/update` in place) IS the
+//    bundle. NO copy from live ~/.dsh/profiles/web anymore. The build only runs
+//    in-place normalization (strip machine paths) and trimming (native
+//    prebuilds, pdfjs) on the existing tree.
 const webDest = join(destRoot, 'profiles', 'web')
-  if (existsSync(webSrc)) {
-    try {
-      cpSync(webSrc, webDest, { recursive: true, force: true })
-      normalizeModulesMetadata(webDest)
-      trimNativePrebuilds(webDest)
-      trimPdfjsBuild(webDest)
-      console.log(`[bundle-user-data] staged profiles/web -> data/profiles/web (${humanSize(dirSize(webDest))})`)
-    } catch (err) {
-      failed = true
-      console.error('[bundle-user-data] failed to stage profiles/web:', err)
-    }
-  } else {
-    console.warn(`[bundle-user-data] skip: profile not found at ${webSrc}`)
+if (existsSync(webDest)) {
+  try {
+    normalizeModulesMetadata(webDest)
+    trimNativePrebuilds(webDest)
+    trimPdfjsBuild(webDest)
+    console.log(`[bundle-user-data] staged profiles/web <- data/profiles/web (in place, no live copy; ${humanSize(dirSize(webDest))})`)
+  } catch (err) {
+    failed = true
+    console.error('[bundle-user-data] failed to stage profiles/web:', err)
   }
+} else {
+  failed = true
+  console.error('[bundle-user-data] fatal: data/profiles/web missing — install the web profile first (market UI or pnpm) before packaging.')
+}
 
 // 3) mnemon bin/ — the memory CLI the harness spawns.
 const binSrc = join(homedir(), '.mnemon', 'bin')
