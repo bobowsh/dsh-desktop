@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process'
 import { dirname, join } from 'node:path'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { parse } from 'yaml'
 import {
   app,
@@ -524,11 +524,33 @@ async function bootstrap(): Promise<void> {
       throw new Error('Directory picker requests are only allowed from the main Harness window')
     }
 
+    // Without a defaultPath, Windows opens the system's remembered "recent"
+    // folder (usually Downloads), so every pick forces a manual cross-drive
+    // navigation. Start from the last directory the user picked instead, and
+    // remember the new choice so the next pick opens where they left off.
+    const lastDirFile = join(app.getPath('userData'), 'last-workspace-dir.txt')
+    let defaultPath = app.getPath('home')
+    try {
+      const remembered = readFileSync(lastDirFile, 'utf8').trim()
+      if (remembered && existsSync(remembered)) defaultPath = remembered
+    } catch {
+      // no remembered directory yet
+    }
+
     const result = await dialog.showOpenDialog(mainWindow, {
       title: harnessLocale() === 'zh' ? '选择工作区目录' : 'Select Workspace Directory',
+      defaultPath,
       properties: ['openDirectory']
     })
-    return result.canceled ? null : result.filePaths[0] ?? null
+    if (!result.canceled && result.filePaths[0]) {
+      try {
+        writeFileSync(lastDirFile, result.filePaths[0], 'utf8')
+      } catch {
+        // non-fatal: only the next default location is affected
+      }
+      return result.filePaths[0]
+    }
+    return null
   })
   ipcMain.handle('mobile:open-pairing', () =>
     ENABLE_MOBILE_BRIDGE ? showMobilePairing() : undefined
