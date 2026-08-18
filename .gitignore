@@ -44,3 +44,5 @@ data/*.checked.json
 !data/profiles/web/node_modules/**/
 # 包内 dist/ 常是 main 入口（@codemirror/@lezer/quickjs 等），离线必须保留
 !data/profiles/web/node_modules/**/dist/
+# node-pty 的 arm64 原生组件（本机 x64 部署用不到，排除以减小仓库体积）
+data/profiles/web/node_modules/node-pty/third_party/conpty/*/win10-arm64/
