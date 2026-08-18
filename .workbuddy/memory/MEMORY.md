@@ -11,18 +11,20 @@
   - 安装器（2026-08-18 新增）：`build/installer.nsh` 的 `customInstall` 在安装完成时把**用户环境变量** `DSH_HOME` 写为 `$INSTDIR\data`（`HKCU\Environment` + `WM_SETTINGCHANGE` 广播，新进程立即可读，无需重启）；`customUnInstall` 仅在当前值仍等于 `$INSTDIR\data` 时删除（用户改指别处则保留）。目的：桌面壳外启动的进程（CLI/编辑器/脚本）也能解析到同一 harness home。语法已用 makensis 3.0.4.1 最小脚本验证通过。
 - ⚠️ **副作用（重要）**：DSH_HOME 一旦指向程序目录/data，harness 就不再读 `~/.dsh`：
   - 现有 `~/.dsh`（30+ 插件、`settings.yaml`、`.credentials.yaml` 里的 API Key）**全部失效**，harness 启动后读写的是全新的空 `data` 目录 → 相当于"全新空 harness"。
-  - 安装器捆绑的 profile（`bundled-user-data` → `~/.dsh`，见下"插件注册"）**不会被 harness 读到**，除非把安装器释放目标也改到程序目录/data。要做便携安装包且保留预装插件，需同步改 `scripts/bundle-user-data.mjs` 的目标 + `build/install-user-data.nsh` 的释放路径。
+  - 安装器现在把 `data/`（settings.yaml + profiles/web + bin，白名单）释放到 `$INSTDIR\data`，与 DSH_HOME 一致（见下"插件注册"路径 A）；旧的 bundled-user-data → `~/.dsh` 链路已废弃。
   - dev 跑时 `process.execPath` 是 electron.exe，`data` 会落在 `node_modules/electron/dist/` 旁边（非项目目录）——已通过 `app.isPackaged ? dirname(execPath) : app.getAppPath()` 分支解决，dev 下落在项目根目录。
 - `launch-root`（harness 启动 cwd）仍在 `userData` 下，与 DSH_HOME 是两回事，未动。
 
 ## 插件如何注册进打包产物（两条路径）
 工程里"把插件打包进安装器"有两条互不相同的机制，新增插件前先判断走哪条：
 
-### 路径 A：profile 插件（社区包，如 dshmarket / dsh-better-sidebar / dsh-agent-team-room 等 30+ 个）
-- **真源（single source of truth）**：`~/.dsh/profiles/web/package.json` 的 `dependencies`。`bundled-user-data/.dsh/profiles/web/package.json` 只是构建时的**快照**，`scripts/bundle-user-data.mjs` 每次构建都从 `~/.dsh` 整体 `cpSync`（force 覆盖）覆盖它——所以**改 live profile，别改快照**。
-- 流程：① 在 live profile 的 `package.json` 加依赖 → ② 在 `D:\Users\bobowsh\.dsh\profiles\web` 里 `pnpm install`（用仓库内 `packages/dsh-desktop-market-installer/node_modules/pnpm/bin/pnpm.cjs` + `NODE_OPTIONS=""`，避 Git Bash 盘符坑）；`pnpm-workspace.yaml` 是 `nodeLinker: hoisted`，node_modules **自包含、可离线拷贝**（注意：包文件以 HardLink 形式复用 store 的同一份内容，但 HardLink 不是 symlink，**zip/7z/robocopy 拷贝时会物化成独立文件**，故到目标机是自包含的；仅 `node_modules/.modules.yaml` 里有机器相关的绝对 `storeDir` 元数据，DSH 运行时不用，拷贝时可删）→ ③ 构建时 `bundle-user-data.mjs` 把整个 `profiles/web`（含 node_modules）搬进 `bundled-user-data/.dsh/profiles/web` → ④ electron-builder `extraResources` 把 `bundled-user-data` → `resources/bundled-user-data`，NSIS `build/install-user-data.nsh` 安装时释放到用户 `~/.dsh`。
+### 路径 A：profile 插件（社区包，如 dshmarket / dsh-better-sidebar / dsh-rule-manager 等 30+ 个）
+- **真源（single source of truth）= `data/profiles/web`（dev DSH_HOME 即打包源，2026-08-18 用户变更）**。`bundle-user-data.mjs` **不再从 `~/.dsh/profiles/web` cpSync 覆盖** data/profiles/web（旧约定"改 live profile 别改快照"已废弃）；构建只对 data/profiles/web **原地**做：`normalizeModulesMetadata`（剥 `node_modules/.modules.yaml` 的 `storeDir`/`virtualStoreDir` 机器绝对路径，`virtualStoreDirMaxLength` 数字字段无害保留；`pnpm-workspace.yaml` 若缺 `storeDir: ~/AppData/Local/pnpm/store` 则追加）+ `trimNativePrebuilds`（pdb/非 x64 prebuilds）+ `trimPdfjsBuild`。打包产物 = data/profiles/web 的当前内容（白名单 `extraResources filter: ["settings.yaml","profiles/web/**","bin/**"]`，`from: data` → `$INSTDIR\data`）。
+- 装/更新插件：直接在 `data/profiles/web` 里做（market UI，或仓库内 pnpm `packages/dsh-desktop-market-installer/node_modules/pnpm/bin/pnpm.cjs` + `NODE_OPTIONS=""`，避 Git Bash 盘符坑 `e:\e\work\...`）；改完重新构建即进包。`pnpm-workspace.yaml` 是 `nodeLinker: hoisted`，node_modules 自包含（HardLink 拷出物化为独立文件，非 symlink）。
+- ⚠️ **data/profiles/web 是 dev 真源，坏了没有 live 可恢复**（以前可从 ~/.dsh 重拷）：对它的 pnpm 操作被中断可能移走部分包（如 @anionex scope 消失导致 harness 启动失败），务必跑完整个命令。
+- ⚠️ `.modules.yaml` 的机器路径：构建时被剥（打包产物干净）；dev 运行时桌面壳 `harness-runtime.ts` 的 `syncModulesMetadata` 启动时重写当前机器 storeDir。dev 里 `pnpm add` 前若 .modules.yaml 无 storeDir 会报 `ERR_PNPM_UNEXPECTED_STORE`（重启 dev 或手动补回）。
+- `bin/` 仍每次从 `~/.mnemon/bin` 刷新（构建输入）；`settings.yaml` 仍用 `data/settings.template.yaml` 覆盖（防泄漏：dev UI 改的 provider/key 不会进包）。
 - 插件靠自身 package.json 的 cordis 字段自注册；profile 级 `cordis.yml` / `cordis.patch.yml` 可覆盖配置。
-- ⚠️ 与 DSH_HOME 冲突：2026-08-17 起 harness 的 `DSH_HOME` 被桌面壳注入为"程序目录/data"（见上节），而本路径的 `bundle-user-data` / NSIS 仍把 profile 释放到 `~/.dsh`。**此时 harness 不会读 `~/.dsh` 的预装插件**——要做带预装插件的便携包，必须把释放目标也改成程序目录/data（改 `bundle-user-data.mjs` 目标 + `install-user-data.nsh`）。
 
 ### 路径 B：桌面壳自有注入插件（如 dsh-desktop-market-installer）
 - 它是根 `package.json` 的 `file:` 依赖 → 进 app `node_modules` → 由 electron-builder `files: node_modules/**/*` 打包。
@@ -30,7 +32,7 @@
 - yml 本身经 `extraResources` 从 `build/dsh-desktop.patch.yml` → `resources/dsh-desktop.patch.yml`。
 
 ### 构建链路（build-installer.ps1）
-`npm run build`（electron-vite）→ `node scripts/bundle-user-data.mjs`（搬 user-data）→ `npx electron-builder --win --x64`。⚠️ 必须在普通终端跑，不要在 WorkBuddy 里跑（safe-delete 垫片会让 electron-builder 死锁）。
+`npm run build`（electron-vite）→ `node scripts/bundle-user-data.mjs`（data 原地整理：profiles/web 剥机器路径+瘦身、bin 从 ~/.mnemon 刷新）→ `npx electron-builder --win --x64`。⚠️ 必须在普通终端跑，不要在 WorkBuddy 里跑（safe-delete 垫片会让 electron-builder 死锁）。
 
 ### 验证 pnpm bin 的小坑
 仓库内 pnpm bin 在 `packages/dsh-desktop-market-installer/node_modules/pnpm/bin/pnpm.cjs`（v11.21.0，由 `dsh-desktop-market-installer` 的 `pnpm` 依赖 pin 决定，已 bump 10.34.5→11.21.0）。在 Git Bash 直接用会盘符错乱（`e:\e\work\...`），务必用 PowerShell 原生路径或 `NODE_OPTIONS=""` + 绝对 Windows 路径调托管 node。
