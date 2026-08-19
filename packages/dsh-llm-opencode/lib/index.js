@@ -738,12 +738,6 @@ function apply(ctx, config) {
     );
   };
   const adapter = new OpenCodeAdapter({ options, resolveApiKey });
-  ctx.llm.registerConfigurableProviders([{
-    provider: PROVIDER,
-    displayName: "OpenCode",
-    settingsNs: NS,
-    settingsPath: []
-  }]);
   const registration = ctx.llm.registerAdapter([PROVIDER], adapter);
   let registeredPolicy = options().retryPolicy;
   const ensureRegistrationFacts = () => {
