@@ -81,6 +81,24 @@
       ${NSD_SetText} $DshDirectoryEdit $3
       StrCpy $DshDirectoryNormalizationActive "0"
     FunctionEnd
+
+    ; Auto-create the installation directory tree before install begins.
+    ; This allows users to type any path (e.g. D:\dsh-desktop) directly
+    ; without needing to pre-create parent folders first.
+    !define MUI_PAGE_CUSTOMFUNCTION_LEAVE DshEnsureInstDirExists
+
+    Function DshEnsureInstDirExists
+      CreateDirectory "$INSTDIR"
+    FunctionEnd
+
+    ; Accept any directory path the user types, even if it does not exist yet.
+    ; Without this override NSIS rejects non-existent paths before the user
+    ; can click Next.
+    !macro preInit
+    !macroend
+    Function .onVerifyInstDir
+      ; Always pass — we create the directory in DshEnsureInstDirExists.
+    FunctionEnd
   !endif
 !endif
 

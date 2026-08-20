@@ -1,17 +1,12 @@
 import { readFile } from 'node:fs/promises'
-import path from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { patchPath } from './patch-path'
 
-const projectRoot = path.resolve(import.meta.dirname, '..')
-const patchPath = path.join(
-  projectRoot,
-  'patches',
-  '@deepseek-ai+dsh-client-ui-conversation+0.1.0-rc.7.patch'
-)
+const conversationPatch = patchPath('@deepseek-ai/dsh-client-ui-conversation')
 
 describe('conversation Query navigation rail', () => {
   it('builds one navigation marker for every durable user query', async () => {
-    const patch = await readFile(patchPath, 'utf8')
+    const patch = await readFile(conversationPatch, 'utf8')
 
     expect(patch).toContain('function QueryRail')
     expect(patch).toContain('node?.kind !== "user" && node?.kind !== "steering"')
@@ -22,7 +17,7 @@ describe('conversation Query navigation rail', () => {
   })
 
   it('keeps the rail independently scrollable and follows the active query', async () => {
-    const patch = await readFile(patchPath, 'utf8')
+    const patch = await readFile(conversationPatch, 'utf8')
 
     expect(patch).toContain('overflow-y:auto')
     expect(patch).toContain('overscroll-behavior-y:contain')

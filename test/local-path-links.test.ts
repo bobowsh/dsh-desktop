@@ -1,17 +1,11 @@
 import { readFile } from 'node:fs/promises'
-import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-
-const projectRoot = path.resolve(import.meta.dirname, '..')
+import { patchPath, projectRoot } from './patch-path'
 
 describe('assistant local path links', () => {
   it('links Codex-style path references even when they are not turn deliverables', async () => {
     const patch = await readFile(
-      path.join(
-        projectRoot,
-        'patches',
-        '@deepseek-ai+dsh-client-ui-deliverables+0.1.0-rc.7.patch'
-      ),
+      patchPath('@deepseek-ai/dsh-client-ui-deliverables'),
       'utf8'
     )
 

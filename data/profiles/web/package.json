@@ -72,7 +72,6 @@
         "dsh-rule-manager",
         "dsh-llm-opencode",
         "dsh-auto-collapse",
-        "dsh-web-archive",
         "dsh-foundry"
       ]
     }

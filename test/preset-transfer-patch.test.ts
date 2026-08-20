@@ -2,8 +2,7 @@ import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { describe, expect, it, vi } from 'vitest'
 import { toFetchHandler } from '@deepseek-ai/dsh-host-apiproxy'
-
-const projectRoot = path.resolve(import.meta.dirname, '..')
+import { patchPath, projectRoot } from './patch-path'
 
 describe('agent preset package transfer', () => {
   it('routes binary export and two-phase import requests outside the JSON RPC carrier', async () => {
@@ -58,11 +57,7 @@ describe('agent preset package transfer', () => {
 
   it('keeps the archive boundary strict and installs through an atomic validated directory move', async () => {
     const patch = await readFile(
-      path.join(
-        projectRoot,
-        'patches',
-        '@deepseek-ai+dsh-host-apiproxy+0.1.0-rc.7.patch'
-      ),
+      patchPath('@deepseek-ai/dsh-host-apiproxy'),
       'utf8'
     )
 
@@ -82,11 +77,7 @@ describe('agent preset package transfer', () => {
 
   it('adds import preview, conflict rename, trust warning, and custom-card export controls', async () => {
     const patch = await readFile(
-      path.join(
-        projectRoot,
-        'patches',
-        '@deepseek-ai+dsh-client-ui-agent-preset+0.1.0-rc.7.patch'
-      ),
+      patchPath('@deepseek-ai/dsh-client-ui-agent-preset'),
       'utf8'
     )
 
@@ -105,15 +96,15 @@ describe('agent preset package transfer', () => {
     expect(patch).toContain('https://www.dshdesktop.com/preset/')
     expect(patch).toContain('"_blank", "noopener,noreferrer"')
     expect(patch).toContain('AgentPresetSection_module_css_default.sectionActions')
+    expect(patch).toContain('.rtSEdW_sectionHead{align-items:center;gap:16px;display:flex}')
+    expect(patch).toContain('justify-content:flex-end')
+    expect(patch).toContain('margin-left:auto')
+    expect(patch).toContain('.rtSEdW_hiddenInput{display:none}')
   })
 
   it('keeps a large mode roster searchable, grouped, compact, and connected to Awesome Presets', async () => {
     const patch = await readFile(
-      path.join(
-        projectRoot,
-        'patches',
-        '@deepseek-ai+dsh-client-ui-agent-preset+0.1.0-rc.7.patch'
-      ),
+      patchPath('@deepseek-ai/dsh-client-ui-agent-preset'),
       'utf8'
     )
 
@@ -141,11 +132,7 @@ describe('agent preset package transfer', () => {
       'utf8'
     )
     const hostPatch = await readFile(
-      path.join(
-        projectRoot,
-        'patches',
-        '@deepseek-ai+dsh-host-apiproxy+0.1.0-rc.7.patch'
-      ),
+      patchPath('@deepseek-ai/dsh-host-apiproxy'),
       'utf8'
     )
 

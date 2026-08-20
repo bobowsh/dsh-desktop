@@ -25,7 +25,7 @@ describe('DSH Desktop sidebar branding', () => {
 
   it('pairs the DSH logo with the original Harness wordmark in the expanded sidebar', async () => {
     const patch = await readFile(
-      path.join(projectRoot, 'patches', '@deepseek-ai+dsh-client-ui-sidebar+0.1.0-rc.7.patch'),
+      path.join(projectRoot, 'patches', '@deepseek-ai+dsh-client-ui-sidebar+0.1.0-rc.8.patch'),
       'utf8'
     )
 
@@ -50,7 +50,7 @@ describe('DSH Desktop sidebar branding', () => {
 
   it('uses an 80px macOS rail that clears the traffic lights', async () => {
     const patch = await readFile(
-      path.join(projectRoot, 'patches', '@deepseek-ai+dsh-client-ui-layout+0.1.0-rc.7.patch'),
+      path.join(projectRoot, 'patches', '@deepseek-ai+dsh-client-ui-layout+0.1.0-rc.8.patch'),
       'utf8'
     )
 
@@ -60,7 +60,7 @@ describe('DSH Desktop sidebar branding', () => {
 
   it('provides a sidebar phone entry that follows expanded and connected state', async () => {
     const patch = await readFile(
-      path.join(projectRoot, 'patches', '@deepseek-ai+dsh-client-ui-sidebar+0.1.0-rc.7.patch'),
+      path.join(projectRoot, 'patches', '@deepseek-ai+dsh-client-ui-sidebar+0.1.0-rc.8.patch'),
       'utf8'
     )
     const preload = await readFile(path.join(projectRoot, 'src', 'preload', 'index.ts'), 'utf8')
@@ -69,6 +69,10 @@ describe('DSH Desktop sidebar branding', () => {
     expect(patch).toContain('data-dsh-sidebar-root')
     expect(patch).toContain('data-dsh-sidebar-wide')
     expect(patch).toContain('data-dsh-sidebar-footer')
+    expect(patch).toContain('data-dsh-sidebar-settings')
+    expect(preload).toContain("document.querySelector<HTMLElement>('[data-dsh-sidebar-settings]')")
+    expect(preload).toContain('settingsArea.appendChild(button)')
+    expect(preload).not.toContain('footer.appendChild(button)')
     expect(preload).toContain("button.hidden = !wide && !phoneConnected")
     expect(preload).toContain("button.classList.toggle('is-connected', phoneConnected)")
     expect(preload).toContain("ipcRenderer.invoke('mobile:open-pairing')")

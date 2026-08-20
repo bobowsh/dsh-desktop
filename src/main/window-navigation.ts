@@ -8,6 +8,19 @@ export function shouldLoadHarnessUrl(currentUrl: string, targetUrl: string): boo
   }
 }
 
+export function desktopHarnessUrl(url: string, platform: NodeJS.Platform): string {
+  if (platform !== 'win32') return url
+
+  try {
+    const parsed = new URL(url)
+    parsed.searchParams.set('dsh-desktop-mode', 'advanced')
+    parsed.searchParams.set('dsh-desktop-platform', platform)
+    return parsed.toString()
+  } catch {
+    return url
+  }
+}
+
 export function isAbortedNavigationError(error: unknown): boolean {
   if (typeof error !== 'object' || error === null) return false
 

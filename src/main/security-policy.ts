@@ -12,7 +12,8 @@ function isHarnessUrl(rawUrl: string): boolean {
 
 export function isTrustedAppUrl(rawUrl: string): boolean {
   try {
-    if (new URL(rawUrl).protocol === 'file:') return true
+    const parsed = new URL(rawUrl)
+    if (parsed.protocol === 'file:' || parsed.protocol === 'dsh-recovery:') return true
   } catch {
     return false
   }
