@@ -131,7 +131,8 @@ describe('desktop plugin market installer', () => {
     expect(client).toContain(
       '只会移除 dsh-market。通过插件市场安装的其他插件将继续保留。'
     )
-    expect(desktopPatch).toContain('name: dsh-desktop-market-installer')
+    // dsh-desktop-market-installer was disabled 2026-08-17; the community
+    // dshmarket plugin provides the market UI from the profile's own deps.
     expect(desktopPatch).toContain('allowRestart: false')
     expect(preload).toContain("restartHarness: (): Promise<{ ok: boolean }>")
   })
