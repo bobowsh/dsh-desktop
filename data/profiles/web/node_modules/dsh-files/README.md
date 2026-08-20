@@ -1,10 +1,16 @@
-# dsh-files
-
 <p align="center">
-  <img src="assets/composer.png" alt="Paperclip upload button in the DeepSeek Harness composer" width="900">
+  <img src="assets/readme/hero.svg" width="100%" alt="dsh-files：一个包。Web UI 回形针上传，模型读文档。">
 </p>
 
-DeepSeek Harness 双面插件（dual-face plugin）：一个包、一行 cordis 配置，为 Web UI 提供「文件上传」与「文档读取」两项能力。
+# dsh-files
+
+一个包，一行 cordis 配置。Web UI 多一个回形针，模型多一个读文档的工具。
+
+<p align="center">
+  <img src="assets/composer.png" alt="DeepSeek Harness 输入框里的回形针上传按钮与彩色文件卡片" width="900">
+</p>
+
+DeepSeek Harness 双面插件（dual-face plugin）。两项能力：
 
 - **上传**：输入框工具栏回形针按钮，文件以浮动彩色卡片呈现，发送时自动把路径附入消息；按会话隔离存储到 `<会话工作区>/.dsh-filess/<sessionId>/`，TTL 定期清扫，sha256 内容去重
 - **文档读取**：`read_document` 工具读取文本 / PDF / DOCX / XLSX，内容嗅探判定真实格式（不信任扩展名），大小预检，LRU 解析缓存

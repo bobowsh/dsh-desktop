@@ -31,7 +31,7 @@ importers:
         version: 0.1.8(@deepseek-ai/schemastery@3.18.1)(react@18.3.1)
       '@omdsh-dev/dsh-genui':
         specifier: github:omdsh-dev/dsh-genui
-        version: https://codeload.github.com/omdsh-dev/dsh-genui/tar.gz/dab48fae600edb97859591ff6a25feb363d10721
+        version: git+https://github.com/omdsh-dev/dsh-genui.git#35e74479eb1b7dadbc7c8732ed22659e2b90f930
       '@yejiming/dsh-gomoku':
         specifier: ^0.0.1
         version: 0.0.1(react@18.3.1)
@@ -58,7 +58,10 @@ importers:
         version: 0.18.0(react@18.3.1)
       dsh-files:
         specifier: github:taxueseek/dsh-files
-        version: https://codeload.github.com/taxueseek/dsh-files/tar.gz/2c453ab3f74659f91a84a35f71ff270eea77e674(@deepseek-ai/schemastery@3.18.1)(react@18.3.1)
+        version: https://codeload.github.com/taxueseek/dsh-files/tar.gz/888b9ea8e7d86ffdc0054afdbc88704133f6c187(@deepseek-ai/schemastery@3.18.1)(react@18.3.1)
+      dsh-foundry:
+        specifier: github:hellosky983/dsh-foundry
+        version: https://codeload.github.com/hellosky983/dsh-foundry/tar.gz/cff65b961af7c8395c614a87b9b8fd864ca33666
       dsh-llm-opencode:
         specifier: file:../../../packages/dsh-llm-opencode
         version: file:../../../packages/dsh-llm-opencode
@@ -67,13 +70,13 @@ importers:
         version: 0.2.13(react@18.3.1)
       dsh-notification:
         specifier: github:omdsh-dev/dsh-notification
-        version: https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/2399457a1f96ed86f761f3bc771539d131eb684f(react@18.3.1)
+        version: https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/ddec603395a223deb46c75b74274c41849c6a131(react@18.3.1)
       dsh-plugin-search:
         specifier: github:shinjiyu/dsh-plugin-search
         version: https://codeload.github.com/shinjiyu/dsh-plugin-search/tar.gz/0ceaa1985ad2e7774cd8f06890c4a9b1a7125955
       dsh-prompt-enhancer:
         specifier: github:Fishsb/dsh-prompt-enhancer
-        version: https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/e0e39ed2efd8410dd54a052dbf9bcde6022a5e3b
+        version: https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/c058755b829f275daeab87cb8755cebaa48a8a2a
       dsh-prompt-manager:
         specifier: ^1.4.1
         version: 1.4.1
@@ -91,13 +94,13 @@ importers:
         version: https://codeload.github.com/YTxue/dsh-skill-manager-ytxue/tar.gz/f254f3005a446062e312144f27ed0820d38d4654
       dsh-skin:
         specifier: github:KinGao294/dsh-skin
-        version: https://codeload.github.com/KinGao294/dsh-skin/tar.gz/65c79b09d4c5f23e72076ff6b6b6b26c883f935c(react@18.3.1)
+        version: https://codeload.github.com/KinGao294/dsh-skin/tar.gz/0a571a27adcc5f780b7b72386c9c294243eec5b3(react@18.3.1)
       dsh-status-rotator:
         specifier: github:01Virex/dsh-status-rotator
-        version: https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/2faa2a62fa2432c2ab29663ec089734989c0bcd5
+        version: https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/cab8715d471b0d83814f247c3adbe64e520fa6ea
       dsh-sticky-note:
         specifier: github:Meredith2328/dsh-sticky-note
-        version: https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/5c1ee970e6af5cb6168eeb9ef2d90774d31b6c60(react@18.3.1)
+        version: https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/fcad3d03e049eeb727c90517d567b828c06cbb13(@deepseek-ai/dsh-settings@0.1.0-rc.8(@deepseek-ai/schemastery@3.18.1))(react@18.3.1)
       dsh-web-archive:
         specifier: github:renat3u/dsh-web-archive
         version: https://codeload.github.com/renat3u/dsh-web-archive/tar.gz/777ae5ec25d391dee8ea2087b6db67cb89e8a378
@@ -488,20 +491,23 @@ packages:
     resolution: {integrity: sha512-xglYA6q3XO5P3BNJYxVZ1IV7DLVjp1Py6nwag88YntrS+3vKHyYcMqXVS4ZztJmwz2uGvz1FWhI/4LgbR5uQDA==}
     engines: {node: '>= 10'}
 
-  '@omdsh-dev/dsh-genui@https://codeload.github.com/omdsh-dev/dsh-genui/tar.gz/dab48fae600edb97859591ff6a25feb363d10721':
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/omdsh-dev/dsh-genui/tar.gz/dab48fae600edb97859591ff6a25feb363d10721}
+  '@omdsh-dev/dsh-genui@git+https://github.com/omdsh-dev/dsh-genui.git#35e74479eb1b7dadbc7c8732ed22659e2b90f930':
+    resolution: {commit: 35e74479eb1b7dadbc7c8732ed22659e2b90f930, repo: https://github.com/omdsh-dev/dsh-genui.git, type: git}
     version: 0.8.7
     engines: {node: ^22.19.0 || >=24.0.0, pnpm: '>=11.7.0 <12'}
     peerDependencies:
       '@deepseek-ai/cordis': ^4.0.1
-      '@deepseek-ai/dsh-client-runtime': ^0.1.0-rc.6
-      '@deepseek-ai/dsh-client-ui-primitives': ^0.1.0-rc.6
-      '@deepseek-ai/dsh-client-ui-slots': ^0.1.0-rc.6
-      '@deepseek-ai/dsh-client-ui-tool': ^0.1.0-rc.6
-      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.6
-      '@deepseek-ai/dsh-llm': ^0.1.0-rc.6
-      '@deepseek-ai/dsh-system-prompt': ^0.1.0-rc.6
-      '@deepseek-ai/dsh-tools': ^0.1.0-rc.6
+      '@deepseek-ai/dsh-client-runtime': ^0.1.0-rc.8
+      '@deepseek-ai/dsh-client-ui-conversation': ^0.1.0-rc.8
+      '@deepseek-ai/dsh-client-ui-input-trigger': ^0.1.0-rc.8
+      '@deepseek-ai/dsh-client-ui-primitives': ^0.1.0-rc.8
+      '@deepseek-ai/dsh-client-ui-slots': ^0.1.0-rc.8
+      '@deepseek-ai/dsh-client-ui-tool': ^0.1.0-rc.8
+      '@deepseek-ai/dsh-invariants': ^0.1.0-rc.8
+      '@deepseek-ai/dsh-llm': ^0.1.0-rc.8
+      '@deepseek-ai/dsh-session': ^0.1.0-rc.8
+      '@deepseek-ai/dsh-system-prompt': ^0.1.0-rc.8
+      '@deepseek-ai/dsh-tools': ^0.1.0-rc.8
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
@@ -919,8 +925,8 @@ packages:
       react:
         optional: true
 
-  dsh-files@https://codeload.github.com/taxueseek/dsh-files/tar.gz/2c453ab3f74659f91a84a35f71ff270eea77e674:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/taxueseek/dsh-files/tar.gz/2c453ab3f74659f91a84a35f71ff270eea77e674}
+  dsh-files@https://codeload.github.com/taxueseek/dsh-files/tar.gz/888b9ea8e7d86ffdc0054afdbc88704133f6c187:
+    resolution: {gitHosted: true, integrity: sha512-Q3aYjVnxR6O8WiztCOsFGB5eGvXA28kOrvVhAyfhCIxAsw67elb8LFIqIWCdO8LqBRjYW1ZuKkgPIVCJrOevmQ==, tarball: https://codeload.github.com/taxueseek/dsh-files/tar.gz/888b9ea8e7d86ffdc0054afdbc88704133f6c187}
     version: 0.2.0
     peerDependencies:
       '@deepseek-ai/cordis': '*'
@@ -928,6 +934,12 @@ packages:
       '@deepseek-ai/dsh-tools': ^0.1.0-rc.6
       '@deepseek-ai/schemastery': ^3.18.1
       react: ^18.2.0
+
+  dsh-foundry@https://codeload.github.com/hellosky983/dsh-foundry/tar.gz/cff65b961af7c8395c614a87b9b8fd864ca33666:
+    resolution: {gitHosted: true, integrity: sha512-yS/Bs2WGnxcuWFqzJwrT1/a1k0QvKqcSUWnWlpZGpv3JdBFZL43fwyu+nKl2cVswOpAq4JkFMhJr8K3NQpxhTA==, tarball: https://codeload.github.com/hellosky983/dsh-foundry/tar.gz/cff65b961af7c8395c614a87b9b8fd864ca33666}
+    version: 0.1.0
+    peerDependencies:
+      '@deepseek-ai/dsh-tools': ^0.1.0-rc.6
 
   dsh-llm-opencode@file:../../../packages/dsh-llm-opencode:
     resolution: {directory: ../../../packages/dsh-llm-opencode, type: directory}
@@ -942,9 +954,9 @@ packages:
       react: ^18.2.0
       react-dom: ^18.2.0
 
-  dsh-notification@https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/2399457a1f96ed86f761f3bc771539d131eb684f:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/2399457a1f96ed86f761f3bc771539d131eb684f}
-    version: 0.1.2
+  dsh-notification@https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/ddec603395a223deb46c75b74274c41849c6a131:
+    resolution: {gitHosted: true, integrity: sha512-5Z6LVwqrOER4ef8GVTZToJTzElRmTAIhCwERGKK88wMo3QpFSLGLyP5qIB5T+K41MLlAtnhT5AGpOoNe0JkQbQ==, tarball: https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/ddec603395a223deb46c75b74274c41849c6a131}
+    version: 0.1.3
     peerDependencies:
       '@deepseek-ai/cordis': '*'
       '@deepseek-ai/dsh-client-locale': '*'
@@ -980,9 +992,9 @@ packages:
     version: 0.1.0
     engines: {node: '>=18'}
 
-  dsh-prompt-enhancer@https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/e0e39ed2efd8410dd54a052dbf9bcde6022a5e3b:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/e0e39ed2efd8410dd54a052dbf9bcde6022a5e3b}
-    version: 3.2.0
+  dsh-prompt-enhancer@https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/c058755b829f275daeab87cb8755cebaa48a8a2a:
+    resolution: {gitHosted: true, integrity: sha512-mpQ5C0jCEpG0SENeWnXaqhRDrXmVIknxi2AgVvE7/z8GfC9ZXRUudD+A4LYq1mXpGZbNt+tkGaCSCov2Dwr9Lw==, tarball: https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/c058755b829f275daeab87cb8755cebaa48a8a2a}
+    version: 3.2.4
     peerDependencies:
       '@deepseek-ai/dsh-client-locale': ^0.1.0-rc.6
       '@deepseek-ai/dsh-client-runtime': ^0.1.0-rc.6
@@ -1029,9 +1041,9 @@ packages:
       '@deepseek-ai/dsh-host-webserver': ^0.1.0-rc.6
       '@deepseek-ai/dsh-workspace': ^0.1.0-rc.6
 
-  dsh-skin@https://codeload.github.com/KinGao294/dsh-skin/tar.gz/65c79b09d4c5f23e72076ff6b6b6b26c883f935c:
-    resolution: {gitHosted: true, integrity: sha512-5DvCpEA4GHNjb8G+p7zwUMznLyFdd9TKWwFD46qMmbwTUp91h3o0HNBNXj9tPLqYwqOwth8CDYOGxOu+ADGiJQ==, tarball: https://codeload.github.com/KinGao294/dsh-skin/tar.gz/65c79b09d4c5f23e72076ff6b6b6b26c883f935c}
-    version: 0.3.1
+  dsh-skin@https://codeload.github.com/KinGao294/dsh-skin/tar.gz/0a571a27adcc5f780b7b72386c9c294243eec5b3:
+    resolution: {gitHosted: true, integrity: sha512-quA+1NZWCs8icNMYQ9xCNlJi/7/bRzgEqgyuUDL8wjdQ/hVnoc7FXZmKkyN8ozcsFl205GmehZFm/zC3Eb6vqw==, tarball: https://codeload.github.com/KinGao294/dsh-skin/tar.gz/0a571a27adcc5f780b7b72386c9c294243eec5b3}
+    version: 0.4.0
     peerDependencies:
       '@deepseek-ai/cordis': ^4.0.1
       '@deepseek-ai/dsh-client-locale': ^0.1.0-rc.6
@@ -1040,18 +1052,19 @@ packages:
       '@deepseek-ai/dsh-client-ui-theme': ^0.1.0-rc.6
       react: ^18.2.0
 
-  dsh-status-rotator@https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/2faa2a62fa2432c2ab29663ec089734989c0bcd5:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/2faa2a62fa2432c2ab29663ec089734989c0bcd5}
-    version: 0.3.0
+  dsh-status-rotator@https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/cab8715d471b0d83814f247c3adbe64e520fa6ea:
+    resolution: {gitHosted: true, integrity: sha512-ZFXxrldUii4kkcc2CaxzerLf+fAXr3GRG3ks/GfIdQ/bVkrm9vuuD0x+DQFvH0qWIVtZRvekxsSXtdPd4IVdig==, tarball: https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/cab8715d471b0d83814f247c3adbe64e520fa6ea}
+    version: 0.4.0
 
-  dsh-sticky-note@https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/5c1ee970e6af5cb6168eeb9ef2d90774d31b6c60:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/5c1ee970e6af5cb6168eeb9ef2d90774d31b6c60}
+  dsh-sticky-note@https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/fcad3d03e049eeb727c90517d567b828c06cbb13:
+    resolution: {gitHosted: true, integrity: sha512-pr1gLIhXckPorfwIhlEmIpXXMIb/UpiPMop52131x0Mr0nksDId1jEUAFvQSrnu57a6SMRBjFG795q/7J0kzmQ==, tarball: https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/fcad3d03e049eeb727c90517d567b828c06cbb13}
     version: 0.2.2
     peerDependencies:
       '@deepseek-ai/cordis': ^4.0.1-rc.1
       '@deepseek-ai/dsh-client-connection': '*'
       '@deepseek-ai/dsh-client-runtime': '*'
       '@deepseek-ai/dsh-client-ui-slots': '*'
+      '@deepseek-ai/dsh-settings': ^0.1.0-rc.7
       react: ^18.2.0
     peerDependenciesMeta:
       '@deepseek-ai/cordis':
@@ -1061,6 +1074,8 @@ packages:
       '@deepseek-ai/dsh-client-runtime':
         optional: true
       '@deepseek-ai/dsh-client-ui-slots':
+        optional: true
+      '@deepseek-ai/dsh-settings':
         optional: true
       react:
         optional: true
@@ -1740,7 +1755,7 @@ snapshots:
       '@napi-rs/canvas-win32-x64-msvc': 0.1.100
     optional: true
 
-  '@omdsh-dev/dsh-genui@https://codeload.github.com/omdsh-dev/dsh-genui/tar.gz/dab48fae600edb97859591ff6a25feb363d10721':
+  '@omdsh-dev/dsh-genui@git+https://github.com/omdsh-dev/dsh-genui.git#35e74479eb1b7dadbc7c8732ed22659e2b90f930':
     dependencies:
       react: 18.3.1
 
@@ -2171,13 +2186,15 @@ snapshots:
     optionalDependencies:
       react: 18.3.1
 
-  dsh-files@https://codeload.github.com/taxueseek/dsh-files/tar.gz/2c453ab3f74659f91a84a35f71ff270eea77e674(@deepseek-ai/schemastery@3.18.1)(react@18.3.1):
+  dsh-files@https://codeload.github.com/taxueseek/dsh-files/tar.gz/888b9ea8e7d86ffdc0054afdbc88704133f6c187(@deepseek-ai/schemastery@3.18.1)(react@18.3.1):
     dependencies:
       '@deepseek-ai/schemastery': 3.18.1
       mammoth: 1.12.1
       pdfjs-dist: 4.10.38
       react: 18.3.1
       read-excel-file: 5.8.8
+
+  dsh-foundry@https://codeload.github.com/hellosky983/dsh-foundry/tar.gz/cff65b961af7c8395c614a87b9b8fd864ca33666: {}
 
   dsh-llm-opencode@file:../../../packages/dsh-llm-opencode:
     dependencies:
@@ -2201,7 +2218,7 @@ snapshots:
       react: 18.3.1
       schemastery: 3.18.0
 
-  dsh-notification@https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/2399457a1f96ed86f761f3bc771539d131eb684f(react@18.3.1):
+  dsh-notification@https://codeload.github.com/omdsh-dev/dsh-notification/tar.gz/ddec603395a223deb46c75b74274c41849c6a131(react@18.3.1):
     dependencies:
       zod: 4.4.3
     optionalDependencies:
@@ -2209,7 +2226,7 @@ snapshots:
 
   dsh-plugin-search@https://codeload.github.com/shinjiyu/dsh-plugin-search/tar.gz/0ceaa1985ad2e7774cd8f06890c4a9b1a7125955: {}
 
-  dsh-prompt-enhancer@https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/e0e39ed2efd8410dd54a052dbf9bcde6022a5e3b: {}
+  dsh-prompt-enhancer@https://codeload.github.com/Fishsb/dsh-prompt-enhancer/tar.gz/c058755b829f275daeab87cb8755cebaa48a8a2a: {}
 
   dsh-prompt-manager@1.4.1: {}
 
@@ -2223,14 +2240,17 @@ snapshots:
 
   dsh-skill-manager-ytxue@https://codeload.github.com/YTxue/dsh-skill-manager-ytxue/tar.gz/f254f3005a446062e312144f27ed0820d38d4654: {}
 
-  dsh-skin@https://codeload.github.com/KinGao294/dsh-skin/tar.gz/65c79b09d4c5f23e72076ff6b6b6b26c883f935c(react@18.3.1):
+  dsh-skin@https://codeload.github.com/KinGao294/dsh-skin/tar.gz/0a571a27adcc5f780b7b72386c9c294243eec5b3(react@18.3.1):
     dependencies:
       react: 18.3.1
 
-  dsh-status-rotator@https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/2faa2a62fa2432c2ab29663ec089734989c0bcd5: {}
+  dsh-status-rotator@https://codeload.github.com/01Virex/dsh-status-rotator/tar.gz/cab8715d471b0d83814f247c3adbe64e520fa6ea: {}
 
-  dsh-sticky-note@https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/5c1ee970e6af5cb6168eeb9ef2d90774d31b6c60(react@18.3.1):
+  dsh-sticky-note@https://codeload.github.com/Meredith2328/dsh-sticky-note/tar.gz/fcad3d03e049eeb727c90517d567b828c06cbb13(@deepseek-ai/dsh-settings@0.1.0-rc.8(@deepseek-ai/schemastery@3.18.1))(react@18.3.1):
+    dependencies:
+      '@deepseek-ai/schemastery': 3.18.1
     optionalDependencies:
+      '@deepseek-ai/dsh-settings': 0.1.0-rc.8(@deepseek-ai/schemastery@3.18.1)
       react: 18.3.1
 
   dsh-web-archive@https://codeload.github.com/renat3u/dsh-web-archive/tar.gz/777ae5ec25d391dee8ea2087b6db67cb89e8a378: {}

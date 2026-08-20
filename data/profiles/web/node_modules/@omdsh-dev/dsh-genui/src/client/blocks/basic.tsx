@@ -5,6 +5,7 @@
  */
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import css from '../GenuiBlock.module.css'
+import type { GenuiAudio, GenuiVideo } from '../spec.ts'
 
 /** Deterministic avatar color by name hash. Host static tokens ONLY —
  * design system v2: no off-brand hexes, the palette always matches the
@@ -59,5 +60,52 @@ export function ClickFeedbackButton({ className, disabled, onClick, children }: 
       {children}
       {sent && <span className={css.btnSent}>✓ 已触发</span>}
     </button>
+  )
+}
+
+/** Native controls intentionally own play/pause/seek/volume. Model-authored
+ * autoplay and controls hints are ignored: media starts only after the user
+ * asks for it. */
+export function AudioNode({ node }: { node: GenuiAudio }): ReactNode {
+  const [failed, setFailed] = useState(false)
+  return (
+    <figure className={css.media}>
+      {node.alt !== undefined && <figcaption className={css.mediaLabel}>{node.alt}</figcaption>}
+      {failed
+        ? <div className={css.mediaError} role="alert">音频无法播放</div>
+        : <audio
+            className={css.mediaPlayer}
+            src={node.src}
+            aria-label={node.alt ?? '音频'}
+            controls
+            preload="metadata"
+            loop={node.loop === true}
+            onError={() => setFailed(true)}
+          />}
+    </figure>
+  )
+}
+
+export function VideoNode({ node }: { node: GenuiVideo }): ReactNode {
+  const [failed, setFailed] = useState(false)
+  return (
+    <figure className={css.media}>
+      {node.alt !== undefined && <figcaption className={css.mediaLabel}>{node.alt}</figcaption>}
+      {failed
+        ? <div className={css.mediaError} role="alert">视频无法播放</div>
+        : <video
+            className={`${css.mediaPlayer} ${css.videoPlayer}`}
+            src={node.src}
+            poster={node.poster}
+            aria-label={node.alt ?? '视频'}
+            controls
+            preload="metadata"
+            playsInline
+            loop={node.loop === true}
+            muted={node.muted === true}
+            style={node.aspectRatio === undefined ? undefined : { aspectRatio: node.aspectRatio.replace(':', ' / ') }}
+            onError={() => setFailed(true)}
+          />}
+    </figure>
   )
 }

@@ -196,6 +196,23 @@
   text-decoration: none;
 }
 
+/* ---------- native media ---------- */
+
+.media {
+  margin: 0;
+  padding: var(--dsl-g-gap-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--dsl-g-gap-sm);
+  background: var(--dsw-alias-bg-layer-1, var(--dsw-alias-markdown-code-block));
+  border: 1px solid var(--dsl-g-border);
+  border-radius: var(--dsl-g-radius-surface);
+}
+.mediaLabel { font-size: var(--dsl-g-font-title); font-weight: 600; color: var(--dsw-alias-label-primary); }
+.mediaPlayer { display: block; width: 100%; min-width: 0; }
+.videoPlayer { max-height: min(70vh, 720px); background: #000; object-fit: contain; }
+.mediaError { font-size: var(--dsl-g-font-title); color: var(--dsw-alias-state-error-primary, #f25a5a); }
+
 /* ---------- badges / stat / progress ---------- */
 
 .badge {

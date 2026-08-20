@@ -78,11 +78,12 @@ export interface GenuiValidation {
 export declare function repairGenuiSpec(value: unknown): GenuiSpec | null;
 /**
  * Count the nodes of a spec tree (every item, descending into tabs /
- * accordion / file-tree containers — the same descent `validateGenuiSpec`
- * walks). Shared by the panel fold (node-budget gate) and validation, so
- * the panel never runs a second, divergent traversal. `cap` bounds the walk
- * for hostile inputs; the panel passes `PANEL_LIMITS.maxNodes + 1` to detect
- * overflow without counting the whole tree.
+ * accordion / file-tree / list containers — the same descent
+ * `validateGenuiSpec` walks). Shared by the panel fold (node-budget gate)
+ * and validation, so the panel never runs a second, divergent traversal.
+ * `cap` bounds the walk for hostile inputs; the panel passes
+ * `PANEL_LIMITS.maxNodes + 1` to detect overflow without counting the whole
+ * tree.
  */
 export declare function countGenuiNodes(value: unknown, cap?: number): number;
 /**

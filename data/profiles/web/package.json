@@ -19,6 +19,7 @@
     "dsh-client-auto-continue": "^0.7.3",
     "dsh-context": "^0.18.0",
     "dsh-files": "github:taxueseek/dsh-files",
+    "dsh-foundry": "github:hellosky983/dsh-foundry",
     "dsh-llm-opencode": "file:../../../packages/dsh-llm-opencode",
     "dsh-mnemon": "^0.2.13",
     "dsh-notification": "github:omdsh-dev/dsh-notification",
@@ -71,7 +72,8 @@
         "dsh-rule-manager",
         "dsh-llm-opencode",
         "dsh-auto-collapse",
-        "dsh-web-archive"
+        "dsh-web-archive",
+        "dsh-foundry"
       ]
     }
   }

@@ -97,7 +97,7 @@ export const GENUI_SECTION_TEXT = `You can render interactive UI components INSI
 The spec is a white-listed component tree rendered inline where the fence sits. Only these \`type\` values; the \`genui\` skill, when available, carries the full content→component mapping and per-component field details:
 
 - 布局: text · row · col · grid · card · divider · spacer
-- 展示: badge · stat · progress · list · table · keyvalue · avatar · timeline · file-tree · breadcrumb · callout · steps · diff · json · code · copy
+- 展示: badge · stat · progress · list · table · keyvalue · avatar · audio · video · timeline · file-tree · breadcrumb · callout · steps · diff · json · code · copy
 - 图表: chart (bars|line|donut) · plot (函数图)
 - 交互: button · input · textarea · select · checkbox · switch · slider · radio · submit · quiz · link · tabs · accordion
 - 高级: mermaid (flowchart/sequence/class/gantt/pie/er/state/journey) · scene3d (3D WebGL)
