@@ -89,6 +89,9 @@ window.__ModuleLoader__.load({
         "sync.timer.on": "定时器开",
         "sync.timer.off": "定时器关",
         "sync.result": "入站 扫 {scanned} / 新 {imported} / 续 {appended} / 跳 {skipped} / 败 {failed}；出站 写回 {synced} / 跳 {outSkipped} / 败 {outFailed}",
+        "settings.systemPrompt.title": "导入系统提示词",
+        "settings.systemPrompt.description": "把源会话的 system / developer 提示词作为「上下文注入」保留。默认关闭；开启后注入正文会附环境变更提示，工具、权限与执行指令以 DSH 当前会话为准。",
+        "settings.tab": "会话导入",
       },
       en: {
         "trigger.title": "Import sessions from other tools (discover + single/multi select)",
@@ -153,6 +156,9 @@ window.__ModuleLoader__.load({
         "sync.timer.on": "Timer on",
         "sync.timer.off": "Timer off",
         "sync.result": "In scanned {scanned} / new {imported} / append {appended} / skip {skipped} / fail {failed}; out wrote {synced} / skip {outSkipped} / fail {outFailed}",
+        "settings.systemPrompt.title": "Import system prompt",
+        "settings.systemPrompt.description": "Keep the source session's system/developer prompt as a \"context injection\". Off by default; when on, the injected body carries a note that the environment changed and tools, permissions, and instructions now follow DSH.",
+        "settings.tab": "Session Import",
       },
     };
 
@@ -352,6 +358,28 @@ window.__ModuleLoader__.load({
           borderRadius: "50%", background: "#fff", transition: "left .12s ease",
         },
       }));
+    }
+
+    // 设置页「会话导入」TAB（settings.plugins.tab 槽，位于「插件」分区内）。
+    // scope 是 ctx.settingsScope.bind('chat-import') 的宿主命名空间分区；读快照 value.
+    // importSystemPrompt、写 scope.set('importSystemPrompt', ...)。服务缺席时 apply 不注册。
+    function ImportSystemPromptTab({ t, scope }) {
+      const colors = themeColors();
+      const [, force] = useState(0);
+      useEffect(() => scope.subscribe(() => force((x) => x + 1)), [scope]);
+      const snap = scope.getSnapshot();
+      const on = !!(snap && snap.value && snap.value.importSystemPrompt);
+      return React.createElement("div", { style: { padding: "16px", display: "flex", flexDirection: "column", gap: "16px" } },
+        React.createElement("div", {
+          style: {
+            display: "flex", alignItems: "flex-start", gap: "12px",
+            padding: "12px 14px", border: "1px solid " + colors.border, borderRadius: "10px",
+          },
+        },
+          React.createElement("div", { style: { flex: "1", minWidth: "0" } },
+            React.createElement("div", { style: { fontSize: "13px", color: colors.text, lineHeight: "1.5", fontWeight: 600 } }, t("settings.systemPrompt.title")),
+            React.createElement("div", { style: { fontSize: "12px", color: colors.dimmer, marginTop: "4px", lineHeight: "1.5" } }, t("settings.systemPrompt.description"))),
+          React.createElement(Toggle, { on, colors, onChange: (next) => { scope.set("importSystemPrompt", next); } })));
     }
 
     function FormatChecks({ value, onChange, colors }) {
@@ -830,6 +858,22 @@ window.__ModuleLoader__.load({
           { name: "sidebar.footer.action", id: "chat-import", order: 0 },
           ImportButton,
         ));
+      // 设置页「会话导入」TAB：settings.plugins.tab 槽（「插件」分区内的功能页）承载
+      // 「导入系统提示词」开关（默认关）。settingsScope 是可选服务（dsh-client-ui-
+      // settings），缺席时不注册；slots.inject 惰性挂到该槽被 ui-settings-plugins 声明
+      // 时，槽不存在（无设置页的 profile）则回调永不执行，不报错。label 用 thunk 跟随
+      // 语言切换（同官方 plugins 分区 tab 的写法）。
+      const settingsScope = ctx.get("settingsScope");
+      if (settingsScope && typeof settingsScope.bind === "function") {
+        const scope = settingsScope.bind({ namespace: "chat-import" });
+        ctx.slots.inject("settings.plugins.tab", () => {
+          const t = localeSvc ? localeSvc.bind(LOCALE_NS) : (key) => DICT.zh[key] || key;
+          return ctx.slots.register(
+            { name: "settings.plugins.tab", id: "chat-import", order: 40, label: () => t("settings.tab"), locale: LOCALE_NS, inject: () => ({ scope }) },
+            ImportSystemPromptTab,
+          );
+        });
+      }
     }
 
     module.exports = { name, inject, apply };

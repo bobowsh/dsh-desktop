@@ -118,6 +118,12 @@ export function createScanCache({ ttlMs = SCAN_TTL_MS, now = () => Date.now() } 
 const scanCache = createScanCache()
 export function clearScanCache() { scanCache.clear() }
 
+// 进行中扫描去重（issue #16）：同 key 并发扫描共享一个 Promise，避免多个会话同时
+// 启动时叠加全量扫描。key = `<format>|<target>`，与 TTL 缓存同口径。模块级共享——
+// 同一 target 的物理状态是共享的，并发扫描结果必然相同。resolve 后自动清理。
+const inflightScans = new Map()
+export function clearInflightScans() { inflightScans.clear() }
+
 // ── 持久化 mtime/size 书签（REQ-40）───────────────────────────────────────
 // <cacheDir>/scan-cache.json：{ version, bookmarks: { <format>: { <sourcePath>:
 // { mtimeMs, sizeBytes, entries } } } }。按 format 分表——同一源文件会被多种格式探测
@@ -245,13 +251,31 @@ function siblingPath(filePath, suffixName) {
   return m ? filePath.slice(0, m.index + 1) + suffixName : filePath
 }
 
+// 递归遍历不进入的目录名：聊天记录从不在这些目录下；node_modules / .git 等在
+// pnpm 符号链接结构下会引发组合爆炸或无意义遍历，单次扫描实际永不结束（issue #16）。
+const WALK_SKIP_DIRS = new Set([
+  'node_modules', '.git', '.hg', '.svn', '.venv', 'venv',
+  'dist', 'build', '.next', '.turbo', '.cache', 'target', 'out',
+  '.idea', '.vscode', '__pycache__', '.pytest_cache', '.mypy_cache',
+  '.DS_Store',
+])
+// 深度兜底：合法聊天记录根不超过 5 层（如 .codex/sessions/YYYY/MM/DD/file），
+// 12 层覆盖任意合理布局，同时切断病态深递归 / 循环符号链接（issue #16）。
+const WALK_MAX_DEPTH = 12
+
 // 递归收集匹配文件（目录缺失/不可读 → 空，发现阶段静默跳过该根）。
-async function walkFiles(host, dir, out, match) {
+// 跳过 node_modules 等目录 + 限深，避免 pnpm 符号链接结构下组合爆炸（issue #16）。
+async function walkFiles(host, dir, out, match, depth = 0) {
+  if (depth > WALK_MAX_DEPTH) return
   const entries = await host.readDir(dir)
   if (!entries) return
   for (const e of entries) {
-    if (e.type === 'directory') await walkFiles(host, e.path, out, match)
-    else if (e.type === 'file' && match(e.name)) out.push(e)
+    if (e.type === 'directory') {
+      if (WALK_SKIP_DIRS.has(e.name)) continue
+      await walkFiles(host, e.path, out, match, depth + 1)
+    } else if (e.type === 'file' && match(e.name)) {
+      out.push(e)
+    }
   }
 }
 
@@ -732,15 +756,18 @@ function scanZcode(host, target, bm) { return scanSqlite(host, 'zcode', target, 
 // grokbuild：~/.grok/sessions/<project>/<session_id>/（含 archived_sessions/），
 // 会话目录 = 含 summary.json 的目录（不再下钻）；标题 generated_title >
 // session_summary > 首条 user 文本；lastActiveAt = summary/chat_history mtime 取大。
-async function walkGrokbuildSessions(host, dir, out) {
+// 复用 walkFiles 同款目录黑名单 + 限深（issue #16）。
+async function walkGrokbuildSessions(host, dir, out, depth = 0) {
+  if (depth > WALK_MAX_DEPTH) return
   const entries = await host.readDir(dir)
   if (!entries) return
   for (const e of entries) {
     if (e.type !== 'directory') continue
+    if (WALK_SKIP_DIRS.has(e.name)) continue
     const sumPath = join(e.path, 'summary.json')
     const st = await host.stat(sumPath)
     if (st && st.type === 'file') out.push(e.path)
-    else await walkGrokbuildSessions(host, e.path, out)
+    else await walkGrokbuildSessions(host, e.path, out, depth + 1)
   }
 }
 async function scanGrokbuild(host, target, bm) {
@@ -995,17 +1022,19 @@ async function scanHermes(host, target, bm) {
 // custom_title / isCustomTitle+title > 首个 user 文本；cwd 优先 state.json.cwd，旧
 // 布局回退 ~/.kimi/kimi.json（md5 映射）；project = cwd basename > hash 目录名；
 // createdAt = 首条记录 timestamp/time；messageCount 只读文件头、恒为 null。
-async function walkKimiSessions(host, dir, out) {
+async function walkKimiSessions(host, dir, out, depth = 0) {
+  if (depth > WALK_MAX_DEPTH) return
   const entries = await host.readDir(dir)
   if (!entries) return
   for (const e of entries) {
     if (e.type !== 'directory') continue
+    if (WALK_SKIP_DIRS.has(e.name)) continue
     const rootWire = join(e.path, 'wire.jsonl')
     const agentWire = join(e.path, 'agents', 'main', 'wire.jsonl')
     const st = await host.stat(rootWire)
     const finalSt = st && st.type === 'file' ? st : await host.stat(agentWire)
     if (finalSt && finalSt.type === 'file') out.push(e.path)
-    else await walkKimiSessions(host, e.path, out)
+    else await walkKimiSessions(host, e.path, out, depth + 1)
   }
 }
 
@@ -1415,8 +1444,22 @@ export async function discoverSessions({ path, format, query, home, host, import
     const key = fmt + '|' + target
     let entries = ttlCache.get(key)
     if (entries === undefined) {
-      entries = await scanFormat(host, fmt, target, bmStore)
-      ttlCache.set(key, entries)
+      // 进行中扫描去重（issue #16）：同 key 并发调用共享一个 Promise，
+      // 避免多会话同时启动时叠加全量扫描。
+      let inflight = inflightScans.get(key)
+      if (!inflight) {
+        inflight = (async () => {
+          try {
+            const result = await scanFormat(host, fmt, target, bmStore)
+            ttlCache.set(key, result)
+            return result
+          } finally {
+            inflightScans.delete(key)
+          }
+        })()
+        inflightScans.set(key, inflight)
+      }
+      entries = await inflight
     }
     all.push(...entries)
   }

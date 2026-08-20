@@ -21,7 +21,7 @@ import { attachToWorkspace } from './import-core.mjs'
 import { runDoctor } from './doctor.mjs'
 import { runMcpMirror } from './mcp.mjs'
 import { runSettingsSuggest } from './settings.mjs'
-import { clearScanCache, SCAN_CACHE_FILE } from './discovery.mjs'
+import { clearScanCache, clearInflightScans, SCAN_CACHE_FILE } from './discovery.mjs'
 
 // 命令接受的来源名 → discovery format：短名（claude/codex/...）、客户端来源 id
 // （claude-code）、工具全名（import_claude）三态都接受。
@@ -331,6 +331,7 @@ export function registerImportCommand(ctx, registryDir) {
       async handler() {
         try {
           clearScanCache()
+          clearInflightScans()
           const cacheFile = join(registryDir, SCAN_CACHE_FILE)
           try {
             await rm(cacheFile, { force: true })

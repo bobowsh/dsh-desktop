@@ -139,8 +139,17 @@ export function convertHermesJson(raw, args = {}) {
   // tool_use_id → 所属 step：tool_result 后置（可能跨 step 到达），按 id 挂回调用 step
   const callSteps = new Map()
   let droppedToolResults = 0
+  // 开关开启时收集 system（系统提示词）文本，作为上下文注入保留
+  let systemPrompt = null
 
   for (const m of messages) {
+    if (m.role === 'system') {
+      if (args.importSystemPrompt === true) {
+        const text = hermesMessageText(m.content)
+        if (text) systemPrompt = systemPrompt ? systemPrompt + '\n\n' + text : text
+      }
+      continue
+    }
     if (m.role === 'user') {
       const texts = []
       const results = []
@@ -250,6 +259,18 @@ export function convertHermesJson(raw, args = {}) {
     skippedLines,
     secrets,
     imported: { sourcePath: args.sourcePath },
+    systemPrompt,
   })
   return { ...out, title: finalTitle, droppedToolResults, ...(trimmed ? { trimmed } : {}) }
+}
+
+// Hermes 消息 content → 纯文本（字符串原样；数组逐块取 text 块）。
+function hermesMessageText(content) {
+  if (typeof content === 'string') return content.trim()
+  if (!Array.isArray(content)) return ''
+  const parts = []
+  for (const b of content) {
+    if (b && typeof b === 'object' && typeof b.text === 'string') parts.push(b.text)
+  }
+  return parts.join('\n').trim()
 }

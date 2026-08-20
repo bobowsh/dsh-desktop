@@ -143,18 +143,34 @@ export async function warmProjection(ctx, sessionId) {
 // agentPresets.mount 把 agent 加入默认 preset scope；agentOptions 绑定默认模型）——
 // agents 是可选 host 服务，缺席/抛错回退 sessionPersistence.create+append（旧路径，
 // 导入工具本身不依赖 preset scope）。
+// 补录预设模式：正常会话创建时 apiproxy 的 composeAgent 会把 preset id 写回
+// SessionHeader.agentPreset（UI 据此渲染「预设模式」chip）；导入路径直接调
+// agents.create 且 setup 里 mount 不返回 id，导致 header 无 agentPreset → UI 空。
+// 这里在 create 前 resolve 默认 preset id 并写进 meta.agentPreset，让导入会话与
+// 正常会话一样显示预设模式；resolve 失败（无 roster/无默认值）时保持现状（工具仍
+// 经 mount 可用，仅不落盘 preset 身份）。
 async function createSession(ctx, meta, events) {
   const agents = ctx.get('agents')
   if (agents && typeof agents.create === 'function') {
     try {
+      const ap = ctx.get('agentPresets')
+      let presetId
+      if (ap && typeof ap.resolve === 'function') {
+        try {
+          const preset = await ap.resolve()
+          if (preset && typeof preset.id === 'string' && preset.id) presetId = preset.id
+        } catch {
+          // 无默认 preset / roster 未配置：不落盘 preset 身份，其余照旧
+        }
+      }
       await agents.create({
         sessionId: meta.id,
-        meta,
+        meta: { ...meta, ...(presetId ? { agentPreset: presetId } : {}) },
         seed: events,
         agentOptions: await resolveAgentOptions(ctx),
         setup: (agentCtx) => {
-          const ap = ctx.get('agentPresets')
-          return ap && typeof ap.mount === 'function' ? ap.mount(agentCtx).then(() => {}) : undefined
+          const ap2 = ctx.get('agentPresets')
+          return ap2 && typeof ap2.mount === 'function' ? ap2.mount(agentCtx, presetId).then(() => {}) : undefined
         },
       })
       return

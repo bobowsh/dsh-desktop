@@ -36,11 +36,16 @@ export const MEDIA_EXT = {
 }
 
 export function apply(ctx, config = {}) {
+  // One evidence cache for the whole plugin: every wrapper route and the
+  // auto-read path share it, so the same pasted attachment is read once,
+  // whichever surface asks first (issue #68; auto-read used to bypass
+  // caching entirely and re-read every image on every step).
+  const evidenceCache = new Map()
   // Off by default since the vision provider converts at request time and
   // keeps the durable log (and the UI thumbnail) intact; turn it on only for
   // setups where images enter through a provider this plugin does not wrap.
   if (config.autoRead === true) {
-    registerAutoRead(ctx)
+    registerAutoRead(ctx, evidenceCache)
   }
   // The provider ids this plugin registered itself. The takeover verdict has
   // to skip them: our wrapper models are synthetic twins of upstream ones,
@@ -50,7 +55,7 @@ export function apply(ctx, config = {}) {
   // wrappers land, including the later sweeps, and read by the verdict.
   const ownProviders = new Set()
   if (config.visionProvider !== false) {
-    registerVisionProvider(ctx, config, ownProviders)
+    registerVisionProvider(ctx, config, ownProviders, evidenceCache)
   }
   // Paste-to-path: the browser half (dsh/client.js) intercepts image pastes
   // and POSTs the bytes here; the file lands in a private temp dir and the
@@ -541,7 +546,7 @@ function restoreUpstreamSource(messages, wrapperId, upstream) {
   return changed ? out : messages
 }
 
-function registerVisionProvider(ctx, config, ownProviders) {
+function registerVisionProvider(ctx, config, ownProviders, evidenceCache) {
   // Wrap only the text-only members of these families. Their own vision
   // models (present or future: deepseek-vl/ocr/janus, glm-4.5v, glm-5v-...)
   // need no bridge and are excluded by name and by declared modality.
@@ -640,7 +645,7 @@ function registerVisionProvider(ctx, config, ownProviders) {
             yield* ctx.llm.stream({ ...options, provider: upstream, messages })
           })()
         },
-        evidenceCache: new Map(),
+        evidenceCache,
       })
       registrations.set(upstream, { providerId, registration, state })
       // Trusted as ours only on a registration this call actually made. A
@@ -908,55 +913,180 @@ function registerVisionProvider(ctx, config, ownProviders) {
   }
 }
 
-// The same pasted attachment rides every later step of its session, but the
-// cache must never make a failure permanent or run the engine twice for
-// concurrent steps. So it stores promises (concurrent readers join the first
-// run), evicts failed reads on settle (a fixed config gets a fresh chance),
-// and caps itself LRU-style so a long-lived Web profile cannot hoard
-// evidence text forever.
-const EVIDENCE_CACHE_LIMIT = 64
+// The same pasted attachment rides every later step of its session, and the
+// provider caches by prefix, so what this cache protects is not just the
+// engine bill but the BYTES of the rewritten history: a message whose text
+// changes between steps busts the provider's context cache for everything
+// after it (issue #68). So it stores promises (concurrent readers join the
+// first run), keeps successes for good, and holds failures for a cooldown
+// instead of evicting them on settle: a broken engine is probed once per
+// cooldown per attachment rather than once per step, the placeholder text is
+// byte-stable while the outcome is unchanged, and the first step after the
+// cooldown retries, so a fixed engine is picked up without a restart. It
+// caps itself LRU-style so a long-lived Web profile cannot hoard evidence
+// text forever.
+const EVIDENCE_CACHE_LIMIT = 256
+const EVIDENCE_FAILURE_COOLDOWN_MS = 60_000
+// Monotonic, so an NTP step backwards cannot freeze a cooling failure for
+// the size of the jump: a recovered engine is re-probed one cooldown after
+// the failure, whatever the wall clock did in between.
+const monotonicNow = () => performance.now()
 
-function cachedEvidence(ctx, adapter, block) {
-  const key = JSON.stringify(block.attachment ?? block)
+/**
+ * A cache key that survives replay: the same attachment serialized with a
+ * different key order used to miss its own entry, re-run the engine, and
+ * rewrite the history with a fresh reading (issue #68).
+ */
+function evidenceKey(value) {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value)
+  if (Array.isArray(value)) return `[${value.map(evidenceKey).join(',')}]`
+  const keys = Object.keys(value).sort()
+  return `{${keys.map((key) => `${JSON.stringify(key)}:${evidenceKey(value[key])}`).join(',')}}`
+}
+
+function cachedEvidence(ctx, adapter, block, walk) {
+  const key = evidenceKey(block.attachment ?? block)
+  // Everything the current walk touches is pinned for the walk's duration:
+  // eviction picks victims outside the union of every open walk, or nothing.
+  walk?.pin(key)
   const hit = adapter.evidenceCache.get(key)
   if (hit !== undefined) {
-    // Refresh recency: Map iteration order is insertion order.
-    adapter.evidenceCache.delete(key)
-    adapter.evidenceCache.set(key, hit)
-    return hit
+    const cooling = typeof hit === 'object' && hit !== null && 'retryAfter' in hit
+    if (!cooling || monotonicNow() < hit.retryAfter) {
+      // Refresh recency: Map iteration order is insertion order.
+      adapter.evidenceCache.delete(key)
+      adapter.evidenceCache.set(key, hit)
+      return cooling ? Promise.resolve(hit.block) : hit
+    }
+    // Cooldown over: fall through into one fresh probe.
   }
   // Deliberately no caller signal: a shared entry must not die with its first
   // caller (their abort used to cancel every concurrent joiner). A cancelled
   // caller simply stops awaiting; the read finishes and the cache keeps it.
   const pending = readImageBlock(ctx, block, undefined).then(
     (evidence) => {
-      // Only evict our own entry: this promise may have been LRU-evicted and
-      // the key re-populated by a newer read meanwhile.
+      // Only replace our own entry: this promise may have been LRU-evicted
+      // and the key re-populated by a newer read meanwhile.
       if (!evidence.ok && adapter.evidenceCache.get(key) === pending) {
-        adapter.evidenceCache.delete(key)
+        adapter.evidenceCache.set(key, {
+          retryAfter: monotonicNow() + EVIDENCE_FAILURE_COOLDOWN_MS,
+          block: evidence.block,
+        })
       }
       return evidence.block
     },
-    (error) => {
+    () => {
       // readImageBlock never rejects by contract; this is the belt for a
       // future refactor breaking that, so a rejected promise cannot lodge in
-      // the cache forever.
-      if (adapter.evidenceCache.get(key) === pending) {
-        adapter.evidenceCache.delete(key)
-      }
-      return {
+      // the cache forever. Same stable text as the engine stage: the detail
+      // belongs in the harness log, never in the wire history.
+      const block = Object.freeze({
         type: 'text',
-        text: `[A pasted image could not be read by modlens: ${
-          error instanceof Error ? error.message.slice(0, 300) : String(error)
-        }]`,
+        text: FAILURE_TEXTS.engine,
+      })
+      if (adapter.evidenceCache.get(key) === pending) {
+        adapter.evidenceCache.set(key, {
+          retryAfter: monotonicNow() + EVIDENCE_FAILURE_COOLDOWN_MS,
+          block,
+        })
       }
+      return block
     },
   )
   adapter.evidenceCache.set(key, pending)
-  while (adapter.evidenceCache.size > EVIDENCE_CACHE_LIMIT) {
-    adapter.evidenceCache.delete(adapter.evidenceCache.keys().next().value)
-  }
+  trimEvidenceCache(adapter.evidenceCache)
   return pending
+}
+
+/**
+ * Overflow evicts the least-recently-used entry OUTSIDE the current walk's
+ * working set, and nothing when the whole cache IS the working set.
+ *
+ * Both naive policies fail a real session shape. Oldest-first thrashes a
+ * front-to-back history walk once it passes the cap (the 257th attachment
+ * evicts the 1st, whose miss next step evicts the 2nd, and so on: the #68
+ * retry storm wearing a cap). Newest-first survives that but starves a NEW
+ * session on a long-lived profile: the cache sits full of a previous
+ * session's entries, every new attachment evicts the previous new one, and
+ * the storm returns with the old entries pinned in place forever.
+ *
+ * Pinning the walk resolves both. A new session's working set evicts stale
+ * entries one by one, in LRU order, and resides in full; a single history
+ * larger than the cap keeps everything it is walking (the cap goes soft for
+ * the walk's duration, bounded by that history's own length) and is stable
+ * again on the next step. The remaining honesty: an entry genuinely evicted
+ * and later re-read by a healthy engine may be worded differently, so bytes
+ * can move with the outcome unchanged; the cap exists so a long-lived Web
+ * profile cannot hoard evidence forever.
+ */
+// Active pins per cache, as exact refcounts: victim selection must see EVERY
+// walk's pins, or two interleaved sessions on the shared Map evict each
+// other's in-flight entries and the full-thrash storm returns with company.
+// Refcounts rather than a set of sets, so the union is exact (two walks
+// pinning the same keys is one union, not a doubled sum) and every check is
+// O(1). WeakMap so a cache that dies takes its registry with it.
+const ACTIVE_PINS = new WeakMap()
+
+function activePinsFor(cache) {
+  let counts = ACTIVE_PINS.get(cache)
+  if (!counts) {
+    counts = new Map()
+    ACTIVE_PINS.set(cache, counts)
+  }
+  return counts
+}
+
+/**
+ * Open one walk over a cache: everything the walk pins stays unevictable
+ * until end() runs, whichever walk a trim happens under. Ending the walk
+ * releases its share of the pins; entries above the cap then linger until
+ * the next miss trims them, which is the stability-over-punctuality trade
+ * the cap makes on purpose.
+ */
+export function beginEvidenceWalk(cache) {
+  const counts = activePinsFor(cache)
+  const mine = new Set()
+  return {
+    pin: (key) => {
+      if (mine.has(key)) return
+      mine.add(key)
+      counts.set(key, (counts.get(key) ?? 0) + 1)
+    },
+    end: () => {
+      for (const key of mine) {
+        const left = (counts.get(key) ?? 1) - 1
+        if (left <= 0) {
+          counts.delete(key)
+        } else {
+          counts.set(key, left)
+        }
+      }
+      mine.clear()
+    },
+  }
+}
+
+export function trimEvidenceCache(cache) {
+  const counts = ACTIVE_PINS.get(cache)
+  while (cache.size > EVIDENCE_CACHE_LIMIT) {
+    // Exact union early-out: when every key in the cache is pinned by some
+    // open walk, a scan would find nothing; counts.size is the union's true
+    // cardinality, so overlapping walks cannot inflate it.
+    if (counts !== undefined && counts.size >= cache.size) {
+      return
+    }
+    let victim
+    for (const key of cache.keys()) {
+      if (counts === undefined || !counts.has(key)) {
+        victim = key
+        break
+      }
+    }
+    if (victim === undefined) {
+      return
+    }
+    cache.delete(victim)
+  }
 }
 
 /**
@@ -1017,15 +1147,23 @@ async function convertBlocks(blocks, convertOne) {
 
 async function convertImagesToEvidence(ctx, messages, signal, adapter) {
   const out = []
-  for (const message of messages) {
-    if (!contentHasImage(message.content)) {
-      out.push(message)
-      continue
+  // One walk per conversion: its pins are visible to every trim on the
+  // shared cache until end(), so concurrent sessions cannot evict each
+  // other's in-flight work.
+  const walk = beginEvidenceWalk(adapter.evidenceCache)
+  try {
+    for (const message of messages) {
+      if (!contentHasImage(message.content)) {
+        out.push(message)
+        continue
+      }
+      const content = await convertBlocks(message.content, (block) =>
+        abortableWait(cachedEvidence(ctx, adapter, block, walk), signal),
+      )
+      out.push({ ...message, content })
     }
-    const content = await convertBlocks(message.content, (block) =>
-      abortableWait(cachedEvidence(ctx, adapter, block), signal),
-    )
-    out.push({ ...message, content })
+  } finally {
+    walk.end()
   }
   return out
 }
@@ -1038,7 +1176,7 @@ async function convertImagesToEvidence(ctx, messages, signal, adapter) {
  * injectors) see and shape the same final message set; a failed read degrades
  * to an explanatory text block instead of rejecting the step.
  */
-function registerAutoRead(ctx) {
+function registerAutoRead(ctx, evidenceCache) {
   ctx.on('agent/pre-step', async (payload, next) => {
     const decision = await next()
     if (decision.kind !== 'enter') {
@@ -1048,32 +1186,63 @@ function registerAutoRead(ctx) {
       return decision
     }
     const messages = []
-    for (const message of decision.messages) {
-      if (!contentHasImage(message.content)) {
-        messages.push(message)
-        continue
+    // One walk per pre-step, spanning every message in it; pins are visible
+    // to every trim on the shared cache until the walk ends.
+    const walk = beginEvidenceWalk(evidenceCache)
+    try {
+      for (const message of decision.messages) {
+        if (!contentHasImage(message.content)) {
+          messages.push(message)
+          continue
+        }
+        const content = await convertBlocks(message.content, (block) =>
+          // The same cache the wrapper routes use: auto-read used to re-read
+          // every image on every step, healthy engine or not (issue #68).
+          abortableWait(cachedEvidence(ctx, { evidenceCache }, block, walk), payload.signal),
+        )
+        messages.push({ ...message, content })
       }
-      const content = await convertBlocks(
-        message.content,
-        async (block) => (await readImageBlock(ctx, block, payload.signal)).block,
-      )
-      messages.push({ ...message, content })
+    } finally {
+      walk.end()
     }
     return { kind: 'enter', messages }
   })
 }
 
 /**
+ * The wire history must not change bytes unless the outcome changed, so a
+ * failure's placeholder is a constant per failure stage, never the attempt's
+ * own error text: the same broken engine words its failures differently on
+ * every try, and each wording rewrote the history and busted the provider's
+ * prefix cache for the rest of the session (issue #68). The attempt's detail
+ * goes to the harness log, which never rides a request.
+ */
+const FAILURE_TEXTS = {
+  store:
+    '[A pasted image could not be read: the attachment store did not return it. Tell the user, and suggest running `npx @liustack/modlens doctor`.]',
+  media:
+    '[A pasted image could not be read: its media type is not supported. Tell the user, and suggest running `npx @liustack/modlens doctor`.]',
+  engine:
+    '[A pasted image could not be read: the vision engine failed. Tell the user, and suggest running `npx @liustack/modlens doctor`.]',
+}
+
+/**
  * Read one image block into an evidence text block. Never throws: failures
  * degrade to an explanatory block with `ok: false`, so callers can decide
- * what a failure means (the pre-step keeps the step going, the cache refuses
- * to memoize it).
+ * what a failure means (the pre-step keeps the step going, the cache holds
+ * it only for a cooldown).
  */
 async function readImageBlock(ctx, block, signal) {
   const { mkdtemp, rm, writeFile } = await import('node:fs/promises')
   const { tmpdir } = await import('node:os')
   const { join } = await import('node:path')
   let dir
+  // Which stage failed decides the (constant) placeholder text below. Even
+  // the media stage carries no variable part: the type string arrives from
+  // paste metadata and replayed content, so it is attacker-shaped, and an
+  // unbounded newline-carrying value on the wire is a fake turn boundary.
+  // The concrete type goes to the harness log with the rest of the detail.
+  let stage = 'store'
   try {
     // StoredImageAttachment carries { ref, data: Uint8Array }; the media type
     // rides the reference (verified against dsh attachment/src/types.ts).
@@ -1088,8 +1257,10 @@ async function readImageBlock(ctx, block, signal) {
     if (!ext) {
       // Refusing beats disguising: a fake .png suffix would make the CLI (and
       // the provider behind it) judge mislabelled bytes.
+      stage = 'media'
       throw new Error(`unsupported pasted media type ${mediaType ?? '(none declared)'}`)
     }
+    stage = 'engine'
     dir = await mkdtemp(join(tmpdir(), 'modlens-dsh-'))
     const file = join(dir, `paste${ext}`)
     await writeFile(file, Buffer.from(stored.data), { mode: 0o600 })
@@ -1105,20 +1276,22 @@ async function readImageBlock(ctx, block, signal) {
     const parsed = JSON.parse(stdout)
     return {
       ok: true,
-      block: {
+      // Frozen: the same object rides every later step from the cache, and a
+      // downstream listener mutating it would silently rewrite history.
+      block: Object.freeze({
         type: 'text',
         text: `[Pasted image, read by the modlens vision bridge]\n${renderEvidence(parsed.result)}`,
-      },
+      }),
     }
   } catch (error) {
+    const detail = error instanceof Error ? error.message.slice(0, 300) : String(error)
+    console.error(`[modlens] image read failed (${stage}): ${detail}`)
     return {
       ok: false,
-      block: {
+      block: Object.freeze({
         type: 'text',
-        text: `[A pasted image could not be read by modlens: ${
-          error instanceof Error ? error.message.slice(0, 300) : String(error)
-        }. Tell the user, and suggest running \`npx @liustack/modlens doctor\`.]`,
-      },
+        text: FAILURE_TEXTS[stage],
+      }),
     }
   } finally {
     if (dir) {

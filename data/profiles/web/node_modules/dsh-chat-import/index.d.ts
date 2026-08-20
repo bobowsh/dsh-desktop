@@ -39,6 +39,7 @@ export interface ToolSurface {
   import_gemini(options: ImportOptions): Promise<ImportResult>
   import_reasonix(options: ImportOptions): Promise<ImportResult>
   import_opencode(options: ImportOptions & OpencodeExtraParams): Promise<ImportResult>
+  import_mimocode(options: ImportOptions & OpencodeExtraParams): Promise<ImportResult>
   import_zcode(options: ImportOptions & ZcodeExtraParams): Promise<ImportResult>
   import_grokbuild(options: ImportOptions): Promise<ImportResult>
   import_openclaw(options: ImportOptions): Promise<ImportResult>

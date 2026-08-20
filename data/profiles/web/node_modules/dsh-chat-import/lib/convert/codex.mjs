@@ -36,6 +36,8 @@ export function convertCodexJsonl(raw, args = {}) {
   let cwd = null
   let createdAt = null
   let model = null
+  // 开关开启时收集 developer（系统提示词/系统注入）文本，作为上下文注入保留
+  let systemPrompt = null
 
   // callId → 它所属的 step（跨行配对 function_call_output）
   const callSteps = new Map()
@@ -92,8 +94,12 @@ export function convertCodexJsonl(raw, args = {}) {
             step.content.push({ type: 'text', text: block.text })
           }
         }
+      } else if (payload.role === 'developer' && args.importSystemPrompt === true) {
+        // developer（系统提示词）：默认忽略；开关开启时按上下文注入保留
+        const text = codexMessageText(payload.content)
+        if (text) systemPrompt = systemPrompt ? systemPrompt + '\n\n' + text : text
       }
-      // developer（系统注入）忽略
+      // developer（系统注入）默认忽略
     } else if ((payload.type === 'function_call' || payload.type === 'custom_tool_call') && cur) {
       // 挂到最近的 assistant 步骤（一步 = assistant 消息 + 其工具调用）；没有则新开一步
       const step = lastStep || openStep()
@@ -154,13 +160,27 @@ export function convertCodexJsonl(raw, args = {}) {
   // 只回填 out.title，不钉 session/title 事件（DSH 自动回退首条 user 文本，见 claude.mjs）。
   const finalTitle = normalizeTitle(turns.length > 0 ? turns[0].prompt : '')
   const { turns: seedTurns, trimmed } = applyBudgetTrim(turns, args.budget)
-  const syn = synthesizeSession({ meta, turns: seedTurns, title: undefined, provider: 'codex', model, skipped, records: recs.length, skippedLines, secrets, imported: { sourcePath: args.sourcePath } })
+  const syn = synthesizeSession({ meta, turns: seedTurns, title: undefined, provider: 'codex', model, skipped, records: recs.length, skippedLines, secrets, imported: { sourcePath: args.sourcePath }, systemPrompt })
   return {
     ...syn,
     title: finalTitle,
     droppedMalformedArgs,
     ...(trimmed ? { trimmed } : {}),
   }
+}
+
+// Codex 消息 content → 纯文本（字符串原样；数组逐块取 input_text/output_text）。
+// developer / user 消息共用（user 分支过滤 < 开头 harness 注入后走同一提取）。
+function codexMessageText(content) {
+  if (typeof content === 'string') return content.trim()
+  if (!Array.isArray(content)) return ''
+  const parts = []
+  for (const block of content) {
+    if (block && (block.type === 'input_text' || block.type === 'output_text') && typeof block.text === 'string') {
+      parts.push(block.text)
+    }
+  }
+  return parts.join('\n').trim()
 }
 
 // Codex `custom_tool_call` 的 input 是 JS 代码字符串（2026+ 新版，如

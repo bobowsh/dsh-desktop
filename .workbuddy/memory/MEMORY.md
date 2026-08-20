@@ -37,3 +37,9 @@
 ### 验证 pnpm bin 的小坑
 仓库内 pnpm bin 在 `packages/dsh-desktop-market-installer/node_modules/pnpm/bin/pnpm.cjs`（v11.21.0，由 `dsh-desktop-market-installer` 的 `pnpm` 依赖 pin 决定，已 bump 10.34.5→11.21.0）。在 Git Bash 直接用会盘符错乱（`e:\e\work\...`），务必用 PowerShell 原生路径或 `NODE_OPTIONS=""` + 绝对 Windows 路径调托管 node。
 - ⚠️ store 路径记录不一致**不是致命问题**：`node_modules/.modules.yaml` 的 `storeDir` 只是 pnpm 安装期元数据，**DSH 运行时不读它**，绝不影响 app 启动/运行。若 active pnpm 解析出的 store 与记录不一致（如用 pnpm 10 跑 v11 profile、或 `.npmrc` 改了 store-dir），pnpm 在下次 `install` 会**自愈**（按 active store 重新硬链、重写 `.modules.yaml`），不报硬错；唯一风险场景是"记录的 store 已删 + 离线 + 需拉新包"才会失败。本 profile 实测：`.modules.yaml` storeDir=v11、`~/.npmrc` 无 store-dir 覆盖、实际 store 含 v11（另残留无用的 v10），三处一致 → 无问题。
+
+## ⚠️ `data/profiles/web/node_modules` 被 git 跟踪是【设计意图】，不是脏状态
+- `.gitignore` 末尾（第 41-49 行）用 `!data/profiles/web/node_modules/` 等规则**刻意把这一层 node_modules 纳入 git 管理**，目的：安装包要随 `profiles/web/**` 白名单自带依赖才能**离线运行**。这是离线部署的关键，绝非误提交。
+- ❌ **绝不要** `git rm --cached -r data/profiles/web/node_modules` 或往 .gitignore 加忽略——会破坏离线打包能力（构建时若 git checkout 后缺 node_modules，离线场景无法补回）。
+- ✅ 回退/切换版本的正确姿势：回退时**只回退清单文件**（`package.json`/`pnpm-lock.yaml`/`pnpm-workspace.yaml`/`cordis*.yml`），**不要带 node_modules 一起回退**（因 node_modules 被跟踪，普通 `git checkout`/`git reset` 会顺带回退它，导致缺包/状态乱）。若已误回退导致 node_modules 不一致：在 `data/profiles/web/` 重跑 `pnpm install --no-frozen-lockfile`（`NODE_OPTIONS=""` + 托管 node + 绝对 Windows 路径调仓库内 pnpm v11.21.0）即可按 lockfile 重新 reconcile 修复，磁盘文件不动。
+- 当前该层被跟踪文件数 ~16767，属正常设计规模。

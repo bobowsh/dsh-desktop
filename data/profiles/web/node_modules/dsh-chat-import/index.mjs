@@ -40,6 +40,7 @@ import { registerImportCommand } from './lib/command.mjs'
 import { registerResumeCommands } from './lib/resume-command.mjs'
 import { registerSessionHint } from './lib/prompt-hint.mjs'
 import { registerContextBridge } from './lib/context-bridge.mjs'
+import { registerImportPrefs } from './lib/import-prefs.mjs'
 import { exportClaudeSession } from './lib/export-tool.mjs'
 import { readOpencodeDb } from './lib/opencode.mjs'
 import { readZcodeDb } from './lib/zcode.mjs'
@@ -77,6 +78,9 @@ function apply(ctx) {
   // REQ-28 上下文桥接（默认关闭，env DSH_IMPORT_CONTEXT_BRIDGE=1 开启）：Claude 的
   // memory / CLAUDE.md / skills 桥进 agent 的 scoped systemPrompt / skills 注册。
   registerContextBridge(ctx)
+  // 导入偏好设置命名空间（chat-import）：「导入系统提示词作为上下文注入」开关（默认关）。
+  // ctx.settings 可选，缺席时注册空转；读取见 makeImportTool.execute（lib/toolkit.mjs）。
+  registerImportPrefs(ctx)
 }
 
 export { apply, inject, name, readOpencodeDb, readZcodeDb, exportClaudeSession }

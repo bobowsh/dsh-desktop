@@ -68,7 +68,7 @@ function convertChatgptConversation(conv, args) {
 
   const out = []
   for (const thread of threads) {
-    const turns = buildTurns(thread)
+    const { turns, systemPrompt } = buildTurns(thread, args.importSystemPrompt === true)
     // 无用户回合（如只有 system 注入的会话）不产生空会话
     if (turns.length === 0) continue
     const leaf = thread[thread.length - 1]
@@ -82,7 +82,7 @@ function convertChatgptConversation(conv, args) {
     // 分支会话标题带分支标记（区分同会话多分支）
     const sessionTitle = !isMain && title ? title + '（分支 ' + branchTag.slice(1) + '）' : title
     const { turns: seedTurns, trimmed } = applyBudgetTrim(turns, args.budget)
-    const syn = synthesizeSession({ meta, turns: seedTurns, title: sessionTitle, provider: 'chatgpt', model: 'chatgpt', skipped: 0, records: thread.length, imported: { sourcePath: args.sourcePath } })
+    const syn = synthesizeSession({ meta, turns: seedTurns, title: sessionTitle, provider: 'chatgpt', model: 'chatgpt', skipped: 0, records: thread.length, imported: { sourcePath: args.sourcePath }, systemPrompt })
     out.push(trimmed ? { ...syn, trimmed } : syn)
   }
   return out
@@ -173,11 +173,13 @@ function extractToolCalls(msg) {
   return calls
 }
 
-// 线程 → turns（含 REQ-19 工具调用结构化：tool/call + tool/result 配对）。
-function buildTurns(thread) {
+// 线程 → { turns, systemPrompt }（含 REQ-19 工具调用结构化：tool/call + tool/result
+// 配对）。开关开启（importSystemPrompt）时 system 角色消息正文收集为 systemPrompt。
+function buildTurns(thread, importSystemPrompt) {
   const turns = []
   let cur = null
   let lastStep = null
+  let systemPrompt = null
   // 未配对调用队列：ChatGPT 导出的 tool 消息无 tool_call_id 字段，按 FIFO 位置配对
   const pendingCalls = []
   for (const n of thread) {
@@ -189,6 +191,11 @@ function buildTurns(thread) {
         cur = { prompt: text, steps: [] }
         turns.push(cur)
         lastStep = null
+      }
+    } else if (role === 'system') {
+      if (importSystemPrompt) {
+        const text = chatgptMessageText(msg)
+        if (text) systemPrompt = systemPrompt ? systemPrompt + '\n\n' + text : text
       }
     } else if (role === 'assistant' && cur) {
       const step = { content: [], toolCalls: [], toolResults: [] }
@@ -233,5 +240,5 @@ function buildTurns(thread) {
     }
     // system 与占位节点跳过
   }
-  return turns
+  return { turns, systemPrompt }
 }

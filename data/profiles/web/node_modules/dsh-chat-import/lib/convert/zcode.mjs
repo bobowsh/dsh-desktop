@@ -109,6 +109,8 @@ export function convertZcodeJson(raw, args = {}) {
   if (chat.id) meta.sourceId = chat.id
   if (typeof chat.directory === 'string' && chat.directory) meta.cwd = chat.directory
   const title = typeof chat.title === 'string' ? chat.title.trim() : undefined
+  // 开关开启时 readZcodeDb / readZcodeTranscript 已把 system 消息收集到 chat.systemPrompt
+  const systemPrompt = args.importSystemPrompt === true && typeof chat.systemPrompt === 'string' && chat.systemPrompt.trim() ? chat.systemPrompt : undefined
   const { turns: seedTurns, trimmed } = applyBudgetTrim(turns, args.budget)
   const out = synthesizeSession({
     meta,
@@ -119,6 +121,7 @@ export function convertZcodeJson(raw, args = {}) {
     skipped: 0,
     records: chat.messages.length,
     imported: { sourcePath: args.sourcePath },
+    systemPrompt,
   })
   return trimmed ? { ...out, trimmed } : out
 }

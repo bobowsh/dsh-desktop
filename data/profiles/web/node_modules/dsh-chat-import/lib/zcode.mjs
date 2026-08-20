@@ -43,12 +43,19 @@ export function readZcodeDb(dbPath) {
       const messages = db.prepare('SELECT id, time_created, data FROM message WHERE session_id = ? ORDER BY time_created, id').all(row.id)
       const msgs = []
       let summary
+      let systemPrompt
       for (const m of messages) {
         let data
         try {
           data = JSON.parse(m.data)
         } catch {
           // 个别消息 data 非 JSON（脏数据）→ 跳过该消息，不静默吞畸形
+          continue
+        }
+        if (data.role === 'system') {
+          // 系统提示词：默认不进对话；开关开启时作为上下文注入保留（收集到 systemPrompt）
+          const text = zcodeContentText(data.content)
+          if (text) systemPrompt = systemPrompt ? systemPrompt + '\n\n' + text : text
           continue
         }
         if (data.role !== 'user' && data.role !== 'assistant') continue
@@ -89,6 +96,7 @@ export function readZcodeDb(dbPath) {
         directory: row.directory,
         createdAt: row.time_updated,
         summary,
+        systemPrompt,
         messages: msgs,
       })
     }
@@ -133,10 +141,15 @@ export function readZcodeTranscript(filePath) {
 
   const messages = []
   const pendingTools = new Map() // callId → tool part（结果回填目标）
+  let systemPrompt
   for (const msg of lastMessages) {
     if (!msg || typeof msg !== 'object') continue
     const role = msg.role
-    if (role === 'system') continue
+    if (role === 'system') {
+      const text = zcodeContentText(msg.content)
+      if (text) systemPrompt = systemPrompt ? systemPrompt + '\n\n' + text : text
+      continue
+    }
     if (role === 'tool') {
       // 工具结果：回填到对应 tool part 的 state.output（孤儿结果丢弃）
       const callId = msg.tool_call_id
@@ -205,6 +218,7 @@ export function readZcodeTranscript(filePath) {
     directory: cwd,
     createdAt: undefined,
     summary: undefined,
+    systemPrompt,
     messages,
   }]
 }
@@ -300,6 +314,19 @@ function readZcodeTarget(path) {
     return readZcodeTranscript(path)
   }
   return readZcodeDb(path)
+}
+
+// zcode 系统提示词 content → 纯文本（字符串原样；数组取 text 块拼接；其余空串）。
+function zcodeContentText(content) {
+  if (typeof content === 'string') return content.trim()
+  if (Array.isArray(content)) {
+    return content.map((b) => {
+      if (typeof b === 'string') return b
+      if (b && typeof b === 'object' && typeof b.text === 'string') return b.text
+      return ''
+    }).join('\n').trim()
+  }
+  return ''
 }
 
 // 旧格式工具结果文本：字符串原样；块数组取 text 拼接；对象序列化；缺失空串。

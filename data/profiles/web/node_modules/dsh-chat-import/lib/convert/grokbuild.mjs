@@ -120,6 +120,8 @@ export function convertGrokbuildJson(summaryJsonText, chatHistoryText, args = {}
   let droppedToolResults = 0
   // reasoning（加密内部状态）与 system（harness 注入）记录的过滤计数
   let filtered = 0
+  // 开关开启时收集 system（系统提示词）文本，作为上下文注入保留
+  let systemPrompt = null
 
   const attachResult = (toolCallId, content, isError) => {
     const step = callSteps.get(toolCallId)
@@ -144,7 +146,15 @@ export function convertGrokbuildJson(summaryJsonText, chatHistoryText, args = {}
   for (const rec of recs) {
     if (!rec || typeof rec !== 'object') continue
     const kind = rec.type
-    if (kind === 'system' || kind === 'reasoning') { filtered++; continue }
+    if (kind === 'system') {
+      if (args.importSystemPrompt === true) {
+        const text = parseGrokContent(rec.content).texts.join('\n').trim()
+        if (text) systemPrompt = systemPrompt ? systemPrompt + '\n\n' + text : text
+      }
+      filtered++
+      continue
+    }
+    if (kind === 'reasoning') { filtered++; continue }
     if (kind !== 'user' && kind !== 'assistant' && kind !== 'tool') continue
     const pc = parseGrokContent(rec.content)
     if (kind === 'user') {
@@ -210,6 +220,7 @@ export function convertGrokbuildJson(summaryJsonText, chatHistoryText, args = {}
     skippedLines,
     secrets,
     imported: { sourcePath: args.sourcePath },
+    systemPrompt,
   })
   return {
     ...syn,

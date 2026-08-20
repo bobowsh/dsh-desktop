@@ -9,6 +9,7 @@
 
 import { defineTool } from '@deepseek-ai/dsh-tools'
 import { resolveImportBudget } from './budget.mjs'
+import { readImportPrefs } from './import-prefs.mjs'
 import {
   importTranscript, importDirectory, previewTranscript, previewDirectory, isPreview,
 } from './import-core.mjs'
@@ -486,7 +487,11 @@ export function makeImportTool(ctx, spec) {
       // args.budget（token 数，转换层裁剪消费、registry 记录）与 args.budgetSource
       // （裁剪上报标注来源）；预算变化经 registry 比对 → budgetChanged 跳过。
       const budgetInfo = await resolveImportBudget(ctx, args)
-      const effective = { ...args, budget: budgetInfo.budget, budgetSource: budgetInfo.source }
+      // 导入偏好（chat-import 设置命名空间）：「导入系统提示词作为上下文注入」开关
+      // （默认关）。读值合并进 args，随既有 args → convert(raw, args) 路径送达各源
+      // 转换器；设置服务缺席时 readImportPrefs 回退默认，不阻塞导入。
+      const prefs = readImportPrefs(ctx)
+      const effective = { ...args, budget: budgetInfo.budget, budgetSource: budgetInfo.source, importSystemPrompt: prefs.importSystemPrompt === true }
       // REQ-17：preview/dryRun=true 走预览分支（照常 resolve/stat/readText/convert，
       // 但零副作用——不落盘、不写 registry、不归组；见 preview* 实现）
       const preview = isPreview(args)

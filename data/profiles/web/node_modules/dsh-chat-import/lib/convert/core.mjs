@@ -39,11 +39,29 @@ export function mapContentBlock(block) {
   return null
 }
 
+// 导入系统提示词的正文：环境变更免责声明 + 原始系统提示词。免责声明放最前，
+// 明确告知模型「已迁移到 DSH，工具列表/权限/执行环境以当前会话为准」，防止模型
+// 沿用源系统提示词里的旧工具名、旧命令或旧环境约定（这些在 DSH 里不可用/不同）。
+function systemPromptInjectionText(provider, systemPrompt) {
+  const src = String(systemPrompt ?? '').trim()
+  const label = typeof provider === 'string' && provider ? provider : 'unknown'
+  return '【导入的历史系统提示词（仅供参考）】\n'
+    + '本会话已从 ' + label + ' 迁移到 DeepSeek Harness（DSH）。'
+    + '以下为原会话的系统提示词，仅供历史参考；当前运行环境、可用工具列表、权限与执行指令'
+    + '均以 DSH 当前会话为准，请勿沿用原文中的旧工具名、旧命令或旧环境约定。\n'
+    + '\n--- 原始系统提示词 ---\n'
+    + src
+}
+
 // 把「回合中间结构」合成平衡的 DSH 事件日志（seq 从 0 连续；surface 事件带
 // surfaceOp:'append'；tool/result 用 sourceEventSeqs 关联其 tool/call）。
 // turns: [{ prompt, steps: [{ content, toolCalls, toolResults }] }]
 // imported: 可选 { sourcePath }——index 层从工具入参 path 归一化后传入（REQ-32）。
-export function synthesizeSession({ meta, turns, title, provider, model, skipped, records, imported, skippedLines = [], secrets = [], permissionCount = 0 }) {
+// systemPrompt: 可选——开关开启时各源提取的原始系统提示词，作为「上下文注入」
+// user/message（source.kind='plugin'，plugin='chat-import'）钉在首个 turn 之前。
+// 注入正文前置环境变更免责声明：迁移到 DSH 后工具/权限/指令以 DSH 当前会话为准，
+// 避免模型沿用源工具的系统提示词里的旧工具名/旧命令。
+export function synthesizeSession({ meta, turns, title, provider, model, skipped, records, imported, skippedLines = [], secrets = [], permissionCount = 0, systemPrompt }) {
   const events = []
   let seq = 0
   let turn = 0
@@ -88,6 +106,18 @@ export function synthesizeSession({ meta, turns, title, provider, model, skipped
         importedAt: Date.now(),
       },
     })
+  }
+
+  // 导入系统提示词（开关开启时）：作为「上下文注入」的 user/message 钉在首个 turn
+  // 之前。source.kind='plugin' 让 UI 折叠显示为「上下文注入 · chat-import」；正文
+  // 前置环境变更免责声明（模型看到的是迁移后的新环境，旧工具名/命令不再适用）。
+  if (turns.length > 0 && typeof systemPrompt === 'string' && systemPrompt.trim()) {
+    push('user/message', {
+      id: 'import:' + meta.id + ':system',
+      role: 'user',
+      content: [{ type: 'text', text: systemPromptInjectionText(provider, systemPrompt) }],
+      source: { kind: 'plugin', plugin: 'chat-import' },
+    }, true)
   }
 
   for (const t of turns) {
