@@ -102,8 +102,8 @@ importers:
         specifier: github:renat3u/dsh-web-archive
         version: https://codeload.github.com/renat3u/dsh-web-archive/tar.gz/777ae5ec25d391dee8ea2087b6db67cb89e8a378
       dshmarket:
-        specifier: ^1.13.1
-        version: 1.13.1(@deepseek-ai/dsh-settings@0.1.0-rc.8(@deepseek-ai/schemastery@3.18.1))
+        specifier: ^1.16.0
+        version: 1.16.0(@deepseek-ai/dsh-settings@0.1.0-rc.8(@deepseek-ai/schemastery@3.18.1))
 
 packages:
 
@@ -1069,8 +1069,8 @@ packages:
     resolution: {gitHosted: true, tarball: https://codeload.github.com/renat3u/dsh-web-archive/tar.gz/777ae5ec25d391dee8ea2087b6db67cb89e8a378}
     version: 0.1.1
 
-  dshmarket@1.13.1:
-    resolution: {integrity: sha512-CmDQe22x5p6WgAvFtcgKf+f1SzwrnEV8rLgO+g9DoZ0iVJodY+/4n8v2gbg2F1sM0a3qK4JqLIsOpUjX/PqC9w==}
+  dshmarket@1.16.0:
+    resolution: {integrity: sha512-WuHVUQzzECcK0gWdf0Q84KVvKNYNLTbF/GEh2TpBZEeekEI9hbZlqRu3kDwfVDciRgb49GtD0ost1sn45BbfMQ==}
     peerDependencies:
       '@deepseek-ai/cordis': ^4.0.1
       '@deepseek-ai/dsh-settings': ^0.1.0-rc.7
@@ -1302,6 +1302,10 @@ packages:
 
   underscore@1.13.8:
     resolution: {integrity: sha512-DXtD3ZtEQzc7M8m4cXotyHR+FAS18C64asBYY5vqZexfYryNNnDc02W4hKg3rdQuqOYas1jkseX0+nZXjTXnvQ==}
+
+  undici@7.29.0:
+    resolution: {integrity: sha512-IDxfleLmmbSskfWSUATiN1nfn2rDuvnMOqb5CWR92iIfojA0Ud+ulOAAEQ57LPr9rWmsreUyf5lwyao+7GNNVw==}
+    engines: {node: '>=20.18.1'}
 
   undici@8.10.0:
     resolution: {integrity: sha512-HvltHd7avK13QIw/oLe4qoOLyoVSoafqJ2jYOrtMRBkbYT31eiBQ8O0ehRKZiEZCMEyLFQNIADpgCWC5fALvYQ==}
@@ -2231,9 +2235,10 @@ snapshots:
 
   dsh-web-archive@https://codeload.github.com/renat3u/dsh-web-archive/tar.gz/777ae5ec25d391dee8ea2087b6db67cb89e8a378: {}
 
-  dshmarket@1.13.1(@deepseek-ai/dsh-settings@0.1.0-rc.8(@deepseek-ai/schemastery@3.18.1)):
+  dshmarket@1.16.0(@deepseek-ai/dsh-settings@0.1.0-rc.8(@deepseek-ai/schemastery@3.18.1)):
     dependencies:
       js-yaml: 4.3.1
+      undici: 7.29.0
     optionalDependencies:
       '@deepseek-ai/dsh-settings': 0.1.0-rc.8(@deepseek-ai/schemastery@3.18.1)
 
@@ -2477,6 +2482,8 @@ snapshots:
   tslib@2.8.1: {}
 
   underscore@1.13.8: {}
+
+  undici@7.29.0: {}
 
   undici@8.10.0: {}
 

@@ -33,7 +33,7 @@
     "dsh-status-rotator": "github:01Virex/dsh-status-rotator",
     "dsh-sticky-note": "github:Meredith2328/dsh-sticky-note",
     "dsh-web-archive": "github:renat3u/dsh-web-archive",
-    "dshmarket": "^1.13.1"
+    "dshmarket": "^1.16.0"
   },
   "dsh": {
     "profile": {

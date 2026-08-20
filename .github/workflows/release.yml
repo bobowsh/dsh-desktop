@@ -45,49 +45,15 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run typecheck
-      - name: Stage bundled user data (web profile plugins + mnemon CLI)
+      - name: Fetch Mnemon CLI for bundling
         shell: pwsh
         env:
           MNEMON_VERSION: '0.2.3'
         run: |
-          # Install the web profile's bundled plugins into the REAL user home
-          # (~/.dsh) and the Mnemon CLI into ~/.mnemon — the exact layout that
-          # scripts/bundle-user-data.mjs snapshots from (it copies ~/.dsh +
-          # ~/.mnemon into ./bundled-user-data, which electron-builder then
-          # ships). This keeps the flow correct: bundle-user-data.mjs does the
-          # staging, instead of us writing straight into bundled-user-data
-          # (which made the snapshot script skip everything as "source not
-          # found" on CI, where the home dir starts empty).
-          #
-          # pnpm v11 deny-by-default blocks build scripts of git-hosted/native
-          # deps. The profile's pnpm-workspace.yaml sets dangerouslyAllowAllBuilds
-          # (scoped to this plugin-bundling workspace; deps are version-pinned in
-          # package.json). We seed that committed config into the real home so
-          # pnpm reads the approval from ~/.dsh/profiles/web/pnpm-workspace.yaml.
-          $srcProfile = Join-Path $env:GITHUB_WORKSPACE 'bundled-user-data\.dsh\profiles\web'
-          $homeDsh = Join-Path $env:USERPROFILE '.dsh'
-          $homeProfile = Join-Path $homeDsh 'profiles\web'
-          New-Item -ItemType Directory -Force -Path $homeProfile | Out-Null
-          # Seed the committed profile manifest + build-approval + lockfile into
-          # the real home so pnpm installs reproducibly (frozen) and the approval
-          # is in effect for the install that follows.
-          Copy-Item "$srcProfile\package.json" "$homeProfile\package.json" -Force
-          Copy-Item "$srcProfile\pnpm-workspace.yaml" "$homeProfile\pnpm-workspace.yaml" -Force
-          Copy-Item "$srcProfile\pnpm-lock.yaml" "$homeProfile\pnpm-lock.yaml" -Force
-          Push-Location $homeProfile
-          # Force the pnpm content-addressable store OUT of any node_modules path.
-          # When installing into the real home (~/.dsh, on C:), pnpm v11 otherwise
-          # resolves its store to the pnpm-install dir under .../node_modules, so
-          # git-hosted packages' `prepare` (e.g. dsh-queue-plus runs `tsdown`) then
-          # executes from a temp dir under that store — tsdown refuses to strip types
-          # from config files "under node_modules" and the prepare fails. Pointing the
-          # store at a plain workspace path (not under node_modules) keeps the prepare
-          # temp dir safe, exactly like the repo-local install that previously worked.
-          $storeDir = Join-Path $env:GITHUB_WORKSPACE '.pnpm-store'
-          pnpm install --store-dir $storeDir --frozen-lockfile
-          Pop-Location
-
-          # Fetch the prebuilt Mnemon memory CLI into the real home ~/.mnemon/bin.
+          # bundle-user-data.mjs copies mnemon from ~/.mnemon/bin into data/bin/,
+          # which electron-builder ships via extraResources. The web profile plugins
+          # are already committed in data/profiles/web/node_modules — no pnpm
+          # install needed; npm ci handles root deps only.
           $ver = $env:MNEMON_VERSION
           $url = "https://github.com/mnemon-dev/mnemon/releases/download/v$ver/mnemon_${ver}_windows_amd64.zip"
           $tmpZip = Join-Path $env:RUNNER_TEMP 'mnemon.zip'

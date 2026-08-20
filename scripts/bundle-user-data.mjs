@@ -25,7 +25,7 @@
 
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { homedir } from 'node:os'
+import { homedir, platform } from 'node:os'
 import { existsSync, cpSync, mkdirSync, rmSync, statSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)))
@@ -163,8 +163,13 @@ function normalizeModulesMetadata(profileDest) {
   const workspaceFile = join(profileDest, 'pnpm-workspace.yaml')
   const workspaceRaw = readFileSync(workspaceFile, 'utf8')
   if (!/^\s*storeDir\s*:/m.test(workspaceRaw)) {
-    writeFileSync(workspaceFile, `${workspaceRaw.replace(/\s*$/, '')}\n\n# pnpm store: reuse the user home store (~/AppData/Local/pnpm/store).\n# Explicit store-dir skips pnpm's default same-volume resolution (which would\n# create a volume-root .pnpm-store next to the profile); cross-volume imports\n# fall back to copy automatically.\nstoreDir: ~/AppData/Local/pnpm/store\n`)
-    console.log('[bundle-user-data] pnpm-workspace.yaml: pinned storeDir: ~/AppData/Local/pnpm/store')
+    const storeDir = platform() === 'win32'
+      ? '~/AppData/Local/pnpm/store'
+      : platform() === 'darwin'
+        ? '~/Library/pnpm/store'
+        : '~/.local/share/pnpm/store'
+    writeFileSync(workspaceFile, `${workspaceRaw.replace(/\s*$/, '')}\n\n# pnpm store: reuse the user home store (${storeDir}).\n# Explicit store-dir skips pnpm's default same-volume resolution (which would\n# create a volume-root .pnpm-store next to the profile); cross-volume imports\n# fall back to copy automatically.\nstoreDir: ${storeDir}\n`)
+    console.log(`[bundle-user-data] pnpm-workspace.yaml: pinned storeDir: ${storeDir}`)
   }
 }
 
