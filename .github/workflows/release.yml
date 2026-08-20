@@ -227,12 +227,13 @@ jobs:
               --repo "$GITHUB_REPOSITORY"
           fi
       - name: Mirror release assets to ModelScope
+        continue-on-error: true
         env:
           MODELSCOPE_TOKEN: ${{ secrets.MODELSCOPE_TOKEN }}
           MODELSCOPE_REPO_ID: alexyaojin/dsh-desktop
         run: |
           set -euo pipefail
-          test -n "$MODELSCOPE_TOKEN" || { echo "::error::Missing secret MODELSCOPE_TOKEN"; exit 1; }
+          test -n "$MODELSCOPE_TOKEN" || { echo "::warning::Skipping ModelScope mirror — MODELSCOPE_TOKEN not configured"; exit 0; }
           python3 -m venv "$RUNNER_TEMP/ms-env"
           "$RUNNER_TEMP/ms-env/bin/pip" install -q modelscope
           "$RUNNER_TEMP/ms-env/bin/python3" <<'PY'
