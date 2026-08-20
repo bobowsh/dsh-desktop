@@ -285,6 +285,11 @@ function bundledPnpmEntryPath(): string {
   return candidates.find((candidate) => existsSync(candidate)) ?? join(root, 'pnpm.cjs')
 }
 
+function bundledNodePath(): string {
+  const executable = process.platform === 'win32' ? 'node.exe' : 'node'
+  return join(app.getAppPath(), 'node_modules', 'node', 'bin', executable)
+}
+
 function harnessNodeEntryPath(): string {
   return app.isPackaged
     ? join(process.resourcesPath, 'harness-node-entry.mjs')
