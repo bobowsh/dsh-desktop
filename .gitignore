@@ -33,6 +33,17 @@ data/bin/
 # Runtime check-marker files produced by profile tools on first use
 data/*.checked.json
 data/dsh-chat-import/scan-cache.json
+# Agent/IDE runtime data (WorkBuddy)
+.workbuddy/
+# Local npm cache
+.npm-cache/
+# Runtime notes / logs produced by the app
+.dsh-notes/
+# User runtime data under data/ (import scratch, enhancer process state)
+data/dsh-chat-import/
+data/dsh-prompt-enhancer*.json
+# One-off debug scripts
+test/check-persistence-list*.mjs
 .env
 .env.*
 !.env.example

@@ -24,6 +24,14 @@
 
 ## Install
 
+Published npm package (recommended; uses the prebuilt release):
+
+```bash
+dsh plugin --profile web add "dsh-auto-collapse"
+```
+
+Install from GitHub when using the development version or following `main`:
+
 ```bash
 dsh plugin --profile web add "github:a179-sanae/dsh-auto-collapse#main"
 ```
@@ -62,8 +70,16 @@ Validates the plugin/DSH package identities and the process listening on port 30
 
 ### Publishing a new version
 
+Update the `version` in `package.json`, then publish to npm (the `prepack` hook builds automatically):
+
 ```bash
-npm pack --pack-destination <local-plugin-dir>   # packing auto-triggers the build via the prepack hook
+npm publish --access public
+```
+
+For local development, you can pack a tgz without publishing:
+
+```bash
+npm pack --pack-destination <local-plugin-dir>
 ```
 
 Point the plugin dependency in the profile's `package.json` to the new tarball and reinstall the plugin.

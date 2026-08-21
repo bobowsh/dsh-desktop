@@ -2,7 +2,19 @@
 
 > **English** | [中文](./README_ZH.md)
 
-Replaces the `Deep diving...` status line in the DeepSeek Harness (dsh) Web UI's turn footer with your own text: phase-aware switching, typewriter output, animated rainbow gradient (optional), and timed rotation. The elapsed-time clock (which appears after 15 seconds) is untouched.
+[![npm version](https://img.shields.io/npm/v/dsh-status-rotator?color=4a6cf7)](https://www.npmjs.com/package/dsh-status-rotator)
+[![npm downloads](https://img.shields.io/npm/dt/dsh-status-rotator?color=4a6cf7)](https://www.npmjs.com/package/dsh-status-rotator)
+[![GitHub stars](https://img.shields.io/github/stars/01Virex/dsh-status-rotator?color=4a6cf7)](https://github.com/01Virex/dsh-status-rotator)
+[![license](https://img.shields.io/github/license/01Virex/dsh-status-rotator)](LICENSE)
+
+```bash
+# One-line install
+dsh plugin --profile web add dsh-status-rotator
+```
+
+> ⭐ **If this made you smile, give it a star** — it keeps the memes flowing.
+
+Replaces the `Deep diving...` status line in the DeepSeek Harness (dsh) Web UI's turn footer with your own text: phase-aware switching, typewriter output, animated rainbow gradient (optional), timed rotation, **template placeholders with live values** (`{elapsed}`, `{phase}`, `{model}`, `{tps}`…), optional **browser tab title** rotation, **a live status pill** (model, phase, elapsed, tokens/s — fed by the same real-time engine), and **presets with time-of-day scheduling**. The elapsed-time clock (which appears after 15 seconds) is untouched.
 
 ## Installation
 
@@ -12,7 +24,7 @@ Two ways to install: the recommended `dsh plugin add` command, or the manual cop
 
 The plugin's `package.json` declares a `dsh.bundle.patch` manifest, so it's recognized automatically after install — no extra flags needed. The command syntax is `dsh plugin --profile <name> add <package>` (e.g. `--profile web`):
 
-- **From npm** (easiest): `dsh plugin --profile web add dsh-status-rotator`
+- **From npm** (easiest): `dsh plugin --profile web add dsh-status-rotator` ← always installs the latest release
 - **From a clone**: `dsh plugin --profile web add ./dsh-status-rotator`
 - **From a release package**: download the packaged tarball from the Release page, then `dsh plugin --profile web add /path/to/dsh-status-rotator-<version>.tgz`.
 
@@ -34,6 +46,11 @@ The plugin's `package.json` declares a `dsh.bundle.patch` manifest, so it's reco
 
 - **Phase-aware**: three sets of phrases — `thinking` (just started) / `running` (after 15s) / `long` (past the threshold). Switches immediately when the clock appears or the timeout hits, no need to wait for the rotation interval;
 - **Typewriter effect**: phrases are typed out character by character, speed configurable, 0 disables it;
+- **Template placeholders**: `{elapsed}` (live, refreshed every `liveTickMs`), `{phase}`, `{phaseLabel}`, `{locale}`, `{date}`, `{time}`, plus live-engine values `{model}`, `{provider}`, `{tps}`, `{pending}`, `{tools}`, `{running}` — e.g. `正在写代码 {elapsed}` shows a ticking clock inside the phrase;
+- **Real-time status engine**: subscribes to the dsh session snapshot (session list, conversation snapshot, model RPC, DOM clock fallback) — one source feeding the phrases, the tab title and the pill;
+- **Live status pill**: a floating pill in the official `shell.overlay` seat, template-driven live info (`{model} · {phaseLabel} · {elapsed} · ⚡{tps} tok/s`), position/opacity configurable;
+- **Browser tab title**: rotate `document.title` through your own templates (`⏳ {phase} {elapsed}`), restore the original title when idle (configurable);
+- **Presets & scheduling**: multiple named phrase banks with their own config, switchable from the settings page or automatically by time-of-day / weekday rules;
 - **Rainbow gradient**: text rendered with an animated gradient, colors and speed configurable, can be turned off with one switch;
 - **Phrases separated from code**: all phrases live in `config.json`, editing them requires zero code and no restart;
 - **Settings page**: a new "Status Texts" page in DSH's Settings, with visual editing for the Chinese/English × three-phase phrase banks, saves take effect immediately;
@@ -66,6 +83,87 @@ Status text is shown with an animated rainbow gradient by default (applies to th
 }
 ```
 
+## Template Placeholders
+
+Any phrase (and any title template) may contain placeholders, replaced at render time:
+
+| Placeholder | Meaning | Example |
+|---|---|---|
+| `{elapsed}` | elapsed time of the current turn, localized like the clock | `正在写代码 1分02秒…` |
+| `{phase}` | phase id: `thinking` / `running` / `long` / `idle` | `running` |
+| `{phaseLabel}` | localized short label of the phase | `运行中` |
+| `{model}` | model of the current session (live engine, `—` when unknown) | `deepseek-chat` |
+| `{provider}` | provider route of the current session (live engine) | `deepseek` |
+| `{tps}` | streaming tokens/s estimate (live engine) | `12` |
+| `{pending}` | pending/approval interactions count (live engine) | `1` |
+| `{tools}` | running tool names joined with `+` (live engine) | `bash+web_search` |
+| `{running}` | `run` / `idle` (live engine) | `run` |
+| `{locale}` | current UI language (`zh` / `en`) | `zh` |
+| `{date}` | local date `YYYY-MM-DD` | `2026-08-07` |
+| `{time}` | local time `HH:MM:SS` | `12:34:56` |
+
+Placeholders that change over time (`{elapsed}`, `{date}`, `{time}`, `{tps}`, `{pending}`, `{tools}`) are refreshed **live** every `liveTickMs` (default 1000 ms; `0` disables live refresh, they then update once per rotation). Unknown placeholders are left as-is, so `{...}` in a phrase is safe. The live values (`{model}`/`{provider}`/`{tps}`/`{pending}`/`{tools}`/`{running}`) come from a **real-time status engine** that subscribes to the dsh session snapshot and model RPC, with a DOM clock fallback — if the session API is unavailable, they stay `—` but the plugin keeps working.
+
+```json
+"phrases": { "zh": { "thinking": ["正在写代码 {elapsed}…", "正在{phaseLabel}中 ({elapsed})…"] } }
+```
+
+## Browser Tab Title
+
+Optionally rotate the browser tab title while a turn is running:
+
+```json
+"title": {
+    "enabled": true,
+    "templates": ["⏳ {phase} {elapsed}", "🤔 {phaseLabel}… {elapsed}"], // rotated every intervalMs
+    "idleTemplate": "💤 dsh 空闲",   // "" = restore the original title when idle
+    "intervalMs": 8000
+}
+```
+
+Templates support the same placeholders as phrases. When no turn is active the title shows `idleTemplate`, or the original title if it is `""`. `title: false` disables it entirely.
+
+## Live Status Pill
+
+A floating pill (official `shell.overlay` seat — the documented place for status pills) shows live information driven by the same real-time engine:
+
+```json
+"pill": {
+    "enabled": true,
+    "template": "{model} · {phaseLabel} · {elapsed} · ⚡{tps} tok/s",
+    "position": "right-bottom",   // right-bottom / left-bottom / right-top / left-top
+    "opacity": 0.92
+}
+```
+
+The template supports every phrase placeholder (including the live-engine ones: `{model}`, `{provider}`, `{tps}`, `{pending}`, `{tools}`). While a turn runs it ticks with: the **model name** (read from the official model-directory service, following session/model switches), the **phase** (`thinking`/`running`/`long`), the **elapsed time** and the streaming **tokens/s** — phase and elapsed are derived from the session snapshot (the turn's start moment is tracked by the engine itself, so it never depends on DOM structure); when idle it shows `— · 空闲 · 0秒 · ⚡0 tok/s`. `pill: false` disables it. If the session API is unavailable (older dsh), the DOM clock drives phase/elapsed as a fallback and the live fields show `—` — no crash, no errors.
+
+## Presets & Scheduling
+
+Named presets can carry their own `config` and `phrases`; the editor on the settings page switches between them and a time schedule can switch the active preset automatically:
+
+```json
+{
+    "activePreset": "work",
+    "presets": [
+        { "id": "work", "label": { "zh": "工作模式", "en": "Work" },
+          "config": { "intervalMs": 12000, "gradient": false },
+          "phrases": { "zh": { "thinking": ["正在认真写代码…"] } } },
+        { "id": "fun", "label": { "zh": "摸鱼模式", "en": "Fun" },
+          "phrases": { "zh": { "thinking": ["正在摸鱼…"] } } }
+    ],
+    "schedule": [
+        { "preset": "work", "days": ["mon", "tue", "wed", "thu", "fri"], "from": "09:00", "to": "18:00" },
+        { "preset": "fun",  "days": ["sat", "sun"], "from": "00:00", "to": "23:59" }
+    ]
+}
+```
+
+- `presets[]`: each has an `id` (required), optional `label` (string or `{zh, en}`), optional `config` (merged over the top-level config) and optional `phrases` (used instead of the top-level phrases). A preset may be an id-only "shell" that just switches back to the base library.
+- `activePreset`: preset id, or `null`/absent to use the top-level `config` / `phrases`.
+- `schedule[]`: rules with `preset`, `days` (`mon`…`sun`, omitted = every day), `from` / `to` (`HH:MM`). Overnight windows (e.g. `22:00`–`06:00`) are supported. While a rule matches, that preset is used; otherwise `activePreset` applies. The schedule is re-evaluated every minute and applies live.
+- Settings-page edits always target the selected preset (or the base library when "Default" is selected); "Set active" writes `activePreset`; the schedule rules are edited as a list on the same page.
+
 ## Configuration
 
 Phrases are fully separated from the source code and live in JSON config files. There are two config files at the project root:
@@ -75,10 +173,15 @@ Phrases are fully separated from the source code and live in JSON config files. 
 
 **Auto-loading (default)**: the plugin's node half registers an HTTP route (`/plugins/dsh-status-rotator/config.json`) that serves the `config.json` next to the plugin (read from disk on every request). The browser fetches it automatically by default, and **while the page stays open it re-reads every `reloadIntervalMs`, plus immediately when you switch back to the tab**, so as long as `config.json` sits in the plugin directory, phrase edits take effect **without a refresh or restart**. The only restart of `dsh web` needed is on first install.
 
+**Persistent storage since v0.6.1**: saved edits are written into the **official dsh settings store** (`$DSH_HOME/settings.yaml`, namespace `status-rotator`) — the same store the rest of dsh uses for its settings, which **survives plugin upgrades**. Upgrading via npm or a release package will no longer wipe your gradient/phrases/presets (previously `config.json` lived inside the plugin directory and was deleted on upgrade). The plugin-directory `config.json` remains as a compatibility mirror and fallback; a one-time import migrates an existing `config.json` into the settings store on first start.
+
 ```json
 {
-    "config": { "intervalMs": 10000, "typeSpeedMs": 30, "longAfterMs": 60000, "reloadIntervalMs": 15000, "debug": false, "gradient": { "enabled": true, "colors": ["#ff5f6d", "#ffc371", "#ffdd55", "#7dff7d", "#5fd4ff", "#a78bfa", "#ff8adb"], "speed": 4 } },
-    "phrases": { "zh": { "thinking": ["…"], "running": ["…"], "long": ["…"] }, "en": { "thinking": ["…"], "running": ["…"], "long": ["…"] } }
+    "config": { "intervalMs": 10000, "typeSpeedMs": 30, "longAfterMs": 60000, "reloadIntervalMs": 15000, "liveTickMs": 1000, "debug": false, "gradient": { "enabled": true, "colors": ["#ff5f6d", "#ffc371", "#ffdd55", "#7dff7d", "#5fd4ff", "#a78bfa", "#ff8adb"], "speed": 4 }, "title": { "enabled": false, "templates": ["⏳ {phaseLabel} {elapsed}"], "idleTemplate": "", "intervalMs": 8000 }, "pill": { "enabled": true, "template": "{model} · {phaseLabel} · {elapsed} · ⚡{tps} tok/s", "position": "right-bottom", "opacity": 0.92 } },
+    "phrases": { "zh": { "thinking": ["…"], "running": ["…"], "long": ["…"] }, "en": { "thinking": ["…"], "running": ["…"], "long": ["…"] } },
+    "presets": [],          // optional, see "Presets & Scheduling"
+    "activePreset": null,   // optional preset id
+    "schedule": []          // optional time rules
 }
 ```
 
@@ -88,9 +191,15 @@ Phrases are fully separated from the source code and live in JSON config files. 
 | `typeSpeedMs` | 30 | Typewriter delay per character (ms), 0 disables the typewriter |
 | `longAfterMs` | 60000 | Threshold for entering the `long` phase |
 | `reloadIntervalMs` | 15000 | Interval for auto re-reading `config.json` while the page is open (ms), 0 disables |
+| `liveTickMs` | 1000 | Refresh interval for live placeholders (`{elapsed}` / `{date}` / `{time}` / `{tps}`…) in phrases, titles and the pill (ms), 0 disables |
 | `debug` | false | Console diagnostic logs |
 | `gradient` | see above | Rainbow gradient: `false` / `true` / `{enabled, colors, speed}` |
+| `title` | see above | Tab title rotation: `false` / `{enabled, templates, idleTemplate, intervalMs}` |
+| `pill` | see above | Live status pill: `false` / `{enabled, template, position, opacity}` |
 | `phrases` | from config file | The phrases (Chinese/English × three phases; partial entries allowed, missing ones fall back to other sources) |
+| `presets` | none | Named phrase banks, each with optional `config` / `phrases` |
+| `activePreset` | null | Which preset is active (`null` = use the top-level config/phrases) |
+| `schedule` | none | Time rules that switch the active preset automatically |
 
 Phrase source priority, highest first:
 
@@ -111,9 +220,13 @@ Open Settings in the bottom-left of DSH and a new **Status Texts** page appears 
 
 - **中文 / English** tabs, each with three text boxes for `thinking` / `running` / `long`, **one phrase per line**, blank lines are ignored;
 - Each phase shows the current phrase count in real time;
-- Basic settings (rotation interval, typewriter speed, long-task threshold, auto-reload interval) live on the same page;
+- Basic settings (rotation interval, typewriter speed, long-task threshold, auto-reload interval, placeholder refresh interval) live on the same page;
+- **Live pill settings**: enable toggle, display template, position — the pill and the live-engine placeholders are configured in the same page;
+- **Rainbow gradient settings**: enable toggle, color sequence, speed — no more manual `config.json` editing to turn the gradient off;
+- **Preset selector**: edit each preset's phrases/config independently; "Set active" writes `activePreset`; the currently effective preset (schedule included) is shown live;
+- **Schedule editor**: add/remove weekday + time-window rules that switch presets automatically;
 - Clicking "Save Phrase Bank" makes the browser `PUT` the full JSON to `/plugins/dsh-status-rotator/config.json`; the node half validates it and **writes it back atomically**, and already-open pages hot-apply it immediately without a refresh;
-- Submitted content is validated (phrases must be string arrays, etc.); invalid content returns 400 and shows an error on the page, so the config file can't be corrupted.
+- Submitted content is validated (phrases must be string arrays, presets/schedule must match their shapes); invalid content returns 400 and shows an error on the page, so the config file can't be corrupted.
 
 After upgrading to a version with the settings page, restart `dsh web` once (so the node half registers the write endpoint); everything after that can be done from the page.
 
@@ -152,14 +265,15 @@ The display name prefers the group card name, falling back to the nickname. The 
 ```
 dsh-status-rotator/
 ├── lib/
-│   ├── index.js            # node half: registers the HTTP route for config.json
-│   └── client.js           # client half: status text replacement / gradient / typewriter
+│   ├── index.js            # node half: registers the HTTP route for config.json (GET/PUT, validated)
+│   └── client.js           # client half: status text replacement / placeholders / gradient / title / presets
 ├── config.example.json     # complete template (default config + all phrases, committed)
 ├── config.qq684306814.example.json  # QQ group member phrase template (scripts/fetch-qq-group.cjs generates the real file)
 ├── config.json             # local personalized config (gitignored)
 ├── gen-config.cjs          # script that initializes config.json
 ├── scripts/
-│   └── fetch-qq-group.cjs  # fetches QQ group members and generates the phrase config
+│   ├── fetch-qq-group.cjs  # fetches QQ group members and generates the phrase config
+│   └── smoke-test.cjs      # pure-function smoke tests (npm test)
 ├── package.json
 ├── README.md               # English docs
 ├── README_ZH.md            # Chinese docs
@@ -167,6 +281,10 @@ dsh-status-rotator/
 ├── CONTRIBUTORS_ZH.md      # Chinese contributors
 └── LICENSE
 ```
+
+## Testing
+
+`npm test` (or `node scripts/smoke-test.cjs`) loads `lib/client.js` in a Node sandbox and asserts the pure logic — placeholder interpolation, elapsed formatting, clock parsing, config/preset/schedule normalization, schedule matching, and the node half's validation — no browser needed. The same suite runs automatically in CI on every push/PR (see [.github/workflows/test.yml](.github/workflows/test.yml)).
 
 ## Uninstall
 

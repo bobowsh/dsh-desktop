@@ -227,6 +227,60 @@ export function rowIdsForPackage(host: PatchHost, profileDirectory: string, pack
 }
 
 /**
+ * Top-level patch rows that DISABLE another plugin: a row carrying both an
+ * `id` and `disabled: true`. Rows nested under an `insert:` block are separate
+ * array elements shaped `{ insert: [...] }`, so anything here is by definition
+ * a sibling row targeting a plugin this package does not own.
+ */
+function foreignDisableIds(rows: unknown[]): string[] {
+  const ids: string[] = []
+  for (const row of rows) {
+    if (row === null || typeof row !== 'object' || Array.isArray(row)) continue
+    const record = row as Record<string, unknown>
+    const id = record.id
+    if (typeof id === 'string' && record.disabled === true && !ids.includes(id)) ids.push(id)
+  }
+  return ids
+}
+
+/**
+ * The ids of OTHER plugins a package's bundle patch DISABLES — top-level
+ * `- id: X` + `disabled: true` rows targeting plugins it does not own. This is
+ * the precise marker of a bundle whose toggle-off can brick the boot (#224):
+ * dsh-postgres-backends disables session-persistence-jsonl, so once the market
+ * also disables the postgres backends nothing provides sessionPersistence.
+ *
+ * A bundle that merely RECONFIGURES a neighbour is deliberately NOT counted:
+ * the e2e fixture-cross tweaks dshm-fixture-b's config, and #147 requires
+ * disabling it to leave that neighbour live — dropping such a bundle from the
+ * stack broke its re-enable. Config-only side effects stay on the normal #147
+ * path; only a foreign `disabled: true` triggers the bundle removal. Removing
+ * the bundle still neutralizes any config side effects it carries, since its
+ * whole patch stops applying.
+ *
+ * Reads both patch sources like rowIdsForPackage — the declared dsh.bundle.patch
+ * and the conventional root cordis.patch.yml — so either form is detected.
+ */
+export function carrierDisableIds(profileDirectory: string, packageName: string): string[] {
+  const packageDir = join(profileDirectory, 'node_modules', packageName)
+  const disabled = new Set<string>()
+  const collectFromFile = (patchPath: string): void => {
+    const rows = parsePatchFile(patchPath)
+    if (rows === null) return
+    for (const id of foreignDisableIds(rows)) disabled.add(id)
+  }
+  try {
+    const manifest = JSON.parse(readFileSync(join(packageDir, 'package.json'), 'utf8')) as {
+      dsh?: { bundle?: { patch?: unknown } }
+    }
+    const declared = manifest.dsh?.bundle?.patch
+    if (typeof declared === 'string' && declared !== '') collectFromFile(join(packageDir, declared))
+  } catch { /* package not installed — nothing to attribute */ }
+  collectFromFile(join(packageDir, 'cordis.patch.yml'))
+  return [...disabled]
+}
+
+/**
  * Per-package patch-layer flags for the installed list: names whose rows the
  * user patch layer disables / force-enables. These cover toggles made
  * OUTSIDE the market (hand-edited cordis.patch.yml, dsh-web-plugin-manager,

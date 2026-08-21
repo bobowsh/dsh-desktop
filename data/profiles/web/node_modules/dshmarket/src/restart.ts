@@ -15,9 +15,64 @@ import { join } from 'node:path'
 import type { IncomingMessage } from 'node:http'
 import { dshArgv, nodeExecutable } from './dsh-cli.ts'
 
-/** Self-restart is enabled by default and disabled only by an explicit false. */
-export function restartAllowed(config: { allowRestart?: boolean }): boolean {
-  return config.allowRestart !== false
+/**
+ * The process supervisor running this host, when one can be identified —
+ * `null` when nothing says so.
+ *
+ * This exists because the failure it prevents is the worst one the market
+ * can cause. Under systemd's default `KillMode=control-group`, everything in
+ * the unit's cgroup dies with the main process — including the detached
+ * helper that was supposed to bring the replacement up. So "restart" killed
+ * a production service and nothing came back (#229 by @SkillBase-Al: "杀死了
+ * 服务但是无法重复启动服务"). `allowRestart: false` was always the documented
+ * answer, but it is opt-in, and nothing told the operator to opt in until
+ * after they had already lost the service.
+ *
+ * TWO signals are required, and the second is the whole reason this function
+ * is not a one-line env check. `INVOCATION_ID` is INHERITED: every
+ * descendant of a systemd unit carries it, which on Linux includes an
+ * ordinary desktop terminal (its shell descends from a user-session unit)
+ * and a CI runner (the agent is a unit — this repo's own smoke test caught
+ * that). Treating inheritance as ownership would disable the button for a
+ * large population of hosts where it works fine, which is a worse bug than
+ * the one being fixed.
+ *
+ * `ppid === 1` is what distinguishes being the unit's own main process from
+ * merely descending from one: systemd forks its services from PID 1, while a
+ * terminal's node has the shell as its parent and a runner's has the agent.
+ *
+ * Scoped to systemd on purpose. pm2 sets `pm_id`, but it is inherited the
+ * same way and pm2's God daemon — not PID 1 — is the parent, so there is no
+ * equivalent second signal; a guess there would reintroduce exactly the
+ * false positive this pair exists to avoid. launchd has no marker at all.
+ * Both still need the explicit setting: detection is a safety net over the
+ * documented option, never a replacement for it.
+ */
+export function detectedSupervisor(
+  env: NodeJS.ProcessEnv = process.env,
+  ppid: number = process.ppid,
+): string | null {
+  const set = (name: string): boolean => (env[name] ?? '') !== ''
+  if ((set('INVOCATION_ID') || set('JOURNAL_STREAM')) && ppid === 1) return 'systemd'
+  return null
+}
+
+/**
+ * Self-restart is enabled by default, disabled by an explicit false — and
+ * disabled by DEFAULT under a detected supervisor, which owns restarts and
+ * whose process group would take the replacement helper down with it.
+ *
+ * An explicit `true` still wins: an operator who has configured their unit
+ * for it (`KillMode=process`, or a wrapper that survives) is making a
+ * statement about their own deployment, and this should not overrule it.
+ */
+export function restartAllowed(
+  config: { allowRestart?: boolean },
+  env: NodeJS.ProcessEnv = process.env,
+  ppid: number = process.ppid,
+): boolean {
+  if (config.allowRestart !== undefined) return config.allowRestart
+  return detectedSupervisor(env, ppid) === null
 }
 
 /**

@@ -7,23 +7,28 @@
     "@dsh-external/dsh-visualize": "github:Nagi-ovo/dsh-visualize",
     "@dsh-external/workflow": "git+https://github.com/icetomoyo/dsh_workflow.git",
     "@huanlin/dsh-plugin-session-delete": "github:lsz-asd/dsh-plugin-session-delete",
-    "@liustack/modlens": "^3.22.0",
-    "@nanmicoder/dsh-agent-teams": "^0.1.8",
+    "@nanmicoder/dsh-agent-teams": "^0.1.10",
     "@omdsh-dev/dsh-genui": "github:omdsh-dev/dsh-genui",
     "@yejiming/dsh-gomoku": "^0.0.1",
     "dsh-agent-message": "^1.5.1",
+    "dsh-agent-team-gui": "github:toolclub/dsh-agent-team-gui",
     "dsh-auto-collapse": "github:a179-sanae/dsh-auto-collapse",
-    "dsh-better-sidebar": "^0.14.0",
+    "dsh-better-sidebar": "^0.15.0",
     "dsh-bookmarks": "^0.1.2",
     "dsh-chat-import": "^0.6.2",
-    "dsh-client-auto-continue": "^0.7.3",
-    "dsh-context": "^0.18.0",
+    "dsh-ci-plugin": "^0.1.0",
+    "dsh-client-auto-continue": "^0.8.1",
+    "dsh-context": "^0.21.1",
     "dsh-files": "github:taxueseek/dsh-files",
     "dsh-foundry": "github:hellosky983/dsh-foundry",
     "dsh-llm-opencode": "file:../../../packages/dsh-llm-opencode",
-    "dsh-mnemon": "^0.2.13",
+    "dsh-md-notes": "^0.6.0",
+    "dsh-mnemon": "^0.2.15",
     "dsh-notification": "github:omdsh-dev/dsh-notification",
+    "dsh-office-tools": "^0.1.0",
+    "dsh-plugin-guide": "^0.1.1",
     "dsh-plugin-search": "github:shinjiyu/dsh-plugin-search",
+    "dsh-project-kanban": "^0.8.3",
     "dsh-prompt-enhancer": "github:Fishsb/dsh-prompt-enhancer",
     "dsh-prompt-manager": "^1.4.1",
     "dsh-queue-plus": "github:starslittle/dsh-queue-plus",
@@ -33,8 +38,7 @@
     "dsh-skin": "github:KinGao294/dsh-skin",
     "dsh-status-rotator": "github:01Virex/dsh-status-rotator",
     "dsh-sticky-note": "github:Meredith2328/dsh-sticky-note",
-    "dsh-web-archive": "github:renat3u/dsh-web-archive",
-    "dshmarket": "^1.16.0"
+    "dshmarket": "^1.17.1"
   },
   "dsh": {
     "profile": {
@@ -46,7 +50,6 @@
         "@omdsh-dev/dsh-genui",
         "@dsh-external/dsh-visualize",
         "dsh-status-rotator",
-        "@liustack/modlens",
         "dsh-mnemon",
         "dsh-plugin-search",
         "dsh-notification",
@@ -72,7 +75,12 @@
         "dsh-rule-manager",
         "dsh-llm-opencode",
         "dsh-auto-collapse",
-        "dsh-foundry"
+        "dsh-foundry",
+        "dsh-project-kanban",
+        "dsh-agent-team-gui",
+        "dsh-office-tools",
+        "dsh-plugin-guide",
+        "dsh-md-notes"
       ]
     }
   }
