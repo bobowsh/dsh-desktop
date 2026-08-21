@@ -1,0 +1,136 @@
+diff --git a/node_modules/@deepseek-ai/dsh-fs/lib/index.js b/node_modules/@deepseek-ai/dsh-fs/lib/index.js
+index 4c75b23..2027cfb 100644
+--- a/node_modules/@deepseek-ai/dsh-fs/lib/index.js
++++ b/node_modules/@deepseek-ai/dsh-fs/lib/index.js
+@@ -72,6 +72,16 @@ var FileSystem = class extends Service {
+ 	*   for a backend that never confines.
+ 	*/
+ 	get sandboxMode() {}
++	/**
++	* Detect a target's text encoding without a full read (BOM, then strict
++	* UTF-8, then legacy heuristics). Optional capability: the base class
++	* reports `undefined`; the local backend implements it. Consumers pass the
++	* result (or an explicit override) as the `encoding` option of the
++	* readText/streamText/writeText/editText calls.
++	*/
++	async detectEncoding(target, signal) {
++		return void 0;
++	}
+ };
+ //#endregion
+ export { FileSystem, FileSystem as default, FsError, FsTargetKey, FsVersion };
+diff --git a/node_modules/@deepseek-ai/dsh-fs/lib/types/index.d.ts b/node_modules/@deepseek-ai/dsh-fs/lib/types/index.d.ts
+index 14da6bf..10b4040 100644
+--- a/node_modules/@deepseek-ai/dsh-fs/lib/types/index.d.ts
++++ b/node_modules/@deepseek-ai/dsh-fs/lib/types/index.d.ts
+@@ -9,9 +9,9 @@
+  */
+ import { Context, Service } from '@deepseek-ai/cordis';
+ import type { SandboxExecutionPolicy, SandboxMode } from '@deepseek-ai/dsh-sandbox';
+-import type { FsDirEntry, FsEditOutcome, FsEditRequest, FsInfo, FsPathInfo, FsObservation, FsTarget, FsVersion, FsWriteIntent, FsWriteOutcome } from './types.ts';
++import type { FsDirEntry, FsEditOutcome, FsEditRequest, FsEncoding, FsInfo, FsPathInfo, FsObservation, FsTarget, FsTextOptions, FsVersion, FsWriteIntent, FsWriteOutcome } from './types.ts';
+ export { FsError, FsTargetKey, FsVersion, } from './types.ts';
+-export type { FsEditOutcome, FsEditRequest, FsDirEntry, FsErrorCode, FsInfo, FsObservation, FsPathInfo, FsTarget, FsWriteIntent, FsWriteOutcome, } from './types.ts';
++export type { FsEditOutcome, FsEditRequest, FsDirEntry, FsEncoding, FsErrorCode, FsInfo, FsObservation, FsPathInfo, FsTarget, FsTextOptions, FsWriteIntent, FsWriteOutcome, } from './types.ts';
+ declare module '@deepseek-ai/cordis' {
+     interface Context {
+         fs: FileSystem;
+@@ -141,17 +141,28 @@ export declare abstract class FileSystem extends Service {
+      * @param signal - aborts the read.
+      * @returns the full decoded UTF-8 content.
+      */
+-    abstract readText(target: FsTarget, signal?: AbortSignal): Promise<string>;
++    abstract readText(target: FsTarget, signal?: AbortSignal, opts?: FsTextOptions): Promise<string>;
+     /**
+      * Stream the whole regular text file as decoded text chunks (same text
+      * semantics as {@link readText}, for large files). The backend owns
+-     * cross-chunk UTF-8 decoding and binary rejection so the policy layer never
++     * cross-chunk decoding and binary rejection so the policy layer never
+      * touches raw bytes.
+      * @param target - the resolved target to read.
+      * @param signal - aborts the stream, including between chunks.
++     * @param opts - optional explicit encoding; omitted, the backend auto-detects.
+      * @returns the chunk iterable, decoded and validated like {@link readText}.
+      */
+-    abstract streamText(target: FsTarget, signal?: AbortSignal): Promise<AsyncIterable<string>>;
++    abstract streamText(target: FsTarget, signal?: AbortSignal, opts?: FsTextOptions): Promise<AsyncIterable<string>>;
++    /**
++     * Detect a target's text encoding without a full read (BOM, then strict
++     * UTF-8, then legacy heuristics). Optional capability: the base class
++     * reports `undefined`; the local backend implements it.
++     * @param target - the resolved target to inspect.
++     * @param signal - aborts the head-sample read.
++     * @returns the detected canonical encoding name, or undefined when the
++     *   backend does not implement detection.
++     */
++    detectEncoding(target: FsTarget, signal?: AbortSignal): Promise<FsEncoding | undefined>;
+     /**
+      * Read the whole regular file as raw bytes with no decoding or binary
+      * rejection. The bound lives at this seam so a backend can never buffer an
+@@ -181,9 +192,11 @@ export declare abstract class FileSystem extends Service {
+      * @param sandboxPolicy - the per-call mode and workspace root this write
+      *   runs under; a sandboxing backend fences the write by it, the bare backend
+      *   ignores it. Omit to leave the backend its own default.
++     * @param opts - optional explicit encoding; omitted, an existing file keeps
++     *   its detected encoding and a new file is written as UTF-8.
+      * @returns the outcome, including the version the write produced.
+      */
+-    abstract writeText(target: FsTarget, content: string, expected?: FsWriteIntent, signal?: AbortSignal, sandboxPolicy?: SandboxExecutionPolicy): Promise<FsWriteOutcome>;
++    abstract writeText(target: FsTarget, content: string, expected?: FsWriteIntent, signal?: AbortSignal, sandboxPolicy?: SandboxExecutionPolicy, opts?: FsTextOptions): Promise<FsWriteOutcome>;
+     /**
+      * Atomically edit literal text. When supplied, the version guard is checked
+      * before matching so stale content reports `FS_STALE_VERSION`; omission edits
+@@ -195,11 +208,13 @@ export declare abstract class FileSystem extends Service {
+      * @param sandboxPolicy - the per-call mode and workspace root this edit runs
+      *   under; a sandboxing backend fences the edit by it, the bare backend
+      *   ignores it. Omit to leave the backend its own default.
++     * @param opts - optional explicit encoding; omitted, the file's encoding is
++     *   auto-detected and preserved on write-back.
+      * @returns the outcome, including the version the edit produced.
+      */
+     abstract editText(target: FsTarget, edit: FsEditRequest, expected?: {
+         version: FsVersion;
+-    }, signal?: AbortSignal, sandboxPolicy?: SandboxExecutionPolicy): Promise<FsEditOutcome>;
++    }, signal?: AbortSignal, sandboxPolicy?: SandboxExecutionPolicy, opts?: FsTextOptions): Promise<FsEditOutcome>;
+ }
+ export default FileSystem;
+ //# sourceMappingURL=index.d.ts.map
+\ No newline at end of file
+diff --git a/node_modules/@deepseek-ai/dsh-fs/lib/types/types.d.ts b/node_modules/@deepseek-ai/dsh-fs/lib/types/types.d.ts
+index d25839b..c410959 100644
+--- a/node_modules/@deepseek-ai/dsh-fs/lib/types/types.d.ts
++++ b/node_modules/@deepseek-ai/dsh-fs/lib/types/types.d.ts
+@@ -131,6 +131,8 @@ export interface FsWriteOutcome {
+     before: string | null;
+     /** The file's content AFTER the write, LF-normalized to share `before`'s diff basis. */
+     after: string;
++    /** The encoding the content was written in (explicit option, preserved detection, or UTF-8 for a create). */
++    encoding?: FsEncoding;
+ }
+ /** A literal-replacement edit request. */
+ export interface FsEditRequest {
+@@ -153,6 +155,24 @@ export interface FsEditOutcome {
+     before: string;
+     /** The file's content AFTER the edit. */
+     after: string;
++    /** The encoding the file was decoded with and written back in. */
++    encoding?: FsEncoding;
++}
++/**
++ * Canonical text encodings the local backend can decode and encode. Detection
++ * and the model-facing tools speak this vocabulary: `gb18030` covers the
++ * gbk/gb2312 family; `latin1` is the lossless single-byte fallback.
++ */
++export type FsEncoding = 'utf-8' | 'utf-16le' | 'utf-16be' | 'gb18030' | 'gbk' | 'big5' | 'latin1';
++/**
++ * Optional per-call text-encoding selection. Omitted, reads and edits of an
++ * existing file auto-detect the encoding (BOM, then strict UTF-8, then legacy
++ * heuristics), a write preserves an existing file's detected encoding, and a
++ * newly created file is written as UTF-8.
++ */
++export interface FsTextOptions {
++    /** Explicit encoding override; alias labels (gbk, gb2312, …) normalize. */
++    encoding?: string;
+ }
+ /**
+  * Stable, machine-routable codes for filesystem failures. Carried on

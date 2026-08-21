@@ -1,0 +1,368 @@
+diff --git a/node_modules/@deepseek-ai/dsh-tool-fs/lib/index.js b/node_modules/@deepseek-ai/dsh-tool-fs/lib/index.js
+index f9fedc1..93a14e4 100644
+--- a/node_modules/@deepseek-ai/dsh-tool-fs/lib/index.js
++++ b/node_modules/@deepseek-ai/dsh-tool-fs/lib/index.js
+@@ -103,9 +103,10 @@ function formatReadOutput(displayPath, outcome) {
+ 	if (outcome.truncatedByBytes) footer = `(Output capped. Showing lines ${outcome.offset}-${endLine}. Use offset=${endLine + 1} to continue.)`;
+ 	else if (endLine < outcome.totalLines) footer = `(Showing lines ${outcome.offset}-${endLine} of ${outcome.totalLines}. Use offset=${endLine + 1} to continue.)`;
+ 	else footer = `(End of file - total ${outcome.totalLines} lines)`;
++	const encodingLine = outcome.encoding !== void 0 && outcome.encoding !== "utf-8" ? `<encoding>${outcome.encoding}</encoding>\n` : "";
+ 	return `<path>${displayPath}</path>
+ <type>file</type>
+-<content>
++${encodingLine}<content>
+ ${outcome.lines.length > 0 ? `${outcome.lines.map((line) => `${line.number}: ${line.text}`).join("\n")}\n\n${footer}` : footer}
+ </content>`;
+ }
+@@ -200,12 +201,13 @@ function isFileTextLine(value) {
+ */
+ function readMetaFromMeta(meta) {
+ 	if (typeof meta !== "object" || meta === null || Array.isArray(meta)) return void 0;
+-	const { path, offset, lines, totalLines, lang } = meta;
++	const { path, offset, lines, totalLines, lang, encoding } = meta;
+ 	if (typeof path !== "string" || typeof totalLines !== "number" || typeof offset !== "number") return void 0;
+ 	if (!Number.isInteger(offset) || offset < 1) return void 0;
+ 	if (!Number.isInteger(totalLines) || totalLines < 0) return void 0;
+ 	if (!Array.isArray(lines) || !lines.every(isFileTextLine)) return void 0;
+ 	if (lang !== void 0 && typeof lang !== "string") return void 0;
++	if (encoding !== void 0 && typeof encoding !== "string") return void 0;
+ 	let previous = offset - 1;
+ 	for (const { number } of lines) {
+ 		if (number <= previous || number > totalLines) return void 0;
+@@ -216,7 +218,8 @@ function readMetaFromMeta(meta) {
+ 		offset,
+ 		lines,
+ 		totalLines,
+-		...lang === void 0 ? {} : { lang }
++		...lang === void 0 ? {} : { lang },
++		...encoding === void 0 ? {} : { encoding }
+ 	};
+ }
+ //#endregion
+@@ -297,6 +300,28 @@ const READ_LIMIT = 2e3;
+ * above this size stream; smaller files read whole into memory.
+ */
+ const STREAM_MIN_SIZE = 10 * 1024 * 1024;
++/** Canonical encodings the fs tools accept for their `encoding` parameter. */
++const FS_ENCODINGS = [
++	"utf-8",
++	"utf-16le",
++	"utf-16be",
++	"gbk",
++	"gb18030",
++	"big5",
++	"latin1"
++];
++/**
++ * The shared optional `encoding` parameter spec for read/write/edit. Omitted,
++ * reads and edits of existing files auto-detect the encoding (BOM, then
++ * strict UTF-8, then legacy heuristics); a new file is written as UTF-8.
++ */
++function encodingParameter(description) {
++	return {
++		type: "string",
++		enum: [...FS_ENCODINGS],
++		description
++	};
++}
+ function parsePositiveInteger(value, name) {
+ 	if (!Number.isFinite(value) || !Number.isInteger(value) || value < 1) throw new Error(`${name} must be a positive integer`);
+ 	return value;
+@@ -327,11 +352,11 @@ function applyReadTool(ctx, caps) {
+ 	ctx.systemPrompt.section({
+ 		name: "tool:read",
+ 		order: 100,
+-		text: "Use the read tool — not shell commands like cat — to inspect text files. Results include line numbers. Use offset and limit to continue reading large files."
++		text: "Use the read tool — not shell commands like cat — to inspect text files. Results include line numbers. Use offset and limit to continue reading large files. The file's encoding is auto-detected (BOM, UTF-8, then legacy encodings such as GB18030/Big5); pass the encoding parameter only to override detection."
+ 	});
+ 	ctx.tools.register(defineTool({
+ 		name: "read",
+-		description: "Read a UTF-8 text file and return line-numbered content.",
++		description: "Read a text file and return line-numbered content. The encoding is auto-detected unless the encoding parameter overrides it.",
+ 		parameters: {
+ 			file_path: {
+ 				type: "string",
+@@ -345,7 +370,8 @@ function applyReadTool(ctx, caps) {
+ 			limit: {
+ 				type: "number",
+ 				description: `Maximum number of lines to return. Defaults to ${caps.limit}.`
+-			}
++			},
++			encoding: encodingParameter("Text encoding to decode with. Omit to auto-detect (BOM, then strict UTF-8, then legacy encodings such as GB18030/Big5, falling back to latin1).")
+ 		},
+ 		output: {
+ 			schema: {
+@@ -381,7 +407,8 @@ function applyReadTool(ctx, caps) {
+ 					totalLines: {
+ 						type: "integer",
+ 						required: true
+-					}
++					},
++					encoding: { type: "string" }
+ 				}
+ 			},
+ 			render: (args, value) => {
+@@ -394,7 +421,8 @@ function applyReadTool(ctx, caps) {
+ 						offset: value.offset,
+ 						lines: value.lines,
+ 						totalLines: value.totalLines,
+-						...truncatedByBytes ? { truncatedByBytes: true } : {}
++						...truncatedByBytes ? { truncatedByBytes: true } : {},
++						...value.encoding === void 0 ? {} : { encoding: value.encoding }
+ 					})
+ 				}];
+ 			},
+@@ -408,7 +436,8 @@ function applyReadTool(ctx, caps) {
+ 						text
+ 					})),
+ 					totalLines: value.totalLines,
+-					...lang === void 0 ? {} : { lang }
++					...lang === void 0 ? {} : { lang },
++					...value.encoding === void 0 ? {} : { encoding: value.encoding }
+ 				};
+ 			}
+ 		},
+@@ -416,17 +445,22 @@ function applyReadTool(ctx, caps) {
+ 		async execute(args, exec) {
+ 			const input = parseReadArgs(args, caps.limit);
+ 			const { target, info } = await resolveRegularReadTarget(ctx, exec, input.filePath);
+-			const window = await buildWindow(info.size === void 0 || info.size >= caps.streamMinSize ? await ctx.fs.streamText(target, exec.signal) : [await ctx.fs.readText(target, exec.signal)], {
++			const textOptions = args.encoding === void 0 ? void 0 : { encoding: args.encoding };
++			const window = await buildWindow(info.size === void 0 || info.size >= caps.streamMinSize ? await ctx.fs.streamText(target, exec.signal, textOptions) : [await ctx.fs.readText(target, exec.signal, textOptions)], {
+ 				offset: input.offset,
+ 				limit: input.limit,
+ 				maxLineLength: caps.maxLineLength,
+ 				maxBytes: caps.maxBytes
+ 			}, target.displayPath);
++			// Report the effective encoding: the explicit override, else the
++			// backend's detection (undefined when the backend cannot detect).
++			const usedEncoding = args.encoding ?? await ctx.fs.detectEncoding?.(target, exec.signal);
+ 			const outcome = {
+ 				path: target.displayPath,
+ 				offset: input.offset,
+ 				lines: window.lines,
+-				totalLines: window.totalLines
++				totalLines: window.totalLines,
++				...usedEncoding === void 0 || usedEncoding === null ? {} : { encoding: usedEncoding }
+ 			};
+ 			ctx.emit("fs/observed", target, {
+ 				kind: "present",
+@@ -441,7 +475,7 @@ function applyReadTool(ctx, caps) {
+ 			const only = result.content.length === 1 ? result.content[0] : void 0;
+ 			const text = only?.type === "text" ? only.text : void 0;
+ 			if (text === void 0) return void 0;
+-			const body = /^<path>[^\n]*<\/path>\n<type>file<\/type>\n<content>\n([\s\S]*)\n<\/content>$/u.exec(text)?.[1];
++			const body = /^<path>[^\n]*<\/path>\n<type>file<\/type>\n(?:<encoding>[^\n]*<\/encoding>\n)?<content>\n([\s\S]*)\n<\/content>$/u.exec(text)?.[1];
+ 			if (body === void 0) return void 0;
+ 			return {
+ 				card: "read",
+@@ -583,10 +617,11 @@ function parseWriteArgs(args) {
+ * @returns the model-facing confirmation envelope (no file content is echoed back).
+ */
+ function formatWriteOutput(displayPath, outcome) {
++	const note = outcome.encoding !== void 0 && outcome.encoding !== "utf-8" ? ` (encoding: ${outcome.encoding})` : "";
+ 	return `<path>${displayPath}</path>
+ <type>file</type>
+ <content>
+-${outcome.operation === "create" ? "Created" : "Updated"} file
++${outcome.operation === "create" ? "Created" : "Updated"} file${note}
+ </content>`;
+ }
+ /**
+@@ -598,11 +633,11 @@ function applyWriteTool(ctx, sandbox) {
+ 	ctx.systemPrompt.section({
+ 		name: "tool:write",
+ 		order: 101,
+-		text: "Use the write tool to create files or completely replace file contents. Existing files are overwritten, so read an existing file first (the default fs-observation-policy requires it) and prefer edit for targeted changes."
++		text: "Use the write tool to create files or completely replace file contents. New files are written as UTF-8 by default; overwriting an existing file preserves its detected encoding unless the encoding parameter overrides it. Existing files are overwritten, so read an existing file first (the default fs-observation-policy requires it) and prefer edit for targeted changes."
+ 	});
+ 	ctx.tools.register(defineTool({
+ 		name: "write",
+-		description: "Create or fully replace a UTF-8 text file.",
++		description: "Create or fully replace a text file. The encoding parameter selects the encoding; omitted, an existing file keeps its detected encoding and a new file is written as UTF-8.",
+ 		parameters: {
+ 			file_path: {
+ 				type: "string",
+@@ -612,8 +647,9 @@ function applyWriteTool(ctx, sandbox) {
+ 			content: {
+ 				type: "string",
+ 				required: true,
+-				description: "Full UTF-8 text content to write."
++				description: "Full text content to write."
+ 			},
++			encoding: encodingParameter("Encoding to write with. Omit to keep an existing file's detected encoding, or UTF-8 for a new file. UTF-16 writes carry a BOM unless the existing file lacked one."),
+ 			...sandbox.escalationModes.length > 0 ? sandbox.schemaFields() : {}
+ 		},
+ 		output: {
+@@ -637,7 +673,8 @@ function applyWriteTool(ctx, sandbox) {
+ 					after: {
+ 						type: "string",
+ 						required: true
+-					}
++					},
++					encoding: { type: "string" }
+ 				}
+ 			},
+ 			render: (_args, value) => [{
+@@ -657,7 +694,7 @@ function applyWriteTool(ctx, sandbox) {
+ 			const intent = await ctx.waterfall("fs/write-intent", target, exec, () => void 0);
+ 			let outcome;
+ 			try {
+-				outcome = await ctx.fs.writeText(target, input.content, intent, exec.signal, sandboxPolicy);
++				outcome = await ctx.fs.writeText(target, input.content, intent, exec.signal, sandboxPolicy, args.encoding === void 0 ? void 0 : { encoding: args.encoding });
+ 			} catch (error) {
+ 				throw remediateFsError(sandbox.mapError(error, sandboxPolicy));
+ 			}
+@@ -669,7 +706,8 @@ function applyWriteTool(ctx, sandbox) {
+ 				path: target.displayPath,
+ 				operation: outcome.operation,
+ 				before: outcome.before,
+-				after: outcome.after
++				after: outcome.after,
++				...outcome.encoding === void 0 ? {} : { encoding: outcome.encoding }
+ 			};
+ 		},
+ 		presentCall(args) {
+@@ -731,8 +769,9 @@ function parseEditArgs(args) {
+ * @param replaceAll - selects the all-occurrences wording over the single-replacement one.
+ * @returns the confirmation sentence the model sees as the tool result.
+ */
+-function formatEditOutput(displayPath, replaceAll) {
+-	return replaceAll ? `The file ${displayPath} has been updated. All occurrences were successfully replaced.` : `The file ${displayPath} has been updated successfully.`;
++function formatEditOutput(displayPath, replaceAll, encoding) {
++	const note = encoding !== void 0 && encoding !== "utf-8" ? ` (encoding: ${encoding})` : "";
++	return replaceAll ? `The file ${displayPath} has been updated. All occurrences were successfully replaced${note}.` : `The file ${displayPath} has been updated successfully${note}.`;
+ }
+ /**
+ * Register the `edit` tool and its system-prompt guidance.
+@@ -743,11 +782,11 @@ function applyEditTool(ctx, sandbox) {
+ 	ctx.systemPrompt.section({
+ 		name: "tool:edit",
+ 		order: 102,
+-		text: "Use the edit tool for targeted changes to existing UTF-8 text files. It replaces literal old_string with new_string; by default old_string must appear exactly once. If old_string appears multiple times, provide a more specific old_string or set replace_all to true. Read the file first (the default fs-observation-policy requires it), unless you just created or edited it in this session."
++		text: "Use the edit tool for targeted changes to existing text files; the file's encoding is auto-detected and preserved (override with the encoding parameter). It replaces literal old_string with new_string; by default old_string must appear exactly once. If old_string appears multiple times, provide a more specific old_string or set replace_all to true. Read the file first (the default fs-observation-policy requires it), unless you just created or edited it in this session."
+ 	});
+ 	ctx.tools.register(defineTool({
+ 		name: "edit",
+-		description: "Edit an existing UTF-8 text file by replacing literal text.",
++		description: "Edit an existing text file by replacing literal text. The encoding is auto-detected and preserved unless the encoding parameter overrides it.",
+ 		parameters: {
+ 			file_path: {
+ 				type: "string",
+@@ -768,6 +807,7 @@ function applyEditTool(ctx, sandbox) {
+ 				type: "boolean",
+ 				description: "Replace all matches. Defaults to false; when false, old_string must appear exactly once."
+ 			},
++			encoding: encodingParameter("Text encoding to decode the file with and write it back in. Omit to auto-detect and preserve the file's encoding."),
+ 			...sandbox.escalationModes.length > 0 ? sandbox.schemaFields() : {}
+ 		},
+ 		output: {
+@@ -786,12 +826,13 @@ function applyEditTool(ctx, sandbox) {
+ 					after: {
+ 						type: "string",
+ 						required: true
+-					}
++					},
++					encoding: { type: "string" }
+ 				}
+ 			},
+ 			render: (args, value) => [{
+ 				type: "text",
+-				text: formatEditOutput(value.path, args.replace_all ?? false)
++				text: formatEditOutput(value.path, args.replace_all ?? false, value.encoding)
+ 			}],
+ 			presentationMeta: (args, value) => ({ diffs: computeHunkDiffs(args.file_path, value.before, value.after).map(({ path, oldText, newText }) => ({
+ 				path,
+@@ -810,7 +851,7 @@ function applyEditTool(ctx, sandbox) {
+ 					oldString: input.oldString,
+ 					newString: input.newString,
+ 					replaceAll: input.replaceAll
+-				}, intent, exec.signal, sandboxPolicy);
++				}, intent, exec.signal, sandboxPolicy, args.encoding === void 0 ? void 0 : { encoding: args.encoding });
+ 			} catch (error) {
+ 				throw remediateFsError(sandbox.mapError(error, sandboxPolicy));
+ 			}
+@@ -821,7 +862,8 @@ function applyEditTool(ctx, sandbox) {
+ 			return {
+ 				path: target.displayPath,
+ 				before: outcome.before,
+-				after: outcome.after
++				after: outcome.after,
++				...outcome.encoding === void 0 ? {} : { encoding: outcome.encoding }
+ 			};
+ 		},
+ 		presentCall(args) {
+diff --git a/node_modules/@deepseek-ai/dsh-tool-fs/lib/types/edit.d.ts b/node_modules/@deepseek-ai/dsh-tool-fs/lib/types/edit.d.ts
+index 557b4fb..b095039 100644
+--- a/node_modules/@deepseek-ai/dsh-tool-fs/lib/types/edit.d.ts
++++ b/node_modules/@deepseek-ai/dsh-tool-fs/lib/types/edit.d.ts
+@@ -1,4 +1,4 @@
+-/**
++﻿/**
+  * Model-facing literal edit, unique-match by default. It obtains an optional guard from the
+  * single intent slot, calls `ctx.fs.editText` without a separate stat, then records the observed
+  * version; no policy means an unconditional atomic edit.
+@@ -32,7 +32,7 @@ export declare function parseEditArgs(args: {
+  * @param replaceAll - selects the all-occurrences wording over the single-replacement one.
+  * @returns the confirmation sentence the model sees as the tool result.
+  */
+-export declare function formatEditOutput(displayPath: string, replaceAll: boolean): string;
++export declare function formatEditOutput(displayPath: string, replaceAll: boolean, encoding?: string): string;
+ /**
+  * Register the `edit` tool and its system-prompt guidance.
+  * @param ctx - the plugin context; registrations are effects scoped to it, and execution uses its `fs` service.
+diff --git a/node_modules/@deepseek-ai/dsh-tool-fs/lib/types/read.d.ts b/node_modules/@deepseek-ai/dsh-tool-fs/lib/types/read.d.ts
+index b72ce60..4bc79c3 100644
+--- a/node_modules/@deepseek-ai/dsh-tool-fs/lib/types/read.d.ts
++++ b/node_modules/@deepseek-ai/dsh-tool-fs/lib/types/read.d.ts
+@@ -1,4 +1,4 @@
+-/**
++﻿/**
+  * Model-facing UTF-8 read. It performs one provider stat for type, routing, and observed version,
+  * streams large or size-unknown files, renders a bounded window, then emits the observation.
+  * @module @deepseek-ai/dsh-tool-fs/src/read
+@@ -11,7 +11,7 @@ export declare const READ_LIMIT = 2000;
+  * above this size stream; smaller files read whole into memory.
+  */
+ export declare const STREAM_MIN_SIZE: number;
+-/** Resolved read-tool caps — plugin config after defaulting (see `Config` in index.ts). */
++/** Resolved read-tool caps —plugin config after defaulting (see `Config` in index.ts). */
+ export interface ReadToolCaps {
+     /** Default and maximum number of lines returned by one call. */
+     limit: number;
+@@ -38,6 +38,7 @@ export declare function parseReadArgs(args: {
+     file_path: string;
+     offset?: number;
+     limit?: number;
++    encoding?: string;
+ }, maxLimit: number): ReadInput;
+ /**
+  * Register the `read` tool and its system-prompt guidance.
+diff --git a/node_modules/@deepseek-ai/dsh-tool-fs/lib/types/write.d.ts b/node_modules/@deepseek-ai/dsh-tool-fs/lib/types/write.d.ts
+index 2f767bc..53ffafa 100644
+--- a/node_modules/@deepseek-ai/dsh-tool-fs/lib/types/write.d.ts
++++ b/node_modules/@deepseek-ai/dsh-tool-fs/lib/types/write.d.ts
+@@ -1,4 +1,4 @@
+-/**
++﻿/**
+  * Model-facing full-file write. It obtains an optional intent from the single policy slot, calls
+  * `ctx.fs.writeText` without a stat, then records the resulting version; no policy means an
+  * unconditional atomic create-or-overwrite.
+@@ -9,7 +9,7 @@ import type { FsWriteOutcome } from '@deepseek-ai/dsh-fs';
+ import type { FsSandboxController } from './sandbox.ts';
+ /**
+  * Validate value constraints the schema DSL can't express: only a non-blank
+- * `file_path` — an empty `content` is legitimate (it writes an empty file).
++ * `file_path` —an empty `content` is legitimate (it writes an empty file).
+  * @param args - the schema-validated raw tool arguments.
+  * @returns the camelCased input; `content` passes through untouched.
+  */
+@@ -26,7 +26,7 @@ export declare function parseWriteArgs(args: {
+  * @param outcome - the write outcome; its `operation` selects the Created/Updated wording.
+  * @returns the model-facing confirmation envelope (no file content is echoed back).
+  */
+-export declare function formatWriteOutput(displayPath: string, outcome: Pick<FsWriteOutcome, 'operation'>): string;
++export declare function formatWriteOutput(displayPath: string, outcome: Pick<FsWriteOutcome, 'operation' | 'encoding'>): string;
+ /**
+  * Register the `write` tool and its system-prompt guidance.
+  * @param ctx - the plugin context; registrations are effects scoped to it, and execution uses its `fs` service.

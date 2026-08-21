@@ -1,0 +1,57 @@
+diff --git a/node_modules/@deepseek-ai/dsh-fs-sandbox/lib/index.js b/node_modules/@deepseek-ai/dsh-fs-sandbox/lib/index.js
+index f938750..06fcef8 100644
+--- a/node_modules/@deepseek-ai/dsh-fs-sandbox/lib/index.js
++++ b/node_modules/@deepseek-ai/dsh-fs-sandbox/lib/index.js
+@@ -126,8 +126,8 @@ var SandboxedFileSystem = class extends LocalFileSystem {
+ 	*   the deployment fallback.
+ 	* @returns the write outcome from the inherited backend.
+ 	*/
+-	async writeText(target, content, expected, signal, sandboxPolicy) {
+-		return super.writeText(await this.checkedTarget(target, sandboxPolicy), content, expected, signal);
++	async writeText(target, content, expected, signal, sandboxPolicy, opts) {
++		return super.writeText(await this.checkedTarget(target, sandboxPolicy), content, expected, signal, sandboxPolicy, opts);
+ 	}
+ 	/**
+ 	* Fence the edit by the per-call policy, then delegate to the inherited
+@@ -140,8 +140,8 @@ var SandboxedFileSystem = class extends LocalFileSystem {
+ 	*   the deployment fallback.
+ 	* @returns the edit outcome from the inherited backend.
+ 	*/
+-	async editText(target, edit, expected, signal, sandboxPolicy) {
+-		return super.editText(await this.checkedTarget(target, sandboxPolicy), edit, expected, signal);
++	async editText(target, edit, expected, signal, sandboxPolicy, opts) {
++		return super.editText(await this.checkedTarget(target, sandboxPolicy), edit, expected, signal, sandboxPolicy, opts);
+ 	}
+ 	/**
+ 	* Enforce the per-call policy against `target` and return the EXACT target the
+diff --git a/node_modules/@deepseek-ai/dsh-fs-sandbox/lib/types/index.d.ts b/node_modules/@deepseek-ai/dsh-fs-sandbox/lib/types/index.d.ts
+index f79f8a3..39c489b 100644
+--- a/node_modules/@deepseek-ai/dsh-fs-sandbox/lib/types/index.d.ts
++++ b/node_modules/@deepseek-ai/dsh-fs-sandbox/lib/types/index.d.ts
+@@ -32,7 +32,7 @@
+ import { Context } from '@deepseek-ai/cordis';
+ import { LocalFileSystem } from '@deepseek-ai/dsh-fs-local';
+ import type { Config as LocalConfig } from '@deepseek-ai/dsh-fs-local';
+-import type { FsEditOutcome, FsEditRequest, FsTarget, FsVersion, FsWriteIntent, FsWriteOutcome } from '@deepseek-ai/dsh-fs';
++import type { FsEditOutcome, FsEditRequest, FsTarget, FsTextOptions, FsVersion, FsWriteIntent, FsWriteOutcome } from '@deepseek-ai/dsh-fs';
+ import type { SandboxExecutionPolicy, SandboxMode } from '@deepseek-ai/dsh-sandbox';
+ /**
+  * Plugin config: the local backend's knobs verbatim (`cwd` resolution default
+@@ -66,7 +66,7 @@ export declare class SandboxedFileSystem extends LocalFileSystem {
+      *   the deployment fallback.
+      * @returns the write outcome from the inherited backend.
+      */
+-    writeText(target: FsTarget, content: string, expected?: FsWriteIntent, signal?: AbortSignal, sandboxPolicy?: SandboxExecutionPolicy): Promise<FsWriteOutcome>;
++    writeText(target: FsTarget, content: string, expected?: FsWriteIntent, signal?: AbortSignal, sandboxPolicy?: SandboxExecutionPolicy, opts?: FsTextOptions): Promise<FsWriteOutcome>;
+     /**
+      * Fence the edit by the per-call policy, then delegate to the inherited
+      * atomic edit. See {@link checkedTarget}.
+@@ -80,7 +80,7 @@ export declare class SandboxedFileSystem extends LocalFileSystem {
+      */
+     editText(target: FsTarget, edit: FsEditRequest, expected?: {
+         version: FsVersion;
+-    }, signal?: AbortSignal, sandboxPolicy?: SandboxExecutionPolicy): Promise<FsEditOutcome>;
++    }, signal?: AbortSignal, sandboxPolicy?: SandboxExecutionPolicy, opts?: FsTextOptions): Promise<FsEditOutcome>;
+     /**
+      * Enforce the per-call policy against `target` and return the EXACT target the
+      * mutation must use, so the checked identity is the mutated one (no

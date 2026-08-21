@@ -1,5 +1,5 @@
 diff --git a/node_modules/@deepseek-ai/dsh-fs-local/lib/index.js b/node_modules/@deepseek-ai/dsh-fs-local/lib/index.js
-index 9138759..00746c4 100644
+index 9138759..36abb12 100644
 --- a/node_modules/@deepseek-ai/dsh-fs-local/lib/index.js
 +++ b/node_modules/@deepseek-ai/dsh-fs-local/lib/index.js
 @@ -7,6 +7,8 @@ import { randomUUID } from "node:crypto";
@@ -11,94 +11,268 @@ index 9138759..00746c4 100644
  //#region lib/types/win32.js
  /**
  * Windows security-descriptor helpers for atomic local-file replacement. Koffi loads lazily so
-@@ -328,6 +330,43 @@ function decodeUtf8Stream(decoder, chunk, verb, displayPath) {
+@@ -328,6 +330,165 @@ function decodeUtf8Stream(decoder, chunk, verb, displayPath) {
  		throw notTextError(verb, displayPath);
  	}
  }
++/** Byte budget of the head sample encoding detection reads (never the whole file). */
++const ENCODING_SAMPLE_BYTES = 64 * 1024;
 +/**
-+ * Detect text encoding from a buffer. Uses chardet for detection, falls back to UTF-8.
-+ * Returns a normalized encoding name: 'utf-8', 'gb18030', 'gbk', or 'gb2312'.
++ * Normalize a caller- or detector-supplied encoding label onto the canonical
++ * set this backend can decode AND encode: utf-8, utf-16le, utf-16be, gb18030
++ * (covers gbk/gb2312), big5, latin1. Unknown labels return undefined.
++ */
++function normalizeEncoding(encoding) {
++	const normalized = String(encoding).trim().toLowerCase().replace(/_/g, "-");
++	switch (normalized) {
++		case "utf-8":
++		case "utf8": return "utf-8";
++		case "utf-16le":
++		case "utf-16-le":
++		case "utf16le":
++		case "utf16-le": return "utf-16le";
++		case "utf-16be":
++		case "utf-16-be":
++		case "utf16be":
++		case "utf16-be": return "utf-16be";
++		case "gbk":
++		case "gb2312":
++		case "gb18030":
++		case "cp936": return "gb18030";
++		case "big5":
++		case "big5-hkscs":
++		case "cp950": return "big5";
++		case "latin1":
++		case "latin-1":
++		case "iso-8859-1":
++		case "windows-1252":
++		case "ascii": return "latin1";
++		default: return undefined;
++	}
++}
++/**
++ * Validate a caller-supplied encoding name, throwing the structured taxonomy
++ * for an unsupported one.
++ */
++function requireEncoding(encoding, verb, displayPath) {
++	const normalized = normalizeEncoding(encoding);
++	if (normalized === undefined) throw new FsError(`${displayPath ? `cannot ${verb} "${displayPath}": ` : ""}unsupported encoding "${encoding}" (supported: utf-8, utf-16le, utf-16be, gbk/gb18030, big5, latin1)`, "FS_NOT_TEXT");
++	return normalized;
++}
++/** Whether a buffer starts with the byte-order mark of the given canonical encoding. */
++function hasBom(buffer, encoding) {
++	if (encoding === "utf-8") return buffer.length >= 3 && buffer[0] === 0xEF && buffer[1] === 0xBB && buffer[2] === 0xBF;
++	if (encoding === "utf-16le") return buffer.length >= 2 && buffer[0] === 0xFF && buffer[1] === 0xFE;
++	if (encoding === "utf-16be") return buffer.length >= 2 && buffer[0] === 0xFE && buffer[1] === 0xFF;
++	return false;
++}
++/** A fresh UTF-16 file gets a BOM so a later read can detect its encoding. */
++function defaultBom(encoding) {
++	return encoding === "utf-16le" || encoding === "utf-16be";
++}
++/**
++ * Structural validity check for GBK/GB18030 double-byte sequences: a lead
++ * byte 0x81–0xFE must be followed by a trail 0x40–0xFE excluding 0x7F; a
++ * truncated trailing lead at the sample boundary is tolerated.
++ */
++function isValidGbk(buffer) {
++	for (let i = 0; i < buffer.length; i++) {
++		const byte = buffer[i];
++		if (byte < 0x80) continue;
++		if (byte === 0x80) continue;
++		if (byte === 0xFF) return false;
++		if (i + 1 >= buffer.length) return true;
++		const trail = buffer[++i];
++		if (trail < 0x40 || trail === 0x7F || trail > 0xFE) return false;
++	}
++	return true;
++}
++/** Structural validity check for Big5 double-byte sequences. */
++function isValidBig5(buffer) {
++	for (let i = 0; i < buffer.length; i++) {
++		const byte = buffer[i];
++		if (byte < 0x80) continue;
++		if (byte < 0x81 || byte > 0xFE) return false;
++		if (i + 1 >= buffer.length) return true;
++		const trail = buffer[++i];
++		if (!((trail >= 0x40 && trail <= 0x7E) || (trail >= 0xA1 && trail <= 0xFE))) return false;
++	}
++	return true;
++}
++/**
++ * Detect the text encoding of a byte sample: BOM first, then strict UTF-8,
++ * then chardet's verdict for legacy CJK encodings (GB18030/Big5), then a
++ * structural GBK/Big5 check (chardet misjudges short samples), and finally
++ * latin1 — the lossless single-byte fallback every byte sequence survives.
++ * @returns the canonical encoding name plus whether the source carried a BOM.
 + */
 +function detectEncoding(buffer) {
-+	if (buffer.length === 0) return 'utf-8';
-+	const detected = chardet.detect(buffer);
-+	if (!detected) return 'utf-8';
-+	const normalized = detected.toLowerCase();
-+	if (normalized === 'utf-8' || normalized === 'utf8') return 'utf-8';
-+	if (normalized === 'gb18030' || normalized === 'gbk' || normalized === 'gb2312') return 'gb18030';
-+	// For other encodings (e.g., Big5, Shift_JIS), default to UTF-8
-+	return 'utf-8';
++	if (hasBom(buffer, "utf-8")) return { encoding: "utf-8", bom: true };
++	if (hasBom(buffer, "utf-16le")) return { encoding: "utf-16le", bom: true };
++	if (hasBom(buffer, "utf-16be")) return { encoding: "utf-16be", bom: true };
++	if (buffer.length === 0) return { encoding: "utf-8", bom: false };
++	try {
++		new TextDecoder("utf-8", { fatal: true }).decode(buffer);
++		return { encoding: "utf-8", bom: false };
++	} catch {}
++	const detected = chardet.detect(Buffer.from(buffer));
++	const normalized = detected ? normalizeEncoding(detected) : undefined;
++	if (normalized === "gb18030" || normalized === "big5") return { encoding: normalized, bom: false };
++	if (isValidGbk(buffer)) return { encoding: "gb18030", bom: false };
++	if (isValidBig5(buffer)) return { encoding: "big5", bom: false };
++	return { encoding: "latin1", bom: false };
 +}
 +/**
-+ * Decode a buffer to text using the specified or detected encoding.
++ * Decode a buffer to text using a canonical encoding. UTF-8 (strict) and
++ * UTF-16 go through TextDecoder, which strips a leading BOM; legacy encodings
++ * go through iconv-lite.
 + */
 +function decodeText(buffer, encoding, verb, displayPath) {
-+	if (encoding === 'utf-8') {
-+		return decodeUtf8(buffer, verb, displayPath);
-+	}
-+	// Use iconv for GB18030/GBK/GB2312
-+	try {
-+		return iconv.decode(buffer, encoding);
++	const normalized = requireEncoding(encoding, verb, displayPath);
++	if (normalized === "utf-8") return decodeUtf8(buffer, verb, displayPath);
++	if (normalized === "utf-16le" || normalized === "utf-16be") try {
++		return new TextDecoder(normalized).decode(buffer);
 +	} catch (error) {
-+		throw new FsError(`cannot ${verb} "${displayPath}": invalid ${encoding} text`, "FS_NOT_TEXT");
++		if (!(error instanceof TypeError)) throw error;
++		throw new FsError(`cannot ${verb} "${displayPath}": invalid ${normalized} text`, "FS_NOT_TEXT");
++	}
++	try {
++		return iconv.decode(Buffer.from(buffer), normalized);
++	} catch (error) {
++		throw new FsError(`cannot ${verb} "${displayPath}": invalid ${normalized} text`, "FS_NOT_TEXT", { cause: error });
 +	}
 +}
 +/**
-+ * Encode text to a buffer using the specified encoding.
++ * Encode text into bytes using a canonical encoding, restoring the BOM the
++ * source file carried (`bom`); latin1/gb18030/big5 never carry one.
 + */
-+function encodeText(content, encoding) {
-+	if (encoding === 'utf-8') {
-+		return Buffer.from(content, 'utf8');
++function encodeText(content, encoding, bom) {
++	const normalized = requireEncoding(encoding, "write");
++	if (normalized === "utf-8") {
++		const body = Buffer.from(content, "utf8");
++		return bom ? Buffer.concat([Buffer.from([0xEF, 0xBB, 0xBF]), body]) : body;
 +	}
-+	return iconv.encode(content, encoding);
++	const label = normalized === "utf-16le" ? "utf16-le" : normalized === "utf-16be" ? "utf16-be" : normalized;
++	const body = iconv.encode(content, label);
++	if (!bom) return body;
++	if (normalized === "utf-16le") return Buffer.concat([Buffer.from([0xFF, 0xFE]), body]);
++	if (normalized === "utf-16be") return Buffer.concat([Buffer.from([0xFE, 0xFF]), body]);
++	return body;
++}
++/**
++ * Read up to `maxBytes` from the start of a file — encoding detection needs
++ * only a head sample, never the whole content.
++ */
++async function readFileHead(absolutePath, maxBytes, signal) {
++	throwIfAborted(signal, "read");
++	const handle = await open(absolutePath, "r");
++	try {
++		const buffer = Buffer.allocUnsafe(maxBytes);
++		const { bytesRead } = await handle.read(buffer, 0, maxBytes, 0);
++		return buffer.subarray(0, bytesRead);
++	} finally {
++		await handle.close();
++	}
 +}
  async function statRegularFile(target, verb, signal) {
  	throwIfAborted(signal, verb);
  	let info;
-@@ -353,7 +392,8 @@ async function readWholeText(target, signal) {
+@@ -348,12 +509,18 @@ async function statRegularFile(target, verb, signal) {
+ * @param signal - aborts the read (`FS_ABORTED`).
+ * @returns the full decoded text, byte-for-byte (no normalization).
+ */
+-async function readWholeText(target, signal) {
++async function readWholeText(target, signal, encoding) {
+ 	await statRegularFile(target, "read", signal);
  	const raw = await readFileAbortable(target.targetKey, "read", signal);
  	throwIfAborted(signal, "read");
- 	if (raw.subarray(0, BINARY_SAMPLE_BYTES).includes(0)) throw new FsError(`cannot read "${target.displayPath}": binary file`, "FS_NOT_TEXT");
+-	if (raw.subarray(0, BINARY_SAMPLE_BYTES).includes(0)) throw new FsError(`cannot read "${target.displayPath}": binary file`, "FS_NOT_TEXT");
 -	return decodeUtf8(raw, "read", target.displayPath);
-+	const encoding = detectEncoding(raw);
-+	return decodeText(raw, encoding, "read", target.displayPath);
++	const detected = encoding === undefined ? detectEncoding(raw).encoding : requireEncoding(encoding, "read", target.displayPath);
++	const isUtf16 = detected === "utf-16le" || detected === "utf-16be";
++	// A raw NUL sample rejects binary content for byte-oriented encodings; a
++	// UTF-16 text legitimately contains NUL bytes, so it is checked decoded.
++	if (!isUtf16 && raw.subarray(0, BINARY_SAMPLE_BYTES).includes(0)) throw new FsError(`cannot read "${target.displayPath}": binary file`, "FS_NOT_TEXT");
++	const text = decodeText(raw, detected, "read", target.displayPath);
++	if (isUtf16 && text.includes("\0")) throw new FsError(`cannot read "${target.displayPath}": binary file`, "FS_NOT_TEXT");
++	return text;
  }
  /**
  * Read a whole regular file as raw bytes with no decoding or binary rejection.
-@@ -400,20 +440,29 @@ async function readWholeBytes(target, signal, maxBytes, internals = {}) {
- async function* streamWholeText(target, signal) {
+@@ -397,23 +564,60 @@ async function readWholeBytes(target, signal, maxBytes, internals = {}) {
+ * @param signal - aborts the stream, including between chunks (`FS_ABORTED`).
+ * @returns decoded text chunks in file order; chunk boundaries carry no meaning.
+ */
+-async function* streamWholeText(target, signal) {
++async function* streamWholeText(target, signal, encoding) {
  	await statRegularFile(target, "read", signal);
++	// Detection needs only the head sample; the body streams afterwards.
++	const head = await readFileHead(target.targetKey, ENCODING_SAMPLE_BYTES, signal);
++	const detection = detectEncoding(head);
++	const detected = encoding === undefined ? detection.encoding : requireEncoding(encoding, "read", target.displayPath);
++	const bom = hasBom(head, detected);
++	const isUtf16 = detected === "utf-16le" || detected === "utf-16be";
  	const stream = createReadStream(target.targetKey, signal ? { signal } : {});
 -	const decoder = new TextDecoder("utf-8", { fatal: true });
- 	let sampledBytes = 0;
-+	let detectedEncoding = null;
- 	function scanBinarySample(chunk) {
- 		if (sampledBytes >= BINARY_SAMPLE_BYTES) return;
- 		const sample = chunk.subarray(0, Math.min(chunk.length, BINARY_SAMPLE_BYTES - sampledBytes));
- 		if (sample.includes(0)) throw new FsError(`cannot read "${target.displayPath}": binary file`, "FS_NOT_TEXT");
- 		sampledBytes += sample.length;
-+		// Detect encoding from the first chunk
-+		if (detectedEncoding === null) {
-+			detectedEncoding = detectEncoding(chunk);
-+		}
- 	}
- 	try {
- 		for await (const chunk of stream) {
- 			scanBinarySample(chunk);
--			yield decodeUtf8Stream(decoder, chunk, "read", target.displayPath);
-+			if (detectedEncoding === 'utf-8') {
-+				// For UTF-8, use streaming decoder for cross-chunk safety
-+				yield decodeUtf8Stream(new TextDecoder("utf-8", { fatal: true }), chunk, "read", target.displayPath);
-+			} else {
-+				// For GB18030, decode the whole chunk at once (GB18030 has no cross-chunk issues for Chinese)
-+				yield decodeText(chunk, detectedEncoding, "read", target.displayPath);
+-	let sampledBytes = 0;
+-	function scanBinarySample(chunk) {
+-		if (sampledBytes >= BINARY_SAMPLE_BYTES) return;
+-		const sample = chunk.subarray(0, Math.min(chunk.length, BINARY_SAMPLE_BYTES - sampledBytes));
+-		if (sample.includes(0)) throw new FsError(`cannot read "${target.displayPath}": binary file`, "FS_NOT_TEXT");
+-		sampledBytes += sample.length;
++	if (detected === "utf-8") {
++		// ONE streaming decoder across chunks: a multi-byte sequence split at a
++		// chunk boundary must not reset the decoder.
++		const decoder = new TextDecoder("utf-8", { fatal: true });
++		let sampledBytes = 0;
++		try {
++			for await (const chunk of stream) {
++				if (sampledBytes < BINARY_SAMPLE_BYTES) {
++					const sample = chunk.subarray(0, Math.min(chunk.length, BINARY_SAMPLE_BYTES - sampledBytes));
++					if (sample.includes(0)) throw new FsError(`cannot read "${target.displayPath}": binary file`, "FS_NOT_TEXT");
++					sampledBytes += sample.length;
++				}
++				yield decodeUtf8Stream(decoder, chunk, "read", target.displayPath);
 +			}
++			yield decodeUtf8Stream(decoder, void 0, "read", target.displayPath);
++		} catch (error) {
++			/* v8 ignore next 4 -- mid-stream errors need an abort/IO fault racing the loop; pre-abort is caught by throwIfAborted. */
++			if (isAbortError(error)) throw new FsError("read aborted", "FS_ABORTED");
++			throw error;
++		}
++		return;
+ 	}
++	// Legacy/UTF-16 encodings stream through iconv-lite's stateful decoder.
++	const label = detected === "utf-16le" ? "utf16-le" : detected === "utf-16be" ? "utf16-be" : detected;
++	const decoder = iconv.getDecoder(label);
++	let first = true;
++	let sampledBytes = 0;
+ 	try {
+-		for await (const chunk of stream) {
+-			scanBinarySample(chunk);
+-			yield decodeUtf8Stream(decoder, chunk, "read", target.displayPath);
++		for await (let chunk of stream) {
++			if (first && bom && chunk.length > 0) chunk = chunk.subarray(isUtf16 ? 2 : 3);
++			first = false;
++			if (!isUtf16 && sampledBytes < BINARY_SAMPLE_BYTES) {
++				const sample = chunk.subarray(0, Math.min(chunk.length, BINARY_SAMPLE_BYTES - sampledBytes));
++				if (sample.includes(0)) throw new FsError(`cannot read "${target.displayPath}": binary file`, "FS_NOT_TEXT");
++				sampledBytes += sample.length;
++			}
++			const text = decoder.write(chunk);
++			if (isUtf16 && text.includes("\0")) throw new FsError(`cannot read "${target.displayPath}": binary file`, "FS_NOT_TEXT");
++			if (text) yield text;
++		}
++		const tail = decoder.end();
++		if (tail) {
++			if (isUtf16 && tail.includes("\0")) throw new FsError(`cannot read "${target.displayPath}": binary file`, "FS_NOT_TEXT");
++			yield tail;
  		}
 -		yield decodeUtf8Stream(decoder, void 0, "read", target.displayPath);
  	} catch (error) {
  		/* v8 ignore next 4 -- mid-stream errors need an abort/IO fault racing the loop; pre-abort is caught by throwIfAborted. */
  		if (isAbortError(error)) throw new FsError("read aborted", "FS_ABORTED");
-@@ -483,10 +532,17 @@ async function writeFileAtomic(absolutePath, content, mode, signal, internals =
+@@ -483,10 +687,17 @@ async function writeFileAtomic(absolutePath, content, mode, signal, internals =
  		handle = await open(tempPath, "wx", 384);
  		await handle.chmod(384);
  		if (platform === "win32" && mode !== void 0) await copyFileDacl(absolutePath, tempPath);
@@ -120,64 +294,248 @@ index 9138759..00746c4 100644
  		await handle.sync();
  		await internals.inspectTemp?.({
  			stagingDir,
-@@ -572,10 +628,12 @@ async function readForEdit(absolutePath, displayPath, signal) {
+@@ -567,15 +778,23 @@ function countOccurrences(content, needle) {
+ * @param signal - aborts the read (`FS_ABORTED`).
+ * @returns the LF-normalized content and the detected style to restore on write-back.
+ */
+-async function readForEdit(absolutePath, displayPath, signal) {
++async function readForEdit(absolutePath, displayPath, signal, encoding) {
+ 	throwIfAborted(signal, "edit");
  	const buffer = await readFileAbortable(absolutePath, "edit", signal);
  	throwIfAborted(signal, "edit");
- 	if (buffer.includes(0)) throw new FsError(`cannot edit "${displayPath}": binary file`, "FS_NOT_TEXT");
+-	if (buffer.includes(0)) throw new FsError(`cannot edit "${displayPath}": binary file`, "FS_NOT_TEXT");
 -	const raw = decodeUtf8(buffer, "edit", displayPath);
-+	const encoding = detectEncoding(buffer);
-+	const raw = decodeText(buffer, encoding, "edit", displayPath);
++	const detection = detectEncoding(buffer);
++	const detected = encoding === undefined ? detection.encoding : requireEncoding(encoding, "edit", displayPath);
++	const isUtf16 = detected === "utf-16le" || detected === "utf-16be";
++	if (!isUtf16 && buffer.includes(0)) throw new FsError(`cannot edit "${displayPath}": binary file`, "FS_NOT_TEXT");
++	const raw = decodeText(buffer, detected, "edit", displayPath);
++	if (isUtf16 && raw.includes("\0")) throw new FsError(`cannot edit "${displayPath}": binary file`, "FS_NOT_TEXT");
  	return {
  		content: normalizeLineEndings(raw),
 -		lineEndings: detectLineEndings(raw)
 +		lineEndings: detectLineEndings(raw),
-+		encoding
++		encoding: detected,
++		// An explicit override that matches the detection keeps the source BOM;
++		// a switched encoding falls back to the target encoding's default.
++		bom: detection.encoding === detected ? detection.bom : defaultBom(detected)
  	};
  }
  /**
-@@ -620,7 +678,8 @@ async function readTextForDiff(absolutePath, maxBytes, signal) {
+@@ -620,11 +839,11 @@ async function readTextForDiff(absolutePath, maxBytes, signal) {
  		const basis = buffer.subarray(0, total);
  		if (basis.includes(0)) return null;
  		try {
 -			return normalizeLineEndings(new TextDecoder("utf-8", { fatal: true }).decode(basis));
-+			const encoding = detectEncoding(basis);
-+			return normalizeLineEndings(decodeText(basis, encoding, "read", absolutePath));
++			return normalizeLineEndings(decodeText(basis, detectEncoding(basis).encoding, "read", absolutePath));
  		} catch (error) {
  			/* v8 ignore next 2 -- TextDecoder({fatal}) only throws TypeError on invalid bytes;
  			* any other throw is an unreachable runtime fault. */
-@@ -784,8 +843,23 @@ var LocalFileSystem = class extends FileSystem {
+-			if (!(error instanceof TypeError)) throw error;
++			if (!(error instanceof TypeError) && !(error instanceof FsError)) throw error;
+ 			return null;
+ 		}
+ 	} catch (error) {
+@@ -743,17 +962,28 @@ var LocalFileSystem = class extends FileSystem {
+ 			size: info.size
+ 		};
+ 	}
+-	async readText(target, signal) {
++	async readText(target, signal, opts) {
+ 		return readWholeText({
+ 			displayPath: target.displayPath,
+ 			targetKey: target.targetKey
+-		}, signal);
++		}, signal, opts?.encoding);
+ 	}
+-	streamText(target, signal) {
++	streamText(target, signal, opts) {
+ 		return Promise.resolve(streamWholeText({
+ 			displayPath: target.displayPath,
+ 			targetKey: target.targetKey
+-		}, signal));
++		}, signal, opts?.encoding));
++	}
++	/**
++	* Detect a target's text encoding from a bounded head sample: BOM, then
++	* strict UTF-8, then legacy heuristics (GB18030/Big5), then latin1.
++	*/
++	async detectEncoding(target, signal) {
++		await statRegularFile({
++			displayPath: target.displayPath,
++			targetKey: target.targetKey
++		}, "read", signal);
++		return detectEncoding(await readFileHead(target.targetKey, ENCODING_SAMPLE_BYTES, signal)).encoding;
+ 	}
+ 	async readBytes(target, signal, maxBytes) {
+ 		return readWholeBytes({
+@@ -776,7 +1006,7 @@ var LocalFileSystem = class extends FileSystem {
+ 			...entry.size !== void 0 ? { size: entry.size } : {}
+ 		}));
+ 	}
+-	async writeText(target, content, expected, signal) {
++	async writeText(target, content, expected, signal, sandboxPolicy, opts) {
+ 		return this.withLock(target.targetKey, async () => {
+ 			const existing = await probe(target.targetKey);
+ 			if (existing && existing.type !== "file") throw new FsError(`cannot write "${target.displayPath}": not a regular file`, "FS_NOT_REGULAR_FILE");
+@@ -784,32 +1014,58 @@ var LocalFileSystem = class extends FileSystem {
  				if (!existing) throw new FsError(`cannot write "${target.displayPath}": file no longer exists`, "FS_STALE_VERSION");
  				if (existing.version !== expected.version) throw new FsError(`cannot write "${target.displayPath}": file changed since it was read`, "FS_STALE_VERSION");
  			} else if (expected?.kind === "createIfAbsent" && existing) throw new FsError(`cannot overwrite existing "${target.displayPath}" without reading it first`, "FS_NOT_OBSERVED");
-+			
-+			// Detect encoding from existing file, default to UTF-8 for new files
-+			let encoding = 'utf-8';
++			// Encoding: an explicit option wins; an existing file keeps its
++			// detected encoding (and BOM); a new file defaults to UTF-8.
++			let encoding = "utf-8";
++			let bom = false;
++			const requested = opts?.encoding === undefined ? void 0 : requireEncoding(opts.encoding, "write", target.displayPath);
 +			if (existing) {
++				let detection = { encoding: "utf-8", bom: false };
 +				try {
-+					const existingRaw = await readFile(target.targetKey);
-+					encoding = detectEncoding(existingRaw);
-+				} catch {
-+					// If we can't read the existing file, default to UTF-8
++					detection = detectEncoding(await readFileHead(target.targetKey, ENCODING_SAMPLE_BYTES, signal));
++				} catch (error) {
++					if (error instanceof FsError) throw error;
 +				}
++				if (requested === void 0) {
++					encoding = detection.encoding;
++					bom = detection.bom;
++				} else {
++					encoding = requested;
++					bom = detection.encoding === requested ? detection.bom : defaultBom(requested);
++				}
++			} else if (requested !== void 0) {
++				encoding = requested;
++				bom = defaultBom(requested);
 +			}
-+			
  			const before = existing !== null && Buffer.byteLength(content, "utf8") < this.config.diffBasisMaxBytes ? await readTextForDiff(target.targetKey, this.config.diffBasisMaxBytes, signal) : null;
 -			await writeFileAtomic(target.targetKey, content, existing?.mode, signal, this.internals, expected?.kind === "createIfAbsent" ? { displayPath: target.displayPath } : void 0);
-+			
-+			// Encode content to the target encoding
-+			const encodedContent = encodeText(content, encoding);
-+			await writeFileAtomic(target.targetKey, encodedContent, existing?.mode, signal, this.internals, expected?.kind === "createIfAbsent" ? { displayPath: target.displayPath } : void 0);
++			await writeFileAtomic(target.targetKey, encodeText(content, encoding, bom), existing?.mode, signal, this.internals, expected?.kind === "createIfAbsent" ? { displayPath: target.displayPath } : void 0);
  			const after = await probe(target.targetKey);
  			return {
  				operation: existing ? "update" : "create",
-@@ -804,7 +878,9 @@ var LocalFileSystem = class extends FileSystem {
- 			const original = await readForEdit(target.targetKey, target.displayPath, signal);
+ 				version: this.versionAfterWrite(after, target),
+ 				before,
+-				after: normalizeLineEndings(content)
++				after: normalizeLineEndings(content),
++				encoding
+ 			};
+ 		});
+ 	}
+-	async editText(target, edit, expected, signal) {
++	async editText(target, edit, expected, signal, sandboxPolicy, opts) {
+ 		return this.withLock(target.targetKey, async () => {
+ 			const existing = await probe(target.targetKey);
+ 			if (!existing) throw new FsError(`cannot edit "${target.displayPath}": file changed since it was read`, "FS_STALE_VERSION");
+ 			if (existing.type !== "file") throw new FsError(`cannot edit "${target.displayPath}": not a regular file`, "FS_NOT_REGULAR_FILE");
+ 			if (expected && existing.version !== expected.version) throw new FsError(`cannot edit "${target.displayPath}": file changed since it was read`, "FS_STALE_VERSION");
+-			const original = await readForEdit(target.targetKey, target.displayPath, signal);
++			const original = await readForEdit(target.targetKey, target.displayPath, signal, opts?.encoding);
  			const edited = applyLiteralEdit(original.content, edit.oldString, edit.newString, edit.replaceAll, target.displayPath);
  			const content = restoreLineEndings(edited.content, original.lineEndings);
 -			await writeFileAtomic(target.targetKey, content, existing.mode, signal, this.internals);
-+			// Preserve original encoding when writing back
-+			const encodedContent = encodeText(content, original.encoding);
-+			await writeFileAtomic(target.targetKey, encodedContent, existing.mode, signal, this.internals);
++			// Write back in the same encoding (and BOM) the file was decoded with.
++			await writeFileAtomic(target.targetKey, encodeText(content, original.encoding, original.bom), existing.mode, signal, this.internals);
  			const after = await probe(target.targetKey);
  			return {
  				version: this.versionAfterWrite(after, target),
+ 				before: original.content,
+-				after: edited.content
++				after: edited.content,
++				encoding: original.encoding
+ 			};
+ 		});
+ 	}
+diff --git a/node_modules/@deepseek-ai/dsh-fs-local/lib/types/fsio.d.ts b/node_modules/@deepseek-ai/dsh-fs-local/lib/types/fsio.d.ts
+index f743e5a..8c356c7 100644
+--- a/node_modules/@deepseek-ai/dsh-fs-local/lib/types/fsio.d.ts
++++ b/node_modules/@deepseek-ai/dsh-fs-local/lib/types/fsio.d.ts
+@@ -95,13 +95,17 @@ export declare function probeNoFollow(absolutePath: string): Promise<PathLinkInf
+  */
+ export declare function listDirectory(target: LocalTarget, signal?: AbortSignal): Promise<LocalDirEntry[]>;
+ /**
+- * Read a whole regular UTF-8 text file into a single decoded string. Rejects
+- * non-regular files, invalid UTF-8, and NUL-byte binary samples.
++ * Read a whole regular text file into a single decoded string. Rejects
++ * non-regular files, NUL-byte binary samples, and bytes invalid for the
++ * resolved encoding. `encoding` overrides detection; omitted, the encoding is
++ * auto-detected (BOM, then strict UTF-8, then GB18030/Big5 heuristics, then
++ * latin1).
+  * @param target - the resolved file to read.
+  * @param signal - aborts the read (`FS_ABORTED`).
++ * @param encoding - explicit encoding override.
+  * @returns the full decoded text, byte-for-byte (no normalization).
+  */
+-export declare function readWholeText(target: LocalTarget, signal?: AbortSignal): Promise<string>;
++export declare function readWholeText(target: LocalTarget, signal?: AbortSignal, encoding?: string): Promise<string>;
+ /**
+  * Read a whole regular file as raw bytes with no decoding or binary rejection.
+  * `maxBytes` bounds the complete content: the stat size short-circuits an
+@@ -122,7 +126,7 @@ export declare function readWholeBytes(target: LocalTarget, signal: AbortSignal
+  * @param signal - aborts the stream, including between chunks (`FS_ABORTED`).
+  * @returns decoded text chunks in file order; chunk boundaries carry no meaning.
+  */
+-export declare function streamWholeText(target: LocalTarget, signal?: AbortSignal): AsyncIterable<string>;
++export declare function streamWholeText(target: LocalTarget, signal?: AbortSignal, encoding?: string): AsyncIterable<string>;
+ /**
+  * Atomically replace a file through a private, synced staging file in the same directory.
+  * POSIX protects the staging directory and file with `0o700` and `0o600`. A new Windows file
+@@ -138,7 +142,7 @@ export declare function streamWholeText(target: LocalTarget, signal?: AbortSigna
+  * primitive; a concurrent creator's file is preserved and this write is
+  * rejected with `FS_NOT_OBSERVED` using the supplied display path.
+  */
+-export declare function writeFileAtomic(absolutePath: string, content: string, mode: number | undefined, signal: AbortSignal | undefined, internals?: FsIoInternals, createIfAbsent?: {
++export declare function writeFileAtomic(absolutePath: string, content: string | Uint8Array, mode: number | undefined, signal: AbortSignal | undefined, internals?: FsIoInternals, createIfAbsent?: {
+     displayPath: string;
+ }): Promise<void>;
+ /** Line ending style detected before LF normalization. */
+@@ -167,9 +171,13 @@ declare function restoreLineEndings(content: string, lineEndings: LineEndings):
+  * @param signal - aborts the read (`FS_ABORTED`).
+  * @returns the LF-normalized content and the detected style to restore on write-back.
+  */
+-export declare function readForEdit(absolutePath: string, displayPath: string, signal?: AbortSignal): Promise<{
++export declare function readForEdit(absolutePath: string, displayPath: string, signal?: AbortSignal, encoding?: string): Promise<{
+     content: string;
+     lineEndings: LineEndings;
++    /** The encoding the file was decoded with (explicit override or detection). */
++    encoding: string;
++    /** Whether the source carried a BOM that write-back must restore. */
++    bom: boolean;
+ }>;
+ /**
+  * Best-effort overwrite diff basis. Binary, invalid UTF-8, a file at/above the byte limit,
+diff --git a/node_modules/@deepseek-ai/dsh-fs-local/lib/types/index.d.ts b/node_modules/@deepseek-ai/dsh-fs-local/lib/types/index.d.ts
+index 6f9309a..2855179 100644
+--- a/node_modules/@deepseek-ai/dsh-fs-local/lib/types/index.d.ts
++++ b/node_modules/@deepseek-ai/dsh-fs-local/lib/types/index.d.ts
+@@ -6,7 +6,8 @@
+ import { Context } from '@deepseek-ai/cordis';
+ import z from '@deepseek-ai/schemastery';
+ import { FileSystem, FsVersion } from '@deepseek-ai/dsh-fs';
+-import type { FsDirEntry, FsEditOutcome, FsEditRequest, FsInfo, FsPathInfo, FsTarget, FsWriteIntent, FsWriteOutcome } from '@deepseek-ai/dsh-fs';
++import type { FsDirEntry, FsEditOutcome, FsEditRequest, FsEncoding, FsInfo, FsPathInfo, FsTarget, FsTextOptions, FsWriteIntent, FsWriteOutcome } from '@deepseek-ai/dsh-fs';
++import type { SandboxExecutionPolicy } from '@deepseek-ai/dsh-sandbox';
+ import type { FsIoInternals } from './fsio.ts';
+ /** Configuration for the local filesystem backend. */
+ export interface Config {
+@@ -49,14 +50,19 @@ export declare class LocalFileSystem extends FileSystem {
+     lstat(path: string, opts?: {
+         cwd?: string;
+     }, signal?: AbortSignal): Promise<FsPathInfo | undefined>;
+-    readText(target: FsTarget, signal?: AbortSignal): Promise<string>;
+-    streamText(target: FsTarget, signal?: AbortSignal): Promise<AsyncIterable<string>>;
++    readText(target: FsTarget, signal?: AbortSignal, opts?: FsTextOptions): Promise<string>;
++    streamText(target: FsTarget, signal?: AbortSignal, opts?: FsTextOptions): Promise<AsyncIterable<string>>;
++    /**
++     * Detect a target's text encoding from a bounded head sample: BOM, then
++     * strict UTF-8, then legacy heuristics (GB18030/Big5), then latin1.
++     */
++    detectEncoding(target: FsTarget, signal?: AbortSignal): Promise<FsEncoding>;
+     readBytes(target: FsTarget, signal: AbortSignal | undefined, maxBytes: number): Promise<Uint8Array>;
+     listDir(target: FsTarget, signal?: AbortSignal): Promise<FsDirEntry[]>;
+-    writeText(target: FsTarget, content: string, expected?: FsWriteIntent, signal?: AbortSignal): Promise<FsWriteOutcome>;
++    writeText(target: FsTarget, content: string, expected?: FsWriteIntent, signal?: AbortSignal, sandboxPolicy?: SandboxExecutionPolicy, opts?: FsTextOptions): Promise<FsWriteOutcome>;
+     editText(target: FsTarget, edit: FsEditRequest, expected?: {
+         version: FsVersion;
+-    }, signal?: AbortSignal): Promise<FsEditOutcome>;
++    }, signal?: AbortSignal, sandboxPolicy?: SandboxExecutionPolicy, opts?: FsTextOptions): Promise<FsEditOutcome>;
+     private versionAfterWrite;
+ }
+ export default LocalFileSystem;
