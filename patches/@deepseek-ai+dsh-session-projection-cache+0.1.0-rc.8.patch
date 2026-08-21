@@ -1,0 +1,39 @@
+diff --git a/node_modules/@deepseek-ai/dsh-session-projection-cache/lib/index.js b/node_modules/@deepseek-ai/dsh-session-projection-cache/lib/index.js
+index 9fe86d4..0a3cb08 100644
+--- a/node_modules/@deepseek-ai/dsh-session-projection-cache/lib/index.js
++++ b/node_modules/@deepseek-ai/dsh-session-projection-cache/lib/index.js
+@@ -109,6 +109,34 @@ var SessionProjectionCache = class extends Service {
+ 		this.ctx.effect(() => () => domain.close(), "sessionProjectionCache.domainClose");
+ 		this.table = domain.table("sessions");
+ 		this.installWritePath();
++		void this.backfillColdSessions();
++	}
++	/**
++	* Startup backfill: fold every persisted session that has no
++	* identity-matching stored record with at least one servable row through
++	* {@link coldSnapshot} (refold from the log + durable write-back). Without
++	* it, sessions that were never live while this cache was mounted never
++	* serve listing projections (titles) again — the listing read is zero-I/O
++	* by design, so nothing else ever fills their rows. Sequential and
++	* fail-soft: a failed session leaves the cache as it was, and live
++	* sessions are skipped (the write-behind path owns their checkpoints).
++	*/
++	async backfillColdSessions() {
++		try {
++			const metas = await this.ctx.sessionPersistence.list();
++			for (const meta of metas) {
++				if (this.ctx.sessions.get(meta.id) !== void 0) continue;
++				try {
++					const record = this.requireTable().get(meta.id);
++					if (record !== void 0 && identityMatches(record.identity, identityOf(meta)) && Object.keys(this.ctx.sessionProjections.viewCheckpoint(record.rows)).length > 0) continue;
++					await this.coldSnapshot(meta.id);
++				} catch (error) {
++					this.ctx.logger.warn(`session projection cache: startup backfill for "${meta.id}" failed (cache stays cold): ${String(error)}`);
++				}
++			}
++		} catch (error) {
++			this.ctx.logger.warn(`session projection cache: startup backfill failed (cache stays cold): ${String(error)}`);
++		}
+ 	}
+ 	/**
+ 	* The stored record for one session, accepted only when its bound log
