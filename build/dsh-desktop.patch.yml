@@ -14,8 +14,14 @@
 # dsh-market normally offers to restart its own Node process after mutations.
 # The desktop shell has the real lifecycle authority, so keep that behavior off
 # whenever the optional plugin is present in the composed profile.
+#
+# The `inject: [desktopProfiles]` that used to be here was removed: the desktop
+# shell's own market-installer plugin (which provides that service) was disabled
+# 2026-08-17, so the hard inject created a deadlock — the community dsh-market
+# plugin waited forever for a service nobody provides. The plugin's own code
+# handles the missing service gracefully (falls back to CLI mode using
+# config.profile / argvProfile), so the inject is unnecessary.
 - id: dsh-market
-  inject: [desktopProfiles]
   config:
     profile: web
     allowRestart: false
