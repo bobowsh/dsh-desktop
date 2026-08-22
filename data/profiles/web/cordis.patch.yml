@@ -4,3 +4,6 @@
 # []
 - id: dsh-context
   disabled: true
+ 
+- id: dsh-better-sidebar
+  disabled: true 
