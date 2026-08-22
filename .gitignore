@@ -17,7 +17,7 @@ build/icon-1024.png
 #              by the bundle script, so it is git-ignored rather than tracked;
 #              data/settings.template.yaml IS the tracked baseline template)
 #   ignored:   the prebuilt mnemon CLI (data/bin); the web profile's node_modules
-#              is TRACKED for offline use (see the ! re-include rules near the top)
+#              is NOT tracked (gitignored) — reproduced from the lockfile via `pnpm install`
 # Runtime/secret user data created by the app at $INSTDIR\data must never be
 # committed or shipped — the installer only seeds the artifacts above.
 data/.credentials.yaml
@@ -48,13 +48,9 @@ test/check-persistence-list*.mjs
 .env.*
 !.env.example
 
-# ==== node_modules 恢复规则（必须保持在文件末尾：git 按「最后匹配的规则」生效）====
-# 离线部署：data/profiles/web 的 node_modules 整体纳入 git 管理
-# （该目录会随安装包分发，必须自带依赖才能离线运行；
-#   用 ! 恢复而非 git add -f，否则后续 pnpm install 新增的包不会被跟踪）
-!data/profiles/web/node_modules/
-!data/profiles/web/node_modules/**/
-# 包内 dist/ 常是 main 入口（@codemirror/@lezer/quickjs 等），离线必须保留
-!data/profiles/web/node_modules/**/dist/
-# node-pty 的 arm64 原生组件（本机 x64 部署用不到，排除以减小仓库体积）
-data/profiles/web/node_modules/node-pty/third_party/conpty/*/win10-arm64/
+# ==== web profile 的 node_modules：不纳入 git（gitignored）====
+# 早期曾用 ! 规则把 data/profiles/web/node_modules 整体纳入 git 以支持离线部署；
+# 因体积过大（1.8 万+ 文件）已改为不跟踪。依赖改为从 lockfile 重建：
+#   在 data/profiles/web/ 跑 `pnpm install --no-frozen-lockfile`（仓库内 pnpm v11.21.0，
+#   NODE_OPTIONS="" + 绝对 Windows 路径调托管 node）即可按清单重建 node_modules。
+# 顶层全局 `node_modules/` 规则已涵盖本目录，无需额外 ! 恢复。
