@@ -1,6 +1,6 @@
 import type { SpawnOptionsWithoutStdio } from 'node:child_process'
 import type { EventEmitter } from 'node:events'
-import { createWriteStream, existsSync, readFileSync, writeFileSync, type WriteStream } from 'node:fs'
+import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, type WriteStream } from 'node:fs'
 import { mkdir } from 'node:fs/promises'
 import { createServer } from 'node:net'
 import { homedir } from 'node:os'
@@ -60,6 +60,10 @@ export function buildHarnessSpawnOptions(
   const { ELECTRON_RUN_AS_NODE: _runAsNode, ...parentEnvironment } = environment
   const pathKey = platform === 'win32' ? 'Path' : 'PATH'
 
+  // ELECTRON_RUN_AS_NODE must not reach the Harness process itself: the macOS
+  // utility process is launched with Chromium switches (--type=utility, …)
+  // that Node rejects as bad options. The Harness entry re-declares Node mode
+  // from the inside, for its children only.
   return {
     cwd: launchDirectory,
     env: {
@@ -80,6 +84,7 @@ export function buildHarnessSpawnOptions(
       // When the child runs the standalone bundled Node.js runtime instead, the
       // flag must be stripped so Node is not accidentally forced back into that mode.
       ...(useElectronRuntime ? { ELECTRON_RUN_AS_NODE: '1' } : {}),
+      PNPM_MAX_WORKERS: '1',
       PNPM_CONFIG_CHILD_CONCURRENCY: '1',
       PNPM_CONFIG_PACKAGE_IMPORT_METHOD: 'clone-or-copy',
       PNPM_CONFIG_SIDE_EFFECTS_CACHE: 'false',
@@ -163,7 +168,7 @@ export class HarnessRuntime {
 
     await mkdir(this.options.dshHome, { recursive: true })
     await mkdir(dirname(this.options.logPath), { recursive: true })
-    this.logStream = createWriteStream(this.options.logPath, { flags: 'a' })
+    this.logStream ??= createWriteStream(this.options.logPath, { flags: 'a' })
 
     syncModulesMetadata(this.options.dshHome, (line) => this.writeLog(line))
 
@@ -292,6 +297,23 @@ ${cause}`
     for (const line of chunk.toString('utf8').split(/\r?\n/)) {
       if (line.length > 0) this.writeLog(`[${source}] ${line}`)
     }
+  }
+
+  /**
+   * Record a line the desktop wants in the Harness log, including before a
+   * launch: what happens to the profile between launches is exactly what
+   * someone reading the log after a failed install needs to see.
+   */
+  note(line: string): void {
+    if (!this.logStream) {
+      try {
+        mkdirSync(dirname(this.options.logPath), { recursive: true })
+        this.logStream = createWriteStream(this.options.logPath, { flags: 'a' })
+      } catch {
+        // Keep the line in the in-memory buffer regardless.
+      }
+    }
+    this.writeLog(line)
   }
 
   private writeLog(line: string): void {

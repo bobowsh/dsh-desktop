@@ -247,6 +247,39 @@ describe('GitHub release contract', () => {
     ).toHaveLength(3)
   })
 
+
+  it('signs and notarizes both macOS architectures on tag releases', async () => {
+    const workflow = await readFile(
+      path.join(projectRoot, '.github', 'workflows', 'release.yml'),
+      'utf8'
+    )
+
+    for (const secret of [
+      'DESKTOP_CSC_LINK',
+      'DESKTOP_CSC_KEY_PASSWORD',
+      'DESKTOP_APPLE_API_KEY',
+      'DESKTOP_APPLE_API_KEY_ID',
+      'DESKTOP_APPLE_API_ISSUER',
+      'DESKTOP_APPLE_TEAM_ID'
+    ]) {
+      expect(workflow).toContain(`secrets.${secret}`)
+    }
+    expect(workflow.match(/Prepare macOS signing keychain/g)).toHaveLength(2)
+    expect(workflow.match(/xcrun stapler validate/g)).toHaveLength(4)
+    expect(workflow.match(/xcrun notarytool submit/g)).toHaveLength(2)
+    expect(workflow.match(/CSC_IDENTITY_AUTO_DISCOVERY: 'false'/g)).toHaveLength(2)
+    expect(workflow).not.toContain("CSC_LINK: ''")
+    expect(workflow).toMatch(
+      /macos-apple-silicon:\r?\n\s+name: macOS Apple Silicon\r?\n(?:[\s\S]*?)runs-on: macos-15\r?\n\s+steps:/
+    )
+    expect(workflow).toMatch(
+      /macos-intel:\r?\n\s+name: macOS Intel\r?\n(?:[\s\S]*?)runs-on: macos-15-intel\r?\n\s+steps:/
+    )
+    expect(workflow).toMatch(
+      /windows-x64:\r?\n\s+name: Windows x64\r?\n(?:[\s\S]*?)runs-on: windows-2022\r?\n\s+steps:/
+    )
+  })
+
   it('routes the published download through the official website', async () => {
     const readmes = await Promise.all(
       ['README.md', 'README.zh.md'].map((file) =>

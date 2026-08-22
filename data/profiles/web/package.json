@@ -7,18 +7,19 @@
     "@dsh-external/dsh-visualize": "github:Nagi-ovo/dsh-visualize",
     "@dsh-external/workflow": "git+https://github.com/icetomoyo/dsh_workflow.git",
     "@huanlin/dsh-plugin-session-delete": "github:lsz-asd/dsh-plugin-session-delete",
-    "@liustack/modlens": "^3.23.1",
-    "@nanmicoder/dsh-agent-teams": "^0.1.11",
+    "@liustack/modlens": "^3.24.0",
+    "@nanmicoder/dsh-agent-teams": "^0.1.12",
     "@omdsh-dev/dsh-genui": "github:omdsh-dev/dsh-genui",
     "@yejiming/dsh-gomoku": "^0.0.1",
     "dsh-agent-message": "^1.5.1",
     "dsh-agent-team-gui": "github:toolclub/dsh-agent-team-gui",
+    "dsh-answer-pet": "github:Nanki-nn/dsh-answer-pet",
     "dsh-auto-collapse": "github:a179-sanae/dsh-auto-collapse",
-    "dsh-better-sidebar": "^0.15.0",
+    "dsh-better-sidebar": "^0.15.1",
     "dsh-bookmarks": "^0.1.2",
     "dsh-chat-import": "^0.6.2",
     "dsh-client-auto-continue": "^0.8.1",
-    "dsh-context": "^0.23.0",
+    "dsh-context": "^0.24.1",
     "dsh-files": "github:taxueseek/dsh-files",
     "dsh-foundry": "github:hellosky983/dsh-foundry",
     "dsh-llm-opencode": "file:../../../packages/dsh-llm-opencode",
@@ -79,7 +80,8 @@
         "dsh-plugin-guide",
         "dsh-md-notes",
         "@liustack/modlens",
-        "dsh-vision-router"
+        "dsh-vision-router",
+        "dsh-answer-pet"
       ]
     }
   }

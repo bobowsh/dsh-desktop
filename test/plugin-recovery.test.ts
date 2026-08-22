@@ -1,8 +1,10 @@
+import { existsSync } from 'node:fs'
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { parse, stringify } from 'yaml'
 import {
+  isDisposableModuleDirectory,
   isThirdPartyPackageName,
   profilePackageJsonPath,
   pruneMissingProfileBundles,
@@ -310,6 +312,33 @@ describe('plugin-recovery', () => {
       '@deepseek-ai/dsh-web-app',
       'dshmarket'
     ])
+  })
+
+  it('removes workspace packages and stale lockfile when resetting a plugin', async () => {
+    const pkgPath = profilePackageJsonPath(testDir)
+    const profileDir = join(testDir, 'profiles', 'web')
+    const workspacePkgDir = join(profileDir, 'packages', 'dsh-doudizhu')
+    const nodeModulesPkgDir = join(profileDir, 'node_modules', 'dsh-doudizhu')
+    const lockfilePath = join(profileDir, 'pnpm-lock.yaml')
+
+    await mkdir(workspacePkgDir, { recursive: true })
+    await mkdir(nodeModulesPkgDir, { recursive: true })
+    await writeFile(join(workspacePkgDir, 'package.json'), '{"name":"dsh-doudizhu"}')
+    await writeFile(join(nodeModulesPkgDir, 'package.json'), '{"name":"dsh-doudizhu"}')
+    await writeFile(lockfilePath, 'lockfileVersion: 9.0')
+    await writeFile(
+      pkgPath,
+      JSON.stringify({
+        dependencies: { 'dsh-doudizhu': 'workspace:^' },
+        dsh: { profile: { bundles: ['@deepseek-ai/dsh-base', 'dsh-doudizhu'] } }
+      })
+    )
+
+    const success = await resetPluginProfile(testDir, 'dsh-doudizhu')
+    expect(success).toBe(true)
+    expect(existsSync(workspacePkgDir)).toBe(false)
+    expect(existsSync(nodeModulesPkgDir)).toBe(false)
+    expect(existsSync(lockfilePath)).toBe(false)
   })
 
   it('resolves root package when a scoped sub-module fails', async () => {
@@ -697,5 +726,74 @@ describe('plugin-recovery', () => {
     const modified = await pruneMissingProfileBundles(testDir)
     expect(modified).toBe(false)
   })
+
+  it('sweeps pnpm staging and sidelined package directories before launch', () => {
+    // Windows refuses to replace a directory something still holds open, so
+    // the packaged pnpm runner moves the blocked package aside and lets pnpm
+    // install over the freed name. Nothing holds either leftover before
+    // Harness starts, which is when this sweep runs.
+    expect(isDisposableModuleDirectory('argparse_tmp_19856_4')).toBe(true)
+    expect(isDisposableModuleDirectory('argparse.dsh-old-1787317710932')).toBe(true)
+    expect(isDisposableModuleDirectory('argparse')).toBe(false)
+    expect(isDisposableModuleDirectory('js-yaml')).toBe(false)
+  })
 })
 
+
+describe('uninstall clears what the patch layer said about the plugin', () => {
+  const testDir = join(__dirname, '.temp-uninstall-patch-layer')
+  const profile = join(testDir, 'profiles', 'web')
+
+  afterEach(async () => {
+    await rm(testDir, { recursive: true, force: true })
+  })
+
+  it('drops the plugin’s rows and keeps the user’s own', async () => {
+    // The residue this closes: rows aimed at a plugin outlive its uninstall and
+    // keep routing services at a provider that no longer composes, which reads
+    // as a slow start rather than a fault.
+    await mkdir(join(profile, 'node_modules', 'dsh-doudizhu'), { recursive: true })
+    await writeFile(
+      join(profile, 'node_modules', 'dsh-doudizhu', 'package.json'),
+      JSON.stringify({ name: 'dsh-doudizhu', dsh: { bundle: { patch: './cordis.patch.yml' } } })
+    )
+    await writeFile(
+      join(profile, 'node_modules', 'dsh-doudizhu', 'cordis.patch.yml'),
+      '- insert:\n    - id: doudizhu\n      name: dsh-doudizhu\n'
+    )
+    await writeFile(
+      join(profile, 'package.json'),
+      JSON.stringify({
+        dependencies: { 'dsh-doudizhu': '^1.0.0' },
+        dsh: { profile: { bundles: ['@deepseek-ai/dsh-base', 'dsh-doudizhu'] } }
+      })
+    )
+    await writeFile(
+      join(profile, 'cordis.patch.yml'),
+      [
+        '- id: doudizhu',
+        '  config:',
+        '    backend: sqlite',
+        '- id: theme',
+        '  config:',
+        '    accent: violet',
+        ''
+      ].join('\n')
+    )
+
+    const success = await uninstallPluginFromProfile(testDir, 'dsh-doudizhu', async () => {
+      const manifest = JSON.parse(await readFile(join(profile, 'package.json'), 'utf8'))
+      delete manifest.dependencies['dsh-doudizhu']
+      manifest.dsh.profile.bundles = ['@deepseek-ai/dsh-base']
+      await writeFile(join(profile, 'package.json'), JSON.stringify(manifest))
+      await rm(join(profile, 'node_modules', 'dsh-doudizhu'), { recursive: true, force: true })
+      return true
+    })
+
+    expect(success).toBe(true)
+    const layer = await readFile(join(profile, 'cordis.patch.yml'), 'utf8')
+    expect(layer).not.toContain('doudizhu')
+    expect(layer).not.toContain('sqlite')
+    expect(layer).toContain('accent: violet')
+  })
+})

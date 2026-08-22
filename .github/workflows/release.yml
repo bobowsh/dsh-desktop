@@ -9,6 +9,15 @@ on:
       - main
   workflow_dispatch:
     inputs:
+      target:
+        description: Platform to build
+        required: false
+        default: all
+        type: choice
+        options:
+          - all
+          - windows
+          - macos
       windows_prerelease_tag:
         description: Optional non-v tag for a Windows Dev pre-release
         required: false
@@ -24,6 +33,9 @@ concurrency:
 jobs:
   macos-apple-silicon:
     name: macOS Apple Silicon
+    if: >-
+      startsWith(github.ref, 'refs/tags/v') ||
+      (github.event_name == 'workflow_dispatch' && (inputs.target == 'all' || inputs.target == 'macos'))
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
@@ -154,7 +166,9 @@ jobs:
 
   macos-intel:
     name: macOS Intel
-    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    if: >-
+      startsWith(github.ref, 'refs/tags/v') ||
+      (github.event_name == 'workflow_dispatch' && (inputs.target == 'all' || inputs.target == 'macos'))
     runs-on: macos-15-intel
     steps:
       - uses: actions/checkout@v4
@@ -285,7 +299,10 @@ jobs:
 
   windows-x64:
     name: Windows x64
-    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    if: >-
+      startsWith(github.ref, 'refs/tags/v') ||
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'workflow_dispatch' && (inputs.target == 'all' || inputs.target == 'windows' || inputs.target == '' || inputs.windows_prerelease_tag != ''))
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
@@ -305,10 +322,10 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm run package:win
       - name: Build isolated Windows development package
-        if: github.event_name == 'workflow_dispatch'
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         run: npm run package:dev:win
       - name: Smoke test packaged Windows Harness
-        if: github.event_name == 'workflow_dispatch'
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         shell: pwsh
         run: |
           $userData = Join-Path $env:APPDATA 'dsh-desktop-dev'
@@ -414,7 +431,7 @@ jobs:
             dist/latest.yml
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
-        if: github.event_name == 'workflow_dispatch'
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         with:
           name: windows-x64-dev
           path: |
