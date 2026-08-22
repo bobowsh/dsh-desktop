@@ -1,8 +1,8 @@
 diff --git a/node_modules/@deepseek-ai/dsh-session-projection-cache/lib/index.js b/node_modules/@deepseek-ai/dsh-session-projection-cache/lib/index.js
-index 9fe86d4..0a3cb08 100644
+index 9fe86d4..6d98b40 100644
 --- a/node_modules/@deepseek-ai/dsh-session-projection-cache/lib/index.js
 +++ b/node_modules/@deepseek-ai/dsh-session-projection-cache/lib/index.js
-@@ -109,6 +109,54 @@
+@@ -109,6 +109,57 @@ var SessionProjectionCache = class extends Service {
  		this.ctx.effect(() => () => domain.close(), "sessionProjectionCache.domainClose");
  		this.table = domain.table("sessions");
  		this.installWritePath();
@@ -59,4 +59,4 @@ index 9fe86d4..0a3cb08 100644
 +		await this.putSoft(meta.id, identityOf(meta), checkpoint, "title-only backfill");
  	}
  	/**
- 	 * The stored record for one session, accepted only when its bound log
+ 	* The stored record for one session, accepted only when its bound log
