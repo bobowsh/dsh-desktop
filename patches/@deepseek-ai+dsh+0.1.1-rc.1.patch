@@ -2,12 +2,12 @@ diff --git a/node_modules/@deepseek-ai/dsh/package.json b/node_modules/@deepseek
 index 881bb2a..e355fb5 100644
 --- a/node_modules/@deepseek-ai/dsh/package.json
 +++ b/node_modules/@deepseek-ai/dsh/package.json
-@@ -20,6 +20,8 @@
+@@ -20,7 +20,8 @@
    ],
    "license": "MIT",
    "dependencies": {
 +    "dsh-desktop-hmr-fallback": "0.1.0",
-+    "dsh-desktop-market-installer": "0.1.0",
+     "dsh-desktop-market-installer": "0.1.0",
      "commander": "^15.0.0",
      "js-yaml": "^4.2.0",
      "node-addon-require-builtin": "^0.1.4",
