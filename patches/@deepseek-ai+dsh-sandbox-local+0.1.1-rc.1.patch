@@ -1,8 +1,8 @@
 diff --git a/node_modules/@deepseek-ai/dsh-sandbox-local/lib/index.js b/node_modules/@deepseek-ai/dsh-sandbox-local/lib/index.js
-index 8ee846e..4b07208 100644
+index b1d1ab9..5faa7cc 100644
 --- a/node_modules/@deepseek-ai/dsh-sandbox-local/lib/index.js
 +++ b/node_modules/@deepseek-ai/dsh-sandbox-local/lib/index.js
-@@ -110,7 +110,8 @@ function defaultProbeBwrap(timeoutMs) {
+@@ -107,7 +107,8 @@ function defaultProbeBwrap(timeoutMs) {
  		"true"
  	], {
  		timeout: timeoutMs,
@@ -12,7 +12,7 @@ index 8ee846e..4b07208 100644
  	}).status === 0;
  }
  /**
-@@ -132,7 +133,8 @@ function defaultProbeSeatbelt(seatbeltExec, timeoutMs) {
+@@ -129,7 +130,8 @@ function defaultProbeSeatbelt(seatbeltExec, timeoutMs) {
  		"true"
  	], {
  		timeout: timeoutMs,
@@ -22,7 +22,7 @@ index 8ee846e..4b07208 100644
  	}).status === 0;
  }
  /**
-@@ -160,7 +162,8 @@ function defaultProbeWindowsAcl(runnerInvocation, timeoutMs) {
+@@ -157,7 +159,8 @@ function defaultProbeWindowsAcl(runnerInvocation, timeoutMs) {
  		"0"
  	], {
  		timeout: timeoutMs,

@@ -1,5 +1,5 @@
 diff --git a/node_modules/@deepseek-ai/dsh-session-projection-cache/lib/index.js b/node_modules/@deepseek-ai/dsh-session-projection-cache/lib/index.js
-index 9fe86d4..6d98b40 100644
+index 2d30f64..1320f6e 100644
 --- a/node_modules/@deepseek-ai/dsh-session-projection-cache/lib/index.js
 +++ b/node_modules/@deepseek-ai/dsh-session-projection-cache/lib/index.js
 @@ -109,6 +109,57 @@ var SessionProjectionCache = class extends Service {

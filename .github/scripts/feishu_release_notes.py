@@ -14,6 +14,17 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
+    try:
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 STABLE_TAG_PATTERN = re.compile(r"^v\d+\.\d+\.\d+$")
 TOPIC_PATTERN = re.compile(r"^\*\*.+? (\d+)\. .+\*\*$", re.MULTILINE)
 LINK_PATTERN = re.compile(r"https?://|\[[^\]]+\]\([^)]+\)")
@@ -125,20 +136,19 @@ class ReleaseEvidence:
     code_diff: str
 
 
-def git_output(*args: str) -> str:
-    return subprocess.check_output(
-        ["git", *args],
-        text=True,
-        stderr=subprocess.DEVNULL,
-    ).strip()
+def git_output(*args: str, default: str = "") -> str:
+    try:
+        return subprocess.check_output(
+            ["git", *args],
+            text=True,
+            stderr=subprocess.DEVNULL,
+        ).strip()
+    except Exception:
+        return default
 
 
 def read_annotated_tag_note(release_tag: str) -> str:
-    try:
-        object_type = git_output("cat-file", "-t", f"refs/tags/{release_tag}")
-    except subprocess.CalledProcessError:
-        return f"Release {release_tag}"
-
+    object_type = git_output("cat-file", "-t", f"refs/tags/{release_tag}")
     if object_type != "tag":
         return f"Release {release_tag}"
 

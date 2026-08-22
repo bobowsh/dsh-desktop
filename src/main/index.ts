@@ -10,10 +10,12 @@ import {
   Menu,
   nativeTheme,
   shell,
+  utilityProcess,
   type IpcMainInvokeEvent,
   type MessageBoxOptions
 } from 'electron'
 import { extractFailureCause, HarnessRuntime } from './runtime/harness-runtime'
+import { launchDisclaimedUtilityProcess } from './runtime/disclaimed-utility-process'
 import { removeProfilePluginWithDsh } from './runtime/profile-plugin-command'
 import { LanMobileBridge } from './mobile/lan-mobile-bridge'
 import {
@@ -919,27 +921,31 @@ async function showMobilePairing(): Promise<void> {
     return
   }
 
-  const snapshot = await mobileBridge.start()
-  if (!snapshot.desktopUrl || !snapshot.pairingUrl) {
+  let snapshot = await mobileBridge.start()
+  if (!snapshot.desktopUrl) {
     await mobileBridge.stop()
     const options: MessageBoxOptions = {
       type: 'warning',
-      message: 'No private Wi-Fi network was found.',
-      detail: 'Connect this computer to the same private Wi-Fi as your phone and try again.',
+      message: 'Failed to start mobile bridge.',
+      detail: 'Please try again.',
       buttons: ['OK']
     }
     await (mainWindow ? dialog.showMessageBox(mainWindow, options) : dialog.showMessageBox(options))
     return
   }
 
+  if (!snapshot.pairingUrl && !snapshot.tunnelActive) {
+    snapshot = await mobileBridge.toggleTunnel(true)
+  }
+
   if (mobileWindow && !mobileWindow.isDestroyed()) mobileWindow.destroy()
   nativeTheme.themeSource = harnessThemePreference()
   mobileWindow = new BrowserWindow({
     width: 560,
-    height: 700,
+    height: 720,
     minWidth: 420,
     minHeight: 560,
-    title: harnessLocale() === 'zh' ? '连接手机' : 'Connect Phone',
+    title: harnessLocale() === 'zh' ? '连接移动设备' : 'Connect Mobile Device',
     icon: desktopIconPath(),
     parent: mainWindow,
     backgroundColor: nativeTheme.shouldUseDarkColors ? '#141416' : '#ffffff',
@@ -954,6 +960,7 @@ async function showMobilePairing(): Promise<void> {
   mobileWindow.on('closed', () => {
     mobileWindow = undefined
   })
+  if (!snapshot.desktopUrl) return
   await mobileWindow.loadURL(snapshot.desktopUrl)
   mobileWindow.show()
   mobileWindow.focus()
@@ -979,7 +986,12 @@ async function bootstrap(): Promise<void> {
     // (Was `~/.dsh` / userData/harness before; re-pointed here on the user's request.)
     dshHome: join(app.isPackaged ? dirname(process.execPath) : app.getAppPath(), 'data'),
     logPath: join(app.getPath('logs'), 'harness.log'),
-    launchProcess: (executablePath, args, options) => spawn(executablePath, args, options),
+    launchProcess: (executablePath, args, options) =>
+      process.platform === 'darwin'
+        ? launchDisclaimedUtilityProcess(utilityProcess, args, options, {
+            disclaim: !developmentBuild
+          })
+        : spawn(executablePath, args, options),
     onChanged: (snapshot) => {
       if (snapshot.phase === 'ready' && snapshot.url) {
         void openHarness(snapshot.url).catch(showUnexpectedError)
@@ -997,7 +1009,11 @@ async function bootstrap(): Promise<void> {
       dark: dshBrandLogoPath('dark')
     },
     appIconPath: desktopIconPath(),
-    port: developmentBuild ? 43128 : 43127
+    cloudflaredCacheDir: join(app.getPath('userData'), 'bin'),
+    port: developmentBuild ? 43128 : 43127,
+    onReconnectRequested: () => {
+      void showMobilePairing().catch(showUnexpectedError)
+    }
   })
   ipcMain.handle('directory-picker:open', async (event) => {
     if (

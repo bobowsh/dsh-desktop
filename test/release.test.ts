@@ -110,9 +110,9 @@ describe('GitHub release contract', () => {
     expect(splash).toContain('Starting DSH Desktop')
     expect(splash).toContain('src="dsh-loader.gif"')
     expect(splash).not.toContain('class="track"')
-    expect(patch).toMatch(/id: directory-picker\r?\n  disabled: true/)
+    expect(patch).not.toMatch(/id:\s*directory-picker/)
     expect(patch).not.toContain("name: '@deepseek-ai/dsh-host-directory-picker-native'")
-    expect(patch).toContain("name: '@deepseek-ai/dsh-client-ui-directory-picker-native'")
+    expect(patch).not.toContain("name: '@deepseek-ai/dsh-client-ui-directory-picker-native'")
   })
 
   it('routes manual restarts through the active plugin recovery flow', async () => {
@@ -176,7 +176,10 @@ describe('GitHub release contract', () => {
       'package:mac',
       'package:mac:arm64',
       'package:mac:x64',
-      'package:win'
+      'package:win',
+      'package:dev:mac:arm64',
+      'package:dev:mac:x64',
+      'package:dev:win'
     ]) {
       expect(packageJson.scripts[script]).toContain('--publish never')
     }
@@ -194,6 +197,10 @@ describe('GitHub release contract', () => {
 
     expect(packageJson.scripts['package:dev:dir']).toContain('npm run build')
     expect(packageJson.scripts['package:dev:dir']).toContain('electron-builder.dev.cjs')
+    expect(packageJson.scripts['package:dev:mac:arm64']).toContain('verify-target.mjs darwin arm64')
+    expect(packageJson.scripts['package:dev:mac:arm64']).toContain('electron-builder.dev.cjs')
+    expect(packageJson.scripts['package:dev:mac:x64']).toContain('verify-target.mjs darwin x64')
+    expect(packageJson.scripts['package:dev:mac:x64']).toContain('electron-builder.dev.cjs')
     expect(packageJson.scripts['package:dev:win']).toContain('verify-target.mjs win32 x64')
     expect(packageJson.scripts['package:dev:win']).toContain('electron-builder.dev.cjs')
     expect(packageJson.scripts['package:dev:win']).toContain('--publish never')
@@ -201,6 +208,9 @@ describe('GitHub release contract', () => {
     expect(developmentConfig).toContain("productName: 'DSH Desktop Dev'")
     expect(developmentConfig).toContain("output: 'dist-dev'")
     expect(developmentConfig).toContain("dshDesktopChannel: 'development'")
+    expect(developmentConfig).toContain(
+      "artifactName: 'dsh-desktop-dev-${os}-${arch}.${ext}'"
+    )
     expect(developmentConfig).toContain(
       "artifactName: 'dsh-desktop-dev-windows-${arch}-setup.${ext}'"
     )

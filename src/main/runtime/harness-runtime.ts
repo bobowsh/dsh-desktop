@@ -1,4 +1,5 @@
-import type { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio } from 'node:child_process'
+import type { SpawnOptionsWithoutStdio } from 'node:child_process'
+import type { EventEmitter } from 'node:events'
 import { createWriteStream, existsSync, readFileSync, writeFileSync, type WriteStream } from 'node:fs'
 import { mkdir } from 'node:fs/promises'
 import { createServer } from 'node:net'
@@ -23,9 +24,16 @@ export interface HarnessRuntimeOptions {
     executablePath: string,
     args: string[],
     options: SpawnOptionsWithoutStdio
-  ): ChildProcessWithoutNullStreams
+  ): HarnessChildProcess
   startupTimeoutMs?: number
   onChanged(snapshot: RuntimeSnapshot): void
+}
+
+export interface HarnessChildProcess extends EventEmitter {
+  readonly stdout: NodeJS.ReadableStream
+  readonly stderr: NodeJS.ReadableStream
+  readonly exitCode: number | null
+  kill(signal?: NodeJS.Signals): boolean
 }
 
 export function buildHarnessArguments(port: number, patchPath?: string): string[] {
@@ -72,6 +80,9 @@ export function buildHarnessSpawnOptions(
       // When the child runs the standalone bundled Node.js runtime instead, the
       // flag must be stripped so Node is not accidentally forced back into that mode.
       ...(useElectronRuntime ? { ELECTRON_RUN_AS_NODE: '1' } : {}),
+      PNPM_CONFIG_CHILD_CONCURRENCY: '1',
+      PNPM_CONFIG_PACKAGE_IMPORT_METHOD: 'clone-or-copy',
+      PNPM_CONFIG_SIDE_EFFECTS_CACHE: 'false',
       [pathKey]: environment[pathKey] ?? environment.PATH ?? ''
     },
     stdio: ['pipe', 'pipe', 'pipe'],
@@ -108,7 +119,7 @@ export function updateReadyStability(
 }
 
 export class HarnessRuntime {
-  private child?: ChildProcessWithoutNullStreams
+  private child?: HarnessChildProcess
   private logStream?: WriteStream
   private phase: RuntimePhase = 'idle'
   private message = 'Harness is not running.'
@@ -172,7 +183,7 @@ export class HarnessRuntime {
     this.writeLog(`[desktop] endpoint ${url}`)
     this.setState('starting', 'Starting DeepSeek Harness…')
 
-    let child: ChildProcessWithoutNullStreams
+    let child: HarnessChildProcess
     try {
       child = this.options.launchProcess(
         this.options.nodeExecutablePath,
@@ -258,7 +269,7 @@ ${cause}`
     this.setState('idle', 'Harness is not running.')
   }
 
-  private async stopChild(child: ChildProcessWithoutNullStreams): Promise<void> {
+  private async stopChild(child: HarnessChildProcess): Promise<void> {
     if (child.exitCode !== null) return
     const exitPromise = new Promise<boolean>((resolve) =>
       child.once('exit', () => resolve(true))

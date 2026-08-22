@@ -7,9 +7,12 @@ describe('Feishu release notes pipeline', () => {
   const scriptPath = join(process.cwd(), '.github', 'scripts', 'feishu_release_notes.py')
   const workflowPath = join(process.cwd(), '.github', 'workflows', 'release.yml')
 
+  const pythonEnv = { ...process.env, PYTHONIOENCODING: 'utf-8' }
+
   it('builds a prompt with valid metadata and evidence blocks', () => {
     const output = execFileSync('python3', [scriptPath, 'build-prompt', '--tag', 'v0.4.0'], {
-      encoding: 'utf8'
+      encoding: 'utf8',
+      env: pythonEnv
     })
 
     expect(output).toContain("You are DSH Desktop's Release Bot.")
@@ -26,7 +29,8 @@ describe('Feishu release notes pipeline', () => {
     const tempFile = join(process.cwd(), '.temp-feishu-test-notes.md')
     try {
       execFileSync('python3', [scriptPath, 'generate-fallback', '--tag', 'v0.4.0', '--output', tempFile], {
-        encoding: 'utf8'
+        encoding: 'utf8',
+        env: pythonEnv
       })
 
       const content = readFileSync(tempFile, 'utf8')
@@ -37,7 +41,8 @@ describe('Feishu release notes pipeline', () => {
 
       // Validate passes without error
       const validateOutput = execFileSync('python3', [scriptPath, 'validate', '--tag', 'v0.4.0', '--input', tempFile], {
-        encoding: 'utf8'
+        encoding: 'utf8',
+        env: pythonEnv
       })
       expect(validateOutput).toContain('validated successfully')
     } finally {
@@ -74,7 +79,8 @@ Description here.
       expect(() => {
         execFileSync('python3', [scriptPath, 'validate', '--tag', 'v0.4.0', '--input', tempFile], {
           encoding: 'utf8',
-          stdio: 'pipe'
+          stdio: 'pipe',
+          env: pythonEnv
         })
       }).toThrow()
     } finally {

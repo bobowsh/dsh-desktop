@@ -13,6 +13,7 @@ import {
   updateReadyStability
 } from '../src/main/runtime/harness-runtime'
 import { canGrantWindowPermission, isTrustedAppUrl } from '../src/main/security-policy'
+import { buildDisclaimedUtilityProcessSpec } from '../src/main/runtime/disclaimed-utility-process'
 import {
   desktopHarnessUrl,
   isAbortedNavigationError,
@@ -132,6 +133,66 @@ describe('Harness launch contract', () => {
       '--port',
       '43127'
     ])
+  })
+
+  it('disclaims macOS TCC responsibility when Harness runs as a utility process', () => {
+    const spawnOptions = buildHarnessSpawnOptions(
+      '/Users/tester/Library/Application Support/dsh-desktop/launch-root',
+      '/Users/tester/Library/Application Support/dsh-desktop/harness',
+      'darwin',
+      { PATH: '/usr/bin', ELECTRON_RUN_AS_NODE: '1' }
+    )
+    const nodeArguments = buildNodeArguments(
+      '/Applications/DSH Desktop.app/Contents/Resources/harness-node-entry.mjs',
+      '/Applications/DSH Desktop.app/Contents/Resources/app/node_modules/@deepseek-ai/dsh/lib/bin.js',
+      43127,
+      '/Applications/DSH Desktop.app/Contents/Resources/dsh-desktop.patch.yml'
+    )
+
+    expect(buildDisclaimedUtilityProcessSpec(nodeArguments, spawnOptions)).toEqual({
+      modulePath: '/Applications/DSH Desktop.app/Contents/Resources/harness-node-entry.mjs',
+      args: [
+        '/Applications/DSH Desktop.app/Contents/Resources/app/node_modules/@deepseek-ai/dsh/lib/bin.js',
+        'web',
+        '--patch',
+        '/Applications/DSH Desktop.app/Contents/Resources/dsh-desktop.patch.yml',
+        '--no-open',
+        '--host',
+        '127.0.0.1',
+        '--port',
+        '43127'
+      ],
+      options: {
+        cwd: '/Users/tester/Library/Application Support/dsh-desktop/launch-root',
+        env: {
+          PATH: '/usr/bin',
+          DSH_HOME: '/Users/tester/Library/Application Support/dsh-desktop/harness',
+          NO_COLOR: '1',
+          PNPM_CONFIG_CHILD_CONCURRENCY: '1',
+          PNPM_CONFIG_PACKAGE_IMPORT_METHOD: 'clone-or-copy',
+          PNPM_CONFIG_SIDE_EFFECTS_CACHE: 'false'
+        },
+        execArgv: ['--expose-internals'],
+        stdio: 'pipe',
+        serviceName: 'DSH Harness',
+        disclaim: true
+      }
+    })
+
+    expect(
+      buildDisclaimedUtilityProcessSpec(nodeArguments, spawnOptions, { disclaim: false }).options
+        .disclaim
+    ).toBe(false)
+  })
+
+  it('rejects an unexpected macOS Harness argument layout', () => {
+    expect(() =>
+      buildDisclaimedUtilityProcessSpec(['entry.mjs'], {
+        cwd: '/tmp/dsh',
+        env: {},
+        stdio: ['pipe', 'pipe', 'pipe']
+      })
+    ).toThrow('Unexpected Harness Node arguments')
   })
 
   it('makes native Windows termination codes diagnosable', () => {

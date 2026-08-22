@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { createServer } from 'node:http'
+import { createServer, type IncomingMessage } from 'node:http'
+import { createRequire } from 'node:module'
 import type { AddressInfo } from 'node:net'
+import type { Duplex } from 'node:stream'
 import {
   isPrivateAddress,
   LanMobileBridge,
@@ -9,9 +11,33 @@ import {
 
 const bridges: LanMobileBridge[] = []
 const servers: ReturnType<typeof createServer>[] = []
+interface TestWebSocket {
+  send(data: string): void
+}
+interface TestWebSocketServer {
+  handleUpgrade(
+    request: IncomingMessage,
+    socket: Duplex,
+    head: Buffer,
+    callback: (client: TestWebSocket) => void
+  ): void
+  close(callback: (error?: Error) => void): void
+}
+const WebSocketServer = createRequire(import.meta.url)('ws').WebSocketServer as new (options: {
+  noServer: boolean
+}) => TestWebSocketServer
+const webSocketServers: TestWebSocketServer[] = []
 
 afterEach(async () => {
   await Promise.all(bridges.splice(0).map((bridge) => bridge.stop()))
+  await Promise.all(
+    webSocketServers.splice(0).map(
+      (server) =>
+        new Promise<void>((resolve, reject) =>
+          server.close((error) => (error ? reject(error) : resolve()))
+        )
+    )
+  )
   await Promise.all(
     servers.splice(0).map((server) => new Promise<void>((resolve) => server.close(() => resolve())))
   )
@@ -47,21 +73,184 @@ describe('LAN mobile bridge pairing surface', () => {
     expect(snapshot.desktopUrl).toBeTruthy()
     const response = await fetch(snapshot.desktopUrl!)
     expect(response.status).toBe(200)
-    expect(await response.text()).toContain('Connect your phone')
+    expect(await response.text()).toContain('Connect a mobile device')
   })
 
-  it('does not expose the mobile UI before pairing', async () => {
+  it('offers a reconnect page without exposing mobile APIs before approval', async () => {
     const bridge = new LanMobileBridge({
       harnessUrl: () => 'http://127.0.0.1:9999'
     })
     bridges.push(bridge)
     const snapshot = await bridge.start()
     const response = await fetch(`http://127.0.0.1:${snapshot.port}/`)
-    expect(response.status).toBe(401)
+    expect(response.status).toBe(200)
+    expect(await response.text()).toContain('Reconnect')
+    const blocked = await fetch(`http://127.0.0.1:${snapshot.port}/api/status`)
+    expect(blocked.status).toBe(401)
+  })
+
+  it('migrates a stale WiFi reconnect into the active internet entry point', async () => {
+    const bridge = new LanMobileBridge({
+      harnessUrl: () => 'http://127.0.0.1:9999'
+    })
+    bridges.push(bridge)
+    const snapshot = await bridge.start()
+    let tunnelStopped = false
+    Object.assign(bridge as unknown as Record<string, unknown>, {
+      tunnelActive: true,
+      tunnelInstance: {
+        url: 'https://active-mobile.trycloudflare.com',
+        process: {},
+        stop: async () => {
+          tunnelStopped = true
+        }
+      }
+    })
+
+    const lanReconnect = await fetch(`http://127.0.0.1:${snapshot.port}/reconnect`, {
+      redirect: 'manual'
+    })
+    expect(lanReconnect.status).toBe(302)
+    expect(lanReconnect.headers.get('location')).toBe(
+      'https://active-mobile.trycloudflare.com/reconnect'
+    )
+
+    const lanRetry = await fetch(`http://127.0.0.1:${snapshot.port}/pair/retry`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        origin: `http://127.0.0.1:${snapshot.port}`
+      },
+      body: '{}'
+    })
+    expect(await lanRetry.json()).toEqual({
+      redirectUrl: 'https://active-mobile.trycloudflare.com/reconnect'
+    })
+
+    const tunnelReconnect = await fetch(`http://127.0.0.1:${snapshot.port}/reconnect`, {
+      headers: {
+        host: 'active-mobile.trycloudflare.com',
+        'cf-connecting-ip': '203.0.113.8',
+        'cf-ray': 'test-ray'
+      }
+    })
+    expect(tunnelReconnect.status).toBe(200)
+    expect(await tunnelReconnect.text()).toContain('Approve this phone')
+    const pending = await fetch(`http://127.0.0.1:${snapshot.port}/desktop/pending`)
+    expect(await pending.json()).toMatchObject({
+      remoteAddress: '203.0.113.8',
+      mode: 'tunnel'
+    })
+    expect(tunnelStopped).toBe(false)
+  })
+
+  it('keeps the active internet tunnel available after desktop disconnect', async () => {
+    const bridge = new LanMobileBridge({
+      harnessUrl: () => 'http://127.0.0.1:9999'
+    })
+    bridges.push(bridge)
+    const snapshot = await bridge.start()
+    let tunnelStopped = false
+    Object.assign(bridge as unknown as Record<string, unknown>, {
+      tunnelActive: true,
+      tunnelInstance: {
+        url: 'https://active-mobile.trycloudflare.com',
+        process: {},
+        stop: async () => {
+          tunnelStopped = true
+        }
+      }
+    })
+
+    const disconnected = await fetch(
+      `http://127.0.0.1:${snapshot.port}/desktop/disconnect`,
+      { method: 'POST' }
+    )
+    expect(disconnected.status).toBe(200)
+    expect(bridge.snapshot().tunnelActive).toBe(true)
+    expect(tunnelStopped).toBe(false)
+
+    const reconnectPage = await fetch(`http://127.0.0.1:${snapshot.port}/disconnected`, {
+      headers: {
+        host: 'active-mobile.trycloudflare.com',
+        'cf-connecting-ip': '203.0.113.8',
+        'cf-ray': 'test-ray'
+      }
+    })
+    expect(reconnectPage.status).toBe(200)
+    const reconnectHtml = await reconnectPage.text()
+    expect(reconnectHtml).toContain('Reconnect')
+    expect(reconnectHtml).not.toContain('same Wi-Fi')
+  })
+
+  it('retries an expired approval inside the same Home Screen browser context', async () => {
+    let reconnectRequests = 0
+    let now = Date.now()
+    const bridge = new LanMobileBridge({
+      harnessUrl: () => 'http://127.0.0.1:9999',
+      now: () => now,
+      onReconnectRequested: () => {
+        reconnectRequests += 1
+      }
+    })
+    bridges.push(bridge)
+    const snapshot = await bridge.start()
+    const reconnect = await fetch(`http://127.0.0.1:${snapshot.port}/reconnect`)
+    const reconnectHtml = await reconnect.text()
+    let pairingId = /let id="([^"]+)"/.exec(reconnectHtml)?.[1]
+    expect(pairingId).toBeTruthy()
+    expect(reconnectHtml).toContain('Approve this phone')
+    expect(reconnectRequests).toBe(1)
+
+    now += 5 * 60 * 1000 + 1
+    const expired = await fetch(
+      `http://127.0.0.1:${snapshot.port}/pair/status?id=${pairingId}`
+    )
+    expect(await expired.json()).toEqual({ expired: true })
+    const retried = await fetch(`http://127.0.0.1:${snapshot.port}/pair/retry`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        origin: `http://127.0.0.1:${snapshot.port}`
+      },
+      body: '{}'
+    })
+    const retriedPairing = (await retried.json()) as { id: string }
+    expect(retriedPairing.id).toBeTruthy()
+    expect(retriedPairing.id).not.toBe(pairingId)
+    expect(reconnectRequests).toBe(2)
+    pairingId = retriedPairing.id
+
+    // Opening the desktop approval window starts the bridge again. That must
+    // not rotate away the pending request the phone is already polling.
+    const reopened = await bridge.start()
+    expect(reopened.port).toBe(snapshot.port)
+    const pending = await fetch(`http://127.0.0.1:${snapshot.port}/desktop/pending`)
+    expect(await pending.json()).toMatchObject({ id: pairingId })
+    await fetch(`http://127.0.0.1:${snapshot.port}/desktop/decide`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ id: pairingId, approved: true })
+    })
+    const approved = await fetch(
+      `http://127.0.0.1:${snapshot.port}/pair/status?id=${pairingId}`
+    )
+    expect(await approved.clone().json()).toEqual({ approved: true })
+    const cookie = approved.headers.get('set-cookie')!.split(';', 1)[0]!
+    const mobile = await fetch(`http://127.0.0.1:${snapshot.port}/`, {
+      headers: { cookie }
+    })
+    expect(mobile.status).toBe(200)
+    expect(await mobile.text()).toContain('DSH Mobile')
   })
 
   it('requires approval, then forwards only allowlisted RPC methods', async () => {
     const harness = createServer(async (request, response) => {
+      if (request.method === 'GET' && request.url === '/api/events.mux') {
+        response.statusCode = 404
+        response.end()
+        return
+      }
       const chunks: Buffer[] = []
       for await (const chunk of request) chunks.push(Buffer.from(chunk))
       const envelope = JSON.parse(Buffer.concat(chunks).toString('utf8')) as { rpcId: string }
@@ -85,7 +274,7 @@ describe('LAN mobile bridge pairing surface', () => {
     const token = new URL(snapshot.pairingUrl!).searchParams.get('token')
     const pairingPage = await fetch(`http://127.0.0.1:${snapshot.port}/pair?token=${token}`)
     const pairingHtml = await pairingPage.text()
-    const pairingId = /const id="([^"]+)"/.exec(pairingHtml)?.[1]
+    const pairingId = /let id="([^"]+)"/.exec(pairingHtml)?.[1]
     expect(pairingId).toBeTruthy()
     const pending = await fetch(`http://127.0.0.1:${snapshot.port}/desktop/pending`)
     expect(await pending.json()).toMatchObject({ id: pairingId, remoteAddress: '127.0.0.1' })
@@ -119,6 +308,29 @@ describe('LAN mobile bridge pairing surface', () => {
       value: { items: [], archivedSessionIds: [] }
     })
 
+    const presetList = await fetch(`http://127.0.0.1:${snapshot.port}/api/rpc`, {
+      method: 'POST',
+      headers: { cookie, 'content-type': 'application/json' },
+      body: JSON.stringify({ method: 'agentPreset.list', payload: {} })
+    })
+    expect(presetList.status).toBe(200)
+
+    for (const [method, payload] of [
+      ['agentPreset.select', { sessionId: 'session-1', agentPreset: 'standard' }],
+      ['session.models', { sessionId: 'session-1' }],
+      [
+        'session.selectModel',
+        { sessionId: 'session-1', provider: 'provider-1', model: 'model-1' }
+      ]
+    ] as const) {
+      const response = await fetch(`http://127.0.0.1:${snapshot.port}/api/rpc`, {
+        method: 'POST',
+        headers: { cookie, 'content-type': 'application/json' },
+        body: JSON.stringify({ method, payload })
+      })
+      expect(response.status, method).toBe(200)
+    }
+
     const sameBridge = await bridge.start()
     expect(sameBridge.port).toBe(snapshot.port)
     const stillAuthorized = await fetch(`http://127.0.0.1:${snapshot.port}/api/rpc`, {
@@ -132,11 +344,29 @@ describe('LAN mobile bridge pairing surface', () => {
     expect(await status.json()).toEqual({ connected: true })
     const managementPage = await fetch(`http://127.0.0.1:${snapshot.port}/desktop`)
     expect(await managementPage.text()).toContain('Manage phone connection')
+    const blockedModeSwitch = await fetch(
+      `http://127.0.0.1:${snapshot.port}/desktop/tunnel/toggle`,
+      {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ enable: true })
+      }
+    )
+    expect(blockedModeSwitch.status).toBe(409)
+    expect(await blockedModeSwitch.json()).toEqual({
+      ok: false,
+      error: 'Disconnect the phone before switching connection modes.'
+    })
     const mobileStatus = await fetch(`http://127.0.0.1:${snapshot.port}/api/status`, {
       headers: { cookie }
     })
     expect(mobileStatus.status).toBe(200)
     expect(await mobileStatus.json()).toEqual({ connected: true })
+    const samePhoneHomeScreen = await fetch(
+      `http://127.0.0.1:${snapshot.port}/api/status`
+    )
+    expect(samePhoneHomeScreen.status).toBe(200)
+    expect(await samePhoneHomeScreen.json()).toEqual({ connected: true })
 
     const blocked = await fetch(`http://127.0.0.1:${snapshot.port}/api/rpc`, {
       method: 'POST',
@@ -156,5 +386,331 @@ describe('LAN mobile bridge pairing surface', () => {
       headers: { cookie }
     })
     expect(disconnectedStatus.status).toBe(401)
+    const disconnectedHomeScreen = await fetch(
+      `http://127.0.0.1:${snapshot.port}/api/status`
+    )
+    expect(disconnectedHomeScreen.status).toBe(401)
+    const legacyHomeScreenCookie = `dsh_mobile=${'a'.repeat(43)}`
+    const unknownHomeScreenBeforeApproval = await fetch(
+      `http://127.0.0.1:${snapshot.port}/api/status`,
+      { headers: { cookie: legacyHomeScreenCookie } }
+    )
+    expect(unknownHomeScreenBeforeApproval.status).toBe(401)
+
+    const reconnectSnapshot = bridge.snapshot()
+    const reconnectToken = new URL(reconnectSnapshot.pairingUrl!).searchParams.get('token')
+    const reconnectPage = await fetch(
+      `http://127.0.0.1:${snapshot.port}/pair?token=${reconnectToken}`
+    )
+    const reconnectHtml = await reconnectPage.text()
+    const reconnectId = /let id="([^"]+)"/.exec(reconnectHtml)?.[1]
+    expect(reconnectId).toBeTruthy()
+    await fetch(`http://127.0.0.1:${snapshot.port}/desktop/decide`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ id: reconnectId, approved: true })
+    })
+    const reapproved = await fetch(
+      `http://127.0.0.1:${snapshot.port}/pair/status?id=${reconnectId}`
+    )
+    expect(await reapproved.clone().json()).toEqual({ approved: true })
+    const newCookie = reapproved.headers.get('set-cookie')!.split(';', 1)[0]!
+
+    const restoredHomeScreen = await fetch(
+      `http://127.0.0.1:${snapshot.port}/api/status`,
+      { headers: { cookie } }
+    )
+    expect(restoredHomeScreen.status).toBe(200)
+    expect(await restoredHomeScreen.json()).toEqual({ connected: true })
+    const newlyPairedSafari = await fetch(
+      `http://127.0.0.1:${snapshot.port}/api/status`,
+      { headers: { cookie: newCookie } }
+    )
+    expect(newlyPairedSafari.status).toBe(200)
+    const homeScreenWithoutSharedCookies = await fetch(
+      `http://127.0.0.1:${snapshot.port}/api/status`
+    )
+    expect(homeScreenWithoutSharedCookies.status).toBe(200)
+    const restoredLegacyHomeScreen = await fetch(
+      `http://127.0.0.1:${snapshot.port}/api/status`,
+      { headers: { cookie: legacyHomeScreenCookie } }
+    )
+    expect(restoredLegacyHomeScreen.status).toBe(200)
+    const lateHomeScreenCookie = `dsh_mobile=${'b'.repeat(43)}`
+    const restoredAfterSafariPaired = await fetch(
+      `http://127.0.0.1:${snapshot.port}/api/status`,
+      { headers: { cookie: lateHomeScreenCookie } }
+    )
+    expect(restoredAfterSafariPaired.status).toBe(200)
   })
 })
+
+describe('LAN mobile bridge user questions', () => {
+  it('replays pending questions and forwards the desktop answer protocol', async () => {
+    const responses: unknown[] = []
+    const muxClients: TestWebSocket[] = []
+    const harness = createServer(async (request, response) => {
+      if (request.method === 'GET' && request.url === '/api/events.mux') {
+        response.statusCode = 426
+        response.end()
+        return
+      }
+      if (request.method === 'POST' && request.url === '/api/respond') {
+        const chunks: Buffer[] = []
+        for await (const chunk of request) chunks.push(Buffer.from(chunk))
+        responses.push(JSON.parse(Buffer.concat(chunks).toString('utf8')))
+        response.setHeader('content-type', 'application/json')
+        response.end(JSON.stringify({ accepted: true }))
+        return
+      }
+      response.statusCode = 404
+      response.end()
+    })
+    const muxServer = new WebSocketServer({ noServer: true })
+    webSocketServers.push(muxServer)
+    harness.on('upgrade', (request, socket, head) => {
+      if (request.url !== '/api/events.mux') return socket.destroy()
+      muxServer.handleUpgrade(request, socket, head, (client) => {
+        muxClients.push(client)
+        client.send(
+          JSON.stringify({
+            type: 'server-request',
+            rpcId: 'question-rpc-1',
+            method: 'question/requested',
+            payload: {
+              type: 'question/requested',
+              sessionId: 'session-1',
+              questions: [
+                {
+                  id: 'domain',
+                  header: '领域确认',
+                  question: '你说的持续学习指哪个领域？',
+                  options: [
+                    {
+                      label: '机器学习中的 Continual Learning (推荐)',
+                      description: '终身学习与抗灾难性遗忘'
+                    },
+                    { label: '教育学中的持续学习' }
+                  ]
+                }
+              ]
+            }
+          })
+        )
+      })
+    })
+    servers.push(harness)
+    await new Promise<void>((resolve) => harness.listen(0, '127.0.0.1', resolve))
+    const harnessPort = (harness.address() as AddressInfo).port
+    const bridge = new LanMobileBridge({
+      harnessUrl: () => `http://127.0.0.1:${harnessPort}`
+    })
+    bridges.push(bridge)
+    const { port, cookie } = await pairBridge(bridge)
+
+    const pending = await waitForRpcValue(port, cookie, 'interaction.pending', {
+      sessionId: 'session-1'
+    })
+    expect(pending).toMatchObject({
+      rpcId: 'question-rpc-1',
+      sessionId: 'session-1',
+      questions: [
+        {
+          id: 'domain',
+          header: '领域确认',
+          question: '你说的持续学习指哪个领域？'
+        }
+      ]
+    })
+
+    const answer = await mobileRpc(port, cookie, 'interaction.answer', {
+      rpcId: 'question-rpc-1',
+      sessionId: 'session-1',
+      answers: [
+        {
+          id: 'domain',
+          selected: ['机器学习中的 Continual Learning (推荐)']
+        }
+      ]
+    })
+    expect(answer.status).toBe(200)
+    expect(await answer.json()).toEqual({ ok: true, value: { accepted: true } })
+    expect(responses).toEqual([
+      {
+        type: 'client-response',
+        rpcId: 'question-rpc-1',
+        result: {
+          ok: true,
+          value: {
+            sessionId: 'session-1',
+            answer: {
+              answers: [
+                {
+                  id: 'domain',
+                  selected: ['机器学习中的 Continual Learning (推荐)']
+                }
+              ]
+            }
+          }
+        }
+      }
+    ])
+
+    // The Harness remains authoritative: an accepted response does not clear
+    // the question until the resolved event arrives on the mux stream.
+    expect(
+      await waitForRpcValue(port, cookie, 'interaction.pending', { sessionId: 'session-1' })
+    ).toMatchObject({ rpcId: 'question-rpc-1' })
+    muxClients[0]?.send(
+      JSON.stringify({
+        type: 'server-request',
+        rpcId: 'resolved-rpc-1',
+        method: 'question/resolved',
+        payload: {
+          type: 'question/resolved',
+          sessionId: 'session-1',
+          questionRpcId: 'question-rpc-1',
+          outcome: 'answered'
+        }
+      })
+    )
+    await waitFor(async () => {
+      const response = await mobileRpc(port, cookie, 'interaction.pending', {
+        sessionId: 'session-1'
+      })
+      return (await response.json()).value === null
+    })
+  })
+
+  it('rejects answers that were not offered by the pending question', async () => {
+    const responses: unknown[] = []
+    const harness = createServer(async (request, response) => {
+      if (request.method === 'GET' && request.url === '/api/events.mux') {
+        response.statusCode = 426
+        response.end()
+        return
+      }
+      if (request.method === 'POST' && request.url === '/api/respond') {
+        const chunks: Buffer[] = []
+        for await (const chunk of request) chunks.push(Buffer.from(chunk))
+        responses.push(JSON.parse(Buffer.concat(chunks).toString('utf8')))
+        response.setHeader('content-type', 'application/json')
+        response.end(JSON.stringify({ accepted: true }))
+        return
+      }
+      response.statusCode = 404
+      response.end()
+    })
+    const muxServer = new WebSocketServer({ noServer: true })
+    webSocketServers.push(muxServer)
+    harness.on('upgrade', (request, socket, head) => {
+      if (request.url !== '/api/events.mux') return socket.destroy()
+      muxServer.handleUpgrade(request, socket, head, (client) => {
+        client.send(
+          JSON.stringify({
+            type: 'server-request',
+            rpcId: 'question-rpc-2',
+            payload: {
+              type: 'question/requested',
+              sessionId: 'session-2',
+              questions: [{ id: 'choice', question: '选择一个', options: [{ label: 'A' }] }]
+            }
+          })
+        )
+      })
+    })
+    servers.push(harness)
+    await new Promise<void>((resolve) => harness.listen(0, '127.0.0.1', resolve))
+    const harnessPort = (harness.address() as AddressInfo).port
+    const bridge = new LanMobileBridge({
+      harnessUrl: () => `http://127.0.0.1:${harnessPort}`
+    })
+    bridges.push(bridge)
+    const { port, cookie } = await pairBridge(bridge)
+    await waitForRpcValue(port, cookie, 'interaction.pending', { sessionId: 'session-2' })
+    const answer = await mobileRpc(port, cookie, 'interaction.answer', {
+      rpcId: 'question-rpc-2',
+      sessionId: 'session-2',
+      answers: [{ id: 'choice', selected: ['B'] }]
+    })
+    expect(answer.status).toBe(500)
+    expect(await answer.json()).toMatchObject({ ok: false, error: 'Answer contains an unknown option.' })
+
+    const cancel = await mobileRpc(port, cookie, 'interaction.cancel', {
+      rpcId: 'question-rpc-2',
+      sessionId: 'session-2'
+    })
+    expect(cancel.status).toBe(200)
+    expect(responses).toEqual([
+      {
+        type: 'client-response',
+        rpcId: 'question-rpc-2',
+        result: {
+          ok: false,
+          error: {
+            code: 'cancelled',
+            message: 'the user closed this question request',
+            details: {}
+          }
+        }
+      }
+    ])
+  })
+})
+
+async function pairBridge(bridge: LanMobileBridge): Promise<{ port: number; cookie: string }> {
+  const snapshot = await bridge.start()
+  const token = new URL(snapshot.pairingUrl!).searchParams.get('token')
+  const pairingPage = await fetch(`http://127.0.0.1:${snapshot.port}/pair?token=${token}`)
+  const pairingId = /let id="([^"]+)"/.exec(await pairingPage.text())?.[1]
+  await fetch(`http://127.0.0.1:${snapshot.port}/desktop/decide`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ id: pairingId, approved: true })
+  })
+  const paired = await fetch(
+    `http://127.0.0.1:${snapshot.port}/pair/status?id=${pairingId}`,
+    { redirect: 'manual' }
+  )
+  return {
+    port: snapshot.port!,
+    cookie: paired.headers.get('set-cookie')!.split(';', 1)[0]!
+  }
+}
+
+function mobileRpc(
+  port: number,
+  cookie: string,
+  method: string,
+  payload: unknown
+): Promise<Response> {
+  return fetch(`http://127.0.0.1:${port}/api/rpc`, {
+    method: 'POST',
+    headers: { cookie, 'content-type': 'application/json' },
+    body: JSON.stringify({ method, payload })
+  })
+}
+
+async function waitForRpcValue(
+  port: number,
+  cookie: string,
+  method: string,
+  payload: unknown
+): Promise<unknown> {
+  let value: unknown = null
+  await waitFor(async () => {
+    const response = await mobileRpc(port, cookie, method, payload)
+    value = (await response.json()).value
+    return value !== null
+  })
+  return value
+}
+
+async function waitFor(check: () => Promise<boolean>, timeoutMs = 2_000): Promise<void> {
+  const end = Date.now() + timeoutMs
+  while (Date.now() < end) {
+    if (await check()) return
+    await new Promise((resolve) => setTimeout(resolve, 20))
+  }
+  throw new Error('Timed out waiting for condition.')
+}
