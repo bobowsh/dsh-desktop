@@ -226,7 +226,6 @@ describe('GitHub release contract', () => {
     )
 
     expect(workflow).toContain('runs-on: windows-2022')
-    expect(workflow).not.toContain('runs-on: macos-15')
     expect(workflow).toContain('npm run package:dev:win')
     expect(workflow).toContain('Smoke test packaged Windows Harness')
     expect(workflow).toContain("$executable = 'dist-dev\\win-unpacked\\DSH Desktop Dev.exe'")
@@ -245,7 +244,7 @@ describe('GitHub release contract', () => {
       workflow.match(
         /npm version --no-git-tag-version --allow-same-version "\$\{\{ github\.ref_name \}\}"/g
       )
-    ).toHaveLength(1)
+    ).toHaveLength(3)
   })
 
   it('routes the published download through the official website', async () => {

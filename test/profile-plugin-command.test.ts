@@ -51,7 +51,7 @@ describe('profile-plugin-command', () => {
     expect(JSON.parse(await readFile(reportPath, 'utf8'))).toEqual({
       argv: ['plugin', '--profile', 'web', 'remove', '@example/plugin'],
       dshHome: testDir,
-      pnpmVersion: '10.34.5',
+      pnpmVersion: '11.21.0',
       pnpmStatus: 0
     })
   })
