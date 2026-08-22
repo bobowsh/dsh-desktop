@@ -18,6 +18,8 @@ build/icon-1024.png
 #              data/settings.template.yaml IS the tracked baseline template)
 #   ignored:   the prebuilt mnemon CLI (data/bin); the web profile's node_modules
 #              is NOT tracked (gitignored) — reproduced from the lockfile via `pnpm install`
+# Local session-log repair backups (data/backups/*.jsonl.zstd are machine-local artifacts)
+data/backups/
 # Runtime/secret user data created by the app at $INSTDIR\data must never be
 # committed or shipped — the installer only seeds the artifacts above.
 data/.credentials.yaml
