@@ -7,7 +7,8 @@
     "@dsh-external/dsh-visualize": "github:Nagi-ovo/dsh-visualize",
     "@dsh-external/workflow": "git+https://github.com/icetomoyo/dsh_workflow.git",
     "@huanlin/dsh-plugin-session-delete": "github:lsz-asd/dsh-plugin-session-delete",
-    "@nanmicoder/dsh-agent-teams": "^0.1.10",
+    "@liustack/modlens": "^3.23.1",
+    "@nanmicoder/dsh-agent-teams": "^0.1.11",
     "@omdsh-dev/dsh-genui": "github:omdsh-dev/dsh-genui",
     "@yejiming/dsh-gomoku": "^0.0.1",
     "dsh-agent-message": "^1.5.1",
@@ -16,9 +17,8 @@
     "dsh-better-sidebar": "^0.15.0",
     "dsh-bookmarks": "^0.1.2",
     "dsh-chat-import": "^0.6.2",
-    "dsh-ci-plugin": "^0.1.0",
     "dsh-client-auto-continue": "^0.8.1",
-    "dsh-context": "^0.21.1",
+    "dsh-context": "^0.23.0",
     "dsh-files": "github:taxueseek/dsh-files",
     "dsh-foundry": "github:hellosky983/dsh-foundry",
     "dsh-llm-opencode": "file:../../../packages/dsh-llm-opencode",
@@ -29,16 +29,15 @@
     "dsh-plugin-guide": "^0.1.1",
     "dsh-plugin-search": "github:shinjiyu/dsh-plugin-search",
     "dsh-project-kanban": "^0.8.3",
-    "dsh-prompt-enhancer": "github:Fishsb/dsh-prompt-enhancer",
     "dsh-prompt-manager": "^1.4.1",
     "dsh-queue-plus": "github:starslittle/dsh-queue-plus",
     "dsh-rule-manager": "^0.1.0",
     "dsh-session-doctor": "github:mayf3/dsh-session-doctor",
     "dsh-skill-manager-ytxue": "github:YTxue/dsh-skill-manager-ytxue",
-    "dsh-skin": "github:KinGao294/dsh-skin",
     "dsh-status-rotator": "github:01Virex/dsh-status-rotator",
     "dsh-sticky-note": "github:Meredith2328/dsh-sticky-note",
-    "dshmarket": "^1.17.1"
+    "dsh-vision-router": "^1.7.6",
+    "dshmarket": "^1.18.0"
   },
   "dsh": {
     "profile": {
@@ -67,8 +66,6 @@
         "dsh-session-doctor",
         "dsh-client-auto-continue",
         "dsh-sticky-note",
-        "dsh-prompt-enhancer",
-        "dsh-skin",
         "dsh-bookmarks",
         "dsh-agent-message",
         "dsh-prompt-manager",
@@ -80,7 +77,9 @@
         "dsh-agent-team-gui",
         "dsh-office-tools",
         "dsh-plugin-guide",
-        "dsh-md-notes"
+        "dsh-md-notes",
+        "@liustack/modlens",
+        "dsh-vision-router"
       ]
     }
   }
