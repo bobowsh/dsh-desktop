@@ -7,7 +7,7 @@
 ;    $INSTDIR\data) and create the dsh.cmd root shortcut. customUnInstall
 ;    removes the shortcut but preserves the user's $INSTDIR\data.
 ; Part 3: record DSH_HOME as a user environment variable so processes spawned
-; outside the desktop shell (CLI, editors) resolve the same harness home.
+;    outside the desktop shell (CLI, editors) resolve the same harness home.
 ; Part 4: upgrade flow — backup existing user data, then ask the user whether
 ;    to do a full reinstall (delete + re-seed) or a preserve/merge install.
 ; ============================================================================
@@ -89,33 +89,26 @@
 
 ; ============================================================================
 ; customInstall — upgrade-aware data seeding
-;
-; Flow:
-;   1. If $INSTDIR\data already exists → backup to D:\dsh-backup\<timestamp>
-;      (fallback E:\) then ask the user:
-;        Yes  → full reinstall  (delete data, re-seed, rewrite DSH_HOME)
-;        No   → preserve/merge  (overlay new files, keep existing DSH_HOME)
-;   2. If $INSTDIR\data does not exist → fresh install (seed + write DSH_HOME)
 ; ============================================================================
 
 !macro customInstall
-  ; --- $R9 = install mode flag: 0=fresh, 1=full, 2=preserve ----------------
+  ; --- $R9 = install mode: 0=fresh, 1=full reinstall, 2=preserve/merge ----
   StrCpy $R9 "0"
 
   ; --- Step 1: backup existing user data ------------------------------------
   ${If} ${FileExists} "$INSTDIR\data\*.*"
-    ; Build timestamp via GetTime plugin (ships with NSIS 3.x)
-    GetTime::GetLocal
-    Pop $0  ; year
-    Pop $1  ; month
-    Pop $2  ; day
-    Pop $3  ; hour
-    Pop $4  ; minute
-    Pop $5  ; second
-    Pop $6  ; day-of-week
-    Pop $7  ; day-of-year
-    ; Format: YYYY-MM-DD_HH-MM-SS  (no leading-zero padding needed for dir name)
-    StrCpy $8 "$0-$1-$2_$3-$4-$5"
+    ; Build timestamp using Windows kernel32 (no NSIS plugins needed).
+    ; Allocate SYSTEMTIME struct (8 x i2 = 16 bytes) on the NSIS heap.
+    System::Call '*(i2,i2,i2,i2,i2,i2,i2,i2)i.r0'
+    System::Call 'kernel32::GetLocalTime(p$r0)i'
+    ; Read fields from the struct pointer: year(+0),month(+2),day(+4),hour(+8),min(+10),sec(+12)
+    System::Call '*$r0(&i2.r1,&i2.r2,&i2.r3,&i2.r4)'
+    System::Int64Op $r0 + 8
+    Pop $r2
+    System::Call '*$r2(&i2.r5,&i2.r6,&i2.r7)'
+    System::Free $r0
+    ; $1=year $2=month $3=day $4=dayOfWeek $5=hour $6=minute $7=second
+    StrCpy $8 "$1-$2-$3_$5-$6-$7"
 
     ; Pick backup root: prefer D:\, fallback E:\
     StrCpy $D "D:\dsh-backup"
@@ -128,12 +121,12 @@
     CopyDirectory /r "$INSTDIR\data" "$E"
     DetailPrint "DSH: backed up user data -> $E"
 
-    ; --- Step 2: ask user choice (MessageBox — always available) -------------
+    ; --- Step 2: ask user choice --------------------------------------------
     MessageBox MB_YESNO|MB_ICONQUESTION \
-      "DSH has existing user data in $\r$\n\
+      "DSH has existing user data in$\r$\n\
        $INSTDIR\data$\r$\n$\r$\n\
-       [Yes] Full install — delete user plugins/skills and install from package$\r$\n\
-       [No]  Preserve — keep existing plugins/skills, only add new ones" \
+       [Yes] Full install: delete user plugins/skills, install from package$\r$\n\
+       [No]  Preserve: keep existing plugins/skills, only add new ones" \
       IDYES _dsh_full IDNO _dsh_preserve
 
     _dsh_preserve:
