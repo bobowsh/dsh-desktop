@@ -12,7 +12,7 @@ on:
       target:
         description: Platform to build
         required: false
-        default: all
+        default: windows
         type: choice
         options:
           - all
@@ -34,8 +34,8 @@ jobs:
   macos-apple-silicon:
     name: macOS Apple Silicon
     if: >-
-      startsWith(github.ref, 'refs/tags/v') ||
-      (github.event_name == 'workflow_dispatch' && (inputs.target == 'all' || inputs.target == 'macos'))
+      github.event_name == 'workflow_dispatch' &&
+      (inputs.target == 'all' || inputs.target == 'macos')
     runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
@@ -179,8 +179,8 @@ jobs:
   macos-intel:
     name: macOS Intel
     if: >-
-      startsWith(github.ref, 'refs/tags/v') ||
-      (github.event_name == 'workflow_dispatch' && (inputs.target == 'all' || inputs.target == 'macos'))
+      github.event_name == 'workflow_dispatch' &&
+      (inputs.target == 'all' || inputs.target == 'macos')
     runs-on: macos-15-intel
     steps:
       - uses: actions/checkout@v4
@@ -481,8 +481,6 @@ jobs:
     if: >-
       always() &&
       startsWith(github.ref, 'refs/tags/v') &&
-      needs.macos-apple-silicon.result == 'success' &&
-      needs.macos-intel.result == 'success' &&
       needs.windows-x64.result == 'success'
     needs:
       - macos-apple-silicon
@@ -504,6 +502,9 @@ jobs:
           path: release-assets
           merge-multiple: true
       - name: Merge macOS update metadata
+        if: >-
+          needs.macos-apple-silicon.result == 'success' ||
+          needs.macos-intel.result == 'success'
         run: |
           node scripts/merge-mac-update-metadata.mjs \
             release-assets/latest-mac-arm64.yml \
