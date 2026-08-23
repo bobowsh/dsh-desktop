@@ -100,7 +100,7 @@
 
     ; Pick backup root (D or E) and find next available counter directory
     StrCpy $D "D:\dsh-backup"
-    ${IfNot} ${DirExists} "D:\"
+    ${IfNot} ${DirExists} "D:\\"
       StrCpy $D "E:\dsh-backup"
     ${EndIf}
     CreateDirectory "$D"
