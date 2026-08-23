@@ -41,6 +41,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          submodules: true
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -49,6 +50,17 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm version --no-git-tag-version --allow-same-version "${{ github.ref_name }}"
       - run: npm ci
+      - name: Enable pnpm for web profile install
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.21.0 --activate
+      # The bundled web profile (data/profiles/web) tracks only its manifests in
+      # git; the plugin node_modules is rebuilt from the committed lockfile on
+      # every runner. git-hosted deps need the runner's git + network, and
+      # dsh-llm-opencode resolves into the packages/ submodule (checked out above).
+      - name: Install web profile plugins
+        working-directory: data/profiles/web
+        run: pnpm install --frozen-lockfile
       - run: npm test
       - run: npm run typecheck
       - name: Validate Apple release secrets
@@ -174,6 +186,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          submodules: true
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -182,6 +195,17 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm version --no-git-tag-version --allow-same-version "${{ github.ref_name }}"
       - run: npm ci
+      - name: Enable pnpm for web profile install
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.21.0 --activate
+      # The bundled web profile (data/profiles/web) tracks only its manifests in
+      # git; the plugin node_modules is rebuilt from the committed lockfile on
+      # every runner. git-hosted deps need the runner's git + network, and
+      # dsh-llm-opencode resolves into the packages/ submodule (checked out above).
+      - name: Install web profile plugins
+        working-directory: data/profiles/web
+        run: pnpm install --frozen-lockfile
       - run: npm test
       - run: npm run typecheck
       - name: Validate Apple release secrets
@@ -308,6 +332,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          submodules: true
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -316,6 +341,17 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm version --no-git-tag-version --allow-same-version "${{ github.ref_name }}"
       - run: npm ci
+      - name: Enable pnpm for web profile install
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.21.0 --activate
+      # The bundled web profile (data/profiles/web) tracks only its manifests in
+      # git; the plugin node_modules is rebuilt from the committed lockfile on
+      # every runner. git-hosted deps need the runner's git + network, and
+      # dsh-llm-opencode resolves into the packages/ submodule (checked out above).
+      - name: Install web profile plugins
+        working-directory: data/profiles/web
+        run: pnpm install --frozen-lockfile
       - run: npm test
       - run: npm run typecheck
       - name: Build Windows release package
@@ -457,6 +493,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          submodules: true
       - uses: actions/setup-node@v4
         with:
           node-version: 22

@@ -1,0 +1,3 @@
+[submodule "packages/dsh-llm-opencode"]
+	path = packages/dsh-llm-opencode
+	url = https://github.com/bobowsh/dsh-llm-opencode.git

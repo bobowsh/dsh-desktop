@@ -25,7 +25,7 @@
 
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { homedir, platform } from 'node:os'
+import { homedir, platform, arch } from 'node:os'
 import { existsSync, cpSync, mkdirSync, rmSync, statSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)))
@@ -40,20 +40,12 @@ const destRoot = join(projectRoot, 'data')
 //
 // To keep the binary tree clean we refresh it by removing *only* `bin/`
 // (regenerated from the canonical live ~/.mnemon every run — a build input, not
-// user data, safe to recreate). `data/profiles/web` is the dev DSH_HOME profile
-// and is NEVER deleted here: it is the single source of truth for packaging.
+// user data, safe to recreate) — but ONLY when a live mnemon install exists on
+// this machine. CI runners have no ~/.mnemon: there the pre-staged data/bin
+// (tracked in git) is kept as-is, so the bundle never silently loses the memory
+// CLI. `data/profiles/web` is the dev DSH_HOME profile and is NEVER deleted
+// here: it is the single source of truth for packaging.
 mkdirSync(destRoot, { recursive: true })
-
-for (const name of ['bin']) {
-  const p = join(destRoot, name)
-  if (existsSync(p)) {
-    try {
-      rmSync(p, { recursive: true, force: true })
-    } catch {
-      // locked (e.g. dev harness has it open) -> overwrite below
-    }
-  }
-}
 
 let failed = false
 
@@ -98,19 +90,29 @@ if (existsSync(webDest)) {
   console.error('[bundle-user-data] fatal: data/profiles/web missing — install the web profile first (market UI or pnpm) before packaging.')
 }
 
-// 3) mnemon bin/ — the memory CLI the harness spawns.
+// 3) mnemon bin/ — the memory CLI the harness spawns. Refreshed from the live
+//    ~/.mnemon when present; otherwise the pre-staged data/bin is KEPT (CI
+//    runners have no live mnemon install — deleting it here would ship a bundle
+//    without the memory CLI).
 const binSrc = join(homedir(), '.mnemon', 'bin')
 const binDest = join(destRoot, 'bin')
 if (existsSync(binSrc)) {
   try {
+    try {
+      rmSync(binDest, { recursive: true, force: true })
+    } catch {
+      // locked (e.g. dev harness has it open) -> overwrite below
+    }
     cpSync(binSrc, binDest, { recursive: true, force: true })
     console.log(`[bundle-user-data] staged mnemon bin -> data/bin (${humanSize(dirSize(binDest))})`)
   } catch (err) {
     failed = true
     console.error('[bundle-user-data] failed to stage mnemon bin:', err)
   }
+} else if (existsSync(binDest)) {
+  console.log(`[bundle-user-data] kept pre-staged data/bin (no live mnemon at ${binSrc}; ${humanSize(dirSize(binDest))})`)
 } else {
-  console.warn(`[bundle-user-data] skip: mnemon bin not found at ${binSrc}`)
+  console.warn(`[bundle-user-data] skip: mnemon bin not found at ${binSrc} and no pre-staged data/bin — memory CLI will be missing from the bundle`)
 }
 
 if (failed) process.exit(1)
@@ -160,34 +162,64 @@ function normalizeModulesMetadata(profileDest) {
   }
   // Pin the store to the current user's home cache on every machine. Do NOT touch
   // the source profile — live ~/.dsh runs on the same volume as its store already.
+  //
+  // The pin block is ALWAYS rewritten for the build machine's platform: this file
+  // is tracked in git, so a `~/AppData/...` pin written by a Windows build must
+  // not leak unchanged into a macOS bundle (and vice versa).
   const workspaceFile = join(profileDest, 'pnpm-workspace.yaml')
   const workspaceRaw = readFileSync(workspaceFile, 'utf8')
-  if (!/^\s*storeDir\s*:/m.test(workspaceRaw)) {
-    const storeDir = platform() === 'win32'
-      ? '~/AppData/Local/pnpm/store'
-      : platform() === 'darwin'
-        ? '~/Library/pnpm/store'
-        : '~/.local/share/pnpm/store'
-    writeFileSync(workspaceFile, `${workspaceRaw.replace(/\s*$/, '')}\n\n# pnpm store: reuse the user home store (${storeDir}).\n# Explicit store-dir skips pnpm's default same-volume resolution (which would\n# create a volume-root .pnpm-store next to the profile); cross-volume imports\n# fall back to copy automatically.\nstoreDir: ${storeDir}\n`)
+  const storeDir = platform() === 'win32'
+    ? '~/AppData/Local/pnpm/store'
+    : platform() === 'darwin'
+      ? '~/Library/pnpm/store'
+      : '~/.local/share/pnpm/store'
+  const pinBlock =
+    `# pnpm store: reuse the user home store (${storeDir}).\n` +
+    `# Explicit store-dir skips pnpm's default same-volume resolution (which would\n` +
+    `# create a volume-root .pnpm-store next to the profile); cross-volume imports\n` +
+    `# fall back to copy automatically.\n` +
+    `storeDir: ${storeDir}\n`
+  // Drop any previously pinned block (our comment block + storeDir line, or a
+  // bare storeDir line), then append the platform-correct one. Idempotent: when
+  // the existing pin already matches, the reconstructed text is identical and
+  // nothing is written.
+  let stripped = workspaceRaw.replace(
+    /\n*# pnpm store: reuse the user home store[^\n]*\n(?:#[^\n]*\n)*storeDir:[^\n]*\n?/m,
+    '\n'
+  )
+  stripped = stripped.replace(/^\s*storeDir\s*:[^\n]*\n?/m, '')
+  const nextWorkspace = `${stripped.replace(/\s*$/, '')}\n\n${pinBlock}`
+  if (nextWorkspace !== workspaceRaw) {
+    writeFileSync(workspaceFile, nextWorkspace)
     console.log(`[bundle-user-data] pnpm-workspace.yaml: pinned storeDir: ${storeDir}`)
   }
 }
 
 /**
- * Trim platform junk from native prebuilds before packaging (win-x64 target):
+ * Trim platform junk from native prebuilds before packaging. The build always
+ * runs ON the target machine (scripts/verify-target.mjs enforces it), so
+ * `${platform()}-${arch()}` IS the packaging target — keep only its prebuilds:
  * - every `*.pdb` (debug symbols — never needed at runtime, they are the bulk of
  *   node-pty's ~58MB prebuilds),
- * - `prebuilds/` platform directories other than `win32-x64` (win32-arm64,
- *   darwin-*, linux-* …),
- * - third-party platform subdirs under `build/Release/conpty` (win10-arm64).
+ * - `prebuilds/` platform directories other than the build target's
+ *   (e.g. on win32-x64: win32-arm64, darwin-*, linux-* …; on darwin-arm64:
+ *   win32-*, linux-* …),
+ * - third-party platform subdirs under `build/Release/conpty` (win10-<arch>).
  *
  * Works on any package tree: scans every `prebuilds` / `build` directory under
- * `node_modules` and removes only the above shapes. The win32-x64 `.node` /
- * winpty.dll / OpenConsole.exe files actually loaded at runtime are untouched.
+ * `node_modules` and removes only the above shapes. The target platform's
+ * `.node` / winpty.dll / OpenConsole.exe files actually loaded at runtime are
+ * untouched. NOTE: this trims the dev profile IN PLACE, so a tree trimmed by a
+ * Windows build can no longer package for macOS — reinstall profile deps (or
+ * let CI, which installs fresh per job) to switch targets.
  */
 function trimNativePrebuilds(profileDest) {
   const nm = join(profileDest, 'node_modules')
   if (!existsSync(nm)) return
+  const targetTag = `${platform()}-${arch()}`
+  // Directory names that look like platform triplets, e.g. win32-x64,
+  // darwin-arm64, linux-x64. Only these are ever dropped.
+  const platformDir = /^[a-z0-9]+-(x64|arm64|ia32|arm|armv7l|ppc64|s390x|universal)$/i
   const removed = []
   const walk = (d) => {
     let entries
@@ -213,9 +245,7 @@ function trimNativePrebuilds(profileDest) {
   const drop = (dir) => {
     for (const entry of readdirSync(dir)) {
       const full = join(dir, entry)
-      const isOtherPlatform =
-        /^win32-(?!x64$)/.test(entry) || /^(darwin|linux|freebsd|openbsd|sunos|aix|android)-/.test(entry)
-      if (isOtherPlatform) {
+      if (platformDir.test(entry) && entry.toLowerCase() !== targetTag) {
         try {
           rmSync(full, { recursive: true, force: true })
           removed.push(full)
@@ -240,7 +270,7 @@ function trimNativePrebuilds(profileDest) {
       if (!e.isDirectory()) continue
       const p = join(d, e.name)
       if (e.name === 'prebuilds') acc.push(p)
-      else if (/^win10-(?!x64$)/.test(e.name) && /(conpty|third_party)/.test(d)) acc.push(p)
+      else if (/^win10-/.test(e.name) && e.name !== `win10-${arch()}` && /(conpty|third_party)/.test(d)) acc.push(p)
       else acc = collectDirs(p, acc)
     }
     return acc

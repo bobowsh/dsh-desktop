@@ -1,6 +1,6 @@
 {
   "name": "dsh-desktop",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "A cross-platform desktop shell for DeepSeek Harness.",
   "private": true,
   "type": "module",
@@ -36,9 +36,9 @@
     "package:dev:mac:arm64": "node scripts/verify-target.mjs darwin arm64 && npm run build && node scripts/bundle-user-data.mjs && electron-builder --mac --arm64 --publish never --config electron-builder.dev.cjs",
     "package:dev:mac:x64": "node scripts/verify-target.mjs darwin x64 && npm run build && node scripts/bundle-user-data.mjs && electron-builder --mac --x64 --publish never --config electron-builder.dev.cjs",
     "package:dev:win": "node scripts/verify-target.mjs win32 x64 && npm run build && node scripts/bundle-user-data.mjs && electron-builder --win --x64 --publish never --config electron-builder.dev.cjs",
-    "package:mac": "npm run build && electron-builder --mac --publish never",
-    "package:mac:arm64": "node scripts/verify-target.mjs darwin arm64 && npm run build && node scripts/bundle-user-data.mjs && electron-builder --mac --arm64 --publish never",
-    "package:mac:x64": "node scripts/verify-target.mjs darwin x64 && npm run build && node scripts/bundle-user-data.mjs && electron-builder --mac --x64 --publish never",
+    "package:mac": "npm run build && electron-builder --mac --publish never --config electron-builder.mac.cjs",
+    "package:mac:arm64": "node scripts/verify-target.mjs darwin arm64 && npm run build && node scripts/bundle-user-data.mjs && electron-builder --mac --arm64 --publish never --config electron-builder.mac.cjs",
+    "package:mac:x64": "node scripts/verify-target.mjs darwin x64 && npm run build && node scripts/bundle-user-data.mjs && electron-builder --mac --x64 --publish never --config electron-builder.mac.cjs",
     "package:win": "node scripts/verify-target.mjs win32 x64 && npm run build && node scripts/bundle-user-data.mjs && electron-builder --win --x64 --publish never"
   },
   "dependencies": {

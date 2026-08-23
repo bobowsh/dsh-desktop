@@ -6,7 +6,7 @@
 ; 2) customInstall: seed the bundled harness data (resources\data ->
 ;    $INSTDIR\data) and create the dsh.cmd root shortcut. customUnInstall
 ;    removes the shortcut but preserves the user's $INSTDIR\data.
-;
+; ;
 ; Part 1 originated upstream (fix: allow Windows drive-root installation),
 ; part 2 was merged from build/install-user-data.nsh (portable data layout).
 ; Part 3: record DSH_HOME as a user environment variable so processes spawned
@@ -119,7 +119,81 @@
 ; ============================================================================
 
 !macro customInstall
-  ; --- seed bundled data next to the executable ($INSTDIR\data) ------------
+  ; --- 第一步：安装前备份用户数据目录，带时间戳 ---------------------------
+  ${If} ${FileExists} "$INSTDIR\data\*.*"
+    ; 生成时间戳，格式：YYYY-MM-DD_HH-MM-SS（例如 2024-01-15_14-30-45）
+    StrTime $0 "%Y-%m-%d_%H-%M-%S"
+    ; 确定备份根目录：优先 D盘，回落 E盘
+    StrCpy $1 "D:\dsh-backup"
+    StrCpy $2 "E:\dsh-backup"
+    ${If} ${DirExists} "$1"
+      ; 构建备份路径：D:\dsh-backup\YYYY-MM-DD_HH-MM-SS
+      StrCpy $3 "$1\$0"
+      ; 确保目录存在（CopyDirectory 可能需要）
+      ${If} ${DirExists} "$3"
+        ; 目录已存在
+      ${Else}
+        ${MKDir} "$3"
+      ${EndIf}
+      CopyDirectory /r "$INSTDIR\data" "$3"
+      DetailPrint "DSH: 已备份用户数据到 $3 (时间戳 $(^$0))"
+    ${ElseIf} ${DirExists} "$2"
+      ; 构建备份路径：E:\dsh-backup\YYYY-MM-DD_HH-MM-SS
+      StrCpy $3 "$2\$0"
+      ${If} ${DirExists} "$3"
+        ; 目录已存在
+      ${Else}
+        ${MKDir} "$3"
+      ${EndIf}
+      CopyDirectory /r "$INSTDIR\data" "$3"
+      DetailPrint "DSH: 已备份用户数据到 $3 (时间戳 $(^$0))"
+    ${Else}
+      ; 两个盘都不存在，记录警告但继续
+      DetailPrint "DSH: 备份目录不可达，跳过备份（建议确保 D: 或 E: 盘有写入权限，或手动备份）"
+    ${EndIf}
+  ${Else}
+    ; $INSTDIR\data 不存在，无需备份（首次安装）
+  ${EndIf}
+  
+  ; --- 第二步：若有现有数据，弹出选择对话框 -------------------------------
+  ${If} ${FileExists} "$INSTDIR\data\*.*"
+    ; --- 创建选择对话框 ---------------------------------------------------
+    ${NSD_Create} "DSHPluginChoice"
+    ${NSD_SetText} $DSHPluginChoice "DSH 安装向导"
+    ${NSD_SetText} $DSHPluginChoice "检测到已安装的插件和技能。请选择操作方式："
+    ${NSD_AddCheckbox} $DSHPluginChoice "1. 全新安装（删除用户插件/技能，安装安装包里的）"
+    ${NSD_AddCheckbox} $DSHPluginChoice "2. 保留用户插件/技能（保留原有插件/技能，仅安装新的）"
+    ${NSD_AddSeparator} $DSHPluginChoice
+    ${NSD_AddButton} $DSHPluginChoice "确定" 1
+    ${NSD_AddButton} $DSHPluginChoice "取消" 2
+    ${If} ${NSD_GetCheckbox} $DSHPluginChoice 1 == "1"
+      ${NSD_Destroy} $DSHPluginChoice
+      ${If} ${FileExists} "$INSTDIR\data\settings.yaml"
+        RMDir /r "$INSTDIR\data"
+        ; 删除后回退到下面的“未安装”分支，执行全新拷贝
+      ${EndIf}
+    ${ElseIf} ${NSD_GetCheckbox} $DSHPluginChoice 2 == "1"
+      ${NSD_Destroy} $DSHPluginChoice
+      DetailPrint "DSH: 保留用户数据模式 — 保留原有插件/技能，仅安装新的"
+      ; 仅更新模式：不删除 $INSTDIR\data，而是执行文件级覆盖
+      CopyFiles /SILENT "$INSTDIR\resources\data" "$INSTDIR"
+      ${If} ${FileExists} "$INSTDIR\data\settings.yaml"
+        ; 已有数据保持不变，不再额外操作
+      ${EndIf}
+    ${Else}
+      ${NSD_Destroy} $DSHPluginChoice
+      DetailPrint "DSH: 用户取消安装，保持现状"
+    ${EndIf}
+    ; ----------------------------------------------------------------
+    ${If} ${NSD_GetCheckbox} $DSHPluginChoice 1 == "1"
+      ; 已在上面 RMDir 并回退到“未安装”逻辑，下面的写注册表等会正常执行
+    ${ElseIf} ${NSD_GetCheckbox} $DSHPluginChoice 2 == "1"
+      ; 仅更新模式已执行 CopyFiles，此处不再重复写 DSH_HOME，
+      ; 保持现有的环境变量不变，避免覆盖用户可能手动调整过的设置。
+    ${EndIf}
+  ${EndIf}
+
+  ; --- 第三步：常规安装流程继续 (dsh.cmd shim, DSH_HOME 等) ---------------
   ${IfNot} ${FileExists} "$INSTDIR\data\*.*"
     ${If} ${FileExists} "$INSTDIR\resources\data"
       DetailPrint "Installing bundled harness data -> $INSTDIR\data"
@@ -145,9 +219,15 @@
   ; Point DSH_HOME at the harness data dir shipped next to the executable so
   ; external processes (shell, CLI shims, editor integrations) resolve the
   ; same harness home as the desktop shell.
-  WriteRegStr HKCU "Environment" "DSH_HOME" "$INSTDIR\data"
-  SendMessage ${DSH_HWND_BROADCAST} ${DSH_WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
-  DetailPrint "DSH_HOME set to $INSTDIR\data (user environment variable)"
+  ; 仅在“全新安装”模式下写入，保留用户可能手动调整的设置
+  ${If} ${NSD_GetCheckbox} $DSHPluginChoice 1 == "1"
+    WriteRegStr HKCU "Environment" "DSH_HOME" "$INSTDIR\data"
+    SendMessage ${DSH_HWND_BROADCAST} ${DSH_WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
+    DetailPrint "DSH_HOME set to $INSTDIR\data (user environment variable)"
+  ${ElseIf} ${NSD_GetCheckbox} $DSHPluginChoice 2 == "1"
+    ; 保留用户模式：不重写 DSH_HOME，保持现有设置不变
+    DetailPrint "DSH: 保留用户 DSH_HOME 环境变量（保持现状）"
+  ${EndIf}
 !macroend
 
 !macro customUnInstall
