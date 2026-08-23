@@ -111,7 +111,7 @@ Function DshUpgradeLogic
     StrCpy $1 "$0\999"
   _dsh_found:
   CreateDirectory "$1"
-  CopyDirectory /r "$INSTDIR\data" "$1"
+  CopyFiles /SILENT "$INSTDIR\data\*.*" "$1"
   DetailPrint "DSH: backed up user data to $1"
 
   ; --- Ask user choice ---
