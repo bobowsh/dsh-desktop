@@ -92,29 +92,30 @@ Function DshUpgradeLogic
   ${EndIf}
 
   ; --- Backup existing data to D:\dsh-backup or E:\dsh-backup ----------
-  StrCpy $D "D:\dsh-backup"
+  ; $0 = backup root, $1 = backup dir, $2 = counter
+  StrCpy $0 "D:\dsh-backup"
   IfFileExists "D:\" 0 _dsh_use_e
     Goto _dsh_have_drive
   _dsh_use_e:
-    StrCpy $D "E:\dsh-backup"
+    StrCpy $0 "E:\dsh-backup"
   _dsh_have_drive:
-  CreateDirectory "$D"
+  CreateDirectory "$0"
 
   ; Find next available counter directory
-  StrCpy $C "0"
+  StrCpy $2 "0"
   _dsh_find_loop:
-    StrCpy $E "$D\$C"
-    IfFileExists "$E\*.*" 0 _dsh_found
-    IntOp $C $C + 1
-    StrCmp $C "999" 0 _dsh_find_loop
-    StrCpy $E "$D\999"
+    StrCpy $1 "$0\$2"
+    IfFileExists "$1\*.*" 0 _dsh_found
+    IntOp $2 $2 + 1
+    StrCmp $2 "999" 0 _dsh_find_loop
+    StrCpy $1 "$0\999"
   _dsh_found:
-  CreateDirectory "$E"
-  CopyDirectory /r "$INSTDIR\data" "$E"
-  DetailPrint "DSH: backed up user data to $E"
+  CreateDirectory "$1"
+  CopyDirectory /r "$INSTDIR\data" "$1"
+  DetailPrint "DSH: backed up user data to $1"
 
   ; --- Ask user choice ---
-  MessageBox MB_YESNO|MB_ICONQUESTION "DSH has existing user data.$\r$\nBackup saved to $E$\r$\n$\r$\n[Yes] Full install - delete and reinstall from package$\r$\n[No]  Preserve - keep existing, only add new" IDYES _dsh_yes IDNO _dsh_no
+  MessageBox MB_YESNO|MB_ICONQUESTION "DSH has existing user data.$\r$\nBackup saved to $1$\r$\n$\r$\n[Yes] Full install - delete and reinstall from package$\r$\n[No]  Preserve - keep existing, only add new" IDYES _dsh_yes IDNO _dsh_no
 
   _dsh_no:
     StrCpy $R9 "2"
