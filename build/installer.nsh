@@ -2,19 +2,13 @@
 ; DSH Desktop installer NSIS customizations
 ; ============================================================================
 ; 1) Assisted-installer directory page: allow installing to a Windows drive
-;    root ("D:" / "D:\" are normalized to D:<AppName>).
-; 2) customInstall: seed the bundled harness data (resources<data ->
-;    $INSTDIR\data) and create the dsh.cmd root shortcut. customUnInstall
-;    removes the shortcut but preserves the user's $INSTDIR\data.
-; Part 3: record DSH_HOME as a user environment variable so processes spawned
-;    outside the desktop shell (CLI, editors) resolve the same harness home.
-; Part 4: upgrade flow - backup existing user data, then ask the user whether
-;    to do a full reinstall (delete + re-seed) or a preserve/merge install.
+;    root.
+; 2) customInstall: seed the bundled harness data, backup/choice logic.
+; 3) DSH_HOME user environment variable.
 ; ============================================================================
 
 !include "LogicLib.nsh"
 
-; --- DSH_HOME user environment variable (install + uninstall) ---------------
 !define DSH_WM_SETTINGCHANGE 0x001A
 !define DSH_HWND_BROADCAST 0xFFFF
 
@@ -44,10 +38,8 @@
       ${If} $DshDirectoryNormalizationActive == "1"
         Return
       ${EndIf}
-
       ${NSD_GetText} $DshDirectoryEdit $0
       StrLen $1 $0
-
       ${If} $1 == 2
         StrCpy $2 $0 1 1
         ${If} $2 != ":"
@@ -67,7 +59,6 @@
       ${Else}
         Return
       ${EndIf}
-
       StrCpy $DshDirectoryNormalizationActive "1"
       StrCpy $INSTDIR $3
       ${NSD_SetText} $DshDirectoryEdit $3
@@ -88,73 +79,65 @@
 !endif
 
 ; ============================================================================
-; customInstall - upgrade-aware data seeding
+; DshUpgradeLogic - called from customInstall macro
+;
+; $R9 output: 0=fresh, 1=full reinstall, 2=preserve/merge
+; ============================================================================
+
+Function DshUpgradeLogic
+  StrCpy $R9 "0"
+
+  ${IfNot} ${FileExists} "$INSTDIR\data\*.*"
+    Return
+  ${EndIf}
+
+  ; --- Backup existing data to D:\dsh-backup or E:\dsh-backup ----------
+  StrCpy $D "D:\dsh-backup"
+  IfFileExists "D:\" 0 _dsh_use_e
+    Goto _dsh_have_drive
+  _dsh_use_e:
+    StrCpy $D "E:\dsh-backup"
+  _dsh_have_drive:
+  CreateDirectory "$D"
+
+  ; Find next available counter directory
+  StrCpy $C "0"
+  _dsh_find_loop:
+    StrCpy $E "$D\$C"
+    IfFileExists "$E\*.*" 0 _dsh_found
+    IntOp $C $C + 1
+    StrCmp $C "999" 0 _dsh_find_loop
+    StrCpy $E "$D\999"
+  _dsh_found:
+  CreateDirectory "$E"
+  CopyDirectory /r "$INSTDIR\data" "$E"
+  DetailPrint "DSH: backed up user data to $E"
+
+  ; --- Ask user choice ---
+  MessageBox MB_YESNO|MB_ICONQUESTION "DSH has existing user data.$\r$\nBackup saved to $E$\r$\n$\r$\n[Yes] Full install - delete and reinstall from package$\r$\n[No]  Preserve - keep existing, only add new" IDYES _dsh_yes IDNO _dsh_no
+
+  _dsh_no:
+    StrCpy $R9 "2"
+    Return
+  _dsh_yes:
+    StrCpy $R9 "1"
+    Return
+FunctionEnd
+
+; ============================================================================
+; customInstall macro - minimal, delegates to function
 ; ============================================================================
 
 !macro customInstall
-  ; $R9 = install mode: 0=fresh, 1=full reinstall, 2=preserve/merge
-  StrCpy $R9 "0"
-
-  ; --- Step 1: backup existing user data ------------------------------------
-  ${If} ${FileExists} "$INSTDIR\data\*.*"
-
-    ; Pick backup root (D or E) and find next available counter directory
-    StrCpy $D "D:\dsh-backup"
-    ${IfNot} ${DirExists} "D:\\"
-      StrCpy $D "E:\dsh-backup"
-    ${EndIf}
-    CreateDirectory "$D"
-
-    StrCpy $C "0"
-    _dsh_find_backup:
-      StrCpy $E "$D\$C"
-      ${IfNot} ${DirExists} "$E"
-        Goto _dsh_backup_found
-      ${EndIf}
-      IntOp $C $C + 1
-      ${If} $C > 999
-        DetailPrint "DSH: too many backups, reusing backup 999"
-        StrCpy $E "$D\999"
-        Goto _dsh_backup_found
-      ${EndIf}
-      Goto _dsh_find_backup
-
-    _dsh_backup_found:
-    CreateDirectory "$E"
-    CopyDirectory /r "$INSTDIR\data" "$E"
-    DetailPrint "DSH: backed up user data to $E"
-
-    ; --- Step 2: ask user choice --------------------------------------------
-    MessageBox MB_YESNO|MB_ICONQUESTION \
-      "DSH has existing user data.$\r$\n\
-       Backup saved to $E$\r$\n$\r$\n\
-       [Yes] Full install - delete and reinstall from package$\r$\n\
-       [No]  Preserve - keep existing, only add new" \
-      IDYES _dsh_full IDNO _dsh_preserve
-
-    _dsh_preserve:
-      StrCpy $R9 "2"
-      Goto _dsh_choice_done
-
-    _dsh_full:
-      StrCpy $R9 "1"
-      Goto _dsh_choice_done
-
-    _dsh_choice_done:
-  ${EndIf}
-
-  ; --- Step 3: act on the chosen mode ---------------------------------------
+  Call DshUpgradeLogic
   ${If} $R9 == "1"
     DetailPrint "DSH: full install - removing existing user data"
     RMDir /r "$INSTDIR\data"
-
   ${ElseIf} $R9 == "2"
     DetailPrint "DSH: preserve mode - merging new files"
     CopyFiles /SILENT "$INSTDIR\resources\data" "$INSTDIR"
-    Goto _dsh_skip_seed
+    Goto _dsh_done
   ${EndIf}
-
-  ; --- Seed bundled data (fresh install OR after full-delete) ---------------
   ${IfNot} ${FileExists} "$INSTDIR\data\*.*"
     ${If} ${FileExists} "$INSTDIR\resources\data"
       DetailPrint "Installing bundled harness data"
@@ -166,16 +149,11 @@
   ${Else}
     DetailPrint "Keeping existing user data"
   ${EndIf}
-
-  _dsh_skip_seed:
-
-  ; --- dsh.cmd CLI shim ----------------------------------------------------
+  _dsh_done:
   ${If} ${FileExists} "$INSTDIR\resources\app\node_modules\node\bin\dsh.cmd"
     DetailPrint "Creating dsh CLI shortcut"
     CreateShortcut "$INSTDIR\dsh.lnk" "$INSTDIR\resources\app\node_modules\node\bin\dsh.cmd" "" "$INSTDIR\resources\icon.png"
   ${EndIf}
-
-  ; --- DSH_HOME user environment variable -----------------------------------
   ${If} $R9 != "2"
     WriteRegStr HKCU "Environment" "DSH_HOME" "$INSTDIR\data"
     SendMessage ${DSH_HWND_BROADCAST} ${DSH_WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
@@ -187,7 +165,6 @@
 
 !macro customUnInstall
   Delete "$INSTDIR\dsh.lnk"
-
   ReadRegStr $0 HKCU "Environment" "DSH_HOME"
   ${If} $0 == "$INSTDIR\data"
     DeleteRegValue HKCU "Environment" "DSH_HOME"
