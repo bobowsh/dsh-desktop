@@ -528,6 +528,7 @@ jobs:
               --repo "$GITHUB_REPOSITORY"
           fi
       - name: Mirror release assets to ModelScope
+        if: false
         env:
           MODELSCOPE_TOKEN: ${{ secrets.MODELSCOPE_TOKEN }}
           MODELSCOPE_REPO_ID: alexyaojin/dsh-desktop
