@@ -84,6 +84,7 @@
 ; $R9 output: 0=fresh, 1=full reinstall, 2=preserve/merge
 ; ============================================================================
 
+!ifndef BUILD_UNINSTALLER
 Function DshUpgradeLogic
   StrCpy $R9 "0"
 
@@ -124,6 +125,7 @@ Function DshUpgradeLogic
     StrCpy $R9 "1"
     Return
 FunctionEnd
+!endif
 
 ; ============================================================================
 ; customInstall macro - minimal, delegates to function
