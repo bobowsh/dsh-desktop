@@ -5,6 +5,8 @@ dist-dev/
 .DS_Store
 *.log
 coverage/
+/doc/
+/deliverables/
 build/icon.iconset/
 build/app-icon.iconset/
 build/icon-1024.png
@@ -49,6 +51,8 @@ test/check-persistence-list*.mjs
 .env
 .env.*
 !.env.example
+.coaligne/
+.coaligneignore
 
 # ==== web profile 的 node_modules：不纳入 git（gitignored）====
 # 早期曾用 ! 规则把 data/profiles/web/node_modules 整体纳入 git 以支持离线部署；

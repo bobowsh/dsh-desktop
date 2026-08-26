@@ -1,4 +1,4 @@
-import type { SpawnOptionsWithoutStdio } from 'node:child_process'
+import { execFileSync, type SpawnOptionsWithoutStdio } from 'node:child_process'
 import type { EventEmitter } from 'node:events'
 import { createWriteStream, existsSync, mkdirSync, readFileSync, writeFileSync, type WriteStream } from 'node:fs'
 import { mkdir } from 'node:fs/promises'
@@ -36,9 +36,139 @@ export interface HarnessChildProcess extends EventEmitter {
   kill(signal?: NodeJS.Signals): boolean
 }
 
-export function buildHarnessArguments(port: number, patchPath?: string): string[] {
+/**
+ * Resolve the user's interactive login shell environment.
+ *
+ * Electron apps launched from macOS Finder/Spotlight inherit a minimal
+ * environment from launchd that never sources the user's shell profile
+ * (~/.zshenv, ~/.zprofile, ~/.zshrc). This leaves PATH without Homebrew,
+ * mise shims, ~/.local/bin, etc., so CLIs like bun, lark-cli, and docker
+ * are invisible to the Harness process and every subprocess it spawns.
+ *
+ * On Windows the same gap exists when tools are added via a PowerShell
+ * profile ($PROFILE) rather than the user-level registry environment —
+ * `cmd /c set` only sees registry vars, so we use PowerShell with the
+ * profile loaded to capture the full set.
+ *
+ * This function shells out once to capture the full environment the user
+ * would have in a terminal, and returns it for use as the Harness spawn
+ * base. On any failure it falls back to `process.env` to preserve the
+ * current behavior.
+ *
+ * The result is memoised for the process lifetime.
+ */
+let resolvedShellEnvironment: NodeJS.ProcessEnv | undefined
+
+export function resolveShellEnvironment(): NodeJS.ProcessEnv {
+  if (resolvedShellEnvironment !== undefined) return resolvedShellEnvironment
+
+  try {
+    if (process.platform === 'win32') {
+      // PowerShell with the user profile loaded captures both registry
+      // environment variables and any PATH additions sourced in $PROFILE
+      // (e.g. conda activate, nvm use, scoop shim).  -OutputFormat Text
+      // avoids BOM/XML wrapping.
+      const output = execFileSync(
+        'powershell',
+        [
+          '-NoLogo',
+          '-NonInteractive',
+          '-OutputFormat', 'Text',
+          '-Command',
+          // Windows PowerShell writes stdout in the console codepage, not
+          // UTF-8, and we decode as UTF-8 below. On a CJK install (ACP 936)
+          // every non-ASCII byte then arrives as U+FFFD, so a user profile
+          // directory like C:\Users\数据项素 comes back as eight replacement
+          // characters — and TEMP, captured here and passed to Harness
+          // unchanged, points nowhere. Harness dies in mkdtemp before it can
+          // load a plugin tree. Pinning the output encoding is what makes the
+          // decode below true; dropping undecodable values is the belt to its
+          // braces.
+          '[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; ' +
+          // Dot-source the profile (suppress errors if it doesn't exist),
+          // then emit NAME=VALUE for every environment variable.
+          '. $PROFILE 2>$null; Get-ChildItem Env: | ForEach-Object { "$($_.Name)=$($_.Value)" }'
+        ],
+        {
+          encoding: 'utf8',
+          timeout: 15_000,
+          stdio: ['ignore', 'pipe', 'ignore']
+        }
+      )
+      resolvedShellEnvironment = withoutUndecodableValues(
+        parseEnvOutput(output, /\r?\n/),
+        process.env
+      )
+    } else {
+      // macOS / Linux: run a login + interactive shell so both .zprofile
+      // (Homebrew, OrbStack) and .zshrc (mise shims, ~/.local/bin, cargo,
+      // go, etc.) are sourced.  stderr is ignored to suppress prompt noise.
+      const shell = process.env.SHELL ?? '/bin/sh'
+      const output = execFileSync(shell, ['-l', '-i', '-c', 'env'], {
+        encoding: 'utf8',
+        timeout: 10_000,
+        stdio: ['ignore', 'pipe', 'ignore']
+      })
+      resolvedShellEnvironment = parseEnvOutput(output, /\n/)
+    }
+  } catch {
+    // Shell capture failed — stay silent and keep the inherited environment.
+    resolvedShellEnvironment = process.env
+  }
+
+  return resolvedShellEnvironment
+}
+
+/**
+ * Replace captured values that lost characters in decoding with the ones this
+ * process already holds.
+ *
+ * A value carrying U+FFFD did not survive the trip out of the shell, and there
+ * is no recovering the original from it — the byte that produced it is gone.
+ * Passing it on is the harmful option: `TEMP` from a mis-decoded capture names
+ * a directory that does not exist, and Harness fails in `mkdtemp` before it
+ * loads anything, which reads as a launch that hangs. The inherited value is
+ * always intact, because it never went through a console.
+ *
+ * A variable that exists only in the shell profile and mis-decoded has no
+ * fallback to take; it is dropped rather than passed on broken, which leaves
+ * the consumer to its own default instead of pointing it somewhere wrong.
+ * @param captured - what the shell reported.
+ * @param inherited - this process's own environment.
+ */
+export function withoutUndecodableValues(
+  captured: NodeJS.ProcessEnv,
+  inherited: NodeJS.ProcessEnv
+): NodeJS.ProcessEnv {
+  const result: NodeJS.ProcessEnv = {}
+  for (const [name, value] of Object.entries(captured)) {
+    if (value === undefined || !value.includes('�')) {
+      result[name] = value
+      continue
+    }
+    const fallback = inherited[name]
+    if (fallback !== undefined) result[name] = fallback
+  }
+  return result
+}
+
+function parseEnvOutput(output: string, lineSeparator: RegExp): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = {}
+  for (const line of output.split(lineSeparator)) {
+    const eq = line.indexOf('=')
+    if (eq <= 0) continue
+    env[line.slice(0, eq)] = line.slice(eq + 1)
+  }
+  return env
+}
+
+export function buildHarnessArguments(
+  port: number,
+  patchPath?: string,
+  profile = 'web'
+): string[] {
   return [
-    'web',
+    ...(profile === 'web' ? ['web'] : ['--profile', profile]),
     ...(patchPath ? ['--patch', patchPath] : []),
     // The desktop window is the only intended surface. Without this, Harness
     // hands the same loopback URL to the system browser on every launch.
@@ -99,13 +229,14 @@ export function buildNodeArguments(
   nodeEntryPath: string,
   dshEntryPath: string,
   port: number,
-  patchPath?: string
+  patchPath?: string,
+  profile = 'web'
 ): string[] {
   return [
     '--expose-internals',
     nodeEntryPath,
     dshEntryPath,
-    ...buildHarnessArguments(port, patchPath)
+    ...buildHarnessArguments(port, patchPath, profile)
   ]
 }
 
@@ -131,6 +262,10 @@ export class HarnessRuntime {
   private launchDirectory?: string
   private url?: string
   private readonly logLines: string[] = []
+  private readonly logRemainders: Record<'stdout' | 'stderr', string> = {
+    stdout: '',
+    stderr: ''
+  }
 
   constructor(private readonly options: HarnessRuntimeOptions) {}
 
@@ -144,8 +279,10 @@ export class HarnessRuntime {
     }
   }
 
-  async start(launchDirectory: string): Promise<void> {
+  async start(launchDirectory: string, profile = 'web'): Promise<void> {
     await this.stop()
+    this.logRemainders.stdout = ''
+    this.logRemainders.stderr = ''
     this.launchDirectory = launchDirectory
     this.url = undefined
 
@@ -178,13 +315,15 @@ export class HarnessRuntime {
       this.options.nodeEntryPath,
       this.options.dshEntryPath,
       port,
-      this.options.dshPatchPath
+      this.options.dshPatchPath,
+      profile
     )
     const startupTimeoutMs =
       this.options.startupTimeoutMs ?? (process.platform === 'win32' ? 120_000 : 45_000)
 
     this.writeLog(`\n[desktop] starting ${new Date().toISOString()}`)
     this.writeLog(`[desktop] launch directory ${launchDirectory}`)
+    this.writeLog(`[desktop] profile ${profile}`)
     this.writeLog(`[desktop] endpoint ${url}`)
     this.setState('starting', 'Starting DeepSeek Harness…')
 
@@ -197,7 +336,7 @@ export class HarnessRuntime {
           launchDirectory,
           this.options.dshHome,
           process.platform,
-          process.env,
+          resolveShellEnvironment(),
           this.options.useElectronRuntime ?? false
         )
       )
@@ -210,7 +349,26 @@ export class HarnessRuntime {
     this.child = child
 
     child.stdout.on('data', (chunk: Buffer) => this.writeChunk('stdout', chunk))
-    child.stderr.on('data', (chunk: Buffer) => this.writeChunk('stderr', chunk))
+    child.stderr.on('data', (chunk: Buffer) => {
+      this.writeChunk('stderr', chunk)
+      if (this.child !== child || this.phase !== 'starting') return
+
+      const cause = extractDshEntryFailureCause(this.logLines)
+      if (!cause) return
+
+      // The Harness entry has already rejected, so waiting for the HTTP
+      // readiness timeout can no longer succeed. Detach this launch before
+      // stopping it so the later OS exit code cannot replace the real DSH
+      // failure (a graceful SIGTERM may otherwise be reported as exit 0).
+      this.child = undefined
+      this.url = undefined
+      this.writeLog('[desktop] Harness entry failed during startup; stopping immediately')
+      this.setState('failed', `Harness could not start.\n${cause}`)
+      void this.stopChild(child).catch((error) => {
+        const detail = error instanceof Error ? error.message : String(error)
+        this.writeLog(`[desktop] failed to stop rejected Harness launch: ${detail}`)
+      })
+    })
     child.once('spawn', () => this.writeLog('[desktop] Bundled Node.js Harness process started'))
     child.once('error', (error) => {
       this.writeLog(`[node] ${error.stack ?? error.message}`)
@@ -219,6 +377,7 @@ export class HarnessRuntime {
       this.setState('failed', `Harness could not start: ${error.message}`)
     })
     child.once('exit', (code, signal) => {
+      this.flushLogRemainders()
       const detail = signal ? `signal ${signal}` : formatExitCode(code ?? -1)
       this.writeLog(`[node] Harness process exited (${detail})`)
       if (this.child !== child) return
@@ -294,7 +453,17 @@ ${cause}`
   }
 
   private writeChunk(source: 'stdout' | 'stderr', chunk: Buffer): void {
-    for (const line of chunk.toString('utf8').split(/\r?\n/)) {
+    const lines = `${this.logRemainders[source]}${chunk.toString('utf8')}`.split(/\r?\n/)
+    this.logRemainders[source] = lines.pop() ?? ''
+    for (const line of lines) {
+      if (line.length > 0) this.writeLog(`[${source}] ${line}`)
+    }
+  }
+
+  private flushLogRemainders(): void {
+    for (const source of ['stdout', 'stderr'] as const) {
+      const line = this.logRemainders[source]
+      this.logRemainders[source] = ''
       if (line.length > 0) this.writeLog(`[${source}] ${line}`)
     }
   }
@@ -382,6 +551,17 @@ export function extractFailureCause(logLines: readonly string[]): string | undef
   return undefined
 }
 
+export function extractDshEntryFailureCause(
+  logLines: readonly string[]
+): string | undefined {
+  for (const line of latestHarnessAttemptLogs(logLines)) {
+    if (!line.startsWith('[stderr] ')) continue
+    const match = line.slice(8).match(/DSH entry failed:\s*(.+)/)
+    if (match?.[1]) return match[1].trim()
+  }
+  return undefined
+}
+
 const CORE_BUNDLES = new Set(['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', 'dshmarket'])
 const PACKAGE_REFERENCE_PATTERN = /^(?:@[a-z0-9][a-z0-9._-]*\/)?[a-z0-9][a-z0-9._-]*$/i
 
@@ -410,9 +590,13 @@ function extractPluginReferences(
     if (!line.startsWith('[stderr] ')) continue
     const text = line.slice(8)
 
-    const m1 = text.match(/failed to apply loader entry [^\s]+ \((@[^)]+|[^)]+)\)/i)
-    if (m1 && m1[1] && accepts(m1[1])) {
-      plugins.add(m1[1].trim())
+    // Loader failures are nested (for example the internal `cordis:include`
+    // entry wrapping a third-party bundle). Collect every entry in the chain;
+    // taking only the first one loses the actual uninstallable owner.
+    for (const match of text.matchAll(
+      /failed to (?:apply|import) loader entry [^\s]+ \((@[^)]+|[^)]+)\)/gi
+    )) {
+      if (match[1] && accepts(match[1])) plugins.add(match[1].trim())
     }
 
     const m2 = text.match(/cannot resolve profile bundle ["']([^"']+)["']/i)
@@ -423,11 +607,6 @@ function extractPluginReferences(
     const m3 = text.match(/profile bundle ["']([^"']+)["'] declares no dsh\.bundle/i)
     if (m3 && m3[1] && accepts(m3[1])) {
       plugins.add(m3[1].trim())
-    }
-
-    const m4 = text.match(/failed to import loader entry [^\s]+ \((@[^)]+|[^)]+)\)/i)
-    if (m4 && m4[1] && accepts(m4[1])) {
-      plugins.add(m4[1].trim())
     }
 
     const m5 = text.match(/plugin\(s\) failed to load:\s*([a-zA-Z0-9@/_-]+)/i)

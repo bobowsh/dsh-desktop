@@ -1,11 +1,34 @@
 import { spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
-import { chmod, mkdir, writeFile } from 'node:fs/promises'
+import { chmod, mkdir, readdir, stat, writeFile } from 'node:fs/promises'
 import { delimiter, dirname, join } from 'node:path'
 
 const PROFILE = 'web'
 const OPERATION_TIMEOUT_MS = 15 * 60 * 1000
-const REPAIR_TIMEOUT_MS = 5 * 60 * 1000
+/**
+ * The ceiling on a repair, not its budget. What actually ends a stalled repair
+ * is {@link IDLE_TIMEOUT_MS}; this only stops a run that keeps producing
+ * progress forever.
+ *
+ * It used to be five minutes of wall clock, which on Windows was less than a
+ * healthy install takes: `clone` is a reflink, NTFS has none, so every package
+ * is copied out of the store file by file with a virus scanner in the path.
+ * The kill then landed mid-rename and left exactly the damaged directories
+ * that trigger the next repair — each launch clearing more than the last.
+ */
+const REPAIR_CAP_MS = 30 * 60 * 1000
+/** How long a run may show no sign of progress before it is considered stalled. */
+const IDLE_TIMEOUT_MS = 2 * 60 * 1000
+/** How often progress is sampled from the filesystem. */
+const PROGRESS_POLL_MS = 5 * 1000
+/**
+ * Depth of the progress walk, counted from `node_modules`: the virtual store, an
+ * entry inside it, that entry’s `node_modules`, the package, and one level of
+ * the package’s own contents — far enough that a copy in progress is visible.
+ */
+const PROGRESS_SCAN_DEPTH = 5
+/** Directories one walk may visit, so sampling stays cheap on a large profile. */
+const PROGRESS_SCAN_LIMIT = 1024
 const MAX_OUTPUT_BYTES = 32 * 1024
 
 export interface ProfilePluginCommandOptions {
@@ -156,6 +179,67 @@ export function diagnosticLine(output: string): string | undefined {
   return (named.at(-1) ?? lines.at(-1))?.slice(0, 800)
 }
 
+/**
+ * A cheap signature of how far an install has got.
+ *
+ * stdout alone cannot answer this. These runs set CI and NO_COLOR, which
+ * suppress pnpm's progress reporter, so a long copy and a hang look identical
+ * from the pipe. The profile's `node_modules` is where the work lands, so its
+ * shape is the signal.
+ *
+ * The walk starts at `node_modules`, not at the virtual store. This profile
+ * sets `nodeLinker: hoisted`, so packages land directly under `node_modules`
+ * and `.pnpm` holds nothing but a lockfile for the profile's whole life —
+ * watching it would report a healthy install as motionless from the first
+ * sample to the last. Starting a level up covers the hoisted layout and the
+ * isolated one alike, since `.pnpm` is simply one of the entries walked.
+ *
+ * The shape also has to be sampled below the top level. A directory's mtime
+ * moves only when its own entries change, so a package being copied file by
+ * file — one package at a time, with child-concurrency pinned to 1 — leaves
+ * everything above it untouched for as long as the copy takes. Reading that as
+ * a stall would kill a healthy install mid-rename, which is how damaged
+ * directories get made in the first place.
+ *
+ * Symlinks are skipped: pnpm's layout is mostly links into the store, they
+ * lead back out of the tree, and none of them is where writing happens. The
+ * walk is bounded rather than complete — a truncated walk that shifts between
+ * samples reads as progress, which errs toward letting a run continue.
+ * @returns a value to compare against the previous sample, never an error.
+ */
+export async function progressSignature(profileDirectory: string): Promise<string> {
+  const root = join(profileDirectory, 'node_modules')
+  const queue: Array<{ path: string; depth: number }> = [{ path: root, depth: 0 }]
+  let directories = 0
+  let latest = 0
+
+  while (queue.length > 0 && directories < PROGRESS_SCAN_LIMIT) {
+    const { path, depth } = queue.shift() as { path: string; depth: number }
+    let entries
+    try {
+      entries = await readdir(path, { withFileTypes: true })
+    } catch {
+      continue
+    }
+    directories += 1
+
+    try {
+      const info = await stat(path)
+      if (info.mtimeMs > latest) latest = info.mtimeMs
+    } catch {
+      // Gone between the two calls, which is itself the tree changing.
+    }
+
+    if (depth >= PROGRESS_SCAN_DEPTH) continue
+    for (const entry of entries) {
+      if (!entry.isDirectory() || entry.isSymbolicLink()) continue
+      queue.push({ path: join(path, entry.name), depth: depth + 1 })
+    }
+  }
+
+  return `${directories}:${latest}`
+}
+
 function killProcessTree(child: ReturnType<typeof spawn>): void {
   if (child.exitCode !== null || !child.pid) return
   if (process.platform === 'win32') {
@@ -181,13 +265,17 @@ export async function removeProfilePluginWithDsh(
 
 /**
  * Restore the profile's packages with Harness stopped.
- * @param timeoutMs - shorter than a user-initiated operation on purpose: this
- * one sits between the user and their window, so it gives up rather than
- * turning a damaged profile into a launch that looks hung.
+ *
+ * This sits between the user and their window, so it still has to give up
+ * rather than leave a launch looking hung — but it gives up on silence, not on
+ * the clock. A repair that is still writing packages is the opposite of a hung
+ * one, and killing it was how a damaged profile got more damaged.
+ * @param timeoutMs - the ceiling, reached only by a run that never stops
+ * making progress.
  */
 export async function installProfileDependenciesWithDsh(
   options: ProfilePluginCommandOptions,
-  timeoutMs = REPAIR_TIMEOUT_MS
+  timeoutMs = REPAIR_CAP_MS
 ): Promise<ProfilePluginCommandResult> {
   return runProfileCommand(options, buildProfileInstallArguments(options.dshEntryPath), 'Profile repair', timeoutMs)
 }
@@ -196,7 +284,8 @@ async function runProfileCommand(
   options: ProfilePluginCommandOptions,
   commandArguments: string[],
   label: string,
-  timeoutMs: number
+  timeoutMs: number,
+  idleTimeoutMs: number = IDLE_TIMEOUT_MS
 ): Promise<ProfilePluginCommandResult> {
   const requiredPaths = [
     options.dshEntryPath,
@@ -240,11 +329,31 @@ async function runProfileCommand(
     child.stdout?.on('data', append)
     child.stderr?.on('data', append)
 
-    let timedOut = false
-    const timer = setTimeout(() => {
-      timedOut = true
-      killProcessTree(child)
-    }, timeoutMs)
+    const started = Date.now()
+    let lastProgress = started
+    let signature = await progressSignature(profileDirectory)
+    let expiry: 'idle' | 'cap' | undefined
+
+    const noteProgress = (): void => {
+      lastProgress = Date.now()
+    }
+    child.stdout?.on('data', noteProgress)
+    child.stderr?.on('data', noteProgress)
+
+    const monitor = setInterval(() => {
+      void (async () => {
+        const current = await progressSignature(profileDirectory)
+        if (current !== signature) {
+          signature = current
+          noteProgress()
+        }
+        const now = Date.now()
+        if (now - started >= timeoutMs) expiry = 'cap'
+        else if (now - lastProgress >= idleTimeoutMs) expiry = 'idle'
+        else return
+        killProcessTree(child)
+      })()
+    }, PROGRESS_POLL_MS)
 
     try {
       const exit = await new Promise<{ code: number | null; signal: NodeJS.Signals | null }>(
@@ -253,10 +362,13 @@ async function runProfileCommand(
           child.once('exit', (code, signal) => resolve({ code, signal }))
         }
       )
-      if (timedOut) {
+      if (expiry !== undefined) {
         return {
           ok: false,
-          detail: `${label} timed out after ${Math.round(timeoutMs / 60_000)} minutes.`
+          detail:
+            expiry === 'idle'
+              ? `${label} stalled: no progress for ${Math.round(idleTimeoutMs / 1000)}s.`
+              : `${label} timed out after ${Math.round(timeoutMs / 60_000)} minutes.`
         }
       }
       if (exit.code !== 0) {
@@ -270,7 +382,7 @@ async function runProfileCommand(
       }
       return { ok: true }
     } finally {
-      clearTimeout(timer)
+      clearInterval(monitor)
     }
   } catch (error) {
     return {

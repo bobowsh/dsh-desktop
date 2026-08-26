@@ -5,6 +5,7 @@ import {
   buildHarnessArguments,
   buildHarnessSpawnOptions,
   buildNodeArguments,
+  extractDshEntryFailureCause,
   extractDuplicateLoaderEntryId,
   extractFailureCause,
   extractOffendingPlugin,
@@ -12,6 +13,7 @@ import {
   extractPluginFailureReferences,
   extractSlotConflictName,
   formatExitCode,
+  resolveShellEnvironment,
   updateReadyStability
 } from '../src/main/runtime/harness-runtime'
 import { canGrantWindowPermission, isTrustedAppUrl } from '../src/main/security-policy'
@@ -63,7 +65,23 @@ describe('Harness launch contract', () => {
     ])
   })
 
-  it('strips ELECTRON_RUN_AS_NODE when launching the bundled Node.js runtime', () => {
+  it('boots an isolated profile while preserving the web server arguments', () => {
+    expect(
+      buildHarnessArguments(43127, 'C:\\app\\dsh-desktop.patch.yml', 'desktop-safe-mode')
+    ).toEqual([
+      '--profile',
+      'desktop-safe-mode',
+      '--patch',
+      'C:\\app\\dsh-desktop.patch.yml',
+      '--no-open',
+      '--host',
+      '127.0.0.1',
+      '--port',
+      '43127'
+    ])
+  })
+
+  it('launches Harness with the bundled Node.js runtime', () => {
     const options = buildHarnessSpawnOptions(
       'C:\\Users\\tester\\AppData\\Roaming\\dsh-desktop\\launch-root',
       'C:\\Users\\tester\\AppData\\Roaming\\dsh-desktop\\harness',
@@ -226,7 +244,35 @@ describe('Harness launch contract', () => {
   })
 })
 
+describe('shell environment resolution', () => {
+  it(
+    'resolves a non-empty environment from the user login shell',
+    () => {
+      const env = resolveShellEnvironment()
+      expect(env).toBeDefined()
+      // Windows may preserve the conventional mixed-case key.
+      expect(env.PATH ?? env.Path).toBeTruthy()
+    },
+    20_000
+  )
 
+  it('memoises the result across calls', () => {
+    const first = resolveShellEnvironment()
+    const second = resolveShellEnvironment()
+    // Same object reference — the result is cached for the process lifetime.
+    expect(second).toBe(first)
+  })
+
+  it('produces a PATH that includes platform-standard system directories', () => {
+    const env = resolveShellEnvironment()
+    const path = env.PATH ?? env.Path ?? ''
+    if (process.platform === 'win32') {
+      expect(path).toMatch(/[A-Za-z]:\\/)
+    } else {
+      expect(path).toContain('/usr/bin')
+    }
+  })
+})
 
 describe('harness failure cause extraction', () => {
   it('extracts the DSH entry failure message from stderr', () => {
@@ -235,6 +281,7 @@ describe('harness failure cause extraction', () => {
       '[stderr] AggregateError: loader entries failed to apply',
     ]
     expect(extractFailureCause(logs)).toBe('Error: dsh: plugin tree failed to load')
+    expect(extractDshEntryFailureCause(logs)).toBe('Error: dsh: plugin tree failed to load')
   })
 
   it('extracts uncaught exception messages from stderr', () => {
@@ -297,6 +344,7 @@ describe('harness failure cause extraction', () => {
       '[stderr] [harness-node] DSH entry failed: Error: second plugin failed'
     ]
     expect(extractFailureCause(logs)).toBe('Error: second plugin failed')
+    expect(extractDshEntryFailureCause(logs)).toBe('Error: second plugin failed')
   })
 
   it('ignores long error lines (>200 chars) when falling back', () => {
@@ -323,6 +371,14 @@ describe('offending plugin extraction', () => {
       '[stderr] [harness-node] DSH entry failed: Error: dsh: plugin tree failed to load: failed to apply loader entry abc (@linxin666/dsh-web-ui-all): error message'
     ]
     expect(extractOffendingPlugin(logs)).toBe('@linxin666/dsh-web-ui-all')
+  })
+
+  it('extracts the third-party plugin nested under the internal include entry', () => {
+    const logs = [
+      '[stderr] [harness-node] DSH entry failed: Error: dsh: plugin tree failed to load: failed to apply loader entry include (cordis:include): failed to apply loader entry db-connector (dsh-db-connector): cannot get property "commands" without inject'
+    ]
+    expect(extractPluginFailureReferences(logs)).toEqual(['dsh-db-connector'])
+    expect(extractOffendingPlugins(logs)).toEqual(['dsh-db-connector'])
   })
 
   it('extracts plugin name from cannot resolve profile bundle error', () => {
