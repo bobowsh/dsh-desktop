@@ -1,0 +1,169 @@
+{"at":"2026-08-28T14:26:53.063Z","level":"info","event":"toggle","detail":"dsh-context -> off: fiber=false"}
+{"at":"2026-08-28T14:26:53.065Z","level":"info","event":"boot","detail":"plugin kept off: dsh-context"}
+{"at":"2026-08-28T14:26:53.065Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-28T14:26:53.066Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-28T14:26:53.066Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-28T14:26:53.067Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-28T14:26:53.067Z","level":"info","event":"toggle","detail":"dsh-vision-router -> off: fiber=false"}
+{"at":"2026-08-28T14:26:53.069Z","level":"info","event":"boot","detail":"plugin kept off: dsh-vision-router"}
+{"at":"2026-08-28T14:27:49.042Z","level":"info","event":"toggle","detail":"dsh-context -> off: fiber=false"}
+{"at":"2026-08-28T14:27:49.043Z","level":"info","event":"boot","detail":"plugin kept off: dsh-context"}
+{"at":"2026-08-28T14:27:49.044Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-28T14:27:49.044Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-28T14:27:49.044Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-28T14:27:49.044Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-28T14:27:49.045Z","level":"info","event":"toggle","detail":"dsh-vision-router -> off: fiber=false"}
+{"at":"2026-08-28T14:27:49.045Z","level":"info","event":"boot","detail":"plugin kept off: dsh-vision-router"}
+{"at":"2026-08-28T14:31:42.358Z","level":"warn","event":"install-blocked","detail":"refused while agents are running — session-d22cca1d-85f1-43e9-aacb-9e777afd3066"}
+{"at":"2026-08-28T14:36:22.634Z","level":"info","event":"hot-mount","detail":"dsh-web-artifact-designer: live"}
+{"at":"2026-08-28T14:36:22.840Z","level":"info","event":"install","detail":"dsh-web-artifact-designer exit=0 hot=true"}
+{"at":"2026-08-28T14:41:35.637Z","level":"info","event":"hot-mount","detail":"deepseek-idesign: live"}
+{"at":"2026-08-28T14:41:36.057Z","level":"info","event":"install","detail":"github:Devin-AXIS/deepseek-design#path:/packages/deepseek-idesign exit=0 hot=true"}
+{"at":"2026-08-28T14:45:17.771Z","level":"info","event":"toggle","detail":"dsh-context -> off: fiber=false"}
+{"at":"2026-08-28T14:45:17.772Z","level":"info","event":"boot","detail":"plugin kept off: dsh-context"}
+{"at":"2026-08-28T14:45:17.772Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-28T14:45:17.772Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-28T14:45:17.773Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-28T14:45:17.773Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-28T14:45:17.773Z","level":"info","event":"toggle","detail":"dsh-vision-router -> off: fiber=false"}
+{"at":"2026-08-28T14:45:17.774Z","level":"info","event":"boot","detail":"plugin kept off: dsh-vision-router"}
+{"at":"2026-08-28T14:45:17.976Z","level":"info","event":"region","detail":"no region on record; network check chose china"}
+{"at":"2026-08-28T14:46:35.608Z","level":"info","event":"hot-mount","detail":"dsh-find-plugin: live"}
+{"at":"2026-08-28T14:46:35.757Z","level":"info","event":"install","detail":"dsh-find-plugin exit=0 hot=true"}
+{"at":"2026-08-28T14:47:08.615Z","level":"info","event":"hot-mount","detail":"@changfenhuang/dsh-genui: live"}
+{"at":"2026-08-28T14:47:08.939Z","level":"warn","event":"install-compat","detail":"@changfenhuang/dsh-genui: introduced host-compatibility risks — @deepseek-ai/dsh-llm@^0.1.0-rc.8 || >=0.1.1-rc.0 <0.2.0 vs 0.0.1-rc.1"}
+{"at":"2026-08-28T14:47:08.940Z","level":"info","event":"install","detail":"@changfenhuang/dsh-genui exit=0 hot=true"}
+{"at":"2026-08-28T14:47:58.254Z","level":"info","event":"toggle","detail":"dsh-notification -> off: fiber=false"}
+{"at":"2026-08-28T14:47:58.254Z","level":"info","event":"toggle","detail":"dsh-notification -> off: fiber=false"}
+{"at":"2026-08-28T14:47:58.256Z","level":"info","event":"patch","detail":"disabled row notify in E:\\work\\dsh-desktop-me\\data\\profiles\\web\\cordis.patch.yml"}
+{"at":"2026-08-28T14:47:58.257Z","level":"info","event":"toggle","detail":"dsh-notification: patch layer disabled rows notify"}
+{"at":"2026-08-28T14:47:58.257Z","level":"info","event":"toggle","detail":"dsh-notification: off ok=true"}
+{"at":"2026-08-28T14:48:00.459Z","level":"info","event":"toggle","detail":"dsh-md-notes -> off: fiber=false"}
+{"at":"2026-08-28T14:48:00.459Z","level":"info","event":"toggle","detail":"dsh-md-notes -> off: fiber=false"}
+{"at":"2026-08-28T14:48:00.462Z","level":"info","event":"patch","detail":"disabled row md-notes in E:\\work\\dsh-desktop-me\\data\\profiles\\web\\cordis.patch.yml"}
+{"at":"2026-08-28T14:48:00.463Z","level":"info","event":"toggle","detail":"dsh-md-notes: patch layer disabled rows md-notes"}
+{"at":"2026-08-28T14:48:00.463Z","level":"info","event":"toggle","detail":"dsh-md-notes: off ok=true"}
+{"at":"2026-08-28T14:48:35.542Z","level":"info","event":"toggle","detail":"dsh-context -> off: fiber=false"}
+{"at":"2026-08-28T14:48:35.544Z","level":"info","event":"patch","detail":"removed patch rows for dsh-context"}
+{"at":"2026-08-28T14:48:35.546Z","level":"info","event":"uninstall","detail":"dsh-context exit=0 live-removed=true"}
+{"at":"2026-08-28T14:53:28.589Z","level":"warn","event":"install-compat","detail":"dsh-image-gen: introduced host-compatibility risks — @deepseek-ai/dsh-credentials@>=0.1.1-rc.2 <0.2.0 vs 0.0.1-rc.1; @deepseek-ai/dsh-settings@>=0.1.1-rc.2 <0.2.0 vs 0.0.1-rc.1"}
+{"at":"2026-08-28T14:53:28.590Z","level":"info","event":"install","detail":"dsh-image-gen exit=0 hot=false"}
+{"at":"2026-08-28T15:46:14.581Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-28T15:46:14.582Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-28T15:46:14.583Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-28T15:46:14.583Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-28T15:46:14.588Z","level":"info","event":"toggle","detail":"dsh-vision-router -> off: fiber=false"}
+{"at":"2026-08-28T15:46:14.589Z","level":"info","event":"boot","detail":"plugin kept off: dsh-vision-router"}
+{"at":"2026-08-28T15:46:14.589Z","level":"info","event":"toggle","detail":"dsh-notification -> off: fiber=false"}
+{"at":"2026-08-28T15:46:14.589Z","level":"info","event":"boot","detail":"plugin kept off: dsh-notification"}
+{"at":"2026-08-28T15:46:14.590Z","level":"info","event":"toggle","detail":"dsh-md-notes -> off: fiber=false"}
+{"at":"2026-08-28T15:46:14.590Z","level":"info","event":"boot","detail":"plugin kept off: dsh-md-notes"}
+{"at":"2026-08-28T15:46:14.854Z","level":"info","event":"region","detail":"no region on record; network check chose china"}
+{"at":"2026-08-29T05:52:10.493Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-29T05:52:10.495Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-29T05:52:10.496Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-29T05:52:10.496Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-29T05:52:10.497Z","level":"info","event":"toggle","detail":"dsh-vision-router -> off: fiber=false"}
+{"at":"2026-08-29T05:52:10.497Z","level":"info","event":"boot","detail":"plugin kept off: dsh-vision-router"}
+{"at":"2026-08-29T05:52:10.497Z","level":"info","event":"toggle","detail":"dsh-notification -> off: fiber=false"}
+{"at":"2026-08-29T05:52:10.497Z","level":"info","event":"boot","detail":"plugin kept off: dsh-notification"}
+{"at":"2026-08-29T05:52:10.498Z","level":"info","event":"toggle","detail":"dsh-md-notes -> off: fiber=false"}
+{"at":"2026-08-29T05:52:10.498Z","level":"info","event":"boot","detail":"plugin kept off: dsh-md-notes"}
+{"at":"2026-08-29T06:06:02.051Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-29T06:06:02.052Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-29T06:06:02.053Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-29T06:06:02.053Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-29T06:06:02.053Z","level":"info","event":"toggle","detail":"dsh-vision-router -> off: fiber=false"}
+{"at":"2026-08-29T06:06:02.054Z","level":"info","event":"boot","detail":"plugin kept off: dsh-vision-router"}
+{"at":"2026-08-29T06:06:02.054Z","level":"info","event":"toggle","detail":"dsh-notification -> off: fiber=false"}
+{"at":"2026-08-29T06:06:02.054Z","level":"info","event":"boot","detail":"plugin kept off: dsh-notification"}
+{"at":"2026-08-29T06:06:02.054Z","level":"info","event":"toggle","detail":"dsh-md-notes -> off: fiber=false"}
+{"at":"2026-08-29T06:06:02.055Z","level":"info","event":"boot","detail":"plugin kept off: dsh-md-notes"}
+{"at":"2026-08-29T06:08:24.280Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-29T06:08:24.281Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-29T06:08:24.282Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-29T06:08:24.282Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-29T06:08:24.282Z","level":"info","event":"toggle","detail":"dsh-vision-router -> off: fiber=false"}
+{"at":"2026-08-29T06:08:24.283Z","level":"info","event":"boot","detail":"plugin kept off: dsh-vision-router"}
+{"at":"2026-08-29T06:08:24.283Z","level":"info","event":"toggle","detail":"dsh-notification -> off: fiber=false"}
+{"at":"2026-08-29T06:08:24.283Z","level":"info","event":"boot","detail":"plugin kept off: dsh-notification"}
+{"at":"2026-08-29T06:08:24.284Z","level":"info","event":"toggle","detail":"dsh-md-notes -> off: fiber=false"}
+{"at":"2026-08-29T06:08:24.284Z","level":"info","event":"boot","detail":"plugin kept off: dsh-md-notes"}
+{"at":"2026-08-29T06:16:06.468Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-29T06:16:06.470Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-29T06:16:06.470Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-29T06:16:06.471Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-29T06:16:06.471Z","level":"info","event":"toggle","detail":"dsh-vision-router -> off: fiber=false"}
+{"at":"2026-08-29T06:16:06.471Z","level":"info","event":"boot","detail":"plugin kept off: dsh-vision-router"}
+{"at":"2026-08-29T06:16:06.471Z","level":"info","event":"toggle","detail":"dsh-notification -> off: fiber=false"}
+{"at":"2026-08-29T06:16:06.472Z","level":"info","event":"boot","detail":"plugin kept off: dsh-notification"}
+{"at":"2026-08-29T06:16:06.472Z","level":"info","event":"toggle","detail":"dsh-md-notes -> off: fiber=false"}
+{"at":"2026-08-29T06:16:06.472Z","level":"info","event":"boot","detail":"plugin kept off: dsh-md-notes"}
+{"at":"2026-08-29T06:19:34.869Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-29T06:19:34.871Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-29T06:19:34.871Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-29T06:19:34.871Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-29T06:19:34.872Z","level":"info","event":"toggle","detail":"dsh-vision-router -> off: fiber=false"}
+{"at":"2026-08-29T06:19:34.872Z","level":"info","event":"boot","detail":"plugin kept off: dsh-vision-router"}
+{"at":"2026-08-29T06:19:34.872Z","level":"info","event":"toggle","detail":"dsh-notification -> off: fiber=false"}
+{"at":"2026-08-29T06:19:34.872Z","level":"info","event":"boot","detail":"plugin kept off: dsh-notification"}
+{"at":"2026-08-29T06:19:34.872Z","level":"info","event":"toggle","detail":"dsh-md-notes -> off: fiber=false"}
+{"at":"2026-08-29T06:19:34.873Z","level":"info","event":"boot","detail":"plugin kept off: dsh-md-notes"}
+{"at":"2026-08-29T06:44:14.381Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-29T06:44:14.382Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-29T06:44:14.383Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-29T06:44:14.383Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-29T06:44:14.383Z","level":"info","event":"toggle","detail":"dsh-vision-router -> off: fiber=false"}
+{"at":"2026-08-29T06:44:14.384Z","level":"info","event":"boot","detail":"plugin kept off: dsh-vision-router"}
+{"at":"2026-08-29T06:44:14.384Z","level":"info","event":"toggle","detail":"dsh-notification -> off: fiber=false"}
+{"at":"2026-08-29T06:44:14.385Z","level":"info","event":"boot","detail":"plugin kept off: dsh-notification"}
+{"at":"2026-08-29T06:44:14.385Z","level":"info","event":"toggle","detail":"dsh-md-notes -> off: fiber=false"}
+{"at":"2026-08-29T06:44:14.386Z","level":"info","event":"boot","detail":"plugin kept off: dsh-md-notes"}
+{"at":"2026-08-29T06:58:46.730Z","level":"warn","event":"install-blocked","detail":"refused while agents are running — session-43776e82-a7bc-400f-aee1-bba3e50cd771"}
+{"at":"2026-08-29T07:04:04.597Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-29T07:04:04.598Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-29T07:04:04.599Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-29T07:04:04.599Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-29T07:04:04.599Z","level":"info","event":"toggle","detail":"dsh-vision-router -> off: fiber=false"}
+{"at":"2026-08-29T07:04:04.600Z","level":"info","event":"boot","detail":"plugin kept off: dsh-vision-router"}
+{"at":"2026-08-29T07:04:04.600Z","level":"info","event":"toggle","detail":"dsh-notification -> off: fiber=false"}
+{"at":"2026-08-29T07:04:04.600Z","level":"info","event":"boot","detail":"plugin kept off: dsh-notification"}
+{"at":"2026-08-29T07:04:04.600Z","level":"info","event":"toggle","detail":"dsh-md-notes -> off: fiber=false"}
+{"at":"2026-08-29T07:04:04.601Z","level":"info","event":"boot","detail":"plugin kept off: dsh-md-notes"}
+{"at":"2026-08-29T08:35:23.753Z","level":"info","event":"toggle","detail":"dsh-vision-router -> off: fiber=false"}
+{"at":"2026-08-29T08:35:23.756Z","level":"info","event":"patch","detail":"removed patch rows for vision-router"}
+{"at":"2026-08-29T08:35:23.757Z","level":"info","event":"uninstall","detail":"dsh-vision-router exit=0 live-removed=true"}
+{"at":"2026-08-29T08:35:42.281Z","level":"info","event":"toggle","detail":"dsh-notification -> off: fiber=false"}
+{"at":"2026-08-29T08:35:42.282Z","level":"info","event":"patch","detail":"removed patch rows for notify"}
+{"at":"2026-08-29T08:35:42.283Z","level":"info","event":"uninstall","detail":"dsh-notification exit=0 live-removed=true"}
+{"at":"2026-08-29T08:37:15.424Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-29T08:37:15.425Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-29T08:37:15.425Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-29T08:37:15.426Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-29T08:37:15.426Z","level":"info","event":"toggle","detail":"dsh-md-notes -> off: fiber=false"}
+{"at":"2026-08-29T08:37:15.426Z","level":"info","event":"boot","detail":"plugin kept off: dsh-md-notes"}
+{"at":"2026-08-29T08:37:15.718Z","level":"info","event":"region","detail":"no region on record; network check chose china"}
+{"at":"2026-08-29T08:54:26.898Z","level":"warn","event":"uninstall-blocked","detail":"dsh-agent-notify: refused while agents are running — session-8ede3511-e5d1-4d24-bffd-4759422b2147"}
+{"at":"2026-08-29T08:57:45.884Z","level":"info","event":"toggle","detail":"dsh-agent-notify -> off: fiber=false"}
+{"at":"2026-08-29T08:57:45.886Z","level":"info","event":"uninstall","detail":"dsh-agent-notify exit=0 live-removed=true"}
+{"at":"2026-08-29T09:01:15.334Z","level":"info","event":"region","detail":"dsh-notify-yimit: downloading through the china mirror"}
+{"at":"2026-08-29T09:01:27.656Z","level":"info","event":"hot-mount","detail":"dsh-notify-yimit: live"}
+{"at":"2026-08-29T09:01:27.783Z","level":"warn","event":"install-compat","detail":"dsh-notify-yimit: introduced host-compatibility risks — @deepseek-ai/dsh-settings@^0.1.0-rc.8 vs 0.0.1-rc.1"}
+{"at":"2026-08-29T09:01:27.783Z","level":"info","event":"install","detail":"https://gh-proxy.com/https://codeload.github.com/YiMlT/dsh-notify-yimit/tar.gz/f6216c4eb2bb9cc61262619553c929ae94719d1d exit=0 hot=true"}
+{"at":"2026-08-29T09:03:36.040Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-29T09:03:36.041Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-29T09:03:36.042Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-29T09:03:36.042Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-29T09:03:36.042Z","level":"info","event":"toggle","detail":"dsh-md-notes -> off: fiber=false"}
+{"at":"2026-08-29T09:03:36.042Z","level":"info","event":"boot","detail":"plugin kept off: dsh-md-notes"}
+{"at":"2026-08-29T09:03:36.869Z","level":"info","event":"region","detail":"no region on record; network check chose china"}
+{"at":"2026-08-29T09:07:02.924Z","level":"warn","event":"install-compat","detail":"dsh-builtin-browser: introduced host-compatibility risks — @deepseek-ai/dsh-llm@^0.1.1-rc.2 vs 0.0.1-rc.1"}
+{"at":"2026-08-29T09:07:02.925Z","level":"info","event":"install","detail":"dsh-builtin-browser exit=0 hot=false"}
+{"at":"2026-08-29T09:07:34.621Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-29T09:07:34.622Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-29T09:07:34.623Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-29T09:07:34.623Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-29T09:07:34.623Z","level":"info","event":"toggle","detail":"dsh-md-notes -> off: fiber=false"}
+{"at":"2026-08-29T09:07:34.624Z","level":"info","event":"boot","detail":"plugin kept off: dsh-md-notes"}
+{"at":"2026-08-29T09:07:34.938Z","level":"info","event":"region","detail":"no region on record; network check chose china"}
+{"at":"2026-08-29T09:13:51.981Z","level":"warn","event":"install-blocked","detail":"refused while agents are running — session-43776e82-a7bc-400f-aee1-bba3e50cd771"}

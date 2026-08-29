@@ -30,6 +30,29 @@ export function profileDirectory(home = dshHome()) {
   return join(home, 'profiles', MARKET_PROFILE)
 }
 
+const LEGACY_PACKAGE_IMPORT_METHOD = /^package-import-method=clone-or-copy(?:\r?\n|$)/mu
+const LEGACY_CHILD_CONCURRENCY = /^child-concurrency=1(?:\r?\n|$)/mu
+
+/**
+ * Remove only the exact pair of slow Windows settings written by older
+ * Desktop releases. Treat every other byte as profile-owned: this file can
+ * carry the store pin, registries, proxies, certificates, and credentials.
+ */
+export function updateProfileNpmrc(npmrc) {
+  const newline = npmrc.includes('\r\n') ? '\r\n' : '\n'
+  if (npmrc === '') return `side-effects-cache=false${newline}`
+
+  // Requiring the pair distinguishes Desktop's historical block from a user
+  // who deliberately chose just one of these otherwise valid pnpm settings.
+  if (!LEGACY_PACKAGE_IMPORT_METHOD.test(npmrc) || !LEGACY_CHILD_CONCURRENCY.test(npmrc)) {
+    return npmrc
+  }
+  const updated = npmrc
+    .replace(LEGACY_PACKAGE_IMPORT_METHOD, '')
+    .replace(LEGACY_CHILD_CONCURRENCY, '')
+  return updated === '' ? `side-effects-cache=false${newline}` : updated
+}
+
 /** Leftovers of an interrupted pnpm run, or of a Windows locked-rename recovery. */
 export function isDisposableModuleDirectory(name) {
   return name.includes('_tmp_') || name.includes(SIDELINE_MARKER)
@@ -231,18 +254,27 @@ export async function ensurePnpmShim(home = dshHome()) {
     await chmod(nodePath, 0o755)
   }
 
-  // Also write .npmrc in profiles/web to prevent Windows file lock conflicts and racing worker threads
+  // Migrate only the exact package-import-method/child-concurrency pair that
+  // older Desktop releases wrote. pnpm then uses its defaults (hardlink, auto
+  // concurrency), while user configuration and the profile store pin survive:
+  // forcing clone-or-copy made every install do a full physical file copy
+  // across the profile's 150+ packages, turning installs that should take
+  // seconds into multi-minute (up to 30-minute) waits on Windows. The
+  // Windows locked-rename problem this was meant to route around is handled
+  // by the dedicated lock-recovery runner instead (see pnpm-runner.mjs).
   const profileDir = profileDirectory(home)
   await mkdir(profileDir, { recursive: true })
   const npmrcPath = join(profileDir, '.npmrc')
-  const npmrcContent = [
-    'package-import-method=clone-or-copy',
-    'child-concurrency=1',
-    'side-effects-cache=false'
-  ].join('\n') + '\n'
+  let npmrcContent
   try {
-    if (!existsSync(npmrcPath)) {
-      await writeFile(npmrcPath, npmrcContent, 'utf8')
+    npmrcContent = await readFile(npmrcPath, 'utf8')
+  } catch (error) {
+    if (error?.code === 'ENOENT') npmrcContent = ''
+  }
+  try {
+    if (npmrcContent !== undefined) {
+      const updatedNpmrc = updateProfileNpmrc(npmrcContent)
+      if (updatedNpmrc !== npmrcContent) await atomicWrite(npmrcPath, updatedNpmrc)
     }
   } catch {
     // ignore
@@ -301,12 +333,7 @@ export function buildPnpmEnvironment(
   if (process.platform === 'win32') result.Path = value
   result.CI = 'true'
   result.NO_COLOR = '1'
-  result.PNPM_MAX_WORKERS = '1'
-  result.npm_config_child_concurrency = '1'
-  result.npm_config_package_import_method = 'clone-or-copy'
   result.npm_config_side_effects_cache = 'false'
-  result.PNPM_CONFIG_CHILD_CONCURRENCY = '1'
-  result.PNPM_CONFIG_PACKAGE_IMPORT_METHOD = 'clone-or-copy'
   result.PNPM_CONFIG_SIDE_EFFECTS_CACHE = 'false'
   return result
 }
@@ -433,8 +460,12 @@ export function buildUninstallArguments(dshEntry = resolveDshEntry()) {
 
 async function atomicWrite(path, contents) {
   const temporary = `${path}.dsh-desktop-${process.pid}-${Date.now()}.tmp`
-  await writeFile(temporary, contents, 'utf8')
-  await rename(temporary, path)
+  try {
+    await writeFile(temporary, contents, 'utf8')
+    await rename(temporary, path)
+  } finally {
+    await rm(temporary, { force: true }).catch(() => undefined)
+  }
 }
 
 function killProcessTree(child) {

@@ -1,0 +1,380 @@
+{
+  "schemaVersion": 1,
+  "runId": "e3f84efa-428d-43db-94bf-123261e6a88a",
+  "mode": "init",
+  "phase": "generating",
+  "startedAt": "2026-08-29T10:40:04.076Z",
+  "language": "en",
+  "languageChanged": false,
+  "requiredRewritePages": [],
+  "initialPages": [],
+  "sourceFingerprint": "sha256:4ced25930cf610ae22d5a112aec72bab74e97981f1c6a9637f84aa5e4c89207b",
+  "actor": {
+    "producerActor": "openwiki/0.4.3",
+    "metadataModel": "qwen36-apex-mtp-mini"
+  },
+  "previousLastUpdate": null,
+  "wikiGoal": "A code wiki for this repository.",
+  "beforeContentSnapshot": "632cf2073a36a4ef01dcd33b2a7a2d55b75afc69f961e55e70fa14a5e236f881",
+  "preparedWiki": {
+    "generatedProvenance": []
+  },
+  "plan": {
+    "pages": [
+      {
+        "id": "b8350394-2a1a-4374-8025-b72e6b9a4b7e",
+        "path": "/openwiki/architecture.md",
+        "title": "System Architecture",
+        "purpose": "High-level architecture overview covering runtime topology, persistent data layout, window/IPC security model, and the boundaries between the Electron host and the DeepSeek Harness agent runtime. Serves as the conceptual anchor for all other pages.",
+        "seedPaths": [
+          "docs/architecture.md",
+          "electron.vite.config.ts",
+          "src/main/index.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/quickstart.md",
+          "/openwiki/runtime/harness-runtime.md",
+          "/openwiki/security/window-ipc.md",
+          "/openwiki/state/profiles-and-plugins.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "ce6622f7-4cfb-4aa7-8682-5faa2f689004",
+        "path": "/openwiki/mobile/mobile-bridge.md",
+        "title": "Mobile Phone Bridge",
+        "purpose": "The paired phone bridge system: LAN pairing flow with QR codes, session management RPCs (list, history, create, prompt, cancel), WebSocket multiplexing, device pairing, and the optional Cloudflare Quick Tunnel for remote access. Covers the mobile pages HTML rendering and the bridge lifecycle.",
+        "seedPaths": [
+          "src/main/mobile/cloudflared-tunnel.ts",
+          "src/main/mobile/lan-mobile-bridge.ts",
+          "src/main/mobile/lan-mobile-pages.ts",
+          "test/lan-mobile-bridge.test.ts",
+          "test/lan-mobile-pages.test.ts",
+          "test/lan-mobile-tunnel.test.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture.md",
+          "/openwiki/runtime/harness-runtime.md"
+        ],
+        "instructions": [
+          "ENABLE_MOBILE_BRIDGE is currently set to false in src/shared/features.ts. The entire mobile bridge subsystem (menu entry, preload button, IPC handlers, bridge server) is a no-op when disabled. Flip to true to re-enable everything."
+        ],
+        "status": "pending"
+      },
+      {
+        "id": "4697fffb-4583-47d2-933f-1869fe262b30",
+        "path": "/openwiki/operations/packaging.md",
+        "title": "Build and Packaging",
+        "purpose": "Electron-builder configuration, platform-specific file filtering, electron-vite build setup, brand asset installation, prebuild handling per platform, and the release runbook (Windows UKey signing via SafeNet, macOS notarization).",
+        "seedPaths": [
+          "docs/release-runbook.md",
+          "electron-builder.dev.cjs",
+          "electron-builder.mac.cjs",
+          "electron.vite.config.ts",
+          "scripts/bundle-user-data.mjs",
+          "test/branding-patch.test.ts",
+          "test/release.test.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/quickstart.md",
+          "/openwiki/update-system.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "aa84e64b-cbe7-4bec-9c17-25238a9ee7dd",
+        "path": "/openwiki/operations/preset-packages.md",
+        "title": "Preset Packages (.dshpreset)",
+        "purpose": "The .dshpreset exchange format: ZIP archive structure, manifest.json schema (format version, id, name, description), import/export API contracts, validation rules (no absolute paths, no parent traversal, no symlink export, no overwrite of existing IDs), and the atomic install flow.",
+        "seedPaths": [
+          "docs/preset-packages.md",
+          "test/preset-transfer-patch.test.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture.md",
+          "/openwiki/quickstart.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "5e0ebf70-8292-4fa3-a7bd-ceecfabcb84b",
+        "path": "/openwiki/packages/dsh-llm-opencode.md",
+        "title": "dsh-llm-opencode Package",
+        "purpose": "The bundled LLM open-source connector package: its purpose as an LLM provider integration, cordis patch configuration, and its role in the desktop's model provider ecosystem.",
+        "seedPaths": [
+          "packages/dsh-llm-opencode/README.md",
+          "packages/dsh-llm-opencode/cordis.patch.yml"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "3f327232-2763-4eaa-8f28-c4306ce9e892",
+        "path": "/openwiki/packages/hmr-fallback.md",
+        "title": "HMR Fallback Package",
+        "purpose": "The hot-module-replacement fallback package for development mode, providing a local development server that bridges between the Vite dev server and the Electron renderer when HMR connectivity is lost.",
+        "seedPaths": [
+          "packages/dsh-desktop-hmr-fallback/index.js"
+        ],
+        "relatedPages": [
+          "/openwiki/operations/packaging.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "c03a2a87-f0fd-4047-baf5-0e0d4c07fc23",
+        "path": "/openwiki/packages/market-installer.md",
+        "title": "Market Installer Package",
+        "purpose": "The desktop market installer: pnpm runner integration for package management, client-side installer UI, and platform-specific installation logic for distributing DSH Desktop through application stores.",
+        "seedPaths": [
+          "packages/dsh-desktop-market-installer/client.js",
+          "packages/dsh-desktop-market-installer/index.js",
+          "packages/dsh-desktop-market-installer/pnpm-runner.mjs"
+        ],
+        "relatedPages": [
+          "/openwiki/operations/packaging.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "def6c829-dd8c-4d4a-8020-10013894c881",
+        "path": "/openwiki/runtime/harness-runtime.md",
+        "title": "Harness Runtime Lifecycle",
+        "purpose": "Details how the Electron main process spawns and manages the Harness agent process: the HarnessRuntime class, environment resolution (shell profile sourcing on macOS/Windows), process spawning strategy (Electron UtilityProcess on macOS vs bundled Node.js on Windows), health polling, log collection, and failure extraction.",
+        "seedPaths": [
+          "src/main/runtime/disclaimed-utility-process.ts",
+          "src/main/runtime/harness-runtime.ts",
+          "src/main/runtime/profile-plugin-command.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture.md",
+          "/openwiki/state/profiles-and-plugins.md",
+          "/openwiki/workflows/startup-flow.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "f2ff68bd-ed1f-4eb4-a6c5-9f4f0492f7f8",
+        "path": "/openwiki/security/window-ipc.md",
+        "title": "Window and IPC Security",
+        "purpose": "Electron security configuration: contextIsolation, nodeIntegration:false, renderer sandboxing, web security, blocked webviews, navigation restrictions, permission allowlist (clipboard-sanitized-write, notifications), trusted URL policy (127.0.0.1, localhost, file://, dsh-recovery://), and the window-raise system for macOS focus behavior.",
+        "seedPaths": [
+          "src/main/security-policy.ts",
+          "src/main/security.ts",
+          "src/main/window-navigation.ts",
+          "src/main/window-raise.ts",
+          "src/preload/index.ts",
+          "test/window-raise.test.ts",
+          "test/windows-titlebar.test.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture.md",
+          "/openwiki/runtime/harness-runtime.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "cc53f99b-f023-490a-a9e7-e6ac9ab81603",
+        "path": "/openwiki/state/launch-agent-audit.md",
+        "title": "macOS LaunchAgent Audit & Repair",
+        "purpose": "How the desktop discovers, audits, and repairs macOS LaunchAgent plists: identifying stale entries pointing at moved/removed app bundles, tracking repair counts in the component ledger, and escalating persistent issues to user-facing decisions when repairs exceed the threshold.",
+        "seedPaths": [
+          "src/main/launchd-guard.ts",
+          "src/main/state/component-ledger.ts",
+          "src/main/state/launch-agent-audit.ts",
+          "test/launch-agent-audit.test.ts",
+          "test/launchd-guard.test.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/state/plugin-recovery.md",
+          "/openwiki/workflows/startup-flow.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "022a510a-68c7-497e-9520-8dca7c732d78",
+        "path": "/openwiki/state/plugin-recovery.md",
+        "title": "Plugin Recovery System",
+        "purpose": "How the desktop detects plugin-caused failures from startup logs and renderer console errors, resolves ownership through profile manifest/lockfile/bundle metadata/loader entry IDs/slot conflicts, and presents targeted recovery actions (uninstall, show log, restart).",
+        "seedPaths": [
+          "src/main/plugin-recovery-detection.ts",
+          "src/main/plugin-recovery-view.ts",
+          "src/main/state/component-ledger.ts",
+          "src/main/state/plugin-component-cleanup.ts",
+          "test/plugin-recovery-view.test.ts",
+          "test/plugin-recovery.test.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/state/launch-agent-audit.md",
+          "/openwiki/state/profiles-and-plugins.md",
+          "/openwiki/state/safe-mode.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "7bb19f7f-e536-4a72-97b5-22506134570f",
+        "path": "/openwiki/state/profiles-and-plugins.md",
+        "title": "Profile and Plugin State",
+        "purpose": "Profile data model: the web profile directory structure, Cordis patch layer, pnpm lockfile management, store directory pinning, dependency resolution through manifest and lockfile, and the plugin installation/removal command pipeline.",
+        "seedPaths": [
+          "src/main/runtime/profile-plugin-command.ts",
+          "src/main/state/patch-layer.ts",
+          "src/main/state/plugin-recovery.ts",
+          "src/main/state/profile-consistency.ts",
+          "src/main/state/profile-store.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/state/plugin-recovery.md",
+          "/openwiki/state/safe-mode.md",
+          "/openwiki/workflows/startup-flow.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "52376180-d89d-4ce1-8686-1d84d16a1fe4",
+        "path": "/openwiki/state/safe-mode.md",
+        "title": "Safe Mode",
+        "purpose": "The non-destructive safe mode system: how it creates an isolated profile containing only official core bundles (@deepseek-ai/dsh-base, @deepseek-ai/dsh-web-app), how it shares DSH_HOME settings/credentials/sessions/workspaces with the normal profile while blocking third-party plugins, and how users can remove selected plugins before returning to normal mode.",
+        "seedPaths": [
+          "src/main/safe-mode.ts",
+          "src/main/state/safe-mode-profile.ts",
+          "test/safe-mode.test.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/state/plugin-recovery.md",
+          "/openwiki/state/profiles-and-plugins.md",
+          "/openwiki/workflows/startup-flow.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "7ed34991-0a28-4c74-b314-08d0b80864ea",
+        "path": "/openwiki/testing.md",
+        "title": "Testing Overview",
+        "purpose": "Test infrastructure: Vitest configuration, test file organization (test/*.test.ts), excluded workspace tests (packages/ use node --test), and patterns for testing Electron main process code, IPC flows, and state mutations.",
+        "seedPaths": [
+          "test/patch-layer.test.ts",
+          "test/plugin-recovery.test.ts",
+          "test/runtime.test.ts",
+          "test/safe-mode.test.ts",
+          "vitest.config.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture.md",
+          "/openwiki/quickstart.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "3cb09b25-f8aa-4dfb-bf00-85da39f43c4c",
+        "path": "/openwiki/ui/context-menu.md",
+        "title": "Context Menu",
+        "purpose": "Right-click context menu implementation: menu item template building, locale-aware labels (en/zh), link opening behavior (external browser vs in-app), and the action dispatch layer.",
+        "seedPaths": [
+          "src/main/context-menu-template.ts",
+          "src/main/context-menu.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/ui/windows-menu.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "8316177e-e29c-4d38-b4fc-233910b7dcc7",
+        "path": "/openwiki/ui/windows-menu.md",
+        "title": "Windows Menu and Titlebar",
+        "purpose": "Windows-specific UI: the custom titlebar overlay, the application menu panel (WebContentsView), command routing through shared desktop-menu.ts constants, zoom controls, theme synchronization via MutationObserver, and drag region management.",
+        "seedPaths": [
+          "src/main/windows-menu-view.ts",
+          "src/preload/windows-menu.ts",
+          "src/preload/windows-titlebar.ts",
+          "src/shared/desktop-menu.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/quickstart.md",
+          "/openwiki/security/window-ipc.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "5672d9bf-a2ad-4704-a7a0-5b826a253c2a",
+        "path": "/openwiki/update-system.md",
+        "title": "Auto-Update System",
+        "purpose": "The electron-updater integration: update policy (6-hour check interval, startup delay with jitter), update state machine phases (idle → checking → available → downloading → downloaded → up-to-date), skip-version persistence, manual check vs automatic check differentiation, and platform support constraints.",
+        "seedPaths": [
+          "src/main/update/skipped-version.ts",
+          "src/main/update/update-manager.ts",
+          "src/main/update/update-policy.ts",
+          "src/main/update/update-state.ts",
+          "test/update-skip.test.ts",
+          "test/update-state.test.ts",
+          "test/update.test.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture.md",
+          "/openwiki/operations/packaging.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "b564a6a9-f720-4fea-ac01-bd90701b5077",
+        "path": "/openwiki/workflows/startup-flow.md",
+        "title": "Startup Flow",
+        "purpose": "End-to-end walkthrough of the application startup sequence: single-instance lock acquisition, launch-root creation, profile consistency checks, pnpm store pinning, Harness launch, health polling, mobile bridge and update manager startup, and error recovery paths.",
+        "seedPaths": [
+          "docs/architecture.md",
+          "src/main/index.ts",
+          "src/main/state/launch-root.ts",
+          "src/main/state/profile-repair.ts",
+          "src/main/state/profile-store.ts"
+        ],
+        "relatedPages": [
+          "/openwiki/architecture.md",
+          "/openwiki/runtime/harness-runtime.md",
+          "/openwiki/state/profiles-and-plugins.md"
+        ],
+        "instructions": [],
+        "status": "pending"
+      },
+      {
+        "id": "8e4abf81-32eb-483d-b0d1-f39ba463b10a",
+        "path": "/openwiki/quickstart.md",
+        "title": "Quickstart",
+        "purpose": "Entry point for coding agents. Provides a task-routing map that directs readers through the hierarchy based on what they need to do: understand the system, modify startup behavior, work with profiles/plugins, handle mobile access, manage updates, or add tests.",
+        "seedPaths": [
+          "README.md",
+          "docs/architecture.md",
+          "docs/development.md",
+          "package.json",
+          "src/main/index.ts",
+          "vitest.config.ts"
+        ],
+        "relatedPages": [],
+        "instructions": [
+          "Prefer the narrowest quiet validation that proves the changed behavior. Preserve complete failure output.",
+          "Treat source code and tests as authoritative. A brief's unknowns and review items are verification gaps, not automatic requirements."
+        ],
+        "status": "pending"
+      }
+    ],
+    "deletePages": []
+  }
+}

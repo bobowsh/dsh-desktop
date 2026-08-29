@@ -2,6 +2,7 @@ import { mkdtemp, mkdir, readFile, realpath, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { ensureStoreDirPinned, inspectStoreConsistency } from '../src/main/state/profile-store'
 import {
   INSTALL_PATH,
   MARKET_PACKAGE,
@@ -18,7 +19,8 @@ import {
   isTrustedRequest,
   readMarketInstallation,
   resolvePnpmEntry,
-  stagePnpmRunner
+  stagePnpmRunner,
+  updateProfileNpmrc
 } from '../packages/dsh-desktop-market-installer/index.js'
 
 describe('desktop plugin market installer', () => {
@@ -48,6 +50,66 @@ describe('desktop plugin market installer', () => {
 
   it('ships a resolvable pnpm binary instead of relying on the user PATH', () => {
     expect(resolvePnpmEntry()).toMatch(/node_modules[/\\]pnpm[/\\]bin[/\\]pnpm\.(c|m)js$/u)
+  })
+
+  it('removes only Desktop’s exact legacy pnpm settings and preserves sensitive config bytes', () => {
+    const npmrc = [
+      '# user configuration',
+      'registry=https://registry.example.test/',
+      '//registry.example.test/:_authToken=${NPM_TOKEN}',
+      'cafile=/profile/private-ca.pem',
+      'store-dir=/profile/.pnpm-store',
+      'package-import-method=clone-or-copy',
+      'child-concurrency=1',
+      'side-effects-cache=true',
+      ''
+    ].join('\r\n')
+
+    const expected = [
+      '# user configuration',
+      'registry=https://registry.example.test/',
+      '//registry.example.test/:_authToken=${NPM_TOKEN}',
+      'cafile=/profile/private-ca.pem',
+      'store-dir=/profile/.pnpm-store',
+      'side-effects-cache=true',
+      ''
+    ].join('\r\n')
+
+    expect(updateProfileNpmrc(npmrc)).toBe(expected)
+    expect(updateProfileNpmrc(expected)).toBe(expected)
+  })
+
+  it('leaves user-selected or partial pnpm tuning untouched', () => {
+    const custom = 'package-import-method=copy\nchild-concurrency=8\nstore-dir=/keep\n'
+    const partialLegacy = 'package-import-method=clone-or-copy\nstore-dir=/keep\n'
+    expect(updateProfileNpmrc(custom)).toBe(custom)
+    expect(updateProfileNpmrc(partialLegacy)).toBe(partialLegacy)
+  })
+
+  it('keeps the store consistent through pinning and packaged shim regeneration', async () => {
+    const home = await mkdtemp(join(tmpdir(), 'dsh-market-store-pin-'))
+    const profile = join(home, 'profiles', 'web')
+    const store = join(profile, '.pnpm-store')
+    await mkdir(join(profile, 'node_modules'), { recursive: true })
+    await writeFile(join(profile, 'package.json'), '{}', 'utf8')
+    await writeFile(
+      join(profile, 'node_modules', '.modules.yaml'),
+      `  "storeDir": "${store}/v10",\n`,
+      'utf8'
+    )
+    await writeFile(
+      join(profile, '.npmrc'),
+      'package-import-method=clone-or-copy\nchild-concurrency=1\nside-effects-cache=false\n',
+      'utf8'
+    )
+
+    await expect(ensureStoreDirPinned(home)).resolves.toBe(store)
+    await ensurePnpmShim(home)
+
+    expect(await readFile(join(profile, '.npmrc'), 'utf8')).toBe(
+      `side-effects-cache=false\nstore-dir=${store}\n`
+    )
+    await expect(inspectStoreConsistency(home)).resolves.toBeUndefined()
   })
 
   it('generates packaged node and pnpm shims in desktop-bin', async () => {
@@ -85,8 +147,9 @@ describe('desktop plugin market installer', () => {
     }
 
     const npmrc = await readFile(join(home, 'profiles', 'web', '.npmrc'), 'utf8')
-    expect(npmrc).toContain('package-import-method=clone-or-copy')
-    expect(npmrc).toContain('child-concurrency=1')
+    expect(npmrc).toContain('side-effects-cache=false')
+    expect(npmrc).not.toContain('package-import-method')
+    expect(npmrc).not.toContain('child-concurrency')
   })
 
   it('cleans up staging and sidelined directories left by interrupted installations', async () => {
@@ -215,10 +278,9 @@ describe('desktop plugin market installer', () => {
     // entry declares it for its children, so the environment must pass it
     // through rather than stripping it.
     expect(pnpmEnv.ELECTRON_RUN_AS_NODE).toBe('1')
-    expect(pnpmEnv.PNPM_MAX_WORKERS).toBe('1')
-    expect(pnpmEnv.npm_config_child_concurrency).toBe('1')
-    expect(pnpmEnv.npm_config_package_import_method).toBe('clone-or-copy')
     expect(pnpmEnv.npm_config_side_effects_cache).toBe('false')
+    expect(pnpmEnv.npm_config_child_concurrency).toBeUndefined()
+    expect(pnpmEnv.npm_config_package_import_method).toBeUndefined()
 
     const next = service.runPlugin(['install'], root)
     await expect(next.done).resolves.toEqual({ exitCode: 0, signal: null })

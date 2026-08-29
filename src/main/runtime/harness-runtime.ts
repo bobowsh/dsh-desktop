@@ -194,6 +194,14 @@ export function buildHarnessSpawnOptions(
   // utility process is launched with Chromium switches (--type=utility, …)
   // that Node rejects as bad options. The Harness entry re-declares Node mode
   // from the inside, for its children only.
+  //
+  // On Windows, `detached: true` puts the Harness in its own process group
+  // and console. Without it, a child process that calls `os.kill(pid, 0)`
+  // (POSIX "liveness probe") ends up broadcasting a Ctrl+C to every process
+  // sharing the desktop's console — including the desktop main process, which
+  // exits silently. This is the same isolation that the Harness's own
+  // subprocess layer is expected to apply; we apply it here so the desktop
+  // shell never becomes collateral damage for a buggy child (issue #208).
   return {
     cwd: launchDirectory,
     env: {
@@ -214,14 +222,20 @@ export function buildHarnessSpawnOptions(
       // When the child runs the standalone bundled Node.js runtime instead, the
       // flag must be stripped so Node is not accidentally forced back into that mode.
       ...(useElectronRuntime ? { ELECTRON_RUN_AS_NODE: '1' } : {}),
-      PNPM_MAX_WORKERS: '1',
-      PNPM_CONFIG_CHILD_CONCURRENCY: '1',
-      PNPM_CONFIG_PACKAGE_IMPORT_METHOD: 'clone-or-copy',
+      // package-import-method/child-concurrency are left at pnpm's defaults
+      // (hardlink, auto concurrency): forcing clone-or-copy made every
+      // install do a full physical file copy across the profile's 150+
+      // packages, which is what turned installs that should take seconds
+      // into multi-minute (up to 30-minute) waits on Windows. The Windows
+      // locked-rename problem this was meant to route around is handled by
+      // the dedicated lock-recovery runner instead (see pnpm-runner.mjs).
+      npm_config_side_effects_cache: 'false',
       PNPM_CONFIG_SIDE_EFFECTS_CACHE: 'false',
       [pathKey]: environment[pathKey] ?? environment.PATH ?? ''
     },
     stdio: ['pipe', 'pipe', 'pipe'],
-    windowsHide: true
+    windowsHide: true,
+    detached: platform === 'win32'
   }
 }
 

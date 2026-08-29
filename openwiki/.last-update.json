@@ -1,0 +1,7 @@
+{
+  "updatedAt": "2026-08-29T10:40:04.081Z",
+  "command": "init",
+  "model": "qwen36-apex-mtp-mini",
+  "status": "interrupted",
+  "language": "en"
+}
