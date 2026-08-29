@@ -1,4 +1,4 @@
-import { spawn } from 'node:child_process'
+import { execFile, spawn } from 'node:child_process'
 import { dirname, join } from 'node:path'
 import { appendFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { parse } from 'yaml'
@@ -75,6 +75,33 @@ import { buildPluginRecoveryViewModel } from './plugin-recovery-view'
 import { buildSafeModeViewModel, shouldStartInSafeMode } from './safe-mode'
 import { aboutDetail, bundledHarnessVersion } from './version-info'
 import { windowsMenuViewBounds } from './windows-menu-view'
+
+/**
+ * Portable DSH_HOME path: beside the executable (packaged) or beside the
+ * project root (dev).  All code that needs the harness data root must call
+ * this instead of hard-coding `app.getPath('userData') + '/harness'`.
+ */
+function portableDshHome(): string {
+  return join(app.isPackaged ? dirname(process.execPath) : app.getAppPath(), 'data')
+}
+
+/**
+ * Set DSH_HOME in the current process and persist it to the Windows user
+ * environment registry so every future process (including CLI tools) sees it.
+ */
+function setDshHomeEnv(): void {
+  const dshHome = portableDshHome()
+  process.env.DSH_HOME = dshHome
+  if (process.platform === 'win32') {
+    // Write to HKCU\Environment so the value survives reboots without admin.
+    // Errors are non-fatal: the process-level env is already set.
+    execFile(
+      'reg',
+      ['add', 'HKCU\\Environment', '/v', 'DSH_HOME', '/t', 'REG_SZ', '/d', dshHome, '/f'],
+      (_err) => { /* best-effort */ }
+    )
+  }
+}
 
 type PluginRecoveryAction = 'uninstall' | 'show-log' | 'quit' | 'restart' | 'refresh' | 'safe-mode'
 type SafeModeAction =
@@ -287,6 +314,14 @@ function attachWindowsMenuView(window: BrowserWindow): void {
 }
 
 function configureAppIdentity(): void {
+  // Windows toast notifications require a stable AppUserModelID; without it
+  // Notification API calls are silently dropped even when permission is granted.
+  if (process.platform === 'win32') {
+    app.setAppUserModelId(
+      developmentBuild ? 'io.dsh.desktop.dev' : 'io.dsh.desktop'
+    )
+  }
+
   if (developmentBuild) {
     app.setName('DSH Desktop Dev')
     app.setPath('userData', join(app.getPath('appData'), 'dsh-desktop-dev'))
@@ -435,7 +470,7 @@ function dshBrandLogoPath(variant: 'light' | 'dark'): string {
 function harnessLocale(): 'en' | 'zh' {
   try {
     const settings = parse(
-      readFileSync(join(app.getPath('userData'), 'harness', 'settings.yaml'), 'utf8')
+      readFileSync(join(portableDshHome(), 'settings.yaml'), 'utf8')
     ) as { locale?: { preference?: unknown } }
     return resolveHarnessLocale(
       settings.locale?.preference,
@@ -453,7 +488,7 @@ function configureApplicationLocale(): void {
 function harnessThemePreference(): 'light' | 'dark' | 'system' {
   try {
     const settings = parse(
-      readFileSync(join(app.getPath('userData'), 'harness', 'settings.yaml'), 'utf8')
+      readFileSync(join(portableDshHome(), 'settings.yaml'), 'utf8')
     ) as { 'ui-theme'?: { preference?: unknown } }
     const preference = settings['ui-theme']?.preference
     return preference === 'light' || preference === 'dark' || preference === 'system'
@@ -706,7 +741,7 @@ function launchHarness(): Promise<void> {
 
   harnessLaunchOperation = (async () => {
     safeModeVisible = false
-    const dshHome = join(app.getPath('userData'), 'harness')
+    const dshHome = portableDshHome()
     await showSplash()
     // The repair only holds on a stopped Harness, and a restart still has the
     // previous one running: start() stops it, but that is after the repair.
@@ -732,7 +767,7 @@ function launchSafeHarness(): Promise<void> {
 
   harnessLaunchOperation = (async () => {
     safeModeVisible = true
-    const dshHome = join(app.getPath('userData'), 'harness')
+    const dshHome = portableDshHome()
     await showSplash()
     await runtime.stop()
     await ensureSafeModeProfile(dshHome)
@@ -1001,7 +1036,7 @@ async function showPluginRecovery(options?: {
   if (failureRecoveryVisible || quitting) return
   failureRecoveryVisible = true
 
-  const dshHome = join(app.getPath('userData'), 'harness')
+  const dshHome = portableDshHome()
   const isChinese = harnessLocale() === 'zh'
   cancelPluginRecoverySessionReset()
   const removedPlugins = pluginRecoveryRemovedPlugins
@@ -1268,7 +1303,7 @@ async function showSafeMode(): Promise<void> {
 async function showSafeModeManager(): Promise<void> {
   if (!safeModeVisible || safeModeManagerVisible || quitting) return
   safeModeManagerVisible = true
-  const dshHome = join(app.getPath('userData'), 'harness')
+  const dshHome = portableDshHome()
   const isChinese = harnessLocale() === 'zh'
   let notice: string | undefined
   let noticeTone: 'success' | 'error' | undefined
@@ -1510,7 +1545,7 @@ async function bootstrap(): Promise<void> {
     // - Dev run: `app.getAppPath()/data` (project root), so the data dir does
     //   not land next to node_modules/electron's electron.exe.
     // (Was `~/.dsh` / userData/harness before; re-pointed here on the user's request.)
-    dshHome: join(app.isPackaged ? dirname(process.execPath) : app.getAppPath(), 'data'),
+    dshHome: portableDshHome(),
     logPath: join(app.getPath('logs'), 'harness.log'),
     launchProcess: (executablePath, args, options) =>
       process.platform === 'darwin'
@@ -1660,7 +1695,7 @@ async function bootstrap(): Promise<void> {
     if (pluginName !== undefined && typeof pluginName !== 'string') {
       throw new Error('The failing plugin name must be a string.')
     }
-    const dshHome = join(app.getPath('userData'), 'harness')
+    const dshHome = portableDshHome()
     await resetPluginProfile(dshHome, pluginName)
     await launchHarness()
     return { ok: runtime.snapshot().phase === 'ready' }
@@ -1689,6 +1724,7 @@ if (isDaemonLaunch(process.env, process.platform)) {
   // its window as though the user had asked for it, so leave first.
   app.exit(0)
 } else {
+  setDshHomeEnv()
   configureAppIdentity()
   configureApplicationLocale()
   const singleInstance = app.requestSingleInstanceLock()

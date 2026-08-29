@@ -2,8 +2,16 @@
 # a top-level YAML array of loader patch entries (id-targeted config
 # overrides, disables, and insert lists; `!!js` expressions allowed).
 # []
-- id: dsh-context
-  disabled: true
  
 - id: dsh-better-sidebar
   disabled: true 
+- id: agent-team-gui
+  disabled: true
+- id: modlens
+  disabled: true
+- id: vision-router
+  disabled: true
+- id: notify
+  disabled: true
+- id: md-notes
+  disabled: true

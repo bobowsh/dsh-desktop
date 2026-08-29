@@ -20,13 +20,15 @@ export function isTrustedAppUrl(rawUrl: string): boolean {
   return isHarnessUrl(rawUrl)
 }
 
+const ALLOWED_PERMISSIONS = ['clipboard-sanitized-write', 'notifications']
+
 export function canGrantWindowPermission(
   permission: string,
   requestingUrl: string | undefined,
   isMainFrame: boolean
 ): boolean {
   return (
-    permission === 'clipboard-sanitized-write' &&
+    ALLOWED_PERMISSIONS.includes(permission) &&
     isMainFrame &&
     requestingUrl !== undefined &&
     isHarnessUrl(requestingUrl)

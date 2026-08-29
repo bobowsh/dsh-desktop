@@ -23,10 +23,10 @@
 // electron-builder then ships this `data` dir via extraResources (from: data),
 // and the installer copies it next to the executable at $INSTDIR\data.
 
-import { dirname, join } from 'node:path'
+import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { homedir, platform, arch } from 'node:os'
-import { existsSync, cpSync, mkdirSync, rmSync, statSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, cpSync, mkdirSync, rmSync, statSync, lstatSync, readdirSync, readFileSync, writeFileSync, readlinkSync } from 'node:fs'
 
 const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)))
 const destRoot = join(projectRoot, 'data')
@@ -114,6 +114,15 @@ if (existsSync(binSrc)) {
 } else {
   console.warn(`[bundle-user-data] skip: mnemon bin not found at ${binSrc} and no pre-staged data/bin — memory CLI will be missing from the bundle`)
 }
+
+// 4) Remove broken symlinks / junctions from node_modules.
+//    pnpm `link:` dependencies create symlinks pointing outside the profile
+//    (e.g. dsh-plugin-imc → E:/work/aitest/dsh-plugin-imc). When electron-builder
+//    copies the tree via extraResources, these become broken junctions in the dist
+//    directory, and 7za exits with code 1 on them during NSIS compression.
+//    We resolve symlinks that still point to valid targets (copy the real content)
+//    and remove those whose targets no longer exist.
+removeBrokenSymlinks(webDest)
 
 if (failed) process.exit(1)
 console.log('[bundle-user-data] complete -> ./data (flat: settings.yaml, profiles/web, bin)')
@@ -303,6 +312,83 @@ function trimPdfjsBuild(profileDest) {
         `[bundle-user-data] trim: could not remove pdfjs-dist/build: ${err instanceof Error ? err.message : String(err)}`
       )
     }
+  }
+}
+
+/**
+ * Walk node_modules and resolve every symlink that points outside the profile.
+ *
+ * pnpm `link:` dependencies (e.g. `dsh-plugin-imc: link:../../aitest/...`) create
+ * symlinks whose targets live outside the profile tree. When electron-builder
+ * copies the tree via extraResources, Windows resolves the symlink into an
+ * absolute JUNCTION — but the target no longer exists in the dist layout, so 7za
+ * exits with code 1 during NSIS compression.
+ *
+ * Strategy:
+ * - Symlink target exists → copy real content into a normal directory, delete the
+ *   symlink (the bundle is self-contained).
+ * - Symlink target missing → delete the broken symlink (the package was a local
+ *   dev dependency that should not ship).
+ */
+function removeBrokenSymlinks(profileDest) {
+  const nm = join(profileDest, 'node_modules')
+  if (!existsSync(nm)) return
+  const removed = []
+  const resolved = []
+  const walk = (dir) => {
+    let entries
+    try {
+      entries = readdirSync(dir, { withFileTypes: true })
+    } catch {
+      return
+    }
+    for (const e of entries) {
+      const p = join(dir, e.name)
+      if (e.isDirectory() && !e.isSymbolicLink()) {
+        walk(p)
+        continue
+      }
+      if (!e.isSymbolicLink()) continue
+      let target
+      try {
+        target = readlinkSync(p)
+      } catch {
+        continue
+      }
+      // Only act on symlinks whose resolved target is OUTSIDE the profile tree
+      // (i.e. `link:` dependencies). Absolute or relative — resolve both.
+      const absTarget = resolve(dir, target)
+      const profileAbs = resolve(profileDest)
+      if (absTarget.startsWith(profileAbs + '\\') || absTarget.startsWith(profileAbs + '/')) {
+        continue // internal symlink, leave it alone
+      }
+      if (existsSync(absTarget)) {
+        // Target exists — replace symlink with a real copy so the bundle is
+        // self-contained and electron-builder copies normal files.
+        try {
+          rmSync(p, { force: true })
+          cpSync(absTarget, p, { recursive: true, force: true })
+          resolved.push(p)
+        } catch (err) {
+          console.warn(`[bundle-user-data] could not resolve symlink ${p}: ${err instanceof Error ? err.message : String(err)}`)
+        }
+      } else {
+        // Target gone — remove the broken symlink.
+        try {
+          rmSync(p, { recursive: true, force: true })
+          removed.push(p)
+        } catch (err) {
+          console.warn(`[bundle-user-data] could not remove broken symlink ${p}: ${err instanceof Error ? err.message : String(err)}`)
+        }
+      }
+    }
+  }
+  walk(nm)
+  if (resolved.length > 0) {
+    console.log(`[bundle-user-data] resolved ${resolved.length} external symlink(s) to real copies in node_modules`)
+  }
+  if (removed.length > 0) {
+    console.log(`[bundle-user-data] removed ${removed.length} broken external symlink(s) from node_modules`)
   }
 }
 

@@ -1,5 +1,5 @@
 diff --git a/node_modules/@deepseek-ai/dsh-tool-fs/lib/index.js b/node_modules/@deepseek-ai/dsh-tool-fs/lib/index.js
-index f9fedc1..93a14e4 100644
+index e720306..a675609 100644
 --- a/node_modules/@deepseek-ai/dsh-tool-fs/lib/index.js
 +++ b/node_modules/@deepseek-ai/dsh-tool-fs/lib/index.js
 @@ -103,9 +103,10 @@ function formatReadOutput(displayPath, outcome) {

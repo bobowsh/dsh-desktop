@@ -517,6 +517,23 @@ describe('navigation trust boundary', () => {
       canGrantWindowPermission('clipboard-sanitized-write', 'file:///tmp/app.html', true)
     ).toBe(false)
   })
+
+  it('grants notifications from the trusted main frame only', () => {
+    expect(
+      canGrantWindowPermission('notifications', 'http://127.0.0.1:43127/session', true)
+    ).toBe(true)
+    expect(
+      canGrantWindowPermission('notifications', 'http://localhost:43127/session', true)
+    ).toBe(true)
+    // Sub-frames (embedded iframes) must not toast on the host's behalf.
+    expect(
+      canGrantWindowPermission('notifications', 'http://127.0.0.1:43127/session', false)
+    ).toBe(false)
+    // External origins stay denied even when reached from the main frame.
+    expect(
+      canGrantWindowPermission('notifications', 'https://example.com/session', true)
+    ).toBe(false)
+  })
 })
 
 describe('Harness window activation', () => {

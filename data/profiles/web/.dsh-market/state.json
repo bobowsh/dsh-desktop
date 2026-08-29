@@ -1,1 +1,1 @@
-{"disabled":["dsh-context"],"groups":{},"groupOrder":[]}
+{"disabled":["dsh-agent-team-gui","@liustack/modlens","dsh-vision-router","dsh-notification","dsh-md-notes"],"groups":{},"groupOrder":[],"region":"china","regionAuto":true}
