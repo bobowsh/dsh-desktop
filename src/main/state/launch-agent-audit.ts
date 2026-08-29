@@ -7,6 +7,10 @@ import {
   recordComponentRepair,
   shouldEscalateRepairs
 } from './component-ledger'
+import {
+  launchServiceIsStoppedAfterBootout,
+  type LaunchctlCommandResult
+} from './launchctl-service-state'
 
 const LAUNCH_AGENT_LABEL_PATTERN = /^[a-z0-9._-]+$/i
 const COMMAND_TIMEOUT_MS = 10_000
@@ -21,13 +25,9 @@ export interface LaunchAgentRecord {
   [key: string]: unknown
 }
 
-export interface CommandResult {
-  code: number | null
-  stdout: string
-  stderr: string
-}
+export interface CommandResult extends LaunchctlCommandResult {}
 
-export type AuditAction = 'repaired' | 'escalated' | 'quarantined'
+export type AuditAction = 'repaired' | 'quarantined' | 'disabled'
 
 export interface AuditFinding {
   label: string
@@ -47,7 +47,9 @@ export interface LaunchAgentAuditOptions {
   readLaunchAgent?: (plistPath: string) => Promise<LaunchAgentRecord>
   writeLaunchAgent?: (plistPath: string, record: LaunchAgentRecord) => Promise<void>
   bootoutLaunchAgent?: (target: string) => Promise<CommandResult>
+  inspectLaunchAgent?: (target: string) => Promise<CommandResult>
   bootstrapLaunchAgent?: (domain: string, plistPath: string) => Promise<CommandResult>
+  disableLaunchAgent?: (target: string) => Promise<CommandResult>
   now?: () => Date
   log?: (message: string) => void
 }
@@ -102,10 +104,23 @@ export function describesDaemonisedAppBinary(
   record: LaunchAgentRecord,
   appBundlePath: string
 ): boolean {
+  return referencesAppBundleExecutable(record, appBundlePath) && !runsAsNode(record)
+}
+
+/**
+ * Any background job whose executable lives inside the application bundle
+ * must be stopped before an update replaces that bundle. This is deliberately
+ * capability-based rather than tied to a package or service label: even a
+ * correctly configured Node-mode helper can observe a missing or half-written
+ * Electron framework while the updater swaps the application directory.
+ */
+export function referencesAppBundleExecutable(
+  record: LaunchAgentRecord,
+  appBundlePath: string
+): boolean {
   const executable = executablePath(record)
   if (executable === undefined) return false
-  if (!pathInside(resolve(appBundlePath), resolve(executable))) return false
-  return !runsAsNode(record)
+  return pathInside(resolve(appBundlePath), resolve(executable))
 }
 
 /**
@@ -197,12 +212,124 @@ function defaultBootoutLaunchAgent(target: string): Promise<CommandResult> {
   return runCommand('/bin/launchctl', ['bootout', target])
 }
 
+function defaultInspectLaunchAgent(target: string): Promise<CommandResult> {
+  return runCommand('/bin/launchctl', ['print', target])
+}
+
 function defaultBootstrapLaunchAgent(domain: string, plistPath: string): Promise<CommandResult> {
   return runCommand('/bin/launchctl', ['bootstrap', domain, plistPath])
 }
 
+function defaultDisableLaunchAgent(target: string): Promise<CommandResult> {
+  return runCommand('/bin/launchctl', ['disable', target])
+}
+
 function timestamp(date: Date): string {
   return date.toISOString().replace(/[:.]/g, '-')
+}
+
+async function quarantineLaunchAgent(options: {
+  dshHome: string
+  plistPath: string
+  label: string
+  uid: number
+  bootoutLaunchAgent: (target: string) => Promise<CommandResult>
+  inspectLaunchAgent: (target: string) => Promise<CommandResult>
+  now: () => Date
+}): Promise<string> {
+  const domain = `gui/${String(options.uid)}`
+  const target = `${domain}/${options.label}`
+  const bootout = await options.bootoutLaunchAgent(target)
+  if (!await launchServiceIsStoppedAfterBootout(
+    bootout,
+    target,
+    domain,
+    options.inspectLaunchAgent
+  )) {
+    throw new Error(bootout.stderr.trim() || `launchctl bootout exited ${String(bootout.code)}`)
+  }
+
+  const quarantineDirectory = join(
+    options.dshHome,
+    'recovery',
+    'quarantined-components',
+    timestamp(options.now())
+  )
+  await mkdir(quarantineDirectory, { recursive: true })
+  const quarantinePath = join(quarantineDirectory, basename(options.plistPath))
+  await rename(options.plistPath, quarantinePath)
+  return quarantinePath
+}
+
+/**
+ * Stop and quarantine every user LaunchAgent that executes a binary from the
+ * application bundle before the updater replaces it. The caller must stop the
+ * Harness first so a third-party plugin cannot recreate the job in the gap.
+ */
+export async function quarantineAppBundleLaunchAgents(
+  options: LaunchAgentAuditOptions
+): Promise<LaunchAgentAuditResult> {
+  const platform = options.platform ?? process.platform
+  const findings: AuditFinding[] = []
+  const failures: string[] = []
+  if (platform !== 'darwin') return { findings, failures }
+
+  const homeDirectory = options.homeDirectory ?? homedir()
+  const launchAgentsDirectory = join(homeDirectory, 'Library', 'LaunchAgents')
+  const readLaunchAgent = options.readLaunchAgent ?? defaultReadLaunchAgent
+  const bootoutLaunchAgent = options.bootoutLaunchAgent ?? defaultBootoutLaunchAgent
+  const inspectLaunchAgent = options.inspectLaunchAgent ?? defaultInspectLaunchAgent
+  const now = options.now ?? (() => new Date())
+  const uid = options.uid === undefined ? process.getuid?.() ?? null : options.uid
+
+  let entries
+  try {
+    entries = await readdir(launchAgentsDirectory, { withFileTypes: true })
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return { findings, failures }
+    const detail = error instanceof Error ? error.message : String(error)
+    return { findings, failures: [`cannot inspect ${launchAgentsDirectory}: ${detail}`] }
+  }
+
+  for (const entry of entries) {
+    if (!entry.isFile() || !entry.name.endsWith('.plist')) continue
+    const plistPath = join(launchAgentsDirectory, entry.name)
+    let record: LaunchAgentRecord
+    try {
+      record = await readLaunchAgent(plistPath)
+    } catch {
+      continue
+    }
+    if (!referencesAppBundleExecutable(record, options.appBundlePath)) continue
+
+    const label = typeof record.Label === 'string' && LAUNCH_AGENT_LABEL_PATTERN.test(record.Label)
+      ? record.Label
+      : undefined
+    if (label === undefined || typeof uid !== 'number') {
+      failures.push(`${plistPath}: missing a safe LaunchAgent label or user id`)
+      continue
+    }
+
+    try {
+      const quarantinePath = await quarantineLaunchAgent({
+        dshHome: options.dshHome,
+        plistPath,
+        label,
+        uid,
+        bootoutLaunchAgent,
+        inspectLaunchAgent,
+        now
+      })
+      const owner = pluginOwnerFromArguments(record)
+      findings.push({ label, plistPath, action: 'quarantined', owner, backupPath: quarantinePath })
+      options.log?.(`[launch-agents] quarantined ${label} before replacing the application bundle`)
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error)
+      failures.push(`${plistPath}: quarantine failed (${detail})`)
+    }
+  }
+
+  return { findings, failures }
 }
 
 /**
@@ -223,7 +350,9 @@ export async function auditLaunchAgents(
   const readLaunchAgent = options.readLaunchAgent ?? defaultReadLaunchAgent
   const writeLaunchAgent = options.writeLaunchAgent ?? defaultWriteLaunchAgent
   const bootoutLaunchAgent = options.bootoutLaunchAgent ?? defaultBootoutLaunchAgent
+  const inspectLaunchAgent = options.inspectLaunchAgent ?? defaultInspectLaunchAgent
   const bootstrapLaunchAgent = options.bootstrapLaunchAgent ?? defaultBootstrapLaunchAgent
+  const disableLaunchAgent = options.disableLaunchAgent ?? defaultDisableLaunchAgent
   const now = options.now ?? (() => new Date())
   const uid = options.uid === undefined ? process.getuid?.() ?? null : options.uid
 
@@ -262,8 +391,36 @@ export async function auditLaunchAgents(
     const owner = pluginOwnerFromArguments(record)
     const previous = ledger[label]
     if (previous !== undefined && shouldEscalateRepairs(previous)) {
-      findings.push({ label, plistPath, action: 'escalated', owner, repairs: previous.repairs })
-      options.log?.(`[launch-agents] ${label} keeps returning; leaving it to the user`)
+      try {
+        const target = `gui/${String(uid)}/${label}`
+        const disabled = await disableLaunchAgent(target)
+        if (disabled.code !== 0) {
+          throw new Error(
+            disabled.stderr.trim() || `launchctl disable exited ${String(disabled.code)}`
+          )
+        }
+        const quarantinePath = await quarantineLaunchAgent({
+          dshHome: options.dshHome,
+          plistPath,
+          label,
+          uid,
+          bootoutLaunchAgent,
+          inspectLaunchAgent,
+          now
+        })
+        findings.push({
+          label,
+          plistPath,
+          action: 'disabled',
+          owner,
+          backupPath: quarantinePath,
+          repairs: previous.repairs
+        })
+        options.log?.(`[launch-agents] disabled ${label} after repeated unsafe recreation`)
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : String(error)
+        failures.push(`${plistPath}: disable/quarantine failed (${detail})`)
+      }
       continue
     }
 
@@ -289,16 +446,15 @@ export async function auditLaunchAgents(
 
     // The job still boots a desktop process, so stopping it beats leaving it.
     try {
-      await bootoutLaunchAgent(target)
-      const quarantineDirectory = join(
-        options.dshHome,
-        'recovery',
-        'quarantined-components',
-        timestamp(now())
-      )
-      await mkdir(quarantineDirectory, { recursive: true })
-      const quarantinePath = join(quarantineDirectory, basename(plistPath))
-      await rename(plistPath, quarantinePath)
+      const quarantinePath = await quarantineLaunchAgent({
+        dshHome: options.dshHome,
+        plistPath,
+        label,
+        uid,
+        bootoutLaunchAgent,
+        inspectLaunchAgent,
+        now
+      })
       findings.push({ label, plistPath, action: 'quarantined', owner, backupPath: quarantinePath })
       options.log?.(`[launch-agents] quarantined ${label} after a failed repair`)
     } catch (error) {

@@ -8,6 +8,18 @@
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",
+    "./generations/registry": {
+      "types": "./generations/registry.d.ts",
+      "default": "./generations/registry.mjs"
+    },
+    "./generations/installer": {
+      "types": "./generations/installer.d.ts",
+      "default": "./generations/installer.mjs"
+    },
+    "./generations/projection": {
+      "types": "./generations/projection.d.ts",
+      "default": "./generations/projection.mjs"
+    },
     "./package.json": "./package.json"
   },
   "dsh": {
@@ -23,7 +35,7 @@
   "license": "MIT",
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.1",
-    "@deepseek-ai/dsh-host-webserver": "^0.1.1-rc.1"
+    "@deepseek-ai/dsh-host-webserver": "^0.1.2-alpha.1"
   },
   "dependencies": {
     "pnpm": "11.21.0"

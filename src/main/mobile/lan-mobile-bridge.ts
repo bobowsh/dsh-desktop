@@ -5,6 +5,7 @@ import type { AddressInfo } from 'node:net'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import QRCode from 'qrcode'
+import WebSocket from 'ws'
 import {
   ensureCloudflaredBinary,
   startCloudflareQuickTunnel
@@ -26,23 +27,66 @@ const MAX_BODY_BYTES = 64 * 1024
 const PAIRING_TTL_MS = 5 * 60 * 1000
 const MUX_RECONNECT_MS = 500
 const MUX_RECONNECT_CAP_MS = 30_000
+
+/** Gateway stream carrier: one WebSocket multiplexing every logical stream. */
+const REMOTE_STREAM_MUX_PATH = '/api/remote.mux'
+/** Gateway-internal stream delivering forwarded Cordis events. */
+const REMOTE_EVENT_STREAM_ENDPOINT = '$events'
+/** Gateway-internal unary endpoint settling one forwarded event. */
+const REMOTE_EVENT_RESULT_ENDPOINT = '$events/result'
+/** Waterfall event a Host raises when it needs an answer from the user. */
+const USER_QUESTION_EVENT = 'user-questions/request'
+const EVENT_STREAM_ID = 'mobile-events'
+const WORKSPACE_STREAM_ID = 'mobile-workspaces'
 const MUX_STABLE_MS = 5_000
 
-const RPC_ALLOWLIST = new Set([
-  'workspace.list',
-  'agentPreset.list',
-  'agentPreset.select',
-  'session.list',
-  'session.history',
-  'session.models',
-  'session.selectModel',
-  'session.create',
-  'session.prompt',
-  'session.cancel'
-])
+/**
+ * Mobile method name to the Host endpoint that serves it.
+ *
+ * 0.1.2-alpha.1 deleted `dsh-host-apiproxy`, whose string-keyed `/api/<name>`
+ * routes this bridge was written against, and moved the same operations onto
+ * Typert Remote. The transport is unchanged — same `/api` prefix, same
+ * client-request envelope — but an endpoint is now `<namespace>/<method>` and
+ * its payload carries named args rather than a bare object. Several shapes
+ * moved too, so each entry owns its own translation instead of a blanket
+ * rename.
+ *
+ * The mobile page's vocabulary is deliberately left alone: it is served from
+ * this file, but a phone may still be holding an older page.
+ */
+const HARNESS_ENDPOINTS: Record<
+  string,
+  { endpoint: string; args(payload: Record<string, unknown>): Record<string, unknown> }
+> = {
+  'agentPreset.list': { endpoint: 'agentPresets/list', args: () => ({}) },
+  // The preset selector is keyed by agent id, which for a top-level session is
+  // the session id the mobile page already sends.
+  'agentPreset.select': {
+    endpoint: 'agentPresets/select',
+    args: (payload) => ({ agentId: payload.sessionId, agentPreset: payload.agentPreset })
+  },
+  'session.list': { endpoint: 'session/list', args: () => ({ _request: {} }) },
+  // The catalog is no longer per-session: it describes what the Host can route
+  // to, so it takes no arguments and the page's sessionId is dropped.
+  'session.models': { endpoint: 'session/modelCatalog', args: () => ({}) },
+  'session.selectModel': {
+    endpoint: 'session/selectModel',
+    args: (payload) => ({ request: payload })
+  },
+  'session.create': { endpoint: 'session/create', args: (payload) => ({ request: payload }) },
+  'session.prompt': {
+    endpoint: 'session/prompt',
+    args: (payload) => ({ request: { requestId: randomUUID(), ...payload } })
+  },
+  'session.cancel': { endpoint: 'session/cancel', args: (payload) => ({ request: payload }) }
+}
+
+const RPC_ALLOWLIST = new Set([...Object.keys(HARNESS_ENDPOINTS), 'session.history', 'workspace.list'])
 
 export interface LanMobileBridgeOptions {
   harnessUrl(): string | undefined
+  /** Per-process Harness launch token, traded once for a session cookie. */
+  harnessAuthToken?(): string | undefined
   locale?: 'en' | 'zh' | (() => 'en' | 'zh')
   brandLogoPaths?: { light: string; dark: string }
   appIconPath?: string
@@ -127,9 +171,14 @@ export class LanMobileBridge {
   private readonly suspendedSessions = new Map<string, MobileSession>()
   private readonly pendingPairings = new Map<string, PendingPairing>()
   private readonly pendingQuestions = new Map<string, PendingMobileQuestion>()
+  /** Client generation id from the event stream's `ready` frame; results quote it. */
+  private eventClientId?: string
+  /** Latest `workspace/follow` baseline, standing in for the removed unary list. */
+  private workspaceSnapshot?: unknown
   private readonly now: () => number
   private muxAbort?: AbortController
   private muxTask?: Promise<void>
+  private readonly sessionStreamAborts = new Set<AbortController>()
   private lastConnected = false
 
   constructor(private readonly options: LanMobileBridgeOptions) {
@@ -188,6 +237,8 @@ export class LanMobileBridge {
     this.suspendedSessions.clear()
     this.pendingPairings.clear()
     this.pendingQuestions.clear()
+    for (const abort of this.sessionStreamAborts) abort.abort()
+    this.sessionStreamAborts.clear()
     this.syncConnected()
     this.muxAbort?.abort()
     const muxTask = this.muxTask
@@ -586,6 +637,12 @@ export class LanMobileBridge {
     if (request.method === 'GET' && url.pathname === '/') {
       return this.html(response, renderMobilePage({ locale: this.locale() }))
     }
+    if (request.method === 'GET' && url.pathname === '/api/session/stream') {
+      this.verifyTrustedOrigin(request)
+      const sessionId = url.searchParams.get('sessionId')
+      if (!sessionId) return this.text(response, 400, 'Session id is required.')
+      return this.streamSession(request, response, sessionId)
+    }
     if (request.method === 'POST' && url.pathname === '/api/rpc') {
       this.verifySameOrigin(request)
       const input = JSON.parse(await readBody(request)) as { method?: unknown; payload?: unknown }
@@ -601,8 +658,8 @@ export class LanMobileBridge {
         const pending = this.assertPendingQuestion(answer.rpcId, answer.sessionId)
         validateQuestionAnswers(pending, answer.answers)
         const result = await this.respondToQuestion(answer.rpcId, {
-          ok: true,
-          value: { sessionId: answer.sessionId, answer: { answers: answer.answers } }
+          kind: 'result',
+          value: { answers: answer.answers }
         })
         return this.json(response, result.ok ? 200 : 400, result)
       }
@@ -611,11 +668,11 @@ export class LanMobileBridge {
         const sessionId = requiredStringField(input.payload, 'sessionId')
         this.assertPendingQuestion(rpcId, sessionId)
         const result = await this.respondToQuestion(rpcId, {
-          ok: false,
+          kind: 'rejected',
           error: {
-            code: 'cancelled',
+            name: 'Error',
             message: 'the user closed this question request',
-            details: {}
+            code: 'cancelled'
           }
         })
         return this.json(response, result.ok ? 200 : 400, result)
@@ -731,16 +788,140 @@ export class LanMobileBridge {
     return new URL(`${url.pathname}${url.search}`, this.tunnelInstance.url).toString()
   }
 
+  /**
+   * The Host session cookie for one Harness base, obtained once and reused.
+   *
+   * Since 0.1.2-alpha.1 every Host API call is authenticated before dispatch:
+   * an unauthenticated caller gets 401, and the launch token is accepted only
+   * as `GET /?token=...` on the root — never on an API path and never in an
+   * Authorization header. The bridge is a server-side client, not a browser,
+   * so it performs that exchange itself.
+   *
+   * The cookie is signed against the request authority, so every later call
+   * has to reach the Host under the same `Host` value the exchange used. That
+   * is why the bridge talks to the loopback base rather than forwarding the
+   * phone's own authority.
+   */
+  private harnessCookie?: { base: string; cookie: string }
+
+  private async harnessSession(base: string): Promise<string | undefined> {
+    if (this.harnessCookie?.base === base) return this.harnessCookie.cookie
+    const token = this.options.harnessAuthToken?.()
+    if (token === undefined) return undefined
+    const url = new URL('/', base)
+    url.searchParams.set('token', token)
+    const response = await fetch(url, {
+      method: 'GET',
+      redirect: 'manual',
+      signal: AbortSignal.timeout(10_000)
+    })
+    // The exchange answers 303 to a clean `/`; anything else means the token
+    // was stale or already spent, and the caller surfaces the resulting 401.
+    const cookie = cookiePair(response.headers.getSetCookie())
+    if (cookie === undefined) return undefined
+    this.harnessCookie = { base, cookie }
+    return cookie
+  }
+
+  /**
+   * Call the Host with the session cookie, exchanging the launch token first
+   * and once more if the stored cookie has stopped being accepted.
+   */
+  private async harnessFetch(url: URL, init: RequestInit, base: string): Promise<Response> {
+    const send = async (cookie: string | undefined): Promise<Response> => fetch(url, {
+      ...init,
+      headers: { ...init.headers, ...(cookie === undefined ? {} : { cookie }) }
+    })
+    let response = await send(await this.harnessSession(base))
+    if (response.status === 401) {
+      this.harnessCookie = undefined
+      const retry = await this.harnessSession(base)
+      if (retry !== undefined) response = await send(retry)
+    }
+    return response
+  }
+
+  /**
+   * Translate one mobile method onto its Host endpoint and drive it.
+   *
+   * `session.history` is the one call the page cannot express directly: the
+   * Host replaced open-ended history reads with a cursor-bounded page, and
+   * refuses a `throughSeq` past the session's own cursor. The cursor lives on
+   * the session list row, so the read is two calls here rather than a
+   * protocol the page has to learn.
+   */
   private async forwardRpc(method: string, payload: unknown): Promise<{ ok: boolean; value?: unknown; error?: string }> {
+    const fields = typeof payload === 'object' && payload !== null
+      ? payload as Record<string, unknown>
+      : {}
+
+    if (method === 'workspace.list') {
+      // The Host kept no unary workspace read: `workspace/follow` is a stream,
+      // and its opening `baseline` frame is exactly the projection this call
+      // used to return. The mux consumer keeps that baseline, so the answer is
+      // whatever the carrier last observed.
+      const snapshot = this.workspaceSnapshot
+      if (snapshot === undefined) return { ok: false, error: 'Harness workspaces are not loaded yet.' }
+      return { ok: true, value: snapshot }
+    }
+
+    if (method === 'session.history') {
+      const sessionId = fields.sessionId
+      const listed = await this.invokeHarness('session/list', { _request: {} })
+      if (!listed.ok) return listed
+      const items = (listed.value as {
+        items?: {
+          sessionId?: unknown
+          projections?: { asOfSeq?: unknown; values?: unknown }
+        }[]
+      }).items ?? []
+      const row = items.find((item) => item.sessionId === sessionId)
+      const projections = row?.projections
+      const throughSeq = projections?.asOfSeq
+      if (typeof throughSeq !== 'number') return { ok: false, error: 'Harness has no cursor for this session.' }
+      const page = await this.invokeHarness('session/page', {
+        request: {
+          address: { kind: 'session', sessionId },
+          throughSeq,
+          ...(typeof fields.maxMessages === 'number' ? { maxMessages: fields.maxMessages } : {})
+        }
+      })
+      if (!page.ok) return page
+      const value = page.value as { records?: unknown; hasMore?: unknown }
+      if (!Array.isArray(value?.records)) {
+        return { ok: false, error: 'Harness returned invalid session history.' }
+      }
+      // Harness 0.1.2 calls the durable entries `records` and serves
+      // projections on the list row. Keep the stable mobile-page contract so
+      // cached pages can still render messages, running state, and todos.
+      return {
+        ok: true,
+        value: {
+          events: value.records,
+          projections,
+          hasMore: value.hasMore === true
+        }
+      }
+    }
+
+    const route = HARNESS_ENDPOINTS[method]
+    if (route === undefined) return { ok: false, error: 'RPC method is not available on mobile.' }
+    return this.invokeHarness(route.endpoint, route.args(fields))
+  }
+
+  private async invokeHarness(
+    endpoint: string,
+    args: Record<string, unknown>
+  ): Promise<{ ok: boolean; value?: unknown; error?: string }> {
     const base = this.options.harnessUrl()
     if (!base) return { ok: false, error: 'Harness is not ready.' }
     const rpcId = randomUUID()
-    const response = await fetch(new URL(`/api/${method}`, base), {
+    const response = await this.harnessFetch(new URL(`/api/${endpoint}`, base), {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ type: 'client-request', rpcId, method, payload }),
+      body: JSON.stringify({ type: 'client-request', rpcId, method: endpoint, payload: { args } }),
       signal: AbortSignal.timeout(30_000)
-    })
+    }, base)
     if (!response.ok) return { ok: false, error: `Harness transport returned HTTP ${response.status}.` }
     const envelope = (await response.json()) as {
       rpcId?: unknown
@@ -834,12 +1015,24 @@ export class LanMobileBridge {
     signal: AbortSignal,
     onOpen?: () => void
   ): Promise<void> {
-    // The network Harness exposes mux events only as a downlink WebSocket;
-    // ordinary GET requests intentionally return 426 with no SSE fallback.
-    const url = new URL('/api/events.mux', base)
+    // 0.1.2-alpha.1 replaced the event mux with the Gateway stream carrier:
+    // one WebSocket multiplexing logical streams, each opened by name. The
+    // forwarded-event stream is `$events`, and the upgrade itself is
+    // authenticated, so it carries the same session cookie as the unary calls.
+    const url = new URL(REMOTE_STREAM_MUX_PATH, base)
     url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
+    const cookie = await this.harnessSession(base)
     await new Promise<void>((resolve, reject) => {
-      const socket = new WebSocket(url)
+      const socket = new WebSocket(url, {
+        headers: cookie === undefined ? {} : { cookie }
+      })
+      // `ws` raises 'error' asynchronously when close() aborts a still-CONNECTING
+      // socket ("WebSocket was closed before the connection was established") —
+      // exactly what finish() below does to unwind on abort. cleanup() has
+      // already removed the real handleError listener by the time that fires,
+      // so without a permanent sink here that self-inflicted error becomes an
+      // unhandled 'error' event and crashes the process.
+      socket.addEventListener('error', () => {})
       let settled = false
       const cleanup = (): void => {
         signal.removeEventListener('abort', handleAbort)
@@ -862,9 +1055,27 @@ export class LanMobileBridge {
       const handleOpen = (): void => {
         onOpen?.()
         this.pendingQuestions.clear()
+        this.eventClientId = undefined
+        // Two logical streams share this carrier: the forwarded events that
+        // raise questions, and the workspace projection whose opening
+        // `baseline` frame is the list the Host no longer serves unary.
+        socket.send(JSON.stringify({
+          type: 'open',
+          streamId: EVENT_STREAM_ID,
+          endpoint: REMOTE_EVENT_STREAM_ENDPOINT,
+          payload: { args: {} }
+        }))
+        socket.send(JSON.stringify({
+          type: 'open',
+          streamId: WORKSPACE_STREAM_ID,
+          endpoint: 'workspace/follow',
+          payload: { args: {} }
+        }))
       }
-      const handleMessage = (event: MessageEvent): void => {
-        if (typeof event.data === 'string') this.consumeMuxEnvelope(event.data)
+      const handleMessage = (event: { data: unknown }): void => {
+        const data = event.data
+        if (typeof data === 'string') this.consumeMuxEnvelope(data)
+        else if (Buffer.isBuffer(data)) this.consumeMuxEnvelope(data.toString('utf8'))
       }
       const handleClose = (): void => {
         finish(signal.aborted ? undefined : new Error('Harness mux WebSocket closed.'))
@@ -879,24 +1090,132 @@ export class LanMobileBridge {
     })
   }
 
+  /** Forward one native Harness session/follow stream to an authenticated phone as SSE. */
+  private async streamSession(
+    request: IncomingMessage,
+    response: ServerResponse,
+    sessionId: string
+  ): Promise<void> {
+    const base = this.options.harnessUrl()
+    if (!base) return this.text(response, 503, 'Harness is not ready.')
+    const cookie = await this.harnessSession(base)
+    const url = new URL(REMOTE_STREAM_MUX_PATH, base)
+    url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:'
+    const streamId = `mobile-session-${randomUUID()}`
+    const abort = new AbortController()
+    this.sessionStreamAborts.add(abort)
+
+    response.statusCode = 200
+    response.setHeader('content-type', 'text/event-stream; charset=utf-8')
+    response.setHeader('cache-control', 'no-store')
+    response.setHeader('connection', 'keep-alive')
+    response.flushHeaders()
+    response.write('retry: 500\n\n')
+
+    await new Promise<void>((resolve) => {
+      const socket = new WebSocket(url, { headers: cookie === undefined ? {} : { cookie } })
+      let settled = false
+      const cleanup = (): void => {
+        request.removeListener('close', finish)
+        abort.signal.removeEventListener('abort', finish)
+        socket.removeEventListener('open', handleOpen)
+        socket.removeEventListener('message', handleMessage)
+        socket.removeEventListener('close', handleClose)
+        socket.removeEventListener('error', handleError)
+        this.sessionStreamAborts.delete(abort)
+      }
+      const finish = (): void => {
+        if (settled) return
+        settled = true
+        cleanup()
+        if (socket.readyState === WebSocket.CONNECTING || socket.readyState === WebSocket.OPEN) socket.close()
+        if (!response.writableEnded) response.end()
+        resolve()
+      }
+      const handleOpen = (): void => {
+        socket.send(JSON.stringify({
+          type: 'open',
+          streamId,
+          endpoint: 'session/follow',
+          payload: {
+            args: {
+              request: { address: { kind: 'session', sessionId }, maxMessages: 100 }
+            }
+          }
+        }))
+      }
+      const handleMessage = (event: { data: unknown }): void => {
+        const text = typeof event.data === 'string'
+          ? event.data
+          : Buffer.isBuffer(event.data) ? event.data.toString('utf8') : undefined
+        if (!text) return
+        let frame: unknown
+        try { frame = JSON.parse(text) } catch { return }
+        if (!isRecord(frame) || frame.streamId !== streamId) return
+        if (frame.type === 'item') {
+          const value = frame.value
+          const eventName = isRecord(value) && value.type === 'snapshot' ? 'snapshot' : 'event'
+          response.write(`event: ${eventName}\ndata: ${JSON.stringify(value)}\n\n`)
+        } else if (frame.type === 'error' || frame.type === 'end') {
+          finish()
+        }
+      }
+      const handleClose = (): void => finish()
+      const handleError = (): void => finish()
+      request.once('close', finish)
+      abort.signal.addEventListener('abort', finish, { once: true })
+      socket.addEventListener('open', handleOpen)
+      socket.addEventListener('message', handleMessage)
+      socket.addEventListener('close', handleClose, { once: true })
+      socket.addEventListener('error', handleError, { once: true })
+      if (abort.signal.aborted) finish()
+    })
+  }
+
+  /**
+   * Consume one carrier frame.
+   *
+   * Every logical stream shares this socket, so a frame is routed by its
+   * `streamId` first. The event stream replaces the old `server-request`
+   * envelopes: a question now arrives as a `waterfall` frame carrying its own
+   * `eventId`, which is also the id the phone answers with, and the opening
+   * `ready` frame names the generation every answer has to quote.
+   */
   private consumeMuxEnvelope(data: string): void {
-    let envelope: unknown
+    let frame: unknown
     try {
-      envelope = JSON.parse(data)
+      frame = JSON.parse(data)
     } catch {
       return
     }
-    if (!isRecord(envelope) || envelope.type !== 'server-request') return
-    const rpcId = typeof envelope.rpcId === 'string' ? envelope.rpcId : undefined
-    const payload = isRecord(envelope.payload) ? envelope.payload : undefined
-    if (!rpcId || !payload || typeof payload.type !== 'string') return
-    if (payload.type === 'question/requested') {
-      const pending = parsePendingQuestion(rpcId, payload)
-      if (pending) this.pendingQuestions.set(rpcId, pending)
+    if (!isRecord(frame) || frame.type !== 'item') return
+    const value = frame.value
+    if (frame.streamId === WORKSPACE_STREAM_ID) {
+      // `baseline` carries the whole projection; later frames are deltas the
+      // mobile surface does not consume, so only the baseline is retained.
+      if (isRecord(value) && value.type === 'baseline') this.workspaceSnapshot = value.value
       return
     }
-    if (payload.type === 'question/resolved' && typeof payload.questionRpcId === 'string') {
-      this.pendingQuestions.delete(payload.questionRpcId)
+    if (frame.streamId !== EVENT_STREAM_ID || !isRecord(value)) return
+    if (value.type === 'ready' && typeof value.clientId === 'string') {
+      this.eventClientId = value.clientId
+      return
+    }
+    if (value.type === 'waterfall' && value.event === USER_QUESTION_EVENT) {
+      const eventId = typeof value.eventId === 'string' ? value.eventId : undefined
+      const request = isRecord(value.request) ? value.request : undefined
+      // The Agent identity travels on the frame, not in the request: the
+      // gateway strips the live Agent and the cancellation signal before the
+      // request crosses the wire. For a top-level session that identity is the
+      // session id, which is what the phone pairs its answer with.
+      const agentId = typeof value.agentId === 'string' ? value.agentId : undefined
+      if (!eventId || !request || !agentId) return
+      const pending = parsePendingQuestion(eventId, { ...request, sessionId: agentId })
+      if (pending) this.pendingQuestions.set(eventId, pending)
+      return
+    }
+    if (value.type === 'cancel' && typeof value.eventId === 'string') {
+      this.pendingQuestions.delete(value.eventId)
     }
   }
 
@@ -908,27 +1227,27 @@ export class LanMobileBridge {
     return pending
   }
 
+  /**
+   * Settle one forwarded question.
+   *
+   * `/api/respond` went with the ApiProxy. A forwarded event is now settled
+   * through the Gateway's own unary endpoint, which pairs the event with the
+   * client generation that received it — so an answer sent after a reconnect
+   * is refused rather than applied to a stale question.
+   */
   private async respondToQuestion(
-    rpcId: string,
-    result: Record<string, unknown>
+    eventId: string,
+    outcome: Record<string, unknown>
   ): Promise<{ ok: boolean; value?: unknown; error?: string }> {
-    const base = this.options.harnessUrl()
-    if (!base) return { ok: false, error: 'Harness is not ready.' }
-    const response = await fetch(new URL('/api/respond', base), {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ type: 'client-response', rpcId, result }),
-      signal: AbortSignal.timeout(30_000)
+    const clientId = this.eventClientId
+    if (clientId === undefined) return { ok: false, error: 'Harness event stream is not connected.' }
+    const settled = await this.invokeHarness(REMOTE_EVENT_RESULT_ENDPOINT, {
+      clientId,
+      eventId,
+      outcome
     })
-    if (!response.ok) return { ok: false, error: `Harness transport returned HTTP ${response.status}.` }
-    const receipt = (await response.json()) as { accepted?: unknown; reason?: unknown }
-    if (receipt.accepted !== true) {
-      return {
-        ok: false,
-        error: typeof receipt.reason === 'string' ? receipt.reason : 'Harness rejected the response.'
-      }
-    }
-    return { ok: true, value: receipt }
+    if (settled.ok) this.pendingQuestions.delete(eventId)
+    return settled
   }
 
   private html(response: ServerResponse, body: string): void {
@@ -961,6 +1280,21 @@ export class LanMobileBridge {
     response.setHeader('content-type', 'application/json; charset=utf-8')
     response.end(JSON.stringify(body))
   }
+}
+
+/**
+ * The `name=value` pair of the first Set-Cookie header, ready for a Cookie
+ * request header. The Host sets exactly one session cookie, host-only and
+ * `SameSite=Strict`; its attributes are for browsers and are dropped here.
+ * @param headers - raw Set-Cookie values from the exchange response.
+ * @returns the cookie pair, or undefined when no cookie was set.
+ */
+export function cookiePair(headers: readonly string[]): string | undefined {
+  for (const header of headers) {
+    const pair = header.split(';', 1)[0]?.trim()
+    if (pair !== undefined && pair.includes('=')) return pair
+  }
+  return undefined
 }
 
 export function preferredLanAddress(): string | undefined {

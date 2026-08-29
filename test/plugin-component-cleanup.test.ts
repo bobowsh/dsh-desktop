@@ -97,6 +97,44 @@ describe('plugin component cleanup', () => {
     expect(logs[0]).toContain('quarantined')
   })
 
+  it('quarantines an owned LaunchAgent when its service is absent from a live domain', async () => {
+    const doctorDirectory = await installPluginGraph()
+    const plistPath = join(launchAgents, 'com.example.doctor.plist')
+    await writeFile(plistPath, 'fixture')
+    const inspect = vi.fn(async (target: string) => ({
+      code: target === 'gui/501' ? 0 : 113,
+      stdout: '',
+      stderr: 'arbitrary localized diagnostic'
+    }))
+
+    const result = await cleanupPluginOwnedComponents({
+      dshHome,
+      pluginName: plugin,
+      platform: 'darwin',
+      homeDirectory: home,
+      uid: 501,
+      readLaunchAgent: async () => ({
+        Label: 'com.example.doctor',
+        ProgramArguments: ['/usr/bin/node', join(doctorDirectory, 'lib', 'cli.mjs')]
+      }),
+      bootoutLaunchAgent: async () => ({
+        code: 3,
+        stdout: '',
+        stderr: 'arbitrary localized diagnostic'
+      }),
+      inspectLaunchAgent: inspect
+    })
+
+    expect(result.ok).toBe(true)
+    expect(result.failures).toEqual([])
+    expect(inspect.mock.calls).toEqual([
+      ['gui/501/com.example.doctor'],
+      ['gui/501']
+    ])
+    expect(existsSync(plistPath)).toBe(false)
+    expect(result.quarantined).toHaveLength(1)
+  })
+
   it('leaves an unrelated LaunchAgent and plugin data untouched', async () => {
     await installPluginGraph()
     const plistPath = join(launchAgents, 'com.example.unrelated.plist')
@@ -164,7 +202,8 @@ describe('plugin component cleanup', () => {
         Label: 'com.example.doctor',
         ProgramArguments: ['/usr/bin/node', join(doctorDirectory, 'lib', 'cli.mjs')]
       }),
-      bootoutLaunchAgent: async () => ({ code: 5, stdout: '', stderr: 'permission denied' })
+      bootoutLaunchAgent: async () => ({ code: 5, stdout: '', stderr: 'permission denied' }),
+      inspectLaunchAgent: async () => ({ code: 0, stdout: 'service = { }', stderr: '' })
     })
 
     expect(result.ok).toBe(false)

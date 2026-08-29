@@ -162,6 +162,30 @@ function parseEnvOutput(output: string, lineSeparator: RegExp): NodeJS.ProcessEn
   return env
 }
 
+/**
+ * The process launch token from the Harness URL line.
+ *
+ * Since 0.1.2-alpha.1 the Host authenticates the whole API before dispatch:
+ * `dsh-web-app` prints one root URL carrying a per-process token, and only
+ * `GET /?token=...` exchanges it for the signed, authority-bound session
+ * cookie. API paths and Authorization headers do not accept the token, so
+ * every desktop-side consumer — the window and the mobile bridge alike —
+ * has to start from this line.
+ *
+ * @param line - one line of Harness stdout.
+ * @returns the token, or undefined when the line is not the URL line.
+ */
+export function extractLaunchToken(line: string): string | undefined {
+  const match = /\bdsh web:\s*(\S+)/u.exec(line)
+  if (!match?.[1]) return undefined
+  try {
+    const token = new URL(match[1]).searchParams.get('token')
+    return token === null || token === '' ? undefined : token
+  } catch {
+    return undefined
+  }
+}
+
 export function buildHarnessArguments(
   port: number,
   patchPath?: string,
@@ -268,6 +292,22 @@ export function updateReadyStability(
   }
 }
 
+/**
+ * A loopback response proves only that the Host has opened its port. Since
+ * 0.1.2-alpha.1 the renderer also needs the per-process launch token printed
+ * on stdout; navigating before that line arrives produces the authentication
+ * error page instead of exchanging the token for a session cookie.
+ *
+ * The unauthenticated readiness probe is expected to receive 401, so any
+ * non-server-error response is acceptable once the token is available.
+ */
+export function isHarnessStartupProbeHealthy(
+  status: number,
+  launchToken: string | undefined
+): boolean {
+  return launchToken !== undefined && status >= 200 && status < 500
+}
+
 export class HarnessRuntime {
   private child?: HarnessChildProcess
   private logStream?: WriteStream
@@ -275,6 +315,7 @@ export class HarnessRuntime {
   private message = 'Harness is not running.'
   private launchDirectory?: string
   private url?: string
+  private launchToken?: string
   private readonly logLines: string[] = []
   private readonly logRemainders: Record<'stdout' | 'stderr', string> = {
     stdout: '',
@@ -289,6 +330,7 @@ export class HarnessRuntime {
       message: this.message,
       launchDirectory: this.launchDirectory,
       url: this.url,
+      authToken: this.launchToken,
       logs: [...this.logLines]
     }
   }
@@ -299,6 +341,7 @@ export class HarnessRuntime {
     this.logRemainders.stderr = ''
     this.launchDirectory = launchDirectory
     this.url = undefined
+    this.launchToken = undefined
 
     if (!existsSync(this.options.dshEntryPath)) {
       this.setState('failed', `Harness entry was not found: ${this.options.dshEntryPath}`)
@@ -376,6 +419,7 @@ export class HarnessRuntime {
       // failure (a graceful SIGTERM may otherwise be reported as exit 0).
       this.child = undefined
       this.url = undefined
+      this.launchToken = undefined
       this.writeLog('[desktop] Harness entry failed during startup; stopping immediately')
       this.setState('failed', `Harness could not start.\n${cause}`)
       void this.stopChild(child).catch((error) => {
@@ -414,6 +458,7 @@ ${cause}`
     const ready = await waitUntilReady(
       url,
       () => this.child === child && child.exitCode === null,
+      () => this.launchToken,
       startupTimeoutMs
     ).finally(() => clearInterval(progressTimer))
 
@@ -444,6 +489,7 @@ ${cause}`
     await this.stopChild(child)
     this.closeLog()
     this.url = undefined
+    this.launchToken = undefined
     this.setState('idle', 'Harness is not running.')
   }
 
@@ -470,7 +516,9 @@ ${cause}`
     const lines = `${this.logRemainders[source]}${chunk.toString('utf8')}`.split(/\r?\n/)
     this.logRemainders[source] = lines.pop() ?? ''
     for (const line of lines) {
-      if (line.length > 0) this.writeLog(`[${source}] ${line}`)
+      if (line.length === 0) continue
+      this.writeLog(`[${source}] ${line}`)
+      this.launchToken ??= extractLaunchToken(line)
     }
   }
 
@@ -711,6 +759,7 @@ async function reservePort(): Promise<number> {
 async function waitUntilReady(
   url: string,
   isAlive: () => boolean,
+  launchToken: () => string | undefined,
   timeoutMs: number
 ): Promise<boolean> {
   const deadline = Date.now() + timeoutMs
@@ -721,7 +770,7 @@ async function waitUntilReady(
       const response = await fetch(url, { redirect: 'manual', signal: AbortSignal.timeout(1_000) })
       const stability = updateReadyStability(
         readySince,
-        response.status >= 200 && response.status < 500,
+        isHarnessStartupProbeHealthy(response.status, launchToken()),
         Date.now(),
         stabilityWindowMs
       )

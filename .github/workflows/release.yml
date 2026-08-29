@@ -380,12 +380,17 @@ jobs:
               if (Test-Path $logPath) {
                 $log = Get-Content -Raw $logPath
                 if (-not [string]::IsNullOrEmpty($log)) {
-                  $match = [regex]::Match($log, '\[desktop\] endpoint (http://127\.0\.0\.1:\d+)')
+                  $match = [regex]::Match($log, 'dsh web: (http://127\.0\.0\.1:\d+/\?token=[^\s]+)')
                   if ($match.Success) {
                     try {
-                      $response = Invoke-WebRequest -UseBasicParsing -Uri $match.Groups[1].Value -TimeoutSec 2
+                      $authenticatedUrl = $match.Groups[1].Value
+                      $response = Invoke-WebRequest `
+                        -UseBasicParsing `
+                        -Uri $authenticatedUrl `
+                        -SessionVariable harnessSession `
+                        -TimeoutSec 2
                       if ($response.StatusCode -ge 200 -and $response.StatusCode -lt 500) {
-                        $endpoint = $match.Groups[1].Value
+                        $endpoint = ([uri]$authenticatedUrl).GetLeftPart([System.UriPartial]::Authority)
                         $ready = $true
                         break
                       }
@@ -397,31 +402,32 @@ jobs:
             }
             if (-not $ready) { throw 'Packaged Harness did not become ready within 75 seconds.' }
 
-            function Invoke-HarnessRpc([string]$method, [hashtable]$payload) {
+            function Invoke-HarnessRpc([string]$endpointName, [hashtable]$request) {
               $rpcId = [guid]::NewGuid().ToString()
               $body = @{
                 type = 'client-request'
                 rpcId = $rpcId
-                method = $method
-                payload = $payload
+                method = $endpointName
+                payload = @{ args = @{ request = $request } }
               } | ConvertTo-Json -Depth 8 -Compress
               $response = Invoke-RestMethod `
                 -Method Post `
-                -Uri "$endpoint/api/$method" `
+                -Uri "$endpoint/api/$endpointName" `
                 -ContentType 'application/json; charset=utf-8' `
                 -Body ([System.Text.Encoding]::UTF8.GetBytes($body)) `
+                -WebSession $harnessSession `
                 -TimeoutSec 30
-              if ($response.rpcId -ne $rpcId) { throw "Harness RPC id mismatch for $method." }
+              if ($response.rpcId -ne $rpcId) { throw "Harness RPC id mismatch for $endpointName." }
               if (-not $response.result.ok) {
-                throw "Harness RPC $method failed: $($response.result.error.code): $($response.result.error.message)"
+                throw "Harness RPC $endpointName failed: $($response.result.error.code): $($response.result.error.message)"
               }
               return $response.result.value
             }
 
             $workspacePath = Join-Path $env:RUNNER_TEMP '数据项素-工作区'
             New-Item -ItemType Directory -Force -Path $workspacePath | Out-Null
-            $workspace = Invoke-HarnessRpc 'workspace.create' @{ path = $workspacePath }
-            $session = Invoke-HarnessRpc 'session.create' @{ workspaceId = $workspace.workspace.workspaceId }
+            $workspace = Invoke-HarnessRpc 'workspace/create' @{ path = $workspacePath }
+            $session = Invoke-HarnessRpc 'session/create' @{ workspaceId = $workspace.workspace.workspaceId }
             if ([string]::IsNullOrWhiteSpace($session.sessionId)) {
               throw 'Harness did not return a session id for the selected workspace.'
             }

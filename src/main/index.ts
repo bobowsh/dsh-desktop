@@ -29,6 +29,13 @@ import {
   markProfileInstallComplete
 } from './state/profile-install-marker'
 import { inspectProfileConsistency } from './state/profile-consistency'
+import {
+  disableProfilePlugins,
+  inspectProfileCompatibility,
+  quarantineProfileCorePackages,
+  quarantineProfileWorkspaces,
+  type ProfileCompatibilityIssue
+} from './state/profile-compatibility'
 import { ensureStoreDirPinned, inspectStoreConsistency } from './state/profile-store'
 import { LanMobileBridge } from './mobile/lan-mobile-bridge'
 import {
@@ -56,9 +63,28 @@ import {
   uninstallPluginFromProfile
 } from './state/plugin-recovery'
 import { ensureSafeModeProfile, SAFE_MODE_PROFILE } from './state/safe-mode-profile'
-import { cleanupPluginOwnedComponents } from './state/plugin-component-cleanup'
-import { appBundlePathFromExecutable, auditLaunchAgents } from './state/launch-agent-audit'
 import {
+  desiredIsUntried,
+  markGenerationsBooted,
+  prepareGenerationsForLaunch,
+  rollBackToLastKnownGood,
+  uninstallGenerationPlugin
+} from './state/generation-launch'
+import {
+  confirmMigration,
+  isProfileMigrated,
+  migrateProfileToGenerations,
+  recoverInterruptedMigration,
+  rollBackMigration
+} from './state/generation-migration'
+import { cleanupPluginOwnedComponents } from './state/plugin-component-cleanup'
+import {
+  appBundlePathFromExecutable,
+  auditLaunchAgents,
+  quarantineAppBundleLaunchAgents
+} from './state/launch-agent-audit'
+import {
+  clearStaleHarnessAuthCookies,
   desktopHarnessUrl,
   isAbortedNavigationError,
   shouldLoadHarnessUrl
@@ -122,7 +148,7 @@ function setDshHomeEnv(): void {
 
 type PluginRecoveryAction = 'uninstall' | 'show-log' | 'quit' | 'restart' | 'refresh' | 'safe-mode'
 type SafeModeAction =
-  | { type: 'uninstall'; plugins: string[] }
+  | { type: 'apply'; plugins: string[]; issues: string[] }
   | { type: 'agent' }
   | { type: 'restart' }
   | { type: 'quit' }
@@ -658,6 +684,16 @@ const GPU_STABLE_LAUNCH_DELAY_MS = 60_000
 function markHarnessRendered(): void {
   if (harnessRendered) return
   harnessRendered = true
+  // The window rendered, so whatever plugin generations are enabled boot. This
+  // is the proof `.install-complete` never was — a pnpm exit code said nothing
+  // about whether the profile could start.
+  const dshHome = join(app.getPath('userData'), 'harness')
+  void markGenerationsBooted(dshHome, (line) => runtime?.note(line))
+  // A migrated profile that rendered a window is confirmed; the pre-upgrade
+  // snapshot is no longer needed.
+  if (isProfileMigrated(dshHome)) {
+    void confirmMigration(dshHome, (line) => runtime?.note(line))
+  }
   if (gpuFallbackState.level === 'default' && gpuFallbackState.stableLaunches === 0) return
   gpuStableLaunchTimer = setTimeout(() => {
     gpuStableLaunchTimer = undefined
@@ -871,11 +907,26 @@ async function openHarness(
   focusIntent: WindowFocusIntent = 'automatic'
 ): Promise<void> {
   const window = mainWindow && !mainWindow.isDestroyed() ? mainWindow : createWindow()
-  const rendererUrl = desktopHarnessUrl(url, process.platform)
+  const rendererUrl = desktopHarnessUrl(url, process.platform, runtime.snapshot().authToken)
   if (shouldLoadHarnessUrl(window.webContents.getURL(), url)) {
     const navigationVersion = ++mainWindowNavigationVersion
     rendererPluginFailureLogs = []
     window.webContents.stop()
+    const clearedCookies = await clearStaleHarnessAuthCookies(
+      window.webContents.session.cookies,
+      rendererUrl,
+      runtime.snapshot().authToken
+    ).catch((error) => {
+      runtime.note(
+        `[desktop] stale Harness cookie cleanup failed: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      )
+      return 0
+    })
+    if (clearedCookies > 0) {
+      runtime.note(`[desktop] cleared ${clearedCookies} stale Harness authentication cookie(s)`)
+    }
     try {
       await window.loadURL(rendererUrl)
     } catch (error) {
@@ -993,16 +1044,38 @@ async function auditInstalledLaunchAgents(dshHome: string): Promise<void> {
     })
     for (const finding of result.findings) {
       const owner = finding.owner === undefined ? '' : ` installed by ${finding.owner}`
-      runtime.note(
-        finding.action === 'escalated'
-          ? `[desktop] ${finding.label}${owner} keeps recreating a background service that starts DSH Desktop; consider removing that plugin`
-          : `[desktop] ${finding.action} the background service ${finding.label}${owner}`
-      )
+      runtime.note(`[desktop] ${finding.action} the background service ${finding.label}${owner}`)
     }
     for (const failure of result.failures) runtime.note(`[desktop] launch agent audit: ${failure}`)
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error)
     runtime.note(`[desktop] launch agent audit failed: ${detail}`)
+  }
+}
+
+/**
+ * A LaunchAgent executing anything from inside this application bundle races
+ * an in-place update even when it is correctly configured as Node. Harness is
+ * already stopped by the caller, so quarantine is durable for the update
+ * window. Any failure aborts the install instead of risking a partial bundle.
+ */
+async function quarantineInstalledLaunchAgentsForUpdate(dshHome: string): Promise<void> {
+  const appBundlePath = appBundlePathFromExecutable(process.execPath)
+  if (appBundlePath === undefined) return
+  const result = await quarantineAppBundleLaunchAgents({
+    dshHome,
+    appBundlePath,
+    log: (message) => runtime.note(message)
+  })
+  for (const finding of result.findings) {
+    const owner = finding.owner === undefined ? '' : ` installed by ${finding.owner}`
+    runtime.note(
+      `[desktop] quarantined the background service ${finding.label}${owner} before update`
+    )
+  }
+  if (result.failures.length > 0) {
+    for (const failure of result.failures) runtime.note(`[desktop] pre-update launch agent: ${failure}`)
+    throw new Error('Unable to stop background services before replacing DSH Desktop.')
   }
 }
 
@@ -1021,11 +1094,59 @@ function launchHarness(): Promise<void> {
     // every package operation fail, repairs included.
     const pinned = await ensureStoreDirPinned(dshHome).catch(() => undefined)
     if (pinned) runtime.note(`[desktop] pinned the profile's pnpm store: ${pinned}`)
-    await repairProfilePackages(dshHome)
+    // A prior process may have stopped midway through the one-time migration.
+    // Restore its snapshot before projection or package repair can observe the
+    // partially switched profile.
+    await recoverInterruptedMigration(dshHome, (line) => runtime.note(line))
+    // Cold start, Harness stopped: sweep unreferenced plugin generations and
+    // reproject so the profile's links match `desired`. A no-op on a profile
+    // that has never used a generation.
+    await prepareGenerationsForLaunch(dshHome, (line) => runtime.note(line))
+    // One-time move of a pre-upgrade profile (community plugins in the shared
+    // tree) onto the generation model. Runs before the shared-tree repair and,
+    // when it succeeds, replaces it — the migration has already rebuilt the
+    // tree down to what stays there.
+    const migrated = await migrateProfileToGenerations({
+      dshHome,
+      nodeExecutablePath: bundledNodePath(),
+      pnpmEntryPath: bundledPnpmEntryPath(),
+      dshEntryPath: dshEntryPath(),
+      note: (line) => runtime.note(line),
+      reinstallSharedTree: async () => {
+        await clearProfileInstallMarker(dshHome)
+        const result = await installProfileDependenciesWithDsh({
+          dshHome,
+          dshEntryPath: dshEntryPath(),
+          nodeExecutablePath: bundledNodePath(),
+          pnpmEntryPath: bundledPnpmEntryPath(),
+          pnpmRunnerPath: bundledPnpmRunnerPath()
+        })
+        if (result.ok) await markProfileInstallComplete(dshHome)
+        return result
+      }
+    })
+    if (!migrated) await repairProfilePackages(dshHome)
     await pruneMissingProfileBundles(dshHome).catch(() => false)
     await reportProfileConsistency(dshHome)
     await auditInstalledLaunchAgents(dshHome)
     await runtime.start(launchDirectory)
+
+    // A new plugin set that did not reach 'ready' is rolled back to the last
+    // set that rendered a window, then Harness is started once more. Reaching
+    // 'ready' is necessary but not sufficient for "known good" — the
+    // window-rendered commit in markHarnessRendered is what confirms it.
+    if (runtime.snapshot().phase !== 'ready') {
+      // A migration that did not boot rolls the whole profile back to the
+      // pre-upgrade snapshot — nothing was lost, and the old shared-tree path
+      // runs next launch.
+      if (migrated && (await rollBackMigration(dshHome, (line) => runtime.note(line)))) {
+        await repairProfilePackages(dshHome)
+        await runtime.start(launchDirectory)
+      } else if (await desiredIsUntried(dshHome).catch(() => false)) {
+        await rollBackToLastKnownGood(dshHome, (line) => runtime.note(line))
+        await runtime.start(launchDirectory)
+      }
+    }
   })().finally(() => {
     harnessLaunchOperation = undefined
   })
@@ -1433,6 +1554,7 @@ async function showRuntimeFailure(snapshot: RuntimeSnapshot): Promise<void> {
 
 async function waitForSafeModeAction(options: {
   plugins: readonly string[]
+  issues: readonly ProfileCompatibilityIssue[]
   notice?: string
   noticeTone?: 'success' | 'error'
 }): Promise<SafeModeAction> {
@@ -1478,6 +1600,7 @@ async function waitForSafeModeAction(options: {
   const model = buildSafeModeViewModel({
     locale: harnessLocale(),
     plugins: options.plugins,
+    issues: options.issues,
     notice: options.notice,
     noticeTone: options.noticeTone
   })
@@ -1513,12 +1636,83 @@ async function removeSafeModePlugin(dshHome: string, pluginName: string): Promis
   )
 }
 
+async function repairSafeModeCompatibilityIssues(
+  dshHome: string,
+  issues: readonly ProfileCompatibilityIssue[]
+): Promise<{ repaired: string[]; failed: string[]; installFailed?: string }> {
+  const repaired: string[] = []
+  const failed: string[] = []
+  const pluginIssues = issues.filter((issue) => issue.resolution === 'disable-plugin')
+  const workspaceIssues = issues.filter((issue) => issue.resolution === 'quarantine-workspace')
+  const coreIssues = issues.filter((issue) => issue.resolution === 'rebuild-profile')
+
+  if (pluginIssues.length > 0) {
+    const targets = [...new Set(pluginIssues.map((issue) => issue.target))]
+    const disabled = await disableProfilePlugins(dshHome, targets)
+    repaired.push(...pluginIssues.filter((issue) => disabled.includes(issue.target)).map((issue) => issue.id))
+    failed.push(...pluginIssues.filter((issue) => !disabled.includes(issue.target)).map((issue) => issue.id))
+  }
+
+  if (workspaceIssues.length > 0) {
+    const targets = [...new Set(workspaceIssues.map((issue) => issue.target))]
+    const quarantined = await quarantineProfileWorkspaces(dshHome, targets)
+    repaired.push(
+      ...workspaceIssues
+        .filter((issue) => quarantined.includes(issue.packageName))
+        .map((issue) => issue.id)
+    )
+    failed.push(
+      ...workspaceIssues
+        .filter((issue) => !quarantined.includes(issue.packageName))
+        .map((issue) => issue.id)
+    )
+  }
+
+  if (coreIssues.length > 0) {
+    const targets = [...new Set(coreIssues.map((issue) => issue.target))]
+    const quarantined = await quarantineProfileCorePackages(dshHome, targets)
+    repaired.push(...coreIssues.filter((issue) => quarantined.includes(issue.target)).map((issue) => issue.id))
+    failed.push(...coreIssues.filter((issue) => !quarantined.includes(issue.target)).map((issue) => issue.id))
+  }
+
+  if (workspaceIssues.length > 0 || coreIssues.length > 0) {
+    await clearProfileInstallMarker(dshHome)
+    const result = await installProfileDependenciesWithDsh({
+      dshHome,
+      dshEntryPath: dshEntryPath(),
+      nodeExecutablePath: bundledNodePath(),
+      pnpmEntryPath: bundledPnpmEntryPath(),
+      pnpmRunnerPath: bundledPnpmRunnerPath()
+    })
+    if (!result.ok) return { repaired, failed, installFailed: result.detail ?? 'unknown error' }
+    await markProfileInstallComplete(dshHome)
+  }
+
+  return { repaired, failed }
+}
+
 async function removeProfilePluginCompletely(
   dshHome: string,
   pluginName: string,
   environment: NodeJS.ProcessEnv,
   logPrefix: string
 ): Promise<boolean> {
+  // A generation plugin is uninstalled by dropping it from `desired` and
+  // reprojecting — a `pnpm remove` on its `link:` dep is undone by the next
+  // projection, which re-derives the profile from `desired`.
+  if (
+    await uninstallGenerationPlugin(dshHome, pluginName, (line) => runtime.note(line)).catch(
+      () => false
+    )
+  ) {
+    await cleanupPluginOwnedComponents({
+      dshHome,
+      pluginName,
+      log: (message) => runtime.note(`[${logPrefix}] ${message}`)
+    }).catch(() => undefined)
+    return !(await listInstalledProfilePlugins(dshHome)).includes(pluginName)
+  }
+
   const cleanup = await cleanupPluginOwnedComponents({
     dshHome,
     pluginName,
@@ -1581,7 +1775,16 @@ async function showSafeModeManager(): Promise<void> {
   try {
     while (!quitting) {
       const installed = await listInstalledProfilePlugins(dshHome)
-      const action = await waitForSafeModeAction({ plugins: installed, notice, noticeTone })
+      const compatibility = await inspectProfileCompatibility(
+        dshHome,
+        join(app.getAppPath(), 'node_modules')
+      )
+      const action = await waitForSafeModeAction({
+        plugins: installed,
+        issues: compatibility.issues,
+        notice,
+        noticeTone
+      })
       notice = undefined
       noticeTone = undefined
 
@@ -1595,31 +1798,57 @@ async function showSafeModeManager(): Promise<void> {
         return
       }
       if (action.type === 'restart') {
+        const unresolved = compatibility.issues.filter((issue) => issue.severity === 'blocking')
+        if (unresolved.length > 0) {
+          runtime.note(
+            `[safe-mode] user exited with ${unresolved.length} unresolved compatibility issue${unresolved.length === 1 ? '' : 's'}`
+          )
+        }
         await launchHarness()
         void mobileBridge.start().catch(showUnexpectedError)
         return
       }
 
+      const issueById = new Map(compatibility.issues.map((issue) => [issue.id, issue]))
+      const selectedIssues = [...new Set(action.issues)]
+        .map((id) => issueById.get(id))
+        .filter((issue): issue is ProfileCompatibilityIssue => issue !== undefined)
       const installedSet = new Set(installed)
-      const selected = [...new Set(action.plugins)].filter((plugin) => installedSet.has(plugin))
-      if (selected.length === 0) {
-        notice = isChinese ? '请选择要卸载的插件。' : 'Select at least one plugin to remove.'
+      const selectedPlugins = [...new Set(action.plugins)].filter((plugin) => installedSet.has(plugin))
+      if (selectedIssues.length === 0 && selectedPlugins.length === 0) {
+        notice = isChinese ? '请选择要处理的插件或遗留项。' : 'Select at least one plugin or leftover to process.'
         noticeTone = 'error'
         continue
       }
 
-      const failed: string[] = []
-      for (const plugin of selected) {
-        if (!(await removeSafeModePlugin(dshHome, plugin))) failed.push(plugin)
+      let repaired = 0
+      let repairFailures = 0
+      if (selectedIssues.length > 0) {
+        const result = await repairSafeModeCompatibilityIssues(dshHome, selectedIssues)
+        if (result.installFailed) {
+          notice = isChinese
+            ? `已备份并应用部分修复，但依赖重建失败：${result.installFailed}`
+            : `Some recoverable repairs were applied, but dependency rebuild failed: ${result.installFailed}`
+          noticeTone = 'error'
+          continue
+        }
+        repaired = result.repaired.length
+        repairFailures = result.failed.length
       }
-      notice = failed.length === 0
+
+      const failedPlugins: string[] = []
+      for (const plugin of selectedPlugins) {
+        if (!(await removeSafeModePlugin(dshHome, plugin))) failedPlugins.push(plugin)
+      }
+      const failed = repairFailures + failedPlugins.length
+      notice = failed === 0
         ? isChinese
-          ? `成功卸载 ${selected.length} 个插件。`
-          : `Successfully removed ${selected.length} plugin${selected.length === 1 ? '' : 's'}.`
+          ? `处理完成：修复 ${repaired} 项，卸载 ${selectedPlugins.length} 个插件。`
+          : `Completed: ${repaired} repair${repaired === 1 ? '' : 's'} and ${selectedPlugins.length} plugin removal${selectedPlugins.length === 1 ? '' : 's'}.`
         : isChinese
-          ? `以下插件未能卸载：${failed.join('、')}`
-          : `These plugins could not be removed: ${failed.join(', ')}`
-      noticeTone = failed.length === 0 ? 'success' : 'error'
+          ? `已修复 ${repaired} 项、卸载 ${selectedPlugins.length - failedPlugins.length} 个插件；${failed} 项未能处理。`
+          : `Completed ${repaired} repairs and removed ${selectedPlugins.length - failedPlugins.length} plugins; ${failed} items could not be processed.`
+      noticeTone = failed === 0 ? 'success' : 'error'
     }
   } finally {
     safeModeActionResolver = undefined
@@ -1846,6 +2075,7 @@ async function bootstrap(): Promise<void> {
   registerHarnessHandlers()
   mobileBridge = new LanMobileBridge({
     harnessUrl: () => runtime.snapshot().url,
+    harnessAuthToken: () => runtime.snapshot().authToken,
     locale: harnessLocale,
     brandLogoPaths: {
       light: dshBrandLogoPath('light'),
@@ -1944,20 +2174,27 @@ async function bootstrap(): Promise<void> {
     return { ok: false }
   })
   ipcMain.removeHandler('safe-mode:action')
-  ipcMain.handle('safe-mode:action', (event, action: unknown, plugins: unknown) => {
+  ipcMain.handle('safe-mode:action', (event, action: unknown, selection: unknown) => {
     assertTrustedSafeModeManagerEvent(event)
     if (
       !safeModeVisible ||
       !safeModeManagerVisible ||
-      (action !== 'uninstall' && action !== 'agent' && action !== 'restart' && action !== 'quit')
+      (action !== 'apply' && action !== 'agent' && action !== 'restart' && action !== 'quit')
     ) {
       return { ok: false }
     }
-    if (action === 'uninstall') {
-      if (!Array.isArray(plugins) || !plugins.every((plugin) => typeof plugin === 'string')) {
+    if (action === 'apply') {
+      if (typeof selection !== 'object' || selection === null) return { ok: false }
+      const { plugins, issues } = selection as { plugins?: unknown; issues?: unknown }
+      if (
+        !Array.isArray(plugins) ||
+        !plugins.every((plugin) => typeof plugin === 'string') ||
+        !Array.isArray(issues) ||
+        !issues.every((issue) => typeof issue === 'string')
+      ) {
         return { ok: false }
       }
-      resolveSafeModeAction({ type: 'uninstall', plugins })
+      resolveSafeModeAction({ type: 'apply', plugins, issues })
     } else {
       resolveSafeModeAction({ type: action })
     }
@@ -1976,11 +2213,21 @@ async function bootstrap(): Promise<void> {
     return { ok: true }
   })
   ipcMain.removeHandler('safe-mode:exit')
-  ipcMain.handle('safe-mode:exit', (event) => {
+  ipcMain.handle('safe-mode:exit', async (event) => {
     assertTrustedMainWindowEvent(event)
     if (!safeModeVisible) return { ok: false }
+    const dshHome = join(app.getPath('userData'), 'harness')
+    const compatibility = await inspectProfileCompatibility(
+      dshHome,
+      join(app.getAppPath(), 'node_modules')
+    )
+    if (compatibility.issues.some((issue) => issue.severity === 'blocking')) {
+      void showSafeModeManager().catch(showUnexpectedError)
+      return { ok: false, blocked: true }
+    }
     resolveSafeModeAction({ type: 'agent' })
-    void launchHarness().then(() => mobileBridge.start()).catch(showUnexpectedError)
+    await launchHarness()
+    void mobileBridge.start().catch(showUnexpectedError)
     return { ok: true }
   })
   ipcMain.removeHandler('harness:reset-plugins')
@@ -2004,6 +2251,8 @@ async function bootstrap(): Promise<void> {
     startUpdateManager({
       prepareToInstall: async () => {
         await runtime.stop()
+        const dshHome = join(app.getPath('userData'), 'harness')
+        await quarantineInstalledLaunchAgentsForUpdate(dshHome)
         quitting = true
         stopUpdateManager()
       }
@@ -2063,6 +2312,10 @@ if (isDaemonLaunch(process.env, process.platform)) {
       event.preventDefault()
       quitting = true
       stopUpdateManager()
+      // Windows leaves the tray icon behind as a ghost until the user hovers
+      // over it unless it is destroyed explicitly before the process exits.
+      if (tray && !tray.isDestroyed()) tray.destroy()
+      tray = undefined
       void Promise.all([runtime.stop(), mobileBridge?.stop()]).finally(() => app.quit())
     })
   }

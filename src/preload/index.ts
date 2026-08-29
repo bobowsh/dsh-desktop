@@ -162,8 +162,6 @@ function renderMobileButton(): void {
   const label = phoneConnected
     ? locale === 'zh' ? '管理手机连接' : 'Manage phone connection'
     : locale === 'zh' ? '连接手机' : 'Connect phone'
-  // Writing an attribute invalidates style even when the value is unchanged, so
-  // every skipped write here is a skipped style recalculation each frame.
   if (button.hidden !== hidden) button.hidden = hidden
   if (button.classList.contains('is-connected') !== phoneConnected) {
     button.classList.toggle('is-connected', phoneConnected)
@@ -241,7 +239,15 @@ async function mountSafeModeBanner(): Promise<void> {
     exit.addEventListener('click', () => {
       manage.disabled = true
       exit.disabled = true
-      void ipcRenderer.invoke('safe-mode:exit')
+      void ipcRenderer.invoke('safe-mode:exit').then((result) => {
+        if (result?.blocked) {
+          manage.disabled = false
+          exit.disabled = false
+        }
+      }).catch(() => {
+        manage.disabled = false
+        exit.disabled = false
+      })
     })
     actions.append(manage, exit)
     bar.append(dot, copy, actions)
@@ -258,12 +264,6 @@ function applyMobileStatus(connected: boolean): void {
   mountMobileButton()
 }
 
-/**
- * Read once at startup. Afterwards the main process pushes every change, so
- * there is no timer here: `connected` only moves when a phone pairs or drops,
- * and polling it woke both renderers once a second for a value that is almost
- * always the same.
- */
 async function refreshMobileStatus(): Promise<void> {
   try {
     const status = (await ipcRenderer.invoke('mobile:status')) as { connected?: boolean }
@@ -328,8 +328,10 @@ contextBridge.exposeInMainWorld(
 contextBridge.exposeInMainWorld(
   'dshSafeMode',
   Object.freeze({
-    action: (action: string, plugins: string[]): Promise<{ ok: boolean }> =>
-      ipcRenderer.invoke('safe-mode:action', action, plugins)
+    action: (
+      action: string,
+      selection: { plugins?: string[]; issues?: string[] }
+    ): Promise<{ ok: boolean }> => ipcRenderer.invoke('safe-mode:action', action, selection)
   })
 )
 
