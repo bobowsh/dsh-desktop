@@ -150,15 +150,6 @@
         "to": "plugin-recovery.html"
       },
       {
-        "from": "data",
-        "to": "data",
-        "filter": [
-          "settings.yaml",
-          "profiles/web/**",
-          "bin/**"
-        ]
-      },
-      {
         "from": "scripts/dsh.cmd",
         "to": "app/node_modules/node/bin/dsh.cmd"
       },
@@ -169,6 +160,17 @@
       {
         "from": "build/windows-menu.html",
         "to": "windows-menu.html"
+      }
+    ],
+    "extraFiles": [
+      {
+        "from": "data",
+        "to": "data",
+        "filter": [
+          "settings.yaml",
+          "profiles/web/**",
+          "bin/**"
+        ]
       }
     ],
     "publish": [

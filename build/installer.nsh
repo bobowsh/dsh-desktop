@@ -79,91 +79,35 @@
 !endif
 
 ; ============================================================================
-; DshUpgradeLogic - called from customInstall macro
+; customInstall - DSH direct overwrite install
 ;
-; $R9 output: 0=fresh, 1=full reinstall, 2=preserve/merge
-; ============================================================================
-
-!ifndef BUILD_UNINSTALLER
-Function DshUpgradeLogic
-  StrCpy $R9 "0"
-
-  ${IfNot} ${FileExists} "$INSTDIR\data\*.*"
-    Return
-  ${EndIf}
-
-  ; --- Backup existing data to D:\dsh-backup or E:\dsh-backup ----------
-  ; $0 = backup root, $1 = backup dir, $2 = counter
-  StrCpy $0 "D:\dsh-backup"
-  IfFileExists "D:\" 0 _dsh_use_e
-    Goto _dsh_have_drive
-  _dsh_use_e:
-    StrCpy $0 "E:\dsh-backup"
-  _dsh_have_drive:
-  CreateDirectory "$0"
-
-  ; Find next available counter directory
-  StrCpy $2 "0"
-  _dsh_find_loop:
-    StrCpy $1 "$0\$2"
-    IfFileExists "$1\*.*" 0 _dsh_found
-    IntOp $2 $2 + 1
-    StrCmp $2 "999" 0 _dsh_find_loop
-    StrCpy $1 "$0\999"
-  _dsh_found:
-  CreateDirectory "$1"
-  CopyFiles /SILENT "$INSTDIR\data\*.*" "$1"
-  DetailPrint "DSH: backed up user data to $1"
-
-  ; --- Ask user choice ---
-  MessageBox MB_YESNO|MB_ICONQUESTION "DSH has existing user data.$\r$\nBackup saved to $1$\r$\n$\r$\n[Yes] Full install - delete and reinstall from package$\r$\n[No]  Preserve - keep existing, only add new" IDYES _dsh_yes IDNO _dsh_no
-
-  _dsh_no:
-    StrCpy $R9 "2"
-    Return
-  _dsh_yes:
-    StrCpy $R9 "1"
-    Return
-FunctionEnd
-!endif
-
-; ============================================================================
-; customInstall macro - minimal, delegates to function
+; The bundled harness `data` is shipped via electron-builder `extraFiles`
+; (build.extraFiles in package.json), which extracts straight to $INSTDIR\data
+; at install time — so there is NO second copy step here and install is fast.
+;
+; The package's `data` filter only ships settings.yaml / profiles/web/** / bin/**
+; (see package.json build.extraFiles). The user's secrets file
+; `data/.credentials.yaml` is NEVER in that filter, so the extracted tree never
+; contains it and an overwrite install cannot clobber an existing API key —
+; NSIS only writes the files present in the package and leaves everything else
+; (sessions, .credentials.yaml, cache, …) in place.
 ; ============================================================================
 
 !macro customInstall
-  Call DshUpgradeLogic
-  ${If} $R9 == "1"
-    DetailPrint "DSH: full install - removing existing user data"
-    RMDir /r "$INSTDIR\data"
-  ${ElseIf} $R9 == "2"
-    DetailPrint "DSH: preserve mode - merging new files"
-    CopyFiles /SILENT "$INSTDIR\resources\data" "$INSTDIR"
-    Goto _dsh_done
-  ${EndIf}
-  ${IfNot} ${FileExists} "$INSTDIR\data\*.*"
-    ${If} ${FileExists} "$INSTDIR\resources\data"
-      DetailPrint "Installing bundled harness data"
-      CopyFiles /SILENT "$INSTDIR\resources\data" "$INSTDIR"
-      ${If} ${FileExists} "$INSTDIR\data\settings.yaml"
-        RMDir /r "$INSTDIR\resources\data"
-      ${EndIf}
-    ${EndIf}
+  ; data is already at $INSTDIR\data from extraFiles — nothing to copy.
+  ${If} ${FileExists} "$INSTDIR\data\settings.yaml"
+    DetailPrint "DSH: overwrite install — kept user data, refreshed bundled files"
   ${Else}
-    DetailPrint "Keeping existing user data"
+    DetailPrint "DSH: fresh install"
   ${EndIf}
-  _dsh_done:
+
   ${If} ${FileExists} "$INSTDIR\resources\app\node_modules\node\bin\dsh.cmd"
     DetailPrint "Creating dsh CLI shortcut"
     CreateShortcut "$INSTDIR\dsh.lnk" "$INSTDIR\resources\app\node_modules\node\bin\dsh.cmd" "" "$INSTDIR\resources\icon.png"
   ${EndIf}
-  ${If} $R9 != "2"
-    WriteRegStr HKCU "Environment" "DSH_HOME" "$INSTDIR\data"
-    SendMessage ${DSH_HWND_BROADCAST} ${DSH_WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
-    DetailPrint "DSH_HOME set to $INSTDIR\data"
-  ${Else}
-    DetailPrint "DSH: keeping existing DSH_HOME"
-  ${EndIf}
+  WriteRegStr HKCU "Environment" "DSH_HOME" "$INSTDIR\data"
+  SendMessage ${DSH_HWND_BROADCAST} ${DSH_WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
+  DetailPrint "DSH_HOME set to $INSTDIR\data"
 !macroend
 
 !macro customUnInstall
