@@ -71,3 +71,12 @@ test/check-persistence-list*.mjs
 #   在 data/profiles/web/ 跑 `pnpm install --no-frozen-lockfile`（仓库内 pnpm v11.21.0，
 #   NODE_OPTIONS="" + 绝对 Windows 路径调托管 node）即可按清单重建 node_modules。
 # 顶层全局 `node_modules/` 规则已涵盖本目录，无需额外 ! 恢复。
+
+# ==== app 运行时数据 / 本地产物（不纳入 git）====
+# 运行时认证/凭据与 prompt 库 DB（用户使用 app 时生成，含敏感/易变数据）
+data/auth/
+data/prompt-library/
+# 设计产物（某次 session 的 design 输出，非仓库源码）
+design/
+# 打包安装器绝不可覆盖的 API key（防御性忽略：extraFiles filter 已排除，这里双保险）
+data/.credentials.yaml
