@@ -9,9 +9,5 @@
   disabled: true
 - id: modlens
   disabled: true
-- id: vision-router
-  disabled: true
-- id: notify
-  disabled: true
 - id: md-notes
   disabled: true

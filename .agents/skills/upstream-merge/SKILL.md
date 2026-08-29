@@ -12,7 +12,7 @@ description: 把 origin/main（dataelement/dsh-desktop 上游）合并到 bobows
 - 本会话 pwsh 5.1；写二进制/UTF-8 文件用 `cmd /c "git show ... > file"`，**不要**用 pwsh `>` 重定向（会写 UTF-16LE BOM 损坏文件）。
 - git 走 schannel 会报 `SEC_E_NO_CREDENTIALS`，加 `-c http.sslBackend=openssl` 绕开；github.com 偶发超时，fetch 失败重试即可。
 - node 在 PATH 里的 `node_modules/.bin/node` 是 no-op stub，跑脚本须显式 `$env:PATH="d:\nodejs;$env:PATH"`。
-- 合并前先 `git stash -u` 保存本地未提交修改；但若仓库 object database 已损坏，stash 会失败（见下）。
+- 合并前先把本地未提交修改**提交成一个 commit**（不用 stash）：`git add -A && git commit`。这样既保证工作树干净可 merge，本地改动又留在历史里可追溯；且 merge 是真正的三方合并，不会像 stash pop 那样事后回放冲突。仓库若损坏导致 commit 失败，见步骤 1 的修复路径。
 
 ## 步骤 1：检查仓库完整性
 
@@ -35,19 +35,20 @@ git merge-base HEAD origin/main
    git tag -d v0.3.1   # 删坏的 tag 指针
    git -c http.sslBackend=openssl fetch origin main
    ```
-3. 若 `git stash` 因 `invalid object` 失败——先备份工作区修改文件到临时目录，再修仓库。
+3. 若 `git add -A && git commit` 因 `invalid object` 失败——先备份工作区修改文件到临时目录，再修仓库。
 4. 仓库修好后，用户可能已手动修复，继续下一步。
 
-## 步骤 2：保存本地修改
+## 步骤 2：先把本地修改提交（不 stash）
+
+合并前必须用 commit 把工作区清零，再用 `git merge`。这样本地改动进入历史、可被 merge 做三方合并，不会像 stash pop 那样事后回放冲突。
 
 ```pwsh
-git stash push -u -m "pre-merge local changes"
+git add -A
+git commit -m "wip: pre-merge local changes ($(Get-Date -Format yyyy-MM-dd))"
+# 若没有可提交的改动，commit 会失败（nothing to commit）——属正常，直接进步骤 3
 ```
 
-⚠️ 若 stash 失败（`Cannot save the current worktree state` / `invalid object`），手动备份：
-```pwsh
-# 用 git diff --name-only 列出修改文件，Copy-Item 到备份目录
-```
+⚠️ 若 `git commit` 失败报 `invalid object`（仓库损坏），不要 stash，先按步骤 1 修复仓库；修好前可手动 `Copy-Item` 备份改动文件到临时目录。
 
 ## 步骤 3：执行合并
 
@@ -132,22 +133,18 @@ npx vitest run
 - `test/model-settings-catalog-ux-patch.test.ts`：读取的是 patch 后的 node_modules 源码，若 patch 没 apply 成功（BOM 损坏），重做步骤 4.2 + 5。
 - `test/preset-transfer-patch.test.ts`：同上，取上游版测试 + 重打 patch。
 
-## 步骤 7：提交 + 恢复本地修改
+## 步骤 7：完成合并提交
+
+冲突解决完后，结束 merge（步骤 2 的 pre-merge commit 已保留本地改动，无需再恢复）：
 
 ```pwsh
 git add -A
-git commit --no-edit
+git commit --no-edit   # 仅当 merge 有冲突、需要收尾合并提交时执行
 ```
 
-恢复 stash：
-```pwsh
-git stash pop
-```
-
-若用户放弃了某些本地功能（如版本号显示），直接 drop stash：
-```pwsh
-git stash drop "stash@{0}"
-```
+- 若 merge 是快进（fast-forward）或无冲突，git 已自动完成，无需此步。
+- 本地改动已保存在步骤 2 的 pre-merge commit 里，不再需要 stash pop。
+- 若用户放弃了某些本地功能（如版本号显示）：合并时取上游版覆盖即可，pre-merge commit 里那份旧改动仍留在历史中（不 revert），下次 merge 自然被上游覆盖；如想彻底清理可在合并后用 `git revert <pre-merge commit>` 或交互式 rebase 整理。
 
 ## 坑点清单
 
@@ -161,7 +158,7 @@ $content = [System.IO.File]::ReadAllText($file, [System.Text.Encoding]::Unicode)
 
 ### 仓库 object database 损坏
 
-症状：`git merge-base` / `git log` / `git stash` 报 `Could not read <sha>`，`git fsck` 报 `invalid sha1 pointer`。
+症状：`git merge-base` / `git log` / `git commit` 报 `Could not read <sha>`，`git fsck` 报 `invalid sha1 pointer`。
 原因：本地 packfile 缺失祖先 commit，fetch 无法补回（git 认为已有 ref）。
 修法：从干净克隆复制 packfile，或删坏 tag 后重新 fetch。
 
@@ -169,9 +166,9 @@ $content = [System.IO.File]::ReadAllText($file, [System.Text.Encoding]::Unicode)
 
 patches/ 目录的文件名带版本号（`dsh+0.1.1-rc.2.patch`），但 node_modules 里装的包版本可能滞后。合并后必须 `npm install` 装新版包再 `patch-package`，否则测试读到的源码和 patch 不一致。
 
-### stash 失败
+### commit 失败（替代原 stash 失败）
 
-仓库损坏时 `git stash` 会失败。修仓库前先手动备份修改文件（`Copy-Item` 到临时目录），修好后再恢复。
+仓库损坏时 `git add -A && git commit` 会失败（invalid object）。修仓库前先手动备份工作区改动文件（`Copy-Item` 到临时目录），修好仓库后重新执行步骤 2 的提交再 merge。
 
 ### git push 的 exit 1 误报
 
@@ -181,5 +178,5 @@ pwsh 5.1 下 git push 的 stderr 进度输出会被报成 NativeCommandError，e
 
 用户若说"某功能不要了"（如版本号显示）：
 1. 合并冲突时取上游版本（覆盖本地修改）。
-2. stash 不恢复，直接 `git stash drop`。
-3. 本地相关 commit 留在历史里（不 revert），下次 merge 时自然丢弃。
+2. 无需 stash drop——本地改动已在步骤 2 的 pre-merge commit 里；取上游版即覆盖了工作区，提交合并即可。
+3. pre-merge commit 里那份旧改动仍留在历史中（不 revert），下次 merge 时自然被上游覆盖；如想彻底清理，合并后用 `git revert <pre-merge commit>` 或在 rebase 时 drop 该提交。

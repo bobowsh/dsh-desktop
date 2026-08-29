@@ -1,5 +1,14 @@
 # dsh-desktop-me 项目约定
 
+## 自制 DSH 插件 defineTool 的 schema DSL 规范（2026-08-29，踩坑总结）
+宿主 `@deepseek-ai/dsh-tools` 的 `defineTool` **不接受原生 JSON Schema**，写错会在 harness 启动加载插件树时直接崩（exit 1）：
+- `parameters` = 「属性名 → 值 schema」映射：`{ pipelineId: { type: 'string', required: true, description } }`。必填用属性级 `required: true`，不要写顶层 `required: [...]`，更不要包一层 `{type:'object', properties:...}`（会报 `parameters.type must be a value schema object`）。
+- `output.schema` 用 `{ type: 'json' }` 最稳。若要严格 object：必须显式 `additionalProperties: true/false`，且不支持联合类型（`type:['string','null']` 非法，要 `oneOf`）。
+- `output.render` **必填**：返回内容块数组 `[{ type: 'text', text }]`；execute 返回值会按 output.schema 校验，render 每次成功调用后必然被调。
+- 注册 API 是 `ctx.tools.register(definition)` **单参数**：直接传 `defineTool({ name, output, execute, ... })` 的返回值，definition 自带 `name`+`output`。写成 `ctx.tools.register('name', defineTool({...}))` 双参会报 `tool "undefined" must declare output`（字符串被当成 definition，name/output 全丢）。
+- 服务名是复数 `tools`，inject 必须含 `'tools'`（单数 `tool` 找不到服务）。
+- 参考实现：`@dsh-external/workflow`、`@dsh-external/dsh-inspect` 的 lib。
+
 ## Harness home 目录（DSH_HOME 注入目标历经多次变更）
 - 历史：最早桌面壳把 harness 数据根改写成 `<userData>/harness`；2026-08-16 一度移除 `DSH_HOME` 注入，让 harness 用默认 `~/.dsh`；**2026-08-17 用户要求重新注入 `DSH_HOME`，指向"当前运行程序目录下的 `data` 目录"**（便携化：数据跟 exe 走）。
 - 当前实现（2026-08-17 生效）：
