@@ -285,7 +285,6 @@ function initializeUi(): void {
   if (ENABLE_MOBILE_BRIDGE) {
     mountMobileButton()
     void refreshMobileStatus()
-    mobileStatusTimer ??= window.setInterval(() => void refreshMobileStatus(), 1000)
   }
   void mountSafeModeBanner()
   checkBootFailureInDom()
