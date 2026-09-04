@@ -1,8 +1,8 @@
 diff --git a/node_modules/@earendil-works/pi-ai/dist/api/openai-completions.js b/node_modules/@earendil-works/pi-ai/dist/api/openai-completions.js
-index 0000000..0000000 100644
+index c732f1f..d58786d 100644
 --- a/node_modules/@earendil-works/pi-ai/dist/api/openai-completions.js
 +++ b/node_modules/@earendil-works/pi-ai/dist/api/openai-completions.js
-@@ -1241,7 +1241,7 @@
+@@ -1273,7 +1273,7 @@ function detectCompat(model) {
      const cacheControlFormat = provider === "openrouter" && model.id.startsWith("anthropic/") ? "anthropic" : undefined;
      return {
          supportsStore: !isNonStandard,
