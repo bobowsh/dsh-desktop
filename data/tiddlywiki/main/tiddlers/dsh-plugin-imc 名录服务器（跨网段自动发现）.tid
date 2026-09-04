@@ -1,0 +1,33 @@
+tags: dsh-plugin-imc decision architecture dsh-plugin agent-written
+title: dsh-plugin-imc 名录服务器（跨网段自动发现）
+
+! 背景
+原 dsh-plugin-imc 跨网段只能手动 imc_probe 扫网段（UDP 广播跨不过网段）。用户要求改成有服务器、跨网段自动发现。
+
+!! 关键决策（用户明确）
+*服务器只做「发现/名录」，不做消息转发*。理由：跨网段但 IP 路由可达（企业网/VPN 多网段互通），发现之后节点间 TCP 直连即可。服务器零消息留存、无带宽压力。曾一版实现成中继转发（/send /blob），被用户砍掉。
+
+! 架构（v0.5.0，2026-09）
+* src/server.js：零依赖名录/presence 服务器（仅 node:http）。
+** POST /register（注册+心跳合一，30s 周期；上报 peerId/profile/admin/tcpPort/ips[]）
+** GET /events（SSE 长连接；推 welcome 全量名册 / peer 上线 / peer-off 下线；心跳超时 90s 判离线，SSE 断开 5s 宽限）
+** POST /bye、GET /api/status、GET / 状态页（浏览器看在线名单）
+** 支持 Bearer/token 鉴权（timingSafeEqual）
+* core.js（ImcCore）：
+** config 新增 serverUrl/serverToken/relayEnabled/relayPort(24252)/relayHost/relayToken；运行时连接存 dataDir/server.json
+** _dirRegister 上报 _localIps()（全部非回环 IPv4）；SSE 收名册 → _onDirPeer 建 peer（via:'server'，带 ips[] 候选地址）
+** peer.via: lan | server | both（同网段 UDP 与服务器都见到=both）；UDP bye/超时只影响 lan 侧，server/both 不因 UDP 超时下线
+** _sendFrameAny(peer,h,payload)：多候选 IP 竞速连接，第一个连上的发帧（4B 长度头+JSON 头+payload 帧格式不变），成功后 peer.ip 记为首选；单 IP 走原 _sendFrame
+** 群聊/群图 _fanoutDirect 逐成员 _sendFrameAny；建群 group_meta/解散/公告也全部直连；_seenMsg(msgId) 去重
+** 内置名录：relayEnabled 或 enableDirectory()/imc_directory_start 在本节点起 createDirectoryServer，并自动连 127.0.0.1
+* 独立服务器：server.js（包根入口，node server.js [--port --host --token]）+ 启动IMC名录服务器.bat（chcp 65001，where node 回退 runtime/node.exe）
+* 工具：imc_server_status / imc_server_connect(url,token) / imc_directory_start(enabled,port,token)
+* Web API：POST /imc/api/server {url,token}、POST /imc/api/directory {enabled,port,token}
+* client.js 设置页新增「跨网段服务器」分区（状态/地址输入+连接断开/密钥/本机当服务器开关）
+
+! 测试
+* test/dir-test.mjs：三节点 UDP/TCP 端口全不同、互不探测（模拟跨网段广播不可达），只连名录 → 19/19 通过（发现/候选IP/单聊直连/文件直连/建群分发/群聊/公告/断开后离线）
+* test/selftest.mjs P2P 回归 38 项全过
+
+! 部署
+源码 E:\work\aitest\dsh-plugin-imc（git main，commit aeb2b39）→ 拷 index.js/server.js/package.json/cordis.patch.yml/lib/client.js/src/*.js 到 E:\work\dsh-desktop-me\data\profiles\web\node_modules\dsh-plugin-imc\，重启 DSH/harness 生效（Cordis 插件无 HMR）。默认端口：UDP 24250 / TCP 24251 / 名录 HTTP 24252。
