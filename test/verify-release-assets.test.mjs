@@ -103,4 +103,28 @@ describe('release asset verification', () => {
       await rm(root, { recursive: true, force: true })
     }
   })
+
+  it('verifies a Windows-only release when the mac jobs were skipped', async () => {
+    const root = await mkdtemp(path.join(tmpdir(), 'dsh-release-assets-'))
+    try {
+      await createFixture(root)
+      await Promise.all([
+        rm(path.join(root, 'dsh-desktop-mac-arm64.dmg')),
+        rm(path.join(root, 'dsh-desktop-mac-arm64.zip')),
+        rm(path.join(root, 'dsh-desktop-mac-arm64.zip.blockmap')),
+        rm(path.join(root, 'dsh-desktop-mac-x64.dmg')),
+        rm(path.join(root, 'dsh-desktop-mac-x64.zip')),
+        rm(path.join(root, 'dsh-desktop-mac-x64.zip.blockmap')),
+        rm(path.join(root, 'latest-mac.yml'))
+      ])
+      await expect(
+        verifyReleaseAssets(root, '1.2.3', { minimumBytes, platforms: 'windows' })
+      ).resolves.toBeUndefined()
+      await expect(
+        verifyReleaseAssets(root, '1.2.3', { minimumBytes })
+      ).rejects.toThrow('Missing required release asset: dsh-desktop-mac-arm64.dmg')
+    } finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
 })

@@ -29,11 +29,15 @@
 
 ### 路径 A：profile 插件（社区包，如 dshmarket / dsh-better-sidebar / dsh-rule-manager 等 30+ 个）
 - **真源（single source of truth）= `data/profiles/web`（dev DSH_HOME 即打包源，2026-08-18 用户变更）**。`bundle-user-data.mjs` **不再从 `~/.dsh/profiles/web` cpSync 覆盖** data/profiles/web（旧约定"改 live profile 别改快照"已废弃）；构建只对 data/profiles/web **原地**做：`normalizeModulesMetadata`（剥 `node_modules/.modules.yaml` 的 `storeDir`/`virtualStoreDir` 机器绝对路径，`virtualStoreDirMaxLength` 数字字段无害保留；`pnpm-workspace.yaml` 若缺 `storeDir: ~/AppData/Local/pnpm/store` 则追加）+ `trimNativePrebuilds`（pdb/非 x64 prebuilds）+ `trimPdfjsBuild`。打包产物 = data/profiles/web 的当前内容（白名单 `extraResources filter: ["settings.yaml","profiles/web/**","bin/**"]`，`from: data` → `$INSTDIR\data`）。
-- 装/更新插件：直接在 `data/profiles/web` 里做（market UI，或仓库内 pnpm `packages/dsh-desktop-market-installer/node_modules/pnpm/bin/pnpm.cjs` + `NODE_OPTIONS=""`，避 Git Bash 盘符坑 `e:\e\work\...`）；改完重新构建即进包。`pnpm-workspace.yaml` 是 `nodeLinker: hoisted`，node_modules 自包含（HardLink 拷出物化为独立文件，非 symlink）。
+- 装/更新插件：直接在 `data/profiles/web` 里做（market UI，或项目根 pnpm `node_modules/pnpm/bin/pnpm.cjs` v11.21.0 + `NODE_OPTIONS=""`，避 Git Bash 盘符坑 `e:\e\work\...`）；改完重新构建即进包。`pnpm-workspace.yaml` 是 `nodeLinker: hoisted`，node_modules 自包含（HardLink 拷出物化为独立文件，非 symlink）。
 - ⚠️ **data/profiles/web 是 dev 真源，坏了没有 live 可恢复**（以前可从 ~/.dsh 重拷）：对它的 pnpm 操作被中断可能移走部分包（如 @anionex scope 消失导致 harness 启动失败），务必跑完整个命令。
 - ⚠️ `.modules.yaml` 的机器路径：构建时被剥（打包产物干净）；dev 运行时桌面壳 `harness-runtime.ts` 的 `syncModulesMetadata` 启动时重写当前机器 storeDir。dev 里 `pnpm add` 前若 .modules.yaml 无 storeDir 会报 `ERR_PNPM_UNEXPECTED_STORE`（重启 dev 或手动补回）。
 - `bin/` 仍每次从 `~/.mnemon/bin` 刷新（构建输入）；`settings.yaml` 仍用 `data/settings.template.yaml` 覆盖（防泄漏：dev UI 改的 provider/key 不会进包）。
 - 插件靠自身 package.json 的 cordis 字段自注册；profile 级 `cordis.yml` / `cordis.patch.yml` 可覆盖配置。
+- ⚠️ **market UI 装插件 = 隐式 pnpm install（2026-08-30 实锤）**：会把 profile 顶层 `@deepseek-ai/*` 重置回 npm 旧版（latest 仍是 0.0.1-rc.1），遮蔽 harness 核心 → 启动即崩（`loader entries failed to apply`，几十个 entry 报缺 `ToolCallId`/`SettingsProvider` 等）。**装完必须立刻重跑 `NODE_OPTIONS="" node scripts/sync-harness-pkgs.mjs`**。临时救急可整批移出 profile 顶层 @deepseek-ai（dev 态解析回落宿主 node_modules），但打包态不保证回落，正式修法永远是 sync。排查 AggregateError 子错误用 `--import` preload patch AggregateError 收集 `e.errors`；grep API 名（ToolCallId/CallId）必须加 `\b` 词边界防子串误判。
+
+- **本地 file: 依赖插件（路径 A 变体，2026-09-02）**：本地开发、未发 npm 的插件放项目根 `vendor/<pkg>/`（git 跟踪），profile 里用 `"<pkg>": "file:../../../vendor/<pkg>"` 引用。pnpm 把它 **hardlink 物化**进 node_modules（`lstatSync().isSymbolicLink()===false`、inode 相同）→ 自包含，bundle-user-data.mjs 的 symlink 物化对它 no-op。原地改 vendor 即时反映；增删文件或编辑器 rename 保存后需重跑 `pnpm install`。
+- ⚠️ 本地包名别和 npm 同名包撞车：`dsh-taskboard` 已被 cloader 占用（agent task board，只到 0.6.3，无 1.x）；本地四象限任务板已改名 `dsh-quadrant-board`（`vendor/dsh-quadrant-board`）。改名要改 5 处：package.json `name` / index.js `export const name` / client.js `id`(load+register) / cordis.patch.yml `name` / README·日志文案；cordis name 三处必须一致；`/taskboard` 路由前缀与数据目录名不改。
 
 ### 路径 B：桌面壳自有注入插件（如 dsh-desktop-market-installer）
 - 它是根 `package.json` 的 `file:` 依赖 → 进 app `node_modules` → 由 electron-builder `files: node_modules/**/*` 打包。
@@ -44,7 +48,7 @@
 `npm run build`（electron-vite）→ `node scripts/bundle-user-data.mjs`（data 原地整理：profiles/web 剥机器路径+瘦身、bin 从 ~/.mnemon 刷新）→ `npx electron-builder --win --x64`。⚠️ 必须在普通终端跑，不要在 WorkBuddy 里跑（safe-delete 垫片会让 electron-builder 死锁）。
 
 ### 验证 pnpm bin 的小坑
-仓库内 pnpm bin 在 `packages/dsh-desktop-market-installer/node_modules/pnpm/bin/pnpm.cjs`（v11.21.0，由 `dsh-desktop-market-installer` 的 `pnpm` 依赖 pin 决定，已 bump 10.34.5→11.21.0）。在 Git Bash 直接用会盘符错乱（`e:\e\work\...`），务必用 PowerShell 原生路径或 `NODE_OPTIONS=""` + 绝对 Windows 路径调托管 node。
+仓库内 pnpm bin 在项目根 `node_modules/pnpm/bin/pnpm.cjs`（v11.21.0）。⚠️ 旧记忆里 `packages/dsh-desktop-market-installer/node_modules/pnpm/...` 路径已不存在（2026-09-02 实测 NOT FOUND）。在 Git Bash 直接用会盘符错乱（`e:\e\work\...`），务必用 PowerShell 原生路径或 `NODE_OPTIONS=""` + 绝对 Windows 路径调托管 node。
 - ⚠️ store 路径记录不一致**不是致命问题**：`node_modules/.modules.yaml` 的 `storeDir` 只是 pnpm 安装期元数据，**DSH 运行时不读它**，绝不影响 app 启动/运行。若 active pnpm 解析出的 store 与记录不一致（如用 pnpm 10 跑 v11 profile、或 `.npmrc` 改了 store-dir），pnpm 在下次 `install` 会**自愈**（按 active store 重新硬链、重写 `.modules.yaml`），不报硬错；唯一风险场景是"记录的 store 已删 + 离线 + 需拉新包"才会失败。本 profile 实测：`.modules.yaml` storeDir=v11、`~/.npmrc` 无 store-dir 覆盖、实际 store 含 v11（另残留无用的 v10），三处一致 → 无问题。
 
 ## web profile 的 node_modules 不再纳入 git（2026-08-22 变更）

@@ -1,0 +1,19 @@
+tags: 索引
+title: 标签笔记
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+
+<$set name="sel" value={{{ [{$:/state/tag}] }}}>
+
+!! 标签：<<sel>>
+
+<div class="tc-message-box">包含标签 <strong><<sel>></strong> 的所有笔记（自动收集，按最近修改排序）。</div>
+
+<ul>
+<$list filter="[all[tiddlers]!is[system]!has[draft.of]tag<sel>] +[!sort[modified]]">
+<li><$link to=<<currentTiddler>>><$view field="title"/></$link><span style="color:#aaa; font-size:0.85em;"> · <$view field="modified" format="relativedate"/></span></li>
+</$list>
+</ul>
+
+</$set>

@@ -1,0 +1,257 @@
+{
+  "purpose": "",
+  "doc_types": {
+    "default": "design",
+    "types": {
+      "api": {
+        "module": "Focus on API documentation: endpoints, parameters, return types, and usage examples."
+      },
+      "architecture": {
+        "module": "Focus on architecture documentation: system design, component relationships, and data flow.",
+        "overview": "Focus on system-level architecture: show how modules relate, data flows between components, and the overall layered design. Include a high-level Mermaid architecture diagram."
+      },
+      "user-guide": {
+        "module": "Focus on user guide documentation: how to use features, step-by-step tutorials."
+      },
+      "developer": {
+        "module": "Focus on developer documentation: code structure, contribution guidelines, and implementation details."
+      },
+      "business": {
+        "module": "Focus on business logic documentation: describe business workflows, processing pipelines, state transitions, and domain rules. Emphasize WHAT the system does for users and WHY, trace end-to-end business scenarios through the code, and document domain-specific terminology. De-emphasize infrastructure and deployment details."
+      },
+      "design": {
+        "module": "Generate technical design documentation optimized for AI comprehension. For each module, describe in depth: (1) module responsibilities and boundaries, (2) detailed implementation logic and business rules, (3) data flow within and through the module, (4) interface contracts — inputs, outputs, and side effects, (5) internal layered design and component collaboration patterns, (6) relationships and dependencies with other modules, (7) constraints, assumptions, and edge cases. Use precise technical language. Include Mermaid diagrams for complex flows and interactions. Do not limit documentation length — let the content depth match the module's complexity.",
+        "overview": "Focus on system-level architecture: show how modules relate to each other, data flows between components, overall layered design, and key architectural decisions. Provide a high-level view that helps readers understand the system's structural blueprint. Include Mermaid diagrams for the architecture overview."
+      }
+    }
+  },
+  "conventions": {
+    "file_pattern": "*.md",
+    "cross_reference_format": "[[{module_name}]]({{module_name}}.md)",
+    "mermaid_required": true,
+    "min_leaf_doc_lines": 200,
+    "max_overview_doc_lines": 1000,
+    "auto_crosslink": true,
+    "okf_frontmatter": true,
+    "okf_version": "0.2",
+    "default_stale_days": 90,
+    "freshness": {
+      "default_window_days": 180,
+      "retrieval_defer_days": 60,
+      "by_type": {
+        "workaround": 45,
+        "known_issue": 60,
+        "general": 120,
+        "pitfall": 180,
+        "lesson": 180,
+        "bug_fix": 180,
+        "decision": 365,
+        "architecture": 365
+      }
+    },
+    "usage_ranking": {
+      "enabled": true,
+      "boost_cap": 0.15,
+      "cold_penalty": 0.2,
+      "cold_days": 180,
+      "cold_min_hits": 3,
+      "adopted_weight": 0.06,
+      "low_adoption": {
+        "min_hits": 5,
+        "max_adopted": 0,
+        "recent_days": 60
+      }
+    },
+    "promotion": {
+      "min_adopted": 3,
+      "min_age_days": 14
+    },
+    "telemetry": {
+      "enabled": true
+    },
+    "okf_tags": [],
+    "module_naming": "snake_case",
+    "note_types": {
+      "workaround": {
+        "freshness_days": 45,
+        "promote_to": "query",
+        "merge_fields": {
+          "body": "append",
+          "related_modules": "replace",
+          "title": "replace",
+          "tags": "union"
+        }
+      },
+      "known_issue": {
+        "freshness_days": 60,
+        "promote_to": "query",
+        "merge_fields": {
+          "body": "append",
+          "related_modules": "replace",
+          "title": "replace",
+          "tags": "union"
+        }
+      },
+      "general": {
+        "freshness_days": 120,
+        "promote_to": "",
+        "merge_fields": {
+          "body": "append",
+          "related_modules": "replace",
+          "title": "replace",
+          "tags": "union"
+        }
+      },
+      "pitfall": {
+        "freshness_days": 180,
+        "promote_to": "query",
+        "merge_fields": {
+          "body": "append",
+          "related_modules": "replace",
+          "title": "replace",
+          "tags": "union"
+        }
+      },
+      "lesson": {
+        "freshness_days": 180,
+        "promote_to": "concept",
+        "merge_fields": {
+          "body": "append",
+          "related_modules": "replace",
+          "title": "replace",
+          "tags": "union"
+        }
+      },
+      "bug_fix": {
+        "freshness_days": 180,
+        "promote_to": "query",
+        "merge_fields": {
+          "body": "append",
+          "related_modules": "replace",
+          "title": "replace",
+          "tags": "union"
+        }
+      },
+      "decision": {
+        "freshness_days": 365,
+        "promote_to": "concept",
+        "merge_fields": {
+          "body": "append",
+          "related_modules": "replace",
+          "title": "replace",
+          "tags": "union"
+        }
+      },
+      "architecture": {
+        "freshness_days": 365,
+        "promote_to": "concept",
+        "merge_fields": {
+          "body": "append",
+          "related_modules": "replace",
+          "title": "replace",
+          "tags": "union"
+        }
+      }
+    }
+  },
+  "required_sections": [
+    {
+      "title": "Architecture Overview",
+      "mermaid_diagram": true
+    },
+    {
+      "title": "Component Responsibilities"
+    },
+    {
+      "title": "Cross-References"
+    }
+  ],
+  "documentation_dimensions": [
+    "architecture_decisions",
+    "api_contracts",
+    "data_model_changes",
+    "dependency_rationale"
+  ],
+  "update_policy": {
+    "on_code_change": "update_affected",
+    "preserve_decisions": true,
+    "cascade_to_overview": true
+  },
+  "lint": {
+    "high_impact_threshold": 5
+  },
+  "page_types": {
+    "module": {
+      "directory": "wiki/modules",
+      "description": "代码模块文档，描述一个功能模块的架构、组件和依赖",
+      "required_sections": [
+        "Architecture Overview",
+        "Component Responsibilities",
+        "Cross-References"
+      ]
+    },
+    "entity": {
+      "directory": "wiki/entities",
+      "description": "关键类、接口、数据模型、API 端点的独立文档",
+      "required_sections": [
+        "职责描述",
+        "公开 API",
+        "使用示例",
+        "依赖关系"
+      ]
+    },
+    "concept": {
+      "directory": "wiki/concepts",
+      "description": "设计模式、架构理念、领域概念的文档",
+      "required_sections": [
+        "概念定义",
+        "适用场景",
+        "在本项目中的应用"
+      ]
+    },
+    "source": {
+      "directory": "wiki/sources",
+      "description": "第三方文档（SDK/API/框架文档）的摘要",
+      "required_sections": [
+        "文档概述",
+        "关键 API/概念",
+        "与本项目相关的部分"
+      ]
+    },
+    "comparison": {
+      "directory": "wiki/comparisons",
+      "description": "方案对比、技术选型分析",
+      "required_sections": [
+        "背景与目标",
+        "候选方案",
+        "对比分析",
+        "结论与决策"
+      ]
+    },
+    "query": {
+      "directory": "wiki/queries",
+      "description": "方案设计决策记录，包含推理过程和权衡",
+      "required_sections": [
+        "问题描述",
+        "调研过程",
+        "方案权衡",
+        "决策结论"
+      ]
+    }
+  },
+  "extraction_granularity": "exhaustive",
+  "wiki_link_syntax": false,
+  "project": {
+    "name": "dsh-desktop-me",
+    "languages": [
+      "javascript",
+      "typescript"
+    ],
+    "total_components": 593
+  },
+  "generated_at": "2026-08-30T22:49:05.847068",
+  "version": 1,
+  "export": {
+    "html": false
+  }
+}

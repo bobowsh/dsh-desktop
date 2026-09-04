@@ -1,1 +1,1 @@
-{"disabled":["dsh-agent-team-gui","@liustack/modlens","dsh-md-notes"],"groups":{},"groupOrder":[],"region":"china","regionAuto":true}
+{"disabled":["dsh-agent-team-gui","@liustack/modlens","dsh-md-notes","dsh-plugin-capabilities","@opendsh/dsh-plugin-setting-mcp","specworkflow","dsh-bookmarks","dsh-builtin-browser"],"groups":{},"groupOrder":[],"region":"china","regionAuto":true}

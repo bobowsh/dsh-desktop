@@ -1,0 +1,6 @@
+{
+  "protocol": 2,
+  "fingerprint": "e9d181d44eb70fbad549c2f45250a9ccce9f8863a22e226080cef59b98907dc6",
+  "reason": "could not stage @changfenhuang/dsh-genui: EPERM: operation not permitted, rename 'E:\\work\\dsh-desktop-me\\data\\profiles\\.generations\\staging\\8871ae73-339e-443c-9409-2ccd6eea8b7e' -> 'E:\\work\\dsh-desktop-me\\data\\profiles\\.generations\\live\\changfenhuang+dsh-genui+0.9.6+0a0d4d94bf55'",
+  "failedAt": "2026-09-04T11:53:53.374Z"
+}

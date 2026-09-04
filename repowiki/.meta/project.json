@@ -1,0 +1,5 @@
+{
+  "repo_name": "dsh-desktop-me",
+  "output_dir": "repowiki",
+  "cache_db": ".codewiki/analysis_cache.db"
+}

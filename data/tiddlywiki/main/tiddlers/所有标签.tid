@@ -1,0 +1,74 @@
+tags: 索引
+title: 所有标签
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+
+\define tag-count() [all[tiddlers]!is[system]!tag[agent-written]tag<currentTiddler>count[]]
+\define tag-list() [all[tiddlers]!is[system]!tag[agent-written]tags[]!prefix[$:/tags/]!match[索引]]
+
+\define agent-notes-pure() [all[tiddlers]!is[system]tag[agent-written]!tag[human-edited]count[]]
+\define agent-notes-mixed() [all[tiddlers]!is[system]tag[agent-written]tag[human-edited]count[]]
+\define agent-tags-pure() [all[tiddlers]!is[system]tag[agent-written]!tag[human-edited]tags[]!prefix[$:/tags/]!match[索引]!match[agent-written]!match[human-edited]]
+\define agent-tags-mixed() [all[tiddlers]!is[system]tag[agent-written]tag[human-edited]tags[]!prefix[$:/tags/]!match[索引]!match[agent-written]!match[human-edited]]
+\define agent-count-pure() [all[tiddlers]!is[system]tag[agent-written]!tag[human-edited]tag<currentTiddler>count[]]
+\define agent-count-mixed() [all[tiddlers]!is[system]tag[agent-written]tag[human-edited]tag<currentTiddler>count[]]
+
+<$button class="tc-btn-invisible tc-tiddlylink" style="margin:6px 0; padding:4px 10px; border:1px solid rgba(128,128,128,0.3); border-radius:6px; font-size:0.9em;">
+<$action-navigate $to="主页"/>
+← 回主页
+</$button>
+
+!! 🏷 所有标签
+
+<div class="tc-message-box">按笔记数量从多到少排序，仅统计人类笔记（Agent 撰写的笔记已排除，见下方「🤖 Agent 撰写的标签」）。点击标签，查看包含该标签的所有笔记。</div>
+
+<div style="margin-top:12px;">
+<$list filter="[subfilter<tag-list>] +[!sortsub:number<tag-count>]">
+<$set name="count" value={{{ [subfilter<tag-count>] }}}>
+<div style="padding:7px 2px; border-bottom:1px solid rgba(128,128,128,0.15);">
+<$button set="$:/state/tag" setTo=<<currentTiddler>> class="tc-btn-invisible tc-tiddlylink" style="width:100%; text-align:left;">
+<$action-navigate $to="标签笔记"/>
+<span style="font-weight:600; font-size:1.05em;"><<currentTiddler>></span>
+<span style="color:#888; font-size:0.85em; margin-left:8px;"><<count>> 篇</span>
+</$button>
+</div>
+</$set>
+</$list>
+</div>
+
+!! 🤖 Agent 撰写的标签
+
+<div class="tc-message-box">以下标签来自带有 <code>agent-written</code> 标签（由 Agent 撰写）的笔记，与上方主列表分开统计。若某篇 Agent 笔记又被人类编辑过，请给它补打 <code>human-edited</code> 标签，即归入下方「Agent + 人工」档。</div>
+
+<div style="font-weight:700; margin:8px 0 4px;">🦾 纯 Agent <span style="color:#888; font-weight:400; font-size:0.82em;">{{{[subfilter<agent-notes-pure>]}}} 篇</span></div>
+<div style="margin-left:10px;">
+<$list filter="[subfilter<agent-tags-pure>] +[!sortsub:number<agent-count-pure>]">
+<$set name="count" value={{{ [subfilter<agent-count-pure>] }}}>
+<div style="padding:7px 2px; border-bottom:1px solid rgba(128,128,128,0.15);">
+<$button set="$:/state/tag" setTo=<<currentTiddler>> class="tc-btn-invisible tc-tiddlylink" style="width:100%; text-align:left;">
+<$action-navigate $to="标签笔记"/>
+<span style="font-weight:600; font-size:1.05em;"><<currentTiddler>></span>
+<span style="color:#888; font-size:0.85em; margin-left:8px;"><<count>> 篇</span>
+</$button>
+</div>
+</$set>
+</$list>
+<$list filter="[subfilter<agent-tags-pure>!count[]]"><div style="color:#aaa; font-size:0.85em;">（暂无纯 Agent 笔记）</div></$list>
+</div>
+
+<div style="font-weight:700; margin:10px 0 4px;">🤝 Agent + 人工 <span style="color:#888; font-weight:400; font-size:0.82em;">{{{[subfilter<agent-notes-mixed>]}}} 篇</span></div>
+<div style="margin-left:10px;">
+<$list filter="[subfilter<agent-tags-mixed>] +[!sortsub:number<agent-count-mixed>]">
+<$set name="count" value={{{ [subfilter<agent-count-mixed>] }}}>
+<div style="padding:7px 2px; border-bottom:1px solid rgba(128,128,128,0.15);">
+<$button set="$:/state/tag" setTo=<<currentTiddler>> class="tc-btn-invisible tc-tiddlylink" style="width:100%; text-align:left;">
+<$action-navigate $to="标签笔记"/>
+<span style="font-weight:600; font-size:1.05em;"><<currentTiddler>></span>
+<span style="color:#888; font-size:0.85em; margin-left:8px;"><<count>> 篇</span>
+</$button>
+</div>
+</$set>
+</$list>
+<$list filter="[subfilter<agent-tags-mixed>!count[]]"><div style="color:#aaa; font-size:0.85em;">（暂无「Agent + 人工」笔记）</div></$list>
+</div>

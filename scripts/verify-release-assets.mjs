@@ -5,18 +5,27 @@ import { basename, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parse } from 'yaml'
 
-const REQUIRED_ASSETS = [
-  'dsh-desktop-mac-arm64.dmg',
-  'dsh-desktop-mac-arm64.zip',
-  'dsh-desktop-mac-arm64.zip.blockmap',
-  'dsh-desktop-mac-x64.dmg',
-  'dsh-desktop-mac-x64.zip',
-  'dsh-desktop-mac-x64.zip.blockmap',
-  'dsh-desktop-windows-x64-setup.exe',
-  'dsh-desktop-windows-x64-setup.exe.blockmap',
-  'latest-mac.yml',
-  'latest.yml'
-]
+/**
+ * Required assets per platform. A release is verified against the union of the
+ * platforms that actually built: a fork that skipped the macOS jobs publishes
+ * a complete Windows-only release (the v0.3.1 shape), not a broken one.
+ */
+const PLATFORM_ASSETS = {
+  mac: [
+    'dsh-desktop-mac-arm64.dmg',
+    'dsh-desktop-mac-arm64.zip',
+    'dsh-desktop-mac-arm64.zip.blockmap',
+    'dsh-desktop-mac-x64.dmg',
+    'dsh-desktop-mac-x64.zip',
+    'dsh-desktop-mac-x64.zip.blockmap',
+    'latest-mac.yml'
+  ],
+  windows: [
+    'dsh-desktop-windows-x64-setup.exe',
+    'dsh-desktop-windows-x64-setup.exe.blockmap',
+    'latest.yml'
+  ]
+}
 
 // A complete DSH Desktop runtime is substantially larger than these floors.
 // These catch truncated/corrupt artifacts without pinning normal release sizes.
@@ -26,6 +35,18 @@ const DEFAULT_MINIMUM_BYTES = {
   exe: 100 * 1024 * 1024,
   blockmap: 1024,
   yml: 64
+}
+
+function requiredPlatforms(options) {
+  const selected = options.platforms === undefined ? 'all' : options.platforms
+  const names = Array.isArray(selected) ? selected : [selected]
+  const platforms = []
+  for (const name of names) {
+    if (name === 'all') platforms.push('mac', 'windows')
+    else if (name === 'mac' || name === 'windows') platforms.push(name)
+    else throw new Error(`Unsupported release platform: ${name}`)
+  }
+  return [...new Set(platforms)]
 }
 
 async function sha512(file) {
@@ -97,8 +118,10 @@ async function assertUpdateEntry(root, metadataName, version, assetName) {
 export async function verifyReleaseAssets(releaseDir, version, options = {}) {
   const root = resolve(releaseDir)
   const minimumBytes = { ...DEFAULT_MINIMUM_BYTES, ...options.minimumBytes }
+  const platforms = requiredPlatforms(options)
+  const requiredAssets = platforms.flatMap((platform) => PLATFORM_ASSETS[platform])
 
-  for (const name of REQUIRED_ASSETS) {
+  for (const name of requiredAssets) {
     const kind = assetKind(name)
     const file = join(root, name)
     const fileStat = await stat(file).catch(() => undefined)
@@ -109,18 +132,34 @@ export async function verifyReleaseAssets(releaseDir, version, options = {}) {
     await assertFileHeader(file, kind, fileStat.size)
   }
 
-  await assertUpdateEntry(root, 'latest.yml', version, 'dsh-desktop-windows-x64-setup.exe')
-  await assertUpdateEntry(root, 'latest-mac.yml', version, 'dsh-desktop-mac-arm64.zip')
-  await assertUpdateEntry(root, 'latest-mac.yml', version, 'dsh-desktop-mac-x64.zip')
+  if (platforms.includes('windows')) {
+    await assertUpdateEntry(root, 'latest.yml', version, 'dsh-desktop-windows-x64-setup.exe')
+  }
+  if (platforms.includes('mac')) {
+    await assertUpdateEntry(root, 'latest-mac.yml', version, 'dsh-desktop-mac-arm64.zip')
+    await assertUpdateEntry(root, 'latest-mac.yml', version, 'dsh-desktop-mac-x64.zip')
+  }
 }
 
 async function main() {
-  const [releaseDir, version] = process.argv.slice(2)
-  if (!releaseDir || !/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version ?? '')) {
-    throw new Error('Usage: node scripts/verify-release-assets.mjs <release-dir> <semver>')
+  const args = process.argv.slice(2)
+  let platforms = 'all'
+  const flagIndex = args.indexOf('--platforms')
+  if (flagIndex >= 0) {
+    platforms = args[flagIndex + 1]
+    if (!platforms) {
+      throw new Error('--platforms requires a value (all, mac, or windows)')
+    }
+    args.splice(flagIndex, 2)
   }
-  await verifyReleaseAssets(releaseDir, version)
-  console.log(`Verified release assets for ${version}.`)
+  const [releaseDir, version] = args
+  if (!releaseDir || !/^\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/.test(version ?? '')) {
+    throw new Error(
+      'Usage: node scripts/verify-release-assets.mjs <release-dir> <semver> [--platforms all|mac|windows]'
+    )
+  }
+  await verifyReleaseAssets(releaseDir, version, { platforms })
+  console.log(`Verified ${platforms} release assets for ${version}.`)
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) await main()

@@ -1,0 +1,14 @@
+{
+  "unmatched_ids": [
+    "src\\shared\\features.ts"
+  ],
+  "unmatched_count": 1,
+  "leftover_component_ids": [
+    "packages\\dsh-desktop-market-installer\\generations\\installer.d.ts::GenerationInstallOptions",
+    "packages\\dsh-desktop-market-installer\\generations\\installer.d.ts::GenerationInstallResult",
+    "packages\\dsh-desktop-market-installer\\generations\\projection.d.ts::ProjectionResult",
+    "packages\\dsh-desktop-market-installer\\generations\\registry.d.ts::Generation",
+    "packages\\dsh-desktop-market-installer\\generations\\registry.d.ts::RegistryLayout"
+  ],
+  "leftover_component_count": 5
+}

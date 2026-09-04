@@ -1,0 +1,34 @@
+{
+  "session_id": "184d7b25f487",
+  "repo_name": "dsh-desktop-me",
+  "repo_path": "E:\\work\\dsh-desktop-me",
+  "output_dir": "E:\\work\\dsh-desktop-me\\repowiki",
+  "total_components": 593,
+  "total_leaf_nodes": 72,
+  "languages": {
+    "typescript": 523,
+    "javascript": 70
+  },
+  "leaf_nodes_preview": [
+    "src\\shared\\contracts.ts::UpdateStatus",
+    "src\\main\\state\\profile-compatibility.ts::ProfileCompatibilitySnapshot",
+    "src\\main\\plugin-recovery-detection.ts::DetectPluginRecoveryOptions",
+    "src\\main\\mobile\\cloudflared-tunnel.ts::CloudflareTunnelInstance",
+    "src\\main\\context-menu-template.ts::ContextMenuState",
+    "src\\main\\mobile\\lan-mobile-bridge.ts::MobileQuestionAnswer",
+    "src\\main\\state\\generation-migration.ts::MigrationDeps",
+    "src\\main\\mobile\\pinggy-tunnel.ts::PinggyTunnelInstance",
+    "src\\main\\state\\plugin-component-cleanup.ts::LaunchAgentDescription",
+    "src\\preload\\boot-failure.ts::BootFailureElement",
+    "src\\shared\\contracts.ts::RuntimeSnapshot",
+    "src\\main\\mobile\\lan-mobile-pages.ts::MobilePageOptions",
+    "src\\main\\runtime\\harness-runtime.ts::HarnessRuntimeOptions",
+    "src\\main\\state\\patch-layer.ts::PatchLayerPrune",
+    "src\\main\\mobile\\lan-mobile-bridge.ts::PendingMobileQuestion",
+    "src\\main\\runtime\\disclaimed-utility-process.ts::UtilityProcessAdapter",
+    "src\\main\\context-menu-template.ts::ContextMenuLabels",
+    "src\\main\\state\\profile-compatibility.ts::PackageManifest",
+    "src\\main\\runtime\\profile-plugin-command.ts::ProfilePluginCommandResult",
+    "src\\main\\state\\launch-agent-audit.ts::LaunchAgentRecord"
+  ]
+}

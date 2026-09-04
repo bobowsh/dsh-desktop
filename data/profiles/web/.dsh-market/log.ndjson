@@ -167,3 +167,596 @@
 {"at":"2026-08-29T09:07:34.624Z","level":"info","event":"boot","detail":"plugin kept off: dsh-md-notes"}
 {"at":"2026-08-29T09:07:34.938Z","level":"info","event":"region","detail":"no region on record; network check chose china"}
 {"at":"2026-08-29T09:13:51.981Z","level":"warn","event":"install-blocked","detail":"refused while agents are running — session-43776e82-a7bc-400f-aee1-bba3e50cd771"}
+{"at":"2026-08-30T03:04:29.693Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T03:04:29.694Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T03:04:29.694Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T03:04:29.694Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T03:04:29.694Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T03:09:29.124Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T03:09:29.125Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T03:09:29.126Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T03:09:29.126Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T03:09:29.126Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T03:16:04.080Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T03:16:04.081Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T03:16:04.082Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T03:16:04.082Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T03:16:04.082Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T03:16:55.100Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T03:16:55.102Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T03:16:55.103Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T03:16:55.103Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T03:16:55.103Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T03:19:34.345Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T03:19:34.347Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T03:19:34.347Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T03:19:34.348Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T03:19:34.348Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T03:22:41.850Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T03:22:41.851Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T03:22:41.851Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T03:22:41.852Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T03:22:41.852Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T04:46:08.374Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T04:46:08.375Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T04:46:08.376Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T04:46:08.376Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T04:46:08.376Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T10:38:14.745Z","level":"warn","event":"install-blocked","detail":"refused while agents are running — session-cce9a961-2a44-4713-b2d9-466c0473a3ed"}
+{"at":"2026-08-30T11:17:24.241Z","level":"info","event":"hot-mount","detail":"dsh-plugin-capabilities: live"}
+{"at":"2026-08-30T11:17:24.520Z","level":"warn","event":"install-compat","detail":"dsh-plugin-capabilities: introduced host-compatibility risks — @deepseek-ai/dsh-llm@^0.1.0-rc.8 || >=0.1.1-rc.0 <0.2.0 vs 0.0.1-rc.1; @deepseek-ai/dsh-llm@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-llm@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-llm@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-settings@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-llm@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-tools@^0.1.2-alpha.1 vs 0.1.1-rc.2; @deepseek-ai/dsh-llm@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-tools@^0.1.2-alpha.1 vs 0.1.1-rc.2; @deepseek-ai/dsh-settings@^0.1.2-alpha.1 vs 0.0.1"}
+{"at":"2026-08-30T11:17:24.521Z","level":"info","event":"install","detail":"dsh-plugin-capabilities exit=0 hot=true"}
+{"at":"2026-08-30T11:19:26.192Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T11:19:26.194Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T11:19:26.194Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities: no loader entry matched"}
+{"at":"2026-08-30T11:19:26.196Z","level":"info","event":"hot-unmount","detail":"dsh-plugin-capabilities: removed live"}
+{"at":"2026-08-30T11:19:26.198Z","level":"info","event":"patch","detail":"disabled row dsh-plugin-capabilities in E:\\work\\dsh-desktop-me\\data\\profiles\\web\\cordis.patch.yml"}
+{"at":"2026-08-30T11:19:26.198Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities: patch layer disabled rows dsh-plugin-capabilities"}
+{"at":"2026-08-30T11:19:26.198Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities: off ok=true"}
+{"at":"2026-08-30T11:21:20.636Z","level":"warn","event":"hot-mount","detail":"@limuyang2/dsh-agent-team: fell back to restart — failed to import loader entry mkt-agent-team (@limuyang2/dsh-agent-team): Cannot find package '@deepseek-ai/dsh-host-apiproxy' imported from E:\\work\\dsh-desktop-me\\data\\profiles\\web\\node_modules\\@limuyang2\\dsh-agent-team\\lib\\index.js"}
+{"at":"2026-08-30T11:21:21.434Z","level":"warn","event":"install-compat","detail":"@limuyang2/dsh-agent-team: introduced host-compatibility risks — @deepseek-ai/dsh-llm@^0.1.1-rc.2 vs 0.0.1-rc.1"}
+{"at":"2026-08-30T11:21:21.435Z","level":"info","event":"install","detail":"@limuyang2/dsh-agent-team exit=0 hot=false"}
+{"at":"2026-08-30T11:28:33.217Z","level":"info","event":"region","detail":"auto-mouse: resolved HEAD through the china mirror; downloading the commit-pinned GitHub target directly for pnpm integrity"}
+{"at":"2026-08-30T11:29:03.029Z","level":"info","event":"hot-mount","detail":"dsh-little-mouse-pointer: live"}
+{"at":"2026-08-30T11:29:03.530Z","level":"warn","event":"install-compat","detail":"dsh-little-mouse-pointer: introduced host-compatibility risks — @deepseek-ai/dsh-mcp-client@^0.1.2-alpha.1 vs 0.0.1-rc.1"}
+{"at":"2026-08-30T11:29:03.531Z","level":"info","event":"install","detail":"github:Fish121380/auto-mouse#f6102369316ec3c15e87703c3abffe186d2e4383 exit=0 hot=true"}
+{"at":"2026-08-30T11:31:26.872Z","level":"info","event":"region","detail":"dsh-nuphus-mcp: resolved HEAD through the china mirror; downloading the commit-pinned GitHub target directly for pnpm integrity"}
+{"at":"2026-08-30T11:31:44.297Z","level":"warn","event":"hot-mount","detail":"@jhp830901/dsh-nuphus-mcp: fell back to restart — failed to import loader entry mkt-dsh-nuphus-mcp (@jhp830901/dsh-nuphus-mcp): The requested module '@deepseek-ai/dsh-llm' does not provide an export named 'CallId'"}
+{"at":"2026-08-30T11:31:44.570Z","level":"info","event":"install","detail":"github:jiayan-xu/dsh-nuphus-mcp#3b6ac446a80d2eda2e6112b91aeb5e015035c6c1 exit=0 hot=false"}
+{"at":"2026-08-30T11:32:35.386Z","level":"info","event":"hot-mount","detail":"@wingsky-1/dsh-mcp-manager: live"}
+{"at":"2026-08-30T11:32:35.721Z","level":"warn","event":"install-compat","detail":"@wingsky-1/dsh-mcp-manager: introduced host-compatibility risks — @deepseek-ai/dsh-tools@^0.1.1-rc.2 vs 0.1.0-rc.8; @deepseek-ai/dsh-tools@^0.1.1-rc.2 vs 0.1.0-rc.8"}
+{"at":"2026-08-30T11:32:35.721Z","level":"info","event":"install","detail":"@wingsky-1/dsh-mcp-manager exit=0 hot=true"}
+{"at":"2026-08-30T11:33:57.141Z","level":"info","event":"update","detail":"dshmarket -> dshmarket@latest exit=0"}
+{"at":"2026-08-30T11:34:47.281Z","level":"info","event":"update","detail":"@liustack/modlens -> @liustack/modlens@latest exit=0"}
+{"at":"2026-08-30T11:34:54.763Z","level":"info","event":"update","detail":"dsh-chat-import -> dsh-chat-import@latest exit=0"}
+{"at":"2026-08-30T11:35:00.737Z","level":"info","event":"update","detail":"dsh-client-auto-continue -> dsh-client-auto-continue@latest exit=0"}
+{"at":"2026-08-30T11:35:11.469Z","level":"info","event":"update","detail":"dsh-files -> github:taxueseek/dsh-files#6b761bba1ccf55ffa5ecbf132b50937f934f73f1 exit=0"}
+{"at":"2026-08-30T11:35:20.595Z","level":"info","event":"update","detail":"dsh-status-rotator -> github:01Virex/dsh-status-rotator#b5a8f9c8b37f8d3d6bc9192ee9e4496e15e37060 exit=0"}
+{"at":"2026-08-30T11:39:24.273Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T11:39:24.274Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T11:39:24.274Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T11:39:24.275Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T11:39:24.275Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T11:39:24.275Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T11:39:24.276Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T11:39:25.117Z","level":"info","event":"region","detail":"no region on record; network check chose china"}
+{"at":"2026-08-30T11:49:28.224Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T11:49:28.226Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T11:49:28.227Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T11:49:28.228Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T11:49:28.229Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T11:49:28.230Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T11:49:28.230Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T11:51:08.727Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T11:51:08.728Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T11:51:08.729Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T11:51:08.730Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T11:51:08.730Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T11:51:08.731Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T11:51:08.731Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T11:52:25.316Z","level":"info","event":"toggle","detail":"@wingsky-1/dsh-mcp-manager -> off: fiber=false"}
+{"at":"2026-08-30T11:52:25.319Z","level":"info","event":"uninstall","detail":"@wingsky-1/dsh-mcp-manager exit=0 live-removed=true"}
+{"at":"2026-08-30T11:52:56.908Z","level":"info","event":"toggle","detail":"dsh-auto-collapse -> off: fiber=false"}
+{"at":"2026-08-30T11:52:56.909Z","level":"info","event":"toggle","detail":"dsh-auto-collapse -> off: fiber=false"}
+{"at":"2026-08-30T11:52:56.910Z","level":"info","event":"toggle","detail":"dsh-auto-collapse -> off: fiber=false"}
+{"at":"2026-08-30T11:52:56.914Z","level":"info","event":"patch","detail":"disabled row dsh-auto-collapse in E:\\work\\dsh-desktop-me\\data\\profiles\\web\\cordis.patch.yml"}
+{"at":"2026-08-30T11:52:56.914Z","level":"info","event":"toggle","detail":"dsh-auto-collapse: patch layer disabled rows dsh-auto-collapse"}
+{"at":"2026-08-30T11:52:56.915Z","level":"info","event":"toggle","detail":"dsh-auto-collapse: off ok=true"}
+{"at":"2026-08-30T11:54:24.422Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T11:54:24.423Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T11:54:24.424Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T11:54:24.424Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T11:54:24.425Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T11:54:24.425Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T11:54:24.425Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T11:54:24.426Z","level":"info","event":"toggle","detail":"dsh-auto-collapse -> off: fiber=false"}
+{"at":"2026-08-30T11:54:24.427Z","level":"info","event":"boot","detail":"plugin kept off: dsh-auto-collapse"}
+{"at":"2026-08-30T11:55:48.192Z","level":"info","event":"hot-mount","detail":"@opendsh/dsh-plugin-setting-mcp: live"}
+{"at":"2026-08-30T11:55:49.013Z","level":"info","event":"install","detail":"@opendsh/dsh-plugin-setting-mcp exit=0 hot=true"}
+{"at":"2026-08-30T11:57:43.778Z","level":"warn","event":"install-compat","detail":"@xxxyz/dsh-mcp-manager: introduced host-compatibility risks — @deepseek-ai/dsh-credentials@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-credentials@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-credentials@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-credentials@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-anonymous-user-id@^0.1.2-alpha.1 vs 0.0.1-rc.5; @deepseek-ai/dsh-credentials@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-credentials@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-anonymous-user-id@^0.1.2-alpha.1 vs 0.0.1-rc.5; @deepseek-ai/dsh-credentials@^0.1.2-alpha.1 vs 0.0.1-r"}
+{"at":"2026-08-30T11:57:43.778Z","level":"info","event":"install","detail":"@xxxyz/dsh-mcp-manager exit=0 hot=false"}
+{"at":"2026-08-30T12:01:59.406Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T12:01:59.407Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T12:01:59.408Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T12:01:59.408Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T12:01:59.408Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T12:01:59.409Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T12:01:59.409Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T12:01:59.411Z","level":"info","event":"toggle","detail":"dsh-auto-collapse -> off: fiber=false"}
+{"at":"2026-08-30T12:01:59.412Z","level":"info","event":"boot","detail":"plugin kept off: dsh-auto-collapse"}
+{"at":"2026-08-30T12:05:56.806Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T12:05:56.807Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T12:05:56.808Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T12:05:56.808Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T12:05:56.808Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T12:05:56.809Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T12:05:56.809Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T12:05:56.809Z","level":"info","event":"toggle","detail":"dsh-auto-collapse -> off: fiber=false"}
+{"at":"2026-08-30T12:05:56.810Z","level":"info","event":"boot","detail":"plugin kept off: dsh-auto-collapse"}
+{"at":"2026-08-30T12:09:38.825Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T12:09:38.827Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T12:09:38.827Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T12:09:38.828Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T12:09:38.828Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T12:09:38.828Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T12:09:38.828Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T12:09:38.829Z","level":"info","event":"toggle","detail":"dsh-auto-collapse -> off: fiber=false"}
+{"at":"2026-08-30T12:09:38.829Z","level":"info","event":"boot","detail":"plugin kept off: dsh-auto-collapse"}
+{"at":"2026-08-30T12:10:42.631Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T12:10:42.633Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T12:10:42.633Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T12:10:42.634Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T12:10:42.634Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T12:10:42.634Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T12:10:42.634Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T12:10:42.635Z","level":"info","event":"toggle","detail":"dsh-auto-collapse -> off: fiber=false"}
+{"at":"2026-08-30T12:10:42.635Z","level":"info","event":"boot","detail":"plugin kept off: dsh-auto-collapse"}
+{"at":"2026-08-30T12:12:27.170Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T12:12:27.172Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T12:12:27.172Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T12:12:27.173Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T12:12:27.173Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T12:12:27.173Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T12:12:27.174Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T12:12:27.174Z","level":"info","event":"toggle","detail":"dsh-auto-collapse -> off: fiber=false"}
+{"at":"2026-08-30T12:12:27.174Z","level":"info","event":"boot","detail":"plugin kept off: dsh-auto-collapse"}
+{"at":"2026-08-30T12:14:34.940Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T12:14:34.941Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T12:14:34.942Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T12:14:34.942Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T12:14:34.942Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T12:14:34.942Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T12:14:34.943Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T12:14:34.943Z","level":"info","event":"toggle","detail":"dsh-auto-collapse -> off: fiber=false"}
+{"at":"2026-08-30T12:14:34.943Z","level":"info","event":"boot","detail":"plugin kept off: dsh-auto-collapse"}
+{"at":"2026-08-30T12:17:09.159Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-30T12:17:09.160Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-30T12:17:09.163Z","level":"info","event":"patch","detail":"disabled row setting-mcp in E:\\work\\dsh-desktop-me\\data\\profiles\\web\\cordis.patch.yml"}
+{"at":"2026-08-30T12:17:09.163Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp: patch layer disabled rows setting-mcp"}
+{"at":"2026-08-30T12:17:09.163Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp: off ok=true"}
+{"at":"2026-08-30T12:17:21.402Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T12:17:21.426Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T12:17:21.426Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T12:17:21.427Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T12:17:21.427Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T12:17:21.427Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T12:17:21.427Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T12:17:21.428Z","level":"info","event":"toggle","detail":"dsh-auto-collapse -> off: fiber=false"}
+{"at":"2026-08-30T12:17:21.428Z","level":"info","event":"boot","detail":"plugin kept off: dsh-auto-collapse"}
+{"at":"2026-08-30T12:17:21.428Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-30T12:17:21.429Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-08-30T12:17:22.249Z","level":"info","event":"region","detail":"no region on record; network check chose china"}
+{"at":"2026-08-30T12:20:28.926Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-30T12:20:28.927Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-30T12:20:28.930Z","level":"info","event":"patch","detail":"disabled row specworkflow in E:\\work\\dsh-desktop-me\\data\\profiles\\web\\cordis.patch.yml"}
+{"at":"2026-08-30T12:20:28.930Z","level":"info","event":"toggle","detail":"specworkflow: patch layer disabled rows specworkflow"}
+{"at":"2026-08-30T12:20:28.931Z","level":"info","event":"toggle","detail":"specworkflow: off ok=true"}
+{"at":"2026-08-30T12:22:38.874Z","level":"info","event":"toggle","detail":"dsh-auto-collapse -> on: fiber=true"}
+{"at":"2026-08-30T12:22:38.878Z","level":"info","event":"patch","detail":"enabled row dsh-auto-collapse in E:\\work\\dsh-desktop-me\\data\\profiles\\web\\cordis.patch.yml"}
+{"at":"2026-08-30T12:22:38.878Z","level":"info","event":"toggle","detail":"dsh-auto-collapse: patch layer enabled rows dsh-auto-collapse"}
+{"at":"2026-08-30T12:22:38.878Z","level":"info","event":"toggle","detail":"dsh-auto-collapse: on ok=true"}
+{"at":"2026-08-30T12:26:29.889Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-30T12:26:29.890Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-30T12:26:29.892Z","level":"info","event":"patch","detail":"disabled row bookmarks in E:\\work\\dsh-desktop-me\\data\\profiles\\web\\cordis.patch.yml"}
+{"at":"2026-08-30T12:26:29.892Z","level":"info","event":"toggle","detail":"dsh-bookmarks: patch layer disabled rows bookmarks"}
+{"at":"2026-08-30T12:26:29.893Z","level":"info","event":"toggle","detail":"dsh-bookmarks: off ok=true"}
+{"at":"2026-08-30T12:30:10.852Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T12:30:10.854Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T12:30:10.854Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T12:30:10.854Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T12:30:10.855Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T12:30:10.855Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T12:30:10.856Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T12:30:10.856Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-30T12:30:10.856Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-08-30T12:30:10.857Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-30T12:30:10.857Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-08-30T12:30:10.857Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-30T12:30:10.858Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-08-30T12:30:12.451Z","level":"info","event":"region","detail":"no region on record; network check chose china"}
+{"at":"2026-08-30T12:44:09.445Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T12:44:09.447Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T12:44:09.447Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T12:44:09.447Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T12:44:09.448Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T12:44:09.448Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T12:44:09.448Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T12:44:09.449Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-30T12:44:09.449Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-08-30T12:44:09.450Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-30T12:44:09.450Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-08-30T12:44:09.450Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-30T12:44:09.451Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-08-30T12:45:35.536Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T12:45:35.538Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T12:45:35.538Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T12:45:35.538Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T12:45:35.539Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T12:45:35.539Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T12:45:35.539Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T12:45:35.540Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-30T12:45:35.540Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-08-30T12:45:35.541Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-30T12:45:35.541Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-08-30T12:45:35.542Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-30T12:45:35.542Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-08-30T12:53:45.821Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T12:53:45.822Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T12:53:45.822Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T12:53:45.822Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T12:53:45.823Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T12:53:45.823Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T12:53:45.823Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T12:53:45.824Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-30T12:53:45.824Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-08-30T12:53:45.824Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-30T12:53:45.825Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-08-30T12:53:45.825Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-30T12:53:45.825Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-08-30T13:02:22.031Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T13:02:22.032Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T13:02:22.032Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T13:02:22.033Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T13:02:22.033Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T13:02:22.033Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T13:02:22.033Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T13:02:22.033Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-30T13:02:22.034Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-08-30T13:02:22.034Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-30T13:02:22.034Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-08-30T13:02:22.035Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-30T13:02:22.035Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-08-30T13:11:34.854Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T13:11:34.856Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T13:11:34.856Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T13:11:34.856Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T13:11:34.857Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T13:11:34.858Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T13:11:34.858Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T13:11:34.859Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-30T13:11:34.859Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-08-30T13:11:34.860Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-30T13:11:34.860Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-08-30T13:11:34.860Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-30T13:11:34.860Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-08-30T13:15:09.256Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T13:15:09.258Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T13:15:09.258Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T13:15:09.258Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T13:15:09.259Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T13:15:09.259Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T13:15:09.259Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T13:15:09.260Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-30T13:15:09.260Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-08-30T13:15:09.260Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-30T13:15:09.260Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-08-30T13:15:09.261Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-30T13:15:09.261Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-08-30T14:27:59.623Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T14:27:59.624Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T14:27:59.624Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T14:27:59.624Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T14:27:59.625Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T14:27:59.625Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T14:27:59.625Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T14:27:59.626Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-30T14:27:59.626Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-08-30T14:27:59.627Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-30T14:27:59.627Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-08-30T14:27:59.627Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-30T14:27:59.627Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-08-30T14:29:23.581Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T14:29:23.582Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T14:29:23.582Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T14:29:23.582Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T14:29:23.582Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T14:29:23.583Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T14:29:23.583Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T14:29:23.583Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-30T14:29:23.583Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-08-30T14:29:23.584Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-30T14:29:23.584Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-08-30T14:29:23.584Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-30T14:29:23.585Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-08-30T14:37:14.370Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T14:37:14.371Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T14:37:14.372Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T14:37:14.372Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T14:37:14.372Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T14:37:14.372Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T14:37:14.373Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T14:37:14.373Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-30T14:37:14.373Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-08-30T14:37:14.374Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-30T14:37:14.374Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-08-30T14:37:14.374Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-30T14:37:14.374Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-08-30T14:46:22.454Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-30T14:46:22.455Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-30T14:46:22.456Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-30T14:46:22.456Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-30T14:46:22.456Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-30T14:46:22.457Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-30T14:46:22.457Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-30T14:46:22.457Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-30T14:46:22.458Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-08-30T14:46:22.458Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-30T14:46:22.459Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-08-30T14:46:22.459Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-30T14:46:22.459Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-08-31T15:35:26.838Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-31T15:35:26.841Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-31T15:35:26.841Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-31T15:35:26.841Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-31T15:35:26.842Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-31T15:35:26.842Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-31T15:35:26.842Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-31T15:35:26.842Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-31T15:35:26.842Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-08-31T15:35:26.843Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-31T15:35:26.843Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-08-31T15:35:26.843Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-31T15:35:26.844Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-08-31T16:12:59.114Z","level":"warn","event":"install-blocked","detail":"refused while agents are running — fd5c764e-ec3a-4706-a84c-99377dc5f92f"}
+{"at":"2026-08-31T16:16:17.833Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-08-31T16:16:17.834Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-08-31T16:16:17.835Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-08-31T16:16:17.835Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-08-31T16:16:17.835Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-08-31T16:16:17.835Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-08-31T16:16:17.836Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-08-31T16:16:17.836Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-08-31T16:16:17.836Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-08-31T16:16:17.837Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-08-31T16:16:17.837Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-08-31T16:16:17.837Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-08-31T16:16:17.838Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-08-31T16:20:39.732Z","level":"error","event":"install","detail":"dsh-keyboard-history exit=1 err=ERR_PNPM_NO_MATCHING_VERSION: No matching version found for dsh-taskboard@^1.0.0 while fetching it from https://registry.npmmirror.com/"}
+{"at":"2026-08-31T16:21:02.931Z","level":"error","event":"install","detail":"dsh-input-history exit=3221226505 err=ERR_PNPM_NO_MATCHING_VERSION: No matching version found for dsh-taskboard@^1.0.0 while fetching it from https://registry.npmmirror.com/"}
+{"at":"2026-09-01T00:07:28.855Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-09-01T00:07:28.858Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-09-01T00:07:28.858Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-09-01T00:07:28.858Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-09-01T00:07:28.859Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-01T00:07:28.859Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-09-01T00:07:28.859Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-09-01T00:07:28.859Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-09-01T00:07:28.860Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-09-01T00:07:28.860Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-09-01T00:07:28.861Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-09-01T00:07:28.861Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-09-01T00:07:28.861Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-09-01T14:00:58.525Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-09-01T14:00:58.529Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-09-01T14:00:58.529Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-09-01T14:00:58.529Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-09-01T14:00:58.529Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-01T14:00:58.529Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-09-01T14:00:58.529Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-09-01T14:00:58.529Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-09-01T14:00:58.530Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-09-01T14:00:58.530Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-09-01T14:00:58.530Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-09-01T14:00:58.531Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-09-01T14:00:58.531Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-09-01T14:34:55.650Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-09-01T14:34:55.650Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-09-01T14:34:55.651Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-09-01T14:34:55.651Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-09-01T14:34:55.651Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-01T14:34:55.651Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-09-01T14:34:55.652Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-09-01T14:34:55.652Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-09-01T14:34:55.652Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-09-01T14:34:55.653Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-09-01T14:34:55.653Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-09-01T14:34:55.653Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-09-01T14:34:55.653Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-09-01T15:20:13.807Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-09-01T15:20:13.808Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-09-01T15:20:13.808Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-09-01T15:20:13.808Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-09-01T15:20:13.808Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-01T15:20:13.809Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-09-01T15:20:13.809Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-09-01T15:20:13.809Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-09-01T15:20:13.809Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-09-01T15:20:13.810Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-09-01T15:20:13.810Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-09-01T15:20:13.810Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-09-01T15:20:13.811Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-09-01T15:53:41.304Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-09-01T15:53:41.304Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-09-01T15:53:41.305Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-09-01T15:53:41.305Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-09-01T15:53:41.305Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-01T15:53:41.306Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-09-01T15:53:41.306Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-09-01T15:53:41.306Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-09-01T15:53:41.306Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-09-01T15:53:41.307Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-09-01T15:53:41.307Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-09-01T15:53:41.307Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-09-01T15:53:41.307Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-09-01T16:21:34.606Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-09-01T16:21:34.607Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-09-01T16:21:34.607Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-09-01T16:21:34.607Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-09-01T16:21:34.608Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-01T16:21:34.608Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-09-01T16:21:34.608Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-09-01T16:21:34.608Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-09-01T16:21:34.608Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-09-01T16:21:34.609Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-09-01T16:21:34.609Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-09-01T16:21:34.610Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-09-01T16:21:34.610Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-09-01T23:54:40.826Z","level":"info","event":"setup-pnpm","detail":"corepack enable: exit=0 "}
+{"at":"2026-09-01T23:54:43.372Z","level":"info","event":"setup-pnpm","detail":"npm -g: exit=0 e\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.changed 1 package in 2s1 package is looking for funding  run `npm fund` for details"}
+{"at":"2026-09-01T23:54:43.754Z","level":"info","event":"setup-pnpm","detail":"added npm's global bin to the probe path: d:\\nodejs"}
+{"at":"2026-09-01T23:55:08.219Z","level":"warn","event":"update-blocked","detail":"dshmarket: refused while agents are running — 0204d3ba-7555-4116-8e38-30d0a3ce0ac6"}
+{"at":"2026-09-01T23:55:40.370Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-09-01T23:55:40.371Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-09-01T23:55:40.372Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-09-01T23:55:40.372Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-09-01T23:55:40.372Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-01T23:55:40.372Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-09-01T23:55:40.372Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-09-01T23:55:40.373Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-09-01T23:55:40.373Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-09-01T23:55:40.373Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-09-01T23:55:40.374Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-09-01T23:55:40.374Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-09-01T23:55:40.374Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-09-02T00:02:05.692Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: no loader entry matched"}
+{"at":"2026-09-02T00:02:05.695Z","level":"info","event":"patch","detail":"disabled row browser in E:\\work\\dsh-desktop-me\\data\\profiles\\web\\cordis.patch.yml"}
+{"at":"2026-09-02T00:02:05.697Z","level":"info","event":"patch","detail":"disabled row browser-electron in E:\\work\\dsh-desktop-me\\data\\profiles\\web\\cordis.patch.yml"}
+{"at":"2026-09-02T00:02:05.698Z","level":"info","event":"patch","detail":"disabled row tool-browser in E:\\work\\dsh-desktop-me\\data\\profiles\\web\\cordis.patch.yml"}
+{"at":"2026-09-02T00:02:05.698Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: patch layer disabled rows browser, browser-electron, tool-browser"}
+{"at":"2026-09-02T00:02:05.698Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: off ok=true"}
+{"at":"2026-09-02T00:04:50.803Z","level":"info","event":"setup-pnpm","detail":"corepack enable: exit=0 "}
+{"at":"2026-09-02T00:04:53.021Z","level":"info","event":"setup-pnpm","detail":"npm -g: exit=0 e\". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.changed 1 package in 2s1 package is looking for funding  run `npm fund` for details"}
+{"at":"2026-09-02T00:04:53.406Z","level":"info","event":"setup-pnpm","detail":"added npm's global bin to the probe path: d:\\nodejs"}
+{"at":"2026-09-02T10:50:43.432Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-09-02T10:50:43.444Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-09-02T10:50:43.445Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-09-02T10:50:43.445Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-09-02T10:50:43.446Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-02T10:50:43.446Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-09-02T10:50:43.446Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-09-02T10:50:43.446Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-09-02T10:50:43.447Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-09-02T10:50:43.447Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-09-02T10:50:43.447Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-09-02T10:50:43.448Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-09-02T10:50:43.448Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-09-02T10:50:43.448Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: no loader entry matched"}
+{"at":"2026-09-02T10:50:44.585Z","level":"info","event":"region","detail":"no region on record; network check chose china"}
+{"at":"2026-09-02T11:14:31.343Z","level":"error","event":"install","detail":"dsh-input-history exit=1 err=ERR_PNPM_NO_MATCHING_VERSION: No matching version found for dsh-taskboard@^1.0.0 while fetching it from https://registry.npmmirror.com/"}
+{"at":"2026-09-02T11:14:52.929Z","level":"error","event":"install","detail":"dsh-input-history exit=1 err=ERR_PNPM_NO_MATCHING_VERSION: No matching version found for dsh-taskboard@^1.0.0 while fetching it from https://registry.npmmirror.com/"}
+{"at":"2026-09-03T10:43:05.815Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-09-03T10:43:05.817Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-09-03T10:43:05.817Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-09-03T10:43:05.818Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-09-03T10:43:05.818Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-03T10:43:05.818Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-09-03T10:43:05.818Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-09-03T10:43:05.818Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-09-03T10:43:05.819Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-09-03T10:43:05.819Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-09-03T10:43:05.819Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-09-03T10:43:05.820Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-09-03T10:43:05.820Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-09-03T10:43:05.820Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: no loader entry matched"}
+{"at":"2026-09-04T11:06:32.908Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-09-04T11:06:32.910Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-09-04T11:06:32.911Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-09-04T11:06:32.911Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-09-04T11:06:32.911Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-04T11:06:32.912Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-09-04T11:06:32.912Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-09-04T11:06:32.912Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-09-04T11:06:32.912Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-09-04T11:06:32.913Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-09-04T11:06:32.913Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-09-04T11:06:32.913Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-09-04T11:06:32.913Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-09-04T11:06:32.913Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: no loader entry matched"}
+{"at":"2026-09-04T11:10:12.866Z","level":"info","event":"hot-mount","detail":"dsh-config-manager: live"}
+{"at":"2026-09-04T11:10:13.207Z","level":"warn","event":"install-compat","detail":"dsh-config-manager: introduced host-compatibility risks — @deepseek-ai/dsh-llm@^0.1.0-rc.8 || >=0.1.1-rc.0 <0.2.0 vs 0.0.1-rc.1; @deepseek-ai/dsh-mcp-client@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-llm@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-llm@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-llm@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-settings@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-llm@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-tools@^0.1.2-alpha.1 vs 0.1.0-rc.8; @deepseek-ai/dsh-llm@^0.1.2-alpha.1 vs 0.0.1-rc.1; @deepseek-ai/dsh-tools@^0.1.2-alpha.1 vs 0.1.0-rc"}
+{"at":"2026-09-04T11:10:13.208Z","level":"info","event":"install","detail":"dsh-config-manager exit=0 hot=true"}
+{"at":"2026-09-04T11:11:15.873Z","level":"warn","event":"install-shadow","detail":"@tt-a1i/archify-dsh: introduced cross-layer duplicate loader names — @deepseek-ai/dsh-skill-filesystem (@deepseek-ai/dsh-base + @tt-a1i/archify-dsh)"}
+{"at":"2026-09-04T11:11:15.874Z","level":"info","event":"install","detail":"@tt-a1i/archify-dsh exit=0 hot=false"}
+{"at":"2026-09-04T11:14:05.776Z","level":"info","event":"hot-mount","detail":"@wenbin_wb/dsh-bridge: live"}
+{"at":"2026-09-04T11:14:06.143Z","level":"info","event":"install","detail":"@wenbin_wb/dsh-bridge exit=0 hot=true"}
+{"at":"2026-09-04T11:15:20.280Z","level":"info","event":"install","detail":"@michengai/dsh-codex-ui exit=0 hot=false"}
+{"at":"2026-09-04T11:16:17.460Z","level":"info","event":"hot-mount","detail":"@sunjuntao/dsh-prompt-library: live"}
+{"at":"2026-09-04T11:16:17.787Z","level":"info","event":"install","detail":"@sunjuntao/dsh-prompt-library exit=0 hot=true"}
+{"at":"2026-09-04T11:17:24.507Z","level":"info","event":"hot-mount","detail":"dsh-plugin-writing-guard: live"}
+{"at":"2026-09-04T11:17:24.794Z","level":"warn","event":"install-compat","detail":"dsh-plugin-writing-guard: introduced host-compatibility risks — @deepseek-ai/dsh-llm@^0.1.0-rc.6 vs 0.0.1-rc.1"}
+{"at":"2026-09-04T11:17:24.795Z","level":"info","event":"install","detail":"dsh-plugin-writing-guard exit=0 hot=true"}
+{"at":"2026-09-04T11:19:46.562Z","level":"info","event":"hot-mount","detail":"dsh-wechat: live"}
+{"at":"2026-09-04T11:19:46.872Z","level":"info","event":"install","detail":"dsh-wechat exit=0 hot=true"}
+{"at":"2026-09-04T11:20:04.362Z","level":"info","event":"hot-mount","detail":"dsh-vscode-mode: live"}
+{"at":"2026-09-04T11:20:04.691Z","level":"warn","event":"install-compat","detail":"dsh-vscode-mode: introduced host-compatibility risks — @deepseek-ai/dsh-settings@>=0.1.0-rc.1 <0.2.0-0 vs 0.0.1-rc.1"}
+{"at":"2026-09-04T11:20:04.691Z","level":"info","event":"install","detail":"dsh-vscode-mode exit=0 hot=true"}
+{"at":"2026-09-04T11:22:20.886Z","level":"warn","event":"install-compat","detail":"dsh-image-gen: introduced host-compatibility risks — @deepseek-ai/dsh-credentials@>=0.1.1-rc.2 <0.2.0 vs 0.0.1-rc.1; @deepseek-ai/dsh-settings@>=0.1.1-rc.2 <0.2.0 vs 0.0.1-rc.1; @deepseek-ai/dsh-tools@>=0.1.1-rc.2 <0.2.0 vs 0.1.0-rc.8"}
+{"at":"2026-09-04T11:22:20.886Z","level":"info","event":"install","detail":"dsh-image-gen exit=0 hot=false"}
+{"at":"2026-09-04T11:23:50.089Z","level":"info","event":"hot-mount","detail":"dsh-ssh-ops: live"}
+{"at":"2026-09-04T11:23:51.159Z","level":"info","event":"install","detail":"dsh-ssh-ops exit=0 hot=true"}
+{"at":"2026-09-04T11:25:42.630Z","level":"warn","event":"install","detail":"iterate-plugin: rolled back manifest residue of the failed run: dsh-little-mouse-pointer"}
+{"at":"2026-09-04T11:25:42.630Z","level":"error","event":"install","detail":"iterate-plugin exit=1 err=ERR_PNPM_EPERM: [importPackage E:\\work\\dsh-desktop-me\\data\\profiles\\web\\node_modules\\dsh-little-mouse-pointer] EPERM: operation not permitted, rename 'E:\\work\\dsh-desktop-me\\data\\profiles\\web\\node_modules\\dsh-little-mouse-pointer_tmp_3776_3' -> 'E:\\work\\dsh-desktop-me\\data\\profiles\\web\\node_modules\\"}
+{"at":"2026-09-04T11:28:58.653Z","level":"info","event":"region","detail":"DSH-Project-Initialization: resolved HEAD through the china mirror; downloading the commit-pinned GitHub target directly for pnpm integrity"}
+{"at":"2026-09-04T11:31:42.155Z","level":"warn","event":"install","detail":"transient network failure while pnpm replayed the dependency tree (#83) — retrying once"}
+{"at":"2026-09-04T11:33:38.752Z","level":"warn","event":"install","detail":"github:Lorvaste/DSH-Project-Initialization#947d3d14ede26f67958225816784bbca04570734: rolled back manifest residue of the failed run: dsh-little-mouse-pointer"}
+{"at":"2026-09-04T11:33:38.752Z","level":"error","event":"install","detail":"github:Lorvaste/DSH-Project-Initialization#947d3d14ede26f67958225816784bbca04570734 exit=1 err=Command failed with exit code 128: git -c \"core.longpaths=true\" fetch --depth 1 origin 947d3d14ede26f67958225816784bbca04570734fatal: unable to access 'https://github.com/Lorvaste/DSH-Project-Initialization.git/': Failed to connect to github.com port 443 after 21108 ms: Timed out"}
+{"at":"2026-09-04T11:35:13.161Z","level":"info","event":"region","detail":"dsh-auto-reviewer: resolved HEAD through the china mirror; downloading the commit-pinned GitHub target directly for pnpm integrity"}
+{"at":"2026-09-04T11:36:25.742Z","level":"warn","event":"install","detail":"github:AntaresCorn/dsh-auto-reviewer#4ab578384aea0f7ac374c23591e4609558353533: rolled back manifest residue of the failed run: dsh-little-mouse-pointer"}
+{"at":"2026-09-04T11:36:25.742Z","level":"error","event":"install","detail":"github:AntaresCorn/dsh-auto-reviewer#4ab578384aea0f7ac374c23591e4609558353533 exit=1 err=ERR_PNPM_EPERM: [importPackage E:\\work\\dsh-desktop-me\\data\\profiles\\web\\node_modules\\dsh-little-mouse-pointer] EPERM: operation not permitted, rename 'E:\\work\\dsh-desktop-me\\data\\profiles\\web\\node_modules\\dsh-little-mouse-pointer_tmp_20428_10' -> 'E:\\work\\dsh-desktop-me\\data\\profiles\\web\\node_module"}
+{"at":"2026-09-04T11:42:47.643Z","level":"warn","event":"uninstall","detail":"@sunjuntao/dsh-prompt-library: remove failed (exit 1) but the package is gone from disk; reconciled manifest lists to match"}
+{"at":"2026-09-04T11:42:48.382Z","level":"info","event":"hot-unmount","detail":"@sunjuntao/dsh-prompt-library: removed live"}
+{"at":"2026-09-04T11:42:48.383Z","level":"info","event":"toggle","detail":"@sunjuntao/dsh-prompt-library: no loader entry matched"}
+{"at":"2026-09-04T11:42:48.385Z","level":"error","event":"uninstall","detail":"@sunjuntao/dsh-prompt-library exit=1 err=ERR_PNPM_EPERM: [importPackage E:\\work\\dsh-desktop-me\\data\\profiles\\web\\node_modules\\dsh-little-mouse-pointer] EPERM: operation not permitted, rename 'E:\\work\\dsh-desktop-me\\data\\profiles\\web\\node_modules\\dsh-little-mouse-pointer_tmp_14692_13' -> 'E:\\work\\dsh-desktop-me\\data\\profiles\\web\\node_module"}
+{"at":"2026-09-04T11:45:28.216Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-09-04T11:45:28.217Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-09-04T11:45:28.218Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-09-04T11:45:28.219Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-09-04T11:45:28.220Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-04T11:45:28.222Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-09-04T11:45:28.223Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-09-04T11:45:28.226Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-09-04T11:45:28.229Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-09-04T11:45:28.230Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-09-04T11:45:28.231Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-09-04T11:45:28.232Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-09-04T11:45:28.233Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-09-04T11:45:28.234Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: no loader entry matched"}
+{"at":"2026-09-04T11:54:01.770Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui -> off: fiber=false"}
+{"at":"2026-09-04T11:54:01.771Z","level":"info","event":"boot","detail":"plugin kept off: dsh-agent-team-gui"}
+{"at":"2026-09-04T11:54:01.772Z","level":"info","event":"toggle","detail":"@liustack/modlens -> off: fiber=false"}
+{"at":"2026-09-04T11:54:01.772Z","level":"info","event":"boot","detail":"plugin kept off: @liustack/modlens"}
+{"at":"2026-09-04T11:54:01.772Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-04T11:54:01.772Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities -> off: fiber=false"}
+{"at":"2026-09-04T11:54:01.773Z","level":"info","event":"boot","detail":"plugin kept off: dsh-plugin-capabilities"}
+{"at":"2026-09-04T11:54:01.773Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp -> off: fiber=false"}
+{"at":"2026-09-04T11:54:01.773Z","level":"info","event":"boot","detail":"plugin kept off: @opendsh/dsh-plugin-setting-mcp"}
+{"at":"2026-09-04T11:54:01.774Z","level":"info","event":"toggle","detail":"specworkflow -> off: fiber=false"}
+{"at":"2026-09-04T11:54:01.774Z","level":"info","event":"boot","detail":"plugin kept off: specworkflow"}
+{"at":"2026-09-04T11:54:01.774Z","level":"info","event":"toggle","detail":"dsh-bookmarks -> off: fiber=false"}
+{"at":"2026-09-04T11:54:01.775Z","level":"info","event":"boot","detail":"plugin kept off: dsh-bookmarks"}
+{"at":"2026-09-04T11:54:01.775Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: no loader entry matched"}
+{"at":"2026-09-04T12:04:20.334Z","level":"warn","event":"registry","detail":"catalog fetch failed: The operation was aborted due to timeout (30s, 2 attempts)"}
+{"at":"2026-09-04T12:04:20.438Z","level":"warn","event":"updates","detail":"local package source lookup failed — The operation was aborted due to timeout (30s, 2 attempts)"}
+{"at":"2026-09-04T12:04:26.999Z","level":"info","event":"toggle","detail":"dsh-vscode-mode -> off: fiber=false"}
+{"at":"2026-09-04T12:04:27.002Z","level":"info","event":"uninstall","detail":"dsh-vscode-mode exit=0 live-removed=true"}
+{"at":"2026-09-04T12:04:28.430Z","level":"warn","event":"updates","detail":"local package source lookup failed — The operation was aborted due to timeout (30s, 2 attempts)"}
+{"at":"2026-09-04T12:04:57.067Z","level":"warn","event":"updates","detail":"local package source lookup failed — The operation was aborted due to timeout (30s, 2 attempts)"}
+{"at":"2026-09-04T13:39:30.576Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui: no loader entry matched"}
+{"at":"2026-09-04T13:39:30.602Z","level":"info","event":"toggle","detail":"@liustack/modlens: no loader entry matched"}
+{"at":"2026-09-04T13:39:30.603Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-04T13:39:30.603Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities: no loader entry matched"}
+{"at":"2026-09-04T13:39:30.603Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp: no loader entry matched"}
+{"at":"2026-09-04T13:39:30.604Z","level":"info","event":"toggle","detail":"specworkflow: no loader entry matched"}
+{"at":"2026-09-04T13:39:30.604Z","level":"info","event":"toggle","detail":"dsh-bookmarks: no loader entry matched"}
+{"at":"2026-09-04T13:39:30.605Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: no loader entry matched"}
+{"at":"2026-09-04T13:39:31.563Z","level":"info","event":"region","detail":"no region on record; network check chose china"}

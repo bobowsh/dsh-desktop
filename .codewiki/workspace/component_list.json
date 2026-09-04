@@ -1,0 +1,2969 @@
+{
+  "components": [
+    {
+      "id": "electron.vite.config.ts::defineConfig",
+      "type": "function",
+      "file": "electron.vite.config.ts"
+    },
+    {
+      "id": "packages\\dsh-desktop-client-ui\\client.js::ConversationBrandMark",
+      "type": "function",
+      "file": "packages\\dsh-desktop-client-ui\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-client-ui\\client.js::DesktopBrandMark",
+      "type": "function",
+      "file": "packages\\dsh-desktop-client-ui\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-client-ui\\client.js::DesktopBrandName",
+      "type": "function",
+      "file": "packages\\dsh-desktop-client-ui\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-client-ui\\client.js::apply",
+      "type": "function",
+      "file": "packages\\dsh-desktop-client-ui\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-client-ui\\client.js::installStyles",
+      "type": "function",
+      "file": "packages\\dsh-desktop-client-ui\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-client-ui\\index.js::apply",
+      "type": "function",
+      "file": "packages\\dsh-desktop-client-ui\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-hmr-fallback\\index.js::ConfigWatchHmr",
+      "type": "class",
+      "file": "packages\\dsh-desktop-hmr-fallback\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-hmr-fallback\\index.js::ConfigWatchHmr.registerConfig",
+      "type": "method",
+      "file": "packages\\dsh-desktop-hmr-fallback\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-hmr-fallback\\index.js::apply",
+      "type": "function",
+      "file": "packages\\dsh-desktop-hmr-fallback\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-hmr-fallback\\index.js::stamp",
+      "type": "function",
+      "file": "packages\\dsh-desktop-hmr-fallback\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\client.js::MarketInstallerSection",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\client.js::MarketManagementTab",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\client.js::UninstallConfirm",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\client.js::apply",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\client.js::install",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\client.js::installStyles",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\client.js::load",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\client.js::marketAlreadyComposed",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\client.js::onKeyDown",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\client.js::poll",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\client.js::readStatus",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\client.js::restart",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\client.js::uninstall",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\client.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\generations\\installer.d.ts::GenerationInstallOptions",
+      "type": "interface",
+      "file": "packages\\dsh-desktop-market-installer\\generations\\installer.d.ts"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\generations\\installer.d.ts::GenerationInstallResult",
+      "type": "interface",
+      "file": "packages\\dsh-desktop-market-installer\\generations\\installer.d.ts"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\generations\\projection.d.ts::ProjectionResult",
+      "type": "interface",
+      "file": "packages\\dsh-desktop-market-installer\\generations\\projection.d.ts"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\generations\\registry.d.ts::Generation",
+      "type": "interface",
+      "file": "packages\\dsh-desktop-market-installer\\generations\\registry.d.ts"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\generations\\registry.d.ts::RegistryLayout",
+      "type": "interface",
+      "file": "packages\\dsh-desktop-market-installer\\generations\\registry.d.ts"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::abort",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::append",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::apply",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::asHandle",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::atomicWrite",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::buildInstallArguments",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::buildPnpmEnvironment",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::buildUninstallArguments",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::cancel",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::cleanStaleTemporaryDirectories",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::createDesktopPnpmService",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::createDesktopProfilesService",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::dshHome",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::ensurePnpmShim",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::hasForwardedAddress",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::isDisposableModuleDirectory",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::isLoopback",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::isTrustedRequest",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::killProcessTree",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::processPath",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::profileDirectory",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::readJson",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::readMarketInstallation",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::readObject",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::release",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::resolveDshEntry",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::resolvePnpmEntry",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::runExternalMarketPluginInstall",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::runInstall",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::runPlugin",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::runProfileCommand",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::runUninstall",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::sendJson",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::shellQuote",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::stagePnpmRunner",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::status",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::sweep",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::updateProfileNpmrc",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-market-installer\\index.js::validatePluginOperation",
+      "type": "function",
+      "file": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-preset-transfer\\index.js::apply",
+      "type": "function",
+      "file": "packages\\dsh-desktop-preset-transfer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-preset-transfer\\index.js::collectPresetArchiveFiles",
+      "type": "function",
+      "file": "packages\\dsh-desktop-preset-transfer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-preset-transfer\\index.js::createPresetArchive",
+      "type": "function",
+      "file": "packages\\dsh-desktop-preset-transfer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-preset-transfer\\index.js::harnessBaseOf",
+      "type": "function",
+      "file": "packages\\dsh-desktop-preset-transfer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-preset-transfer\\index.js::presetArchiveFailure",
+      "type": "function",
+      "file": "packages\\dsh-desktop-preset-transfer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-preset-transfer\\index.js::presetArchiveWarnings",
+      "type": "function",
+      "file": "packages\\dsh-desktop-preset-transfer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-preset-transfer\\index.js::safePresetArchivePath",
+      "type": "function",
+      "file": "packages\\dsh-desktop-preset-transfer\\index.js"
+    },
+    {
+      "id": "packages\\dsh-desktop-preset-transfer\\index.js::visit",
+      "type": "function",
+      "file": "packages\\dsh-desktop-preset-transfer\\index.js"
+    },
+    {
+      "id": "src\\main\\application-locale.ts::HarnessLocale",
+      "type": "type",
+      "file": "src\\main\\application-locale.ts"
+    },
+    {
+      "id": "src\\main\\application-locale.ts::resolveHarnessLocale",
+      "type": "function",
+      "file": "src\\main\\application-locale.ts"
+    },
+    {
+      "id": "src\\main\\close-to-tray.ts::shouldKeepRunningInBackground",
+      "type": "function",
+      "file": "src\\main\\close-to-tray.ts"
+    },
+    {
+      "id": "src\\main\\context-menu-template.ts::ContextMenuActions",
+      "type": "interface",
+      "file": "src\\main\\context-menu-template.ts"
+    },
+    {
+      "id": "src\\main\\context-menu-template.ts::ContextMenuLabels",
+      "type": "interface",
+      "file": "src\\main\\context-menu-template.ts"
+    },
+    {
+      "id": "src\\main\\context-menu-template.ts::ContextMenuState",
+      "type": "interface",
+      "file": "src\\main\\context-menu-template.ts"
+    },
+    {
+      "id": "src\\main\\context-menu-template.ts::appendSection",
+      "type": "function",
+      "file": "src\\main\\context-menu-template.ts"
+    },
+    {
+      "id": "src\\main\\context-menu-template.ts::buildContextMenuTemplate",
+      "type": "function",
+      "file": "src\\main\\context-menu-template.ts"
+    },
+    {
+      "id": "src\\main\\context-menu-template.ts::isExternalWebUrl",
+      "type": "function",
+      "file": "src\\main\\context-menu-template.ts"
+    },
+    {
+      "id": "src\\main\\context-menu.ts::installContextMenu",
+      "type": "function",
+      "file": "src\\main\\context-menu.ts"
+    },
+    {
+      "id": "src\\main\\gpu-fallback.ts::GpuFallbackLevel",
+      "type": "type",
+      "file": "src\\main\\gpu-fallback.ts"
+    },
+    {
+      "id": "src\\main\\gpu-fallback.ts::GpuFallbackState",
+      "type": "interface",
+      "file": "src\\main\\gpu-fallback.ts"
+    },
+    {
+      "id": "src\\main\\gpu-fallback.ts::gpuFallbackStateEquals",
+      "type": "function",
+      "file": "src\\main\\gpu-fallback.ts"
+    },
+    {
+      "id": "src\\main\\gpu-fallback.ts::gpuFallbackSwitches",
+      "type": "function",
+      "file": "src\\main\\gpu-fallback.ts"
+    },
+    {
+      "id": "src\\main\\gpu-fallback.ts::isGpuLossFatal",
+      "type": "function",
+      "file": "src\\main\\gpu-fallback.ts"
+    },
+    {
+      "id": "src\\main\\gpu-fallback.ts::parseGpuFallbackState",
+      "type": "function",
+      "file": "src\\main\\gpu-fallback.ts"
+    },
+    {
+      "id": "src\\main\\gpu-fallback.ts::planGpuFallbackResponse",
+      "type": "function",
+      "file": "src\\main\\gpu-fallback.ts"
+    },
+    {
+      "id": "src\\main\\gpu-fallback.ts::planStableLaunch",
+      "type": "function",
+      "file": "src\\main\\gpu-fallback.ts"
+    },
+    {
+      "id": "src\\main\\gpu-fallback.ts::readCount",
+      "type": "function",
+      "file": "src\\main\\gpu-fallback.ts"
+    },
+    {
+      "id": "src\\main\\gpu-fallback.ts::serializeGpuFallbackState",
+      "type": "function",
+      "file": "src\\main\\gpu-fallback.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::HarnessNodeRuntime",
+      "type": "interface",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::PluginRecoveryAction",
+      "type": "type",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::SafeModeAction",
+      "type": "type",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::appendPluginRecoveryDetectionLog",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::appendRendererPluginFailureLog",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::appendRendererPluginRecoveryLog",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::applyWindowChromeTheme",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::assertTrustedDesktopMenuEvent",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::assertTrustedMainWindowEvent",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::assertTrustedSafeModeManagerEvent",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::assertTrustedWindowsMenuEvent",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::attachWindowsMenuView",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::auditInstalledLaunchAgents",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::bootstrap",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::broadcastMobileStatus",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::bundledNodePath",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::bundledPnpmEntryPath",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::bundledPnpmRunnerPath",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::cancelPluginRecoverySessionReset",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::configureAppIdentity",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::configureApplicationLocale",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::configureGpuFallback",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::createWindow",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::desktopIconPath",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::desktopResourcePath",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::dshBrandLogoPath",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::dshEntryPath",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::ensureTray",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::executeDesktopMenuCommand",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::gpuFallbackStatePath",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::harnessLocale",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::harnessNodeEntryPath",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::harnessNodeRuntime",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::harnessThemePreference",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::installGpuFallbackWatch",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::installMainWindowRendererRecovery",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::installMenu",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::installPluginRecoveryNavigation",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::isDevelopmentBuild",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::isPluginRecoveryPage",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::launchHarness",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::launchSafeHarness",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::markHarnessRendered",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::openHarness",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::portableDshHome",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::quarantineInstalledLaunchAgentsForUpdate",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::queuePendingFrontendPluginRecovery",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::readGpuFallbackState",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::recordMainWindowRendererLoss",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::registerHarnessHandlers",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::reloadMainWindowAfterRendererLoss",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::removeProfilePluginCompletely",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::removeSafeModePlugin",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::repairProfilePackages",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::repairSafeModeCompatibilityIssues",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::reportProfileConsistency",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::resolvePluginRecoveryAction",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::resolveSafeModeAction",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::restartHarness",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::restoreMainWindow",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::schedulePluginRecoverySessionReset",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::setDshHomeEnv",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::setWindowsMenuOpen",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::showAbout",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::showMobilePairing",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::showPluginRecovery",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::showRuntimeFailure",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::showSafeMode",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::showSafeModeManager",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::showSplash",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::showUnexpectedError",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::syncNativeTheme",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::takePendingFrontendPluginRecovery",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::updateWindowsMenuViewBounds",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::waitForPluginRecoveryAction",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::waitForSafeModeAction",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::windowTitle",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::windowsTitleBarOverlay",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\index.ts::writeGpuFallbackState",
+      "type": "function",
+      "file": "src\\main\\index.ts"
+    },
+    {
+      "id": "src\\main\\launchd-guard.ts::isDaemonLaunch",
+      "type": "function",
+      "file": "src\\main\\launchd-guard.ts"
+    },
+    {
+      "id": "src\\main\\launchd-guard.ts::isUserInitiatedInstance",
+      "type": "function",
+      "file": "src\\main\\launchd-guard.ts"
+    },
+    {
+      "id": "src\\main\\main-window-recovery.ts::shouldReloadAfterMainWindowRendererLoss",
+      "type": "function",
+      "file": "src\\main\\main-window-recovery.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\cloudflared-tunnel.ts::CloudflareAssetSpec",
+      "type": "interface",
+      "file": "src\\main\\mobile\\cloudflared-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\cloudflared-tunnel.ts::CloudflareTunnelInstance",
+      "type": "interface",
+      "file": "src\\main\\mobile\\cloudflared-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\cloudflared-tunnel.ts::downloadFileWithRedirects",
+      "type": "function",
+      "file": "src\\main\\mobile\\cloudflared-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\cloudflared-tunnel.ts::ensureCloudflaredBinary",
+      "type": "function",
+      "file": "src\\main\\mobile\\cloudflared-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\cloudflared-tunnel.ts::extractTryCloudflareUrl",
+      "type": "function",
+      "file": "src\\main\\mobile\\cloudflared-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\cloudflared-tunnel.ts::findCloudflaredOnPath",
+      "type": "function",
+      "file": "src\\main\\mobile\\cloudflared-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\cloudflared-tunnel.ts::resolveCurrentAssetSpec",
+      "type": "function",
+      "file": "src\\main\\mobile\\cloudflared-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\cloudflared-tunnel.ts::sha256OfFile",
+      "type": "function",
+      "file": "src\\main\\mobile\\cloudflared-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\cloudflared-tunnel.ts::startCloudflareQuickTunnel",
+      "type": "function",
+      "file": "src\\main\\mobile\\cloudflared-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\internet-tunnel.ts::InternetTunnelInstance",
+      "type": "interface",
+      "file": "src\\main\\mobile\\internet-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\internet-tunnel.ts::InternetTunnelProvider",
+      "type": "type",
+      "file": "src\\main\\mobile\\internet-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\internet-tunnel.ts::errorMessage",
+      "type": "function",
+      "file": "src\\main\\mobile\\internet-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\internet-tunnel.ts::startTunnelWithFallback",
+      "type": "function",
+      "file": "src\\main\\mobile\\internet-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge",
+      "type": "class",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.assertPendingQuestion",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.authorized",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.consumeMux",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.consumeMuxEnvelope",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.forwardRpc",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.handle",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.harnessFetch",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.harnessSession",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.html",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.invokeHarness",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.json",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.launchTunnel",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.locale",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.mobileToken",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.monitorMux",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.pairingTokenValid",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.reconnectPairing",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.redirect",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.rememberMobileContext",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.requestConnectionMode",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.respondToQuestion",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.rotatePairingToken",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.snapshot",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.start",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.startMuxMonitor",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.stop",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.streamSession",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.syncConnected",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.text",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.toggleTunnel",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.tunnelMigrationUrl",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.validPairingToken",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.verifySameOrigin",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridge.verifyTrustedOrigin",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridgeOptions",
+      "type": "interface",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::LanMobileBridgeSnapshot",
+      "type": "interface",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::MobileConnectionMode",
+      "type": "type",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::MobileQuestion",
+      "type": "interface",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::MobileQuestionAnswer",
+      "type": "interface",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::MobileQuestionOption",
+      "type": "interface",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::MobileSession",
+      "type": "interface",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::PendingMobileQuestion",
+      "type": "interface",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::PendingPairing",
+      "type": "interface",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::cookiePair",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::firstHeaderValue",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::isInternetTunnelHost",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::isLoopbackAddress",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::isPrivateAddress",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::isRecord",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::normalizeRemoteAddress",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::parsePendingQuestion",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::parseQuestionResponse",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::preferredLanAddress",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::readBody",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::requiredStringField",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::validateQuestionAnswers",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-bridge.ts::waitFor",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-bridge.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-pages.ts::MobilePageOptions",
+      "type": "interface",
+      "file": "src\\main\\mobile\\lan-mobile-pages.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-pages.ts::escapeHtml",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-pages.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-pages.ts::renderDesktopPairingPage",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-pages.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-pages.ts::renderMobilePage",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-pages.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-pages.ts::renderMobileReconnectPage",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-pages.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\lan-mobile-pages.ts::renderPairingWaitPage",
+      "type": "function",
+      "file": "src\\main\\mobile\\lan-mobile-pages.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\pinggy-tunnel.ts::PinggyTunnelInstance",
+      "type": "interface",
+      "file": "src\\main\\mobile\\pinggy-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\pinggy-tunnel.ts::extractPinggyUrl",
+      "type": "function",
+      "file": "src\\main\\mobile\\pinggy-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\pinggy-tunnel.ts::findSshOnPath",
+      "type": "function",
+      "file": "src\\main\\mobile\\pinggy-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\pinggy-tunnel.ts::lastOutputLine",
+      "type": "function",
+      "file": "src\\main\\mobile\\pinggy-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\mobile\\pinggy-tunnel.ts::startPinggyTunnel",
+      "type": "function",
+      "file": "src\\main\\mobile\\pinggy-tunnel.ts"
+    },
+    {
+      "id": "src\\main\\plugin-recovery-detection.ts::DetectPluginRecoveryOptions",
+      "type": "interface",
+      "file": "src\\main\\plugin-recovery-detection.ts"
+    },
+    {
+      "id": "src\\main\\plugin-recovery-detection.ts::PluginRecoveryDetection",
+      "type": "interface",
+      "file": "src\\main\\plugin-recovery-detection.ts"
+    },
+    {
+      "id": "src\\main\\plugin-recovery-detection.ts::detectPluginRecovery",
+      "type": "function",
+      "file": "src\\main\\plugin-recovery-detection.ts"
+    },
+    {
+      "id": "src\\main\\plugin-recovery-detection.ts::mergeLogs",
+      "type": "function",
+      "file": "src\\main\\plugin-recovery-detection.ts"
+    },
+    {
+      "id": "src\\main\\plugin-recovery-view.ts::FailureDescription",
+      "type": "interface",
+      "file": "src\\main\\plugin-recovery-view.ts"
+    },
+    {
+      "id": "src\\main\\plugin-recovery-view.ts::PluginRecoveryLocale",
+      "type": "type",
+      "file": "src\\main\\plugin-recovery-view.ts"
+    },
+    {
+      "id": "src\\main\\plugin-recovery-view.ts::PluginRecoveryViewModel",
+      "type": "interface",
+      "file": "src\\main\\plugin-recovery-view.ts"
+    },
+    {
+      "id": "src\\main\\plugin-recovery-view.ts::buildPluginRecoveryViewModel",
+      "type": "function",
+      "file": "src\\main\\plugin-recovery-view.ts"
+    },
+    {
+      "id": "src\\main\\plugin-recovery-view.ts::describePluginFailure",
+      "type": "function",
+      "file": "src\\main\\plugin-recovery-view.ts"
+    },
+    {
+      "id": "src\\main\\plugin-recovery-view.ts::displayPluginName",
+      "type": "function",
+      "file": "src\\main\\plugin-recovery-view.ts"
+    },
+    {
+      "id": "src\\main\\plugin-recovery-view.ts::latestAttemptText",
+      "type": "function",
+      "file": "src\\main\\plugin-recovery-view.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\disclaimed-utility-process.ts::DisclaimedUtilityProcessSpec",
+      "type": "interface",
+      "file": "src\\main\\runtime\\disclaimed-utility-process.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\disclaimed-utility-process.ts::UtilityProcessAdapter",
+      "type": "class",
+      "file": "src\\main\\runtime\\disclaimed-utility-process.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\disclaimed-utility-process.ts::UtilityProcessAdapter.kill",
+      "type": "function",
+      "file": "src\\main\\runtime\\disclaimed-utility-process.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\disclaimed-utility-process.ts::UtilityProcessLauncher",
+      "type": "interface",
+      "file": "src\\main\\runtime\\disclaimed-utility-process.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\disclaimed-utility-process.ts::buildDisclaimedUtilityProcessSpec",
+      "type": "function",
+      "file": "src\\main\\runtime\\disclaimed-utility-process.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\disclaimed-utility-process.ts::definedEnvironment",
+      "type": "function",
+      "file": "src\\main\\runtime\\disclaimed-utility-process.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\disclaimed-utility-process.ts::launchDisclaimedUtilityProcess",
+      "type": "function",
+      "file": "src\\main\\runtime\\disclaimed-utility-process.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::HarnessChildProcess",
+      "type": "interface",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::HarnessRuntime",
+      "type": "class",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::HarnessRuntime.closeLog",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::HarnessRuntime.flushLogRemainders",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::HarnessRuntime.note",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::HarnessRuntime.setState",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::HarnessRuntime.snapshot",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::HarnessRuntime.start",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::HarnessRuntime.stop",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::HarnessRuntime.stopChild",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::HarnessRuntime.writeChunk",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::HarnessRuntime.writeLog",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::HarnessRuntimeOptions",
+      "type": "interface",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::buildHarnessArguments",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::buildHarnessSpawnOptions",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::buildNodeArguments",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::extractDshEntryFailureCause",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::extractDuplicateLoaderEntryId",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::extractFailureCause",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::extractLaunchToken",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::extractOffendingPlugin",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::extractOffendingPlugins",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::extractPluginFailureReferences",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::extractPluginReferences",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::extractSlotConflictName",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::formatExitCode",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::isActionablePluginReference",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::isHarnessStartupProbeHealthy",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::isPackageReference",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::latestHarnessAttemptLogs",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::parseEnvOutput",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::reservePort",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::resolveShellEnvironment",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::syncModulesMetadata",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::updateReadyStability",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::waitUntilReady",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\harness-runtime.ts::withoutUndecodableValues",
+      "type": "function",
+      "file": "src\\main\\runtime\\harness-runtime.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\profile-plugin-command.ts::ProfilePluginCommandOptions",
+      "type": "interface",
+      "file": "src\\main\\runtime\\profile-plugin-command.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\profile-plugin-command.ts::ProfilePluginCommandResult",
+      "type": "interface",
+      "file": "src\\main\\runtime\\profile-plugin-command.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\profile-plugin-command.ts::buildPnpmShimCommand",
+      "type": "function",
+      "file": "src\\main\\runtime\\profile-plugin-command.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\profile-plugin-command.ts::buildProfileInstallArguments",
+      "type": "function",
+      "file": "src\\main\\runtime\\profile-plugin-command.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\profile-plugin-command.ts::buildProfilePluginCommandEnvironment",
+      "type": "function",
+      "file": "src\\main\\runtime\\profile-plugin-command.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\profile-plugin-command.ts::buildProfilePluginRemoveArguments",
+      "type": "function",
+      "file": "src\\main\\runtime\\profile-plugin-command.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\profile-plugin-command.ts::diagnosticLine",
+      "type": "function",
+      "file": "src\\main\\runtime\\profile-plugin-command.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\profile-plugin-command.ts::ensureProfilePnpmShim",
+      "type": "function",
+      "file": "src\\main\\runtime\\profile-plugin-command.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\profile-plugin-command.ts::installProfileDependenciesWithDsh",
+      "type": "function",
+      "file": "src\\main\\runtime\\profile-plugin-command.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\profile-plugin-command.ts::killProcessTree",
+      "type": "function",
+      "file": "src\\main\\runtime\\profile-plugin-command.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\profile-plugin-command.ts::progressSignature",
+      "type": "function",
+      "file": "src\\main\\runtime\\profile-plugin-command.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\profile-plugin-command.ts::removeProfilePluginWithDsh",
+      "type": "function",
+      "file": "src\\main\\runtime\\profile-plugin-command.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\profile-plugin-command.ts::runProfileCommand",
+      "type": "function",
+      "file": "src\\main\\runtime\\profile-plugin-command.ts"
+    },
+    {
+      "id": "src\\main\\runtime\\profile-plugin-command.ts::shellQuote",
+      "type": "function",
+      "file": "src\\main\\runtime\\profile-plugin-command.ts"
+    },
+    {
+      "id": "src\\main\\safe-mode.ts::SafeModeIssueGroupViewModel",
+      "type": "interface",
+      "file": "src\\main\\safe-mode.ts"
+    },
+    {
+      "id": "src\\main\\safe-mode.ts::SafeModeIssueViewModel",
+      "type": "interface",
+      "file": "src\\main\\safe-mode.ts"
+    },
+    {
+      "id": "src\\main\\safe-mode.ts::SafeModeLocale",
+      "type": "type",
+      "file": "src\\main\\safe-mode.ts"
+    },
+    {
+      "id": "src\\main\\safe-mode.ts::SafeModePluginViewModel",
+      "type": "interface",
+      "file": "src\\main\\safe-mode.ts"
+    },
+    {
+      "id": "src\\main\\safe-mode.ts::SafeModeViewModel",
+      "type": "interface",
+      "file": "src\\main\\safe-mode.ts"
+    },
+    {
+      "id": "src\\main\\safe-mode.ts::buildSafeModeViewModel",
+      "type": "function",
+      "file": "src\\main\\safe-mode.ts"
+    },
+    {
+      "id": "src\\main\\safe-mode.ts::shouldStartInSafeMode",
+      "type": "function",
+      "file": "src\\main\\safe-mode.ts"
+    },
+    {
+      "id": "src\\main\\security-policy.ts::canGrantWindowPermission",
+      "type": "function",
+      "file": "src\\main\\security-policy.ts"
+    },
+    {
+      "id": "src\\main\\security-policy.ts::isHarnessUrl",
+      "type": "function",
+      "file": "src\\main\\security-policy.ts"
+    },
+    {
+      "id": "src\\main\\security-policy.ts::isTrustedAppUrl",
+      "type": "function",
+      "file": "src\\main\\security-policy.ts"
+    },
+    {
+      "id": "src\\main\\security.ts::secureWindow",
+      "type": "function",
+      "file": "src\\main\\security.ts"
+    },
+    {
+      "id": "src\\main\\state\\component-ledger.ts::ComponentLedger",
+      "type": "type",
+      "file": "src\\main\\state\\component-ledger.ts"
+    },
+    {
+      "id": "src\\main\\state\\component-ledger.ts::ComponentLedgerEntry",
+      "type": "interface",
+      "file": "src\\main\\state\\component-ledger.ts"
+    },
+    {
+      "id": "src\\main\\state\\component-ledger.ts::ledgerPath",
+      "type": "function",
+      "file": "src\\main\\state\\component-ledger.ts"
+    },
+    {
+      "id": "src\\main\\state\\component-ledger.ts::readComponentLedger",
+      "type": "function",
+      "file": "src\\main\\state\\component-ledger.ts"
+    },
+    {
+      "id": "src\\main\\state\\component-ledger.ts::recordComponentRepair",
+      "type": "function",
+      "file": "src\\main\\state\\component-ledger.ts"
+    },
+    {
+      "id": "src\\main\\state\\component-ledger.ts::shouldEscalateRepairs",
+      "type": "function",
+      "file": "src\\main\\state\\component-ledger.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-launch.ts::Note",
+      "type": "type",
+      "file": "src\\main\\state\\generation-launch.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-launch.ts::desiredIsUntried",
+      "type": "function",
+      "file": "src\\main\\state\\generation-launch.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-launch.ts::markGenerationsBooted",
+      "type": "function",
+      "file": "src\\main\\state\\generation-launch.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-launch.ts::prepareGenerationsForLaunch",
+      "type": "function",
+      "file": "src\\main\\state\\generation-launch.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-launch.ts::rollBackToLastKnownGood",
+      "type": "function",
+      "file": "src\\main\\state\\generation-launch.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-launch.ts::uninstallGenerationPlugin",
+      "type": "function",
+      "file": "src\\main\\state\\generation-launch.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::MigrationDeps",
+      "type": "interface",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::Note",
+      "type": "type",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::PlannedPlugin",
+      "type": "interface",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::communityPlugins",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::confirmMigration",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::discardSnapshot",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::isProfileMigrated",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::migrateProfileToGenerations",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::migrationInputFingerprint",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::migrationPlan",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::profileDir",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::profileManifest",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::readDeferredFingerprint",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::recoverInterruptedMigration",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::rewriteManifest",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::rollBackMigration",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::snapshotProfile",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::usesExternalSource",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::validateGeneration",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\generation-migration.ts::writeDeferred",
+      "type": "function",
+      "file": "src\\main\\state\\generation-migration.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::AuditAction",
+      "type": "type",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::AuditFinding",
+      "type": "interface",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::CommandResult",
+      "type": "interface",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::LaunchAgentAuditOptions",
+      "type": "interface",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::LaunchAgentAuditResult",
+      "type": "interface",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::LaunchAgentRecord",
+      "type": "interface",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::appBundlePathFromExecutable",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::auditLaunchAgents",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::defaultBootoutLaunchAgent",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::defaultBootstrapLaunchAgent",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::defaultDisableLaunchAgent",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::defaultInspectLaunchAgent",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::defaultReadLaunchAgent",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::defaultWriteLaunchAgent",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::describesDaemonisedAppBinary",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::executablePath",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::pathInside",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::pluginOwnerFromArguments",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::quarantineAppBundleLaunchAgents",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::quarantineLaunchAgent",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::referencesAppBundleExecutable",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::repairedLaunchAgent",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::runCommand",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::runsAsNode",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-agent-audit.ts::timestamp",
+      "type": "function",
+      "file": "src\\main\\state\\launch-agent-audit.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-root.ts::ensureLaunchRoot",
+      "type": "function",
+      "file": "src\\main\\state\\launch-root.ts"
+    },
+    {
+      "id": "src\\main\\state\\launch-root.ts::launchRootPath",
+      "type": "function",
+      "file": "src\\main\\state\\launch-root.ts"
+    },
+    {
+      "id": "src\\main\\state\\launchctl-service-state.ts::LaunchctlCommandResult",
+      "type": "interface",
+      "file": "src\\main\\state\\launchctl-service-state.ts"
+    },
+    {
+      "id": "src\\main\\state\\launchctl-service-state.ts::LaunchctlInspector",
+      "type": "type",
+      "file": "src\\main\\state\\launchctl-service-state.ts"
+    },
+    {
+      "id": "src\\main\\state\\launchctl-service-state.ts::launchServiceIsStoppedAfterBootout",
+      "type": "function",
+      "file": "src\\main\\state\\launchctl-service-state.ts"
+    },
+    {
+      "id": "src\\main\\state\\patch-layer.ts::PatchLayerPrune",
+      "type": "interface",
+      "file": "src\\main\\state\\patch-layer.ts"
+    },
+    {
+      "id": "src\\main\\state\\patch-layer.ts::belongsToPlugin",
+      "type": "function",
+      "file": "src\\main\\state\\patch-layer.ts"
+    },
+    {
+      "id": "src\\main\\state\\patch-layer.ts::bundleEntryIds",
+      "type": "function",
+      "file": "src\\main\\state\\patch-layer.ts"
+    },
+    {
+      "id": "src\\main\\state\\patch-layer.ts::prunePatchLayer",
+      "type": "function",
+      "file": "src\\main\\state\\patch-layer.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::InstalledPackage",
+      "type": "interface",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::LaunchAgentDescription",
+      "type": "interface",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::PackageManifest",
+      "type": "interface",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::PluginComponentCleanupOptions",
+      "type": "interface",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::PluginComponentCleanupResult",
+      "type": "interface",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::cleanupPluginOwnedComponents",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::defaultBootoutLaunchAgent",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::defaultInspectLaunchAgent",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::defaultReadLaunchAgent",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::installedPackage",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::launchAgentReferencesDirectories",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::orphanedPluginPackageDirectories",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::packageClosure",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::pathInside",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::profileDirectory",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::quarantineTimestamp",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-component-cleanup.ts::runCommand",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-component-cleanup.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::BundleManifest",
+      "type": "interface",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::ProfileLockfile",
+      "type": "interface",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::ProfileManifest",
+      "type": "interface",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::ProfilePluginRemovalRunner",
+      "type": "type",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::bundleDeclaresLoaderEntry",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::bundleOwnsPackage",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::configuredProfilePlugins",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::isDisposableModuleDirectory",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::isThirdPartyPackageName",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::listInstalledProfilePlugins",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::loaderEntryPattern",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::packagesProvidingSlot",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::pluginDeclaredEntryIds",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::pluginMatchesSlot",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::pluginReferencesPackage",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::profileCordisPatchPath",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::profilePackageJsonPath",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::pruneMissingProfileBundles",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::prunePluginPatchLayer",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::resetPluginProfile",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::resolveProfileRecoveryPlugins",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::uninstallPluginFromProfile",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\plugin-recovery.ts::yamlPackageNamePattern",
+      "type": "function",
+      "file": "src\\main\\state\\plugin-recovery.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::PackageManifest",
+      "type": "interface",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::ProfileCompatibilityIssue",
+      "type": "interface",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::ProfileCompatibilityIssueKind",
+      "type": "type",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::ProfileCompatibilityResolution",
+      "type": "type",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::ProfileCompatibilitySnapshot",
+      "type": "interface",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::backupManifest",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::disableProfilePlugins",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::inspectProfileCompatibility",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::installedPackageNames",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::issueId",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::literalModuleRequests",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::moduleSourcePaths",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::packageNameFromRequest",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::packageVersion",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::pluginDependencyClosure",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::pluginRealDirectory",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::quarantineProfileCorePackages",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::quarantineProfileWorkspaces",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::readManifest",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::recoveryStamp",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::resolvesFrom",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-compatibility.ts::workspaceManifests",
+      "type": "function",
+      "file": "src\\main\\state\\profile-compatibility.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-consistency.ts::ProfileManifest",
+      "type": "interface",
+      "file": "src\\main\\state\\profile-consistency.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-consistency.ts::inspectPackage",
+      "type": "function",
+      "file": "src\\main\\state\\profile-consistency.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-consistency.ts::inspectProfileConsistency",
+      "type": "function",
+      "file": "src\\main\\state\\profile-consistency.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-consistency.ts::patchLayerInsertedPackages",
+      "type": "function",
+      "file": "src\\main\\state\\profile-consistency.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-consistency.ts::readManifest",
+      "type": "function",
+      "file": "src\\main\\state\\profile-consistency.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-consistency.ts::undeclaredBundles",
+      "type": "function",
+      "file": "src\\main\\state\\profile-consistency.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-install-marker.ts::clearProfileInstallMarker",
+      "type": "function",
+      "file": "src\\main\\state\\profile-install-marker.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-install-marker.ts::installFingerprint",
+      "type": "function",
+      "file": "src\\main\\state\\profile-install-marker.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-install-marker.ts::isProfileInstallComplete",
+      "type": "function",
+      "file": "src\\main\\state\\profile-install-marker.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-install-marker.ts::markProfileInstallComplete",
+      "type": "function",
+      "file": "src\\main\\state\\profile-install-marker.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-install-marker.ts::profileDirectory",
+      "type": "function",
+      "file": "src\\main\\state\\profile-install-marker.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-install-marker.ts::profileInstallMarkerPath",
+      "type": "function",
+      "file": "src\\main\\state\\profile-install-marker.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-repair.ts::clearDamagedPackageDirectories",
+      "type": "function",
+      "file": "src\\main\\state\\profile-repair.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-repair.ts::exists",
+      "type": "function",
+      "file": "src\\main\\state\\profile-repair.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-repair.ts::findDamagedPackageDirectories",
+      "type": "function",
+      "file": "src\\main\\state\\profile-repair.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-repair.ts::hasProfile",
+      "type": "function",
+      "file": "src\\main\\state\\profile-repair.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-repair.ts::isMaterializedPackage",
+      "type": "function",
+      "file": "src\\main\\state\\profile-repair.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-repair.ts::isReservedEntry",
+      "type": "function",
+      "file": "src\\main\\state\\profile-repair.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-store.ts::configuredStoreDir",
+      "type": "function",
+      "file": "src\\main\\state\\profile-store.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-store.ts::ensureStoreDirPinned",
+      "type": "function",
+      "file": "src\\main\\state\\profile-store.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-store.ts::inspectStoreConsistency",
+      "type": "function",
+      "file": "src\\main\\state\\profile-store.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-store.ts::pinStoreDir",
+      "type": "function",
+      "file": "src\\main\\state\\profile-store.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-store.ts::recordedStoreDir",
+      "type": "function",
+      "file": "src\\main\\state\\profile-store.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-store.ts::storeDirSetting",
+      "type": "function",
+      "file": "src\\main\\state\\profile-store.ts"
+    },
+    {
+      "id": "src\\main\\state\\profile-store.ts::writeFileAtomically",
+      "type": "function",
+      "file": "src\\main\\state\\profile-store.ts"
+    },
+    {
+      "id": "src\\main\\state\\remove-tree.ts::removeTree",
+      "type": "function",
+      "file": "src\\main\\state\\remove-tree.ts"
+    },
+    {
+      "id": "src\\main\\state\\remove-tree.ts::removeTreeIfPossible",
+      "type": "function",
+      "file": "src\\main\\state\\remove-tree.ts"
+    },
+    {
+      "id": "src\\main\\state\\safe-mode-profile.ts::ensureSafeModeProfile",
+      "type": "function",
+      "file": "src\\main\\state\\safe-mode-profile.ts"
+    },
+    {
+      "id": "src\\main\\state\\safe-mode-profile.ts::writeIfChanged",
+      "type": "function",
+      "file": "src\\main\\state\\safe-mode-profile.ts"
+    },
+    {
+      "id": "src\\main\\update\\skipped-version.ts::readSkippedVersion",
+      "type": "function",
+      "file": "src\\main\\update\\skipped-version.ts"
+    },
+    {
+      "id": "src\\main\\update\\skipped-version.ts::shouldOfferUpdate",
+      "type": "function",
+      "file": "src\\main\\update\\skipped-version.ts"
+    },
+    {
+      "id": "src\\main\\update\\skipped-version.ts::skippedVersionPath",
+      "type": "function",
+      "file": "src\\main\\update\\skipped-version.ts"
+    },
+    {
+      "id": "src\\main\\update\\skipped-version.ts::writeSkippedVersion",
+      "type": "function",
+      "file": "src\\main\\update\\skipped-version.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::checkAfterResume",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::checkForUpdates",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::configureUpdater",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::currentSkippedVersion",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::downloadAvailableUpdate",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::errorMessage",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::getUpdateStatus",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::installDownloadedUpdate",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::registerUpdateHandlers",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::scheduleReset",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::skipFile",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::skipUpdate",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::startUpdateManager",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::stopUpdateManager",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::supportsUpdates",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-manager.ts::transition",
+      "type": "function",
+      "file": "src\\main\\update\\update-manager.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-policy.ts::shouldCheckAfterResume",
+      "type": "function",
+      "file": "src\\main\\update\\update-policy.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-policy.ts::supportsAutoUpdates",
+      "type": "function",
+      "file": "src\\main\\update\\update-policy.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-state.ts::UpdateStateEvent",
+      "type": "type",
+      "file": "src\\main\\update\\update-state.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-state.ts::clampPercent",
+      "type": "function",
+      "file": "src\\main\\update\\update-state.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-state.ts::initialUpdateStatus",
+      "type": "function",
+      "file": "src\\main\\update\\update-state.ts"
+    },
+    {
+      "id": "src\\main\\update\\update-state.ts::reduceUpdateStatus",
+      "type": "function",
+      "file": "src\\main\\update\\update-state.ts"
+    },
+    {
+      "id": "src\\main\\version-info.ts::PackageMetadata",
+      "type": "interface",
+      "file": "src\\main\\version-info.ts"
+    },
+    {
+      "id": "src\\main\\version-info.ts::aboutDetail",
+      "type": "function",
+      "file": "src\\main\\version-info.ts"
+    },
+    {
+      "id": "src\\main\\version-info.ts::bundledHarnessVersion",
+      "type": "function",
+      "file": "src\\main\\version-info.ts"
+    },
+    {
+      "id": "src\\main\\version-info.ts::readPackageMetadata",
+      "type": "function",
+      "file": "src\\main\\version-info.ts"
+    },
+    {
+      "id": "src\\main\\version-info.ts::validVersion",
+      "type": "function",
+      "file": "src\\main\\version-info.ts"
+    },
+    {
+      "id": "src\\main\\window-navigation.ts::HarnessCookieStore",
+      "type": "interface",
+      "file": "src\\main\\window-navigation.ts"
+    },
+    {
+      "id": "src\\main\\window-navigation.ts::clearStaleHarnessAuthCookies",
+      "type": "function",
+      "file": "src\\main\\window-navigation.ts"
+    },
+    {
+      "id": "src\\main\\window-navigation.ts::desktopHarnessUrl",
+      "type": "function",
+      "file": "src\\main\\window-navigation.ts"
+    },
+    {
+      "id": "src\\main\\window-navigation.ts::isAbortedNavigationError",
+      "type": "function",
+      "file": "src\\main\\window-navigation.ts"
+    },
+    {
+      "id": "src\\main\\window-navigation.ts::shouldLoadHarnessUrl",
+      "type": "function",
+      "file": "src\\main\\window-navigation.ts"
+    },
+    {
+      "id": "src\\main\\window-raise.ts::RaiseableWindow",
+      "type": "interface",
+      "file": "src\\main\\window-raise.ts"
+    },
+    {
+      "id": "src\\main\\window-raise.ts::WindowFocusIntent",
+      "type": "type",
+      "file": "src\\main\\window-raise.ts"
+    },
+    {
+      "id": "src\\main\\window-raise.ts::raiseWindowWithoutStealingFocus",
+      "type": "function",
+      "file": "src\\main\\window-raise.ts"
+    },
+    {
+      "id": "src\\main\\windows-menu-view.ts::ContentSize",
+      "type": "interface",
+      "file": "src\\main\\windows-menu-view.ts"
+    },
+    {
+      "id": "src\\main\\windows-menu-view.ts::windowsMenuViewBounds",
+      "type": "function",
+      "file": "src\\main\\windows-menu-view.ts"
+    },
+    {
+      "id": "src\\preload\\boot-failure.ts::BootFailureElement",
+      "type": "interface",
+      "file": "src\\preload\\boot-failure.ts"
+    },
+    {
+      "id": "src\\preload\\boot-failure.ts::extractBootFailureText",
+      "type": "function",
+      "file": "src\\preload\\boot-failure.ts"
+    },
+    {
+      "id": "src\\preload\\boot-failure.ts::findBootFailureText",
+      "type": "function",
+      "file": "src\\preload\\boot-failure.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::addBootFailureMessage",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::applyMobileStatus",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::applyStatus",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::button",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::checkBootFailureInDom",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::currentBootFailureText",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::dismissCurrent",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::element",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::initializeUi",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::isBusy",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::liveElement",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::mount",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::mountMobileButton",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::mountSafeModeBanner",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::queueBootFailure",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::refreshMobileStatus",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::render",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::renderMobileButton",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::runDomSync",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::scheduleDomSync",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\index.ts::skipButton",
+      "type": "function",
+      "file": "src\\preload\\index.ts"
+    },
+    {
+      "id": "src\\preload\\plugin-error-view.ts::extractPluginName",
+      "type": "function",
+      "file": "src\\preload\\plugin-error-view.ts"
+    },
+    {
+      "id": "src\\preload\\plugin-error-view.ts::isPluginLoadError",
+      "type": "function",
+      "file": "src\\preload\\plugin-error-view.ts"
+    },
+    {
+      "id": "src\\preload\\plugin-error-view.ts::pluginErrorMessage",
+      "type": "function",
+      "file": "src\\preload\\plugin-error-view.ts"
+    },
+    {
+      "id": "src\\preload\\update-view.ts::UpdateHeadline",
+      "type": "interface",
+      "file": "src\\preload\\update-view.ts"
+    },
+    {
+      "id": "src\\preload\\update-view.ts::UpdateLocale",
+      "type": "type",
+      "file": "src\\preload\\update-view.ts"
+    },
+    {
+      "id": "src\\preload\\update-view.ts::isUpdateDismissed",
+      "type": "function",
+      "file": "src\\preload\\update-view.ts"
+    },
+    {
+      "id": "src\\preload\\update-view.ts::shouldShowUpdate",
+      "type": "function",
+      "file": "src\\preload\\update-view.ts"
+    },
+    {
+      "id": "src\\preload\\update-view.ts::updateHeadline",
+      "type": "function",
+      "file": "src\\preload\\update-view.ts"
+    },
+    {
+      "id": "src\\preload\\update-view.ts::updateMessage",
+      "type": "function",
+      "file": "src\\preload\\update-view.ts"
+    },
+    {
+      "id": "src\\preload\\windows-menu.ts::MenuEntry",
+      "type": "type",
+      "file": "src\\preload\\windows-menu.ts"
+    },
+    {
+      "id": "src\\preload\\windows-menu.ts::applyTheme",
+      "type": "function",
+      "file": "src\\preload\\windows-menu.ts"
+    },
+    {
+      "id": "src\\preload\\windows-menu.ts::menuEntries",
+      "type": "function",
+      "file": "src\\preload\\windows-menu.ts"
+    },
+    {
+      "id": "src\\preload\\windows-menu.ts::mountWindowsMenu",
+      "type": "function",
+      "file": "src\\preload\\windows-menu.ts"
+    },
+    {
+      "id": "src\\preload\\windows-menu.ts::readZoomFactor",
+      "type": "function",
+      "file": "src\\preload\\windows-menu.ts"
+    },
+    {
+      "id": "src\\preload\\windows-menu.ts::renderMenu",
+      "type": "function",
+      "file": "src\\preload\\windows-menu.ts"
+    },
+    {
+      "id": "src\\preload\\windows-titlebar.ts::TitlebarLayoutMountOptions",
+      "type": "interface",
+      "file": "src\\preload\\windows-titlebar.ts"
+    },
+    {
+      "id": "src\\preload\\windows-titlebar.ts::documentIsDark",
+      "type": "function",
+      "file": "src\\preload\\windows-titlebar.ts"
+    },
+    {
+      "id": "src\\preload\\windows-titlebar.ts::installDragRegion",
+      "type": "function",
+      "file": "src\\preload\\windows-titlebar.ts"
+    },
+    {
+      "id": "src\\preload\\windows-titlebar.ts::installLayout",
+      "type": "function",
+      "file": "src\\preload\\windows-titlebar.ts"
+    },
+    {
+      "id": "src\\preload\\windows-titlebar.ts::mountWindowsTitlebarLayout",
+      "type": "function",
+      "file": "src\\preload\\windows-titlebar.ts"
+    },
+    {
+      "id": "src\\preload\\windows-titlebar.ts::syncTheme",
+      "type": "function",
+      "file": "src\\preload\\windows-titlebar.ts"
+    },
+    {
+      "id": "src\\preload\\windows-titlebar.ts::trackSidebarLayout",
+      "type": "function",
+      "file": "src\\preload\\windows-titlebar.ts"
+    },
+    {
+      "id": "src\\shared\\contracts.ts::RuntimePhase",
+      "type": "type",
+      "file": "src\\shared\\contracts.ts"
+    },
+    {
+      "id": "src\\shared\\contracts.ts::RuntimeSnapshot",
+      "type": "interface",
+      "file": "src\\shared\\contracts.ts"
+    },
+    {
+      "id": "src\\shared\\contracts.ts::UpdatePhase",
+      "type": "type",
+      "file": "src\\shared\\contracts.ts"
+    },
+    {
+      "id": "src\\shared\\contracts.ts::UpdateStatus",
+      "type": "interface",
+      "file": "src\\shared\\contracts.ts"
+    },
+    {
+      "id": "src\\shared\\desktop-menu.ts::DesktopMenuCommand",
+      "type": "type",
+      "file": "src\\shared\\desktop-menu.ts"
+    },
+    {
+      "id": "src\\shared\\desktop-menu.ts::formatZoomPercentage",
+      "type": "function",
+      "file": "src\\shared\\desktop-menu.ts"
+    },
+    {
+      "id": "src\\shared\\desktop-menu.ts::isDesktopMenuCommand",
+      "type": "function",
+      "file": "src\\shared\\desktop-menu.ts"
+    },
+    {
+      "id": "src\\shared\\desktop-menu.ts::isZoomMenuCommand",
+      "type": "function",
+      "file": "src\\shared\\desktop-menu.ts"
+    },
+    {
+      "id": "vitest.config.ts::defineConfig",
+      "type": "function",
+      "file": "vitest.config.ts"
+    }
+  ]
+}

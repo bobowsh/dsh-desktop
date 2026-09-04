@@ -318,6 +318,14 @@ contextBridge.exposeInMainWorld(
   })
 )
 
+// dsh-plugin-imc：全屏区域框选截图（返回临时 PNG 路径，取消/失败返回 null）
+contextBridge.exposeInMainWorld(
+  'imcRegionCapture',
+  Object.freeze({
+    capture: (): Promise<{ path: string | null }> => ipcRenderer.invoke('imc:screenshot-region')
+  })
+)
+
 contextBridge.exposeInMainWorld(
   'dshRecovery',
   Object.freeze({

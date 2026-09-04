@@ -1,0 +1,5 @@
+# TiddlyWiki transient artifacts (auto-managed by dsh-tiddlywiki)
+tiddlers/$__temp_*
+tiddlers/$__StoryList*
+tiddlers/$__HistoryList*
+*.meta.tmp

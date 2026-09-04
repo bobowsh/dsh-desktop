@@ -1,0 +1,30 @@
+tags: $:/tags/Stylesheet
+title: $:/plugins/dsh-tiddlywiki/menubar-theme
+type: text/vnd.tiddlywiki
+
+\rules only filteredtranscludeinline transcludeinline macrodef macrocallinline
+
+nav.tc-menubar ul.tc-menubar-list {
+	background: <<colour background>> !important;
+}
+
+nav.tc-menubar li.tc-menubar-item > a,
+nav.tc-menubar li.tc-menubar-item > button {
+	color: <<colour foreground>> !important;
+	fill: <<colour foreground>> !important;
+}
+
+nav.tc-menubar li.tc-menubar-item svg {
+	fill: <<colour foreground>> !important;
+}
+
+nav.tc-menubar li.tc-menubar-item > a.tc-selected,
+nav.tc-menubar li.tc-menubar-item > button.tc-selected,
+nav.tc-menubar li.tc-menubar-item > a:hover,
+nav.tc-menubar li.tc-menubar-item > button:hover,
+nav.tc-menubar li.tc-menubar-item > a:active,
+nav.tc-menubar li.tc-menubar-item > button:active {
+	background: <<colour foreground>> !important;
+	color: <<colour background>> !important;
+	fill: <<colour background>> !important;
+}

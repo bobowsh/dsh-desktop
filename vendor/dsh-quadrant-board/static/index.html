@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>时间管理</title>
+<link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+<div id="app">
+
+  <header>
+    <div class="brand">
+      <div class="brand-mark"><i></i><i></i><i></i><i></i></div>
+      <h1>时间管理<small>任务 · 随手记</small></h1>
+    </div>
+    <div id="clock"><div class="t">--:--</div><div class="d">----</div></div>
+    <button class="icon-btn" id="btn-layout" title="页面布局设置">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+    </button>
+    <button class="icon-btn" id="btn-theme" title="切换明暗主题"></button>
+  </header>
+
+  <div id="toolbar">
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="search" type="text" placeholder="搜索任务标题 / 备注…">
+    </div>
+    <div id="tagbar">
+      <button class="chip ghost" id="chip-done">含已完成</button>
+      <span id="taglist"></span>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" id="btn-add">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+      新建任务
+    </button>
+  </div>
+
+  <div id="tiles">
+
+    <section class="tile quad q1" data-tile="q1" data-q="1">
+      <div class="quad-head"><i class="dot"></i><h2>紧急 · 重要</h2><span class="sub">立即做</span><span class="count">0</span></div>
+      <div class="quad-body"></div>
+    </section>
+    <section class="tile quad q2" data-tile="q2" data-q="2">
+      <div class="quad-head"><i class="dot"></i><h2>重要 · 不紧急</h2><span class="sub">计划做</span><span class="count">0</span></div>
+      <div class="quad-body"></div>
+    </section>
+    <section class="tile quad q3" data-tile="q3" data-q="3">
+      <div class="quad-head"><i class="dot"></i><h2>紧急 · 不重要</h2><span class="sub">尽快脱身</span><span class="count">0</span></div>
+      <div class="quad-body"></div>
+    </section>
+    <section class="tile quad q4" data-tile="q4" data-q="4">
+      <div class="quad-head"><i class="dot"></i><h2>不紧急 · 不重要</h2><span class="sub">有空再说</span><span class="count">0</span></div>
+      <div class="quad-body"></div>
+    </section>
+
+    <section class="tile pane" data-tile="notes" id="pane-notes">
+      <div class="pane-head">
+        
+        <h2>随手记</h2><span class="hint">想法即记即存</span>
+        <select id="week-sel" title="切换周"></select>
+      </div>
+      <div class="note-input">
+        <textarea id="note-text" placeholder="此刻在想什么？写下来…（支持 Markdown）"></textarea>
+        <div class="md-preview" id="note-preview" style="display:none"></div>
+        <div class="row">
+          <button class="chip" id="btn-note-preview" title="预览 Markdown 渲染效果">预览</button>
+          <span class="kbd">Ctrl + Enter 快速保存</span>
+          <button class="btn sm accent" id="btn-note-save">存入本周</button>
+        </div>
+      </div>
+      <div class="note-list" id="note-list"></div>
+    </section>
+
+  </div>
+</div>
+
+<!-- 任务弹窗 -->
+<div class="modal-mask" id="task-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="tm-title">新建任务</h3>
+      <button class="icon-btn" data-close="task-modal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>标题 *</label>
+        <input type="text" id="tf-title" placeholder="要做什么？" maxlength="120">
+      </div>
+      <div class="field">
+        <label>象限</label>
+        <div class="quad-pick" id="tf-quad">
+          <button class="qp1" data-i="1" data-u="1"><b>Ⅰ 紧急且重要</b><small>立即做</small></button>
+          <button class="qp2" data-i="1" data-u="0"><b>Ⅱ 重要不紧急</b><small>计划做</small></button>
+          <button class="qp3" data-i="0" data-u="1"><b>Ⅲ 紧急不重要</b><small>尽快脱身</small></button>
+          <button class="qp4" data-i="0" data-u="0"><b>Ⅳ 不重要不紧急</b><small>有空再说</small></button>
+        </div>
+      </div>
+      <div class="field">
+        <label>结束时间（留空表示无期限）</label>
+        <input type="datetime-local" id="tf-deadline">
+      </div>
+      <div class="field">
+        <label>标签（用逗号分隔）</label>
+        <input type="text" id="tf-tags" placeholder="例如：工作, 学习">
+      </div>
+      <div class="field">
+        <label>备注</label>
+        <textarea id="tf-note" placeholder="补充说明、验收标准、相关链接…"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn danger sm left" id="tf-delete" style="display:none">删除</button>
+      <button class="btn line" data-close="task-modal">取消</button>
+      <button class="btn accent" id="tf-save">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 布局设置面板 -->
+<div class="modal-mask" id="layout-modal">
+  <div class="modal layout-modal">
+    <div class="modal-head">
+      <h3>页面布局设置</h3>
+      <button class="icon-btn" data-close="layout-modal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="lay-row">
+        <span class="lay-label">每行块数</span>
+        <div class="seg" id="cols-ctl">
+          <button id="cols-minus" title="减少一列">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14"/></svg>
+          </button>
+          <span id="cols-num">3 列</span>
+          <button id="cols-plus" title="增加一列">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+          </button>
+        </div>
+        <span class="lay-hint">直接拖动块换位；块上的 −/＋ 调整它占几列</span>
+        <button class="btn sm line" id="btn-layout-reset" style="margin-left:auto">重置默认</button>
+      </div>
+      <div id="mock-tiles"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn accent" data-close="layout-modal">完成</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="static/app.js"></script>
+</body>
+</html>

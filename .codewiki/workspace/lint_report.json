@@ -1,0 +1,469 @@
+{
+  "total_issues": 45,
+  "by_severity": {
+    "error": 0,
+    "warning": 22,
+    "info": 23
+  },
+  "checks_run": [
+    "superseded_pages",
+    "orphan_pages",
+    "scenario_orphan",
+    "layout_violations",
+    "broken_links",
+    "scenario_capacity",
+    "stale_notes",
+    "overview_stale",
+    "cycles",
+    "okf_conformance",
+    "no_outlinks",
+    "undocumented",
+    "stale_sources",
+    "note_clusters",
+    "low_adoption",
+    "stale_refs",
+    "isolated_components",
+    "unsupported_claims",
+    "missing_aliases",
+    "coverage"
+  ],
+  "issues": [
+    {
+      "check": "orphan_pages",
+      "severity": "warning",
+      "message": "Page has no incoming links",
+      "file": "wiki\\modules\\app-bootstrap.md",
+      "suggestion": "Add cross-references from related pages",
+      "page": "wiki\\modules\\app-bootstrap.md"
+    },
+    {
+      "check": "orphan_pages",
+      "severity": "warning",
+      "message": "Page has no incoming links",
+      "file": "wiki\\modules\\auto-update.md",
+      "suggestion": "Add cross-references from related pages",
+      "page": "wiki\\modules\\auto-update.md"
+    },
+    {
+      "check": "orphan_pages",
+      "severity": "warning",
+      "message": "Page has no incoming links",
+      "file": "wiki\\modules\\build-tooling.md",
+      "suggestion": "Add cross-references from related pages",
+      "page": "wiki\\modules\\build-tooling.md"
+    },
+    {
+      "check": "orphan_pages",
+      "severity": "warning",
+      "message": "Page has no incoming links",
+      "file": "wiki\\modules\\desktop-extensions.md",
+      "suggestion": "Add cross-references from related pages",
+      "page": "wiki\\modules\\desktop-extensions.md"
+    },
+    {
+      "check": "orphan_pages",
+      "severity": "warning",
+      "message": "Page has no incoming links",
+      "file": "wiki\\modules\\harness-runtime.md",
+      "suggestion": "Add cross-references from related pages",
+      "page": "wiki\\modules\\harness-runtime.md"
+    },
+    {
+      "check": "orphan_pages",
+      "severity": "warning",
+      "message": "Page has no incoming links",
+      "file": "wiki\\modules\\mobile-bridge.md",
+      "suggestion": "Add cross-references from related pages",
+      "page": "wiki\\modules\\mobile-bridge.md"
+    },
+    {
+      "check": "orphan_pages",
+      "severity": "warning",
+      "message": "Page has no incoming links",
+      "file": "wiki\\modules\\preload-ui.md",
+      "suggestion": "Add cross-references from related pages",
+      "page": "wiki\\modules\\preload-ui.md"
+    },
+    {
+      "check": "orphan_pages",
+      "severity": "warning",
+      "message": "Page has no incoming links",
+      "file": "wiki\\modules\\profile-state.md",
+      "suggestion": "Add cross-references from related pages",
+      "page": "wiki\\modules\\profile-state.md"
+    },
+    {
+      "check": "orphan_pages",
+      "severity": "warning",
+      "message": "Page has no incoming links",
+      "file": "wiki\\modules\\recovery-views.md",
+      "suggestion": "Add cross-references from related pages",
+      "page": "wiki\\modules\\recovery-views.md"
+    },
+    {
+      "check": "orphan_pages",
+      "severity": "warning",
+      "message": "Page has no incoming links",
+      "file": "wiki\\modules\\shared-contracts.md",
+      "suggestion": "Add cross-references from related pages",
+      "page": "wiki\\modules\\shared-contracts.md"
+    },
+    {
+      "check": "orphan_pages",
+      "severity": "warning",
+      "message": "Page has no incoming links",
+      "file": "wiki\\modules\\window-shell.md",
+      "suggestion": "Add cross-references from related pages",
+      "page": "wiki\\modules\\window-shell.md"
+    },
+    {
+      "check": "okf_conformance",
+      "severity": "warning",
+      "message": "Non-OKF top-level frontmatter key(s): resource (OKF v0.2 §4/§5 — producer-private fields belong under `metadata:`)",
+      "file": "wiki/modules/app-bootstrap.md",
+      "suggestion": "Fold these keys under a `metadata:` node, or regenerate the page with the OKF frontmatter helper.",
+      "page": "wiki/modules/app-bootstrap.md"
+    },
+    {
+      "check": "okf_conformance",
+      "severity": "warning",
+      "message": "Non-OKF top-level frontmatter key(s): resource (OKF v0.2 §4/§5 — producer-private fields belong under `metadata:`)",
+      "file": "wiki/modules/auto-update.md",
+      "suggestion": "Fold these keys under a `metadata:` node, or regenerate the page with the OKF frontmatter helper.",
+      "page": "wiki/modules/auto-update.md"
+    },
+    {
+      "check": "okf_conformance",
+      "severity": "warning",
+      "message": "Non-OKF top-level frontmatter key(s): resource (OKF v0.2 §4/§5 — producer-private fields belong under `metadata:`)",
+      "file": "wiki/modules/build-tooling.md",
+      "suggestion": "Fold these keys under a `metadata:` node, or regenerate the page with the OKF frontmatter helper.",
+      "page": "wiki/modules/build-tooling.md"
+    },
+    {
+      "check": "okf_conformance",
+      "severity": "warning",
+      "message": "Non-OKF top-level frontmatter key(s): resource (OKF v0.2 §4/§5 — producer-private fields belong under `metadata:`)",
+      "file": "wiki/modules/desktop-extensions.md",
+      "suggestion": "Fold these keys under a `metadata:` node, or regenerate the page with the OKF frontmatter helper.",
+      "page": "wiki/modules/desktop-extensions.md"
+    },
+    {
+      "check": "okf_conformance",
+      "severity": "warning",
+      "message": "Non-OKF top-level frontmatter key(s): resource (OKF v0.2 §4/§5 — producer-private fields belong under `metadata:`)",
+      "file": "wiki/modules/harness-runtime.md",
+      "suggestion": "Fold these keys under a `metadata:` node, or regenerate the page with the OKF frontmatter helper.",
+      "page": "wiki/modules/harness-runtime.md"
+    },
+    {
+      "check": "okf_conformance",
+      "severity": "warning",
+      "message": "Non-OKF top-level frontmatter key(s): resource (OKF v0.2 §4/§5 — producer-private fields belong under `metadata:`)",
+      "file": "wiki/modules/mobile-bridge.md",
+      "suggestion": "Fold these keys under a `metadata:` node, or regenerate the page with the OKF frontmatter helper.",
+      "page": "wiki/modules/mobile-bridge.md"
+    },
+    {
+      "check": "okf_conformance",
+      "severity": "warning",
+      "message": "Non-OKF top-level frontmatter key(s): resource (OKF v0.2 §4/§5 — producer-private fields belong under `metadata:`)",
+      "file": "wiki/modules/preload-ui.md",
+      "suggestion": "Fold these keys under a `metadata:` node, or regenerate the page with the OKF frontmatter helper.",
+      "page": "wiki/modules/preload-ui.md"
+    },
+    {
+      "check": "okf_conformance",
+      "severity": "warning",
+      "message": "Non-OKF top-level frontmatter key(s): resource (OKF v0.2 §4/§5 — producer-private fields belong under `metadata:`)",
+      "file": "wiki/modules/profile-state.md",
+      "suggestion": "Fold these keys under a `metadata:` node, or regenerate the page with the OKF frontmatter helper.",
+      "page": "wiki/modules/profile-state.md"
+    },
+    {
+      "check": "okf_conformance",
+      "severity": "warning",
+      "message": "Non-OKF top-level frontmatter key(s): resource (OKF v0.2 §4/§5 — producer-private fields belong under `metadata:`)",
+      "file": "wiki/modules/recovery-views.md",
+      "suggestion": "Fold these keys under a `metadata:` node, or regenerate the page with the OKF frontmatter helper.",
+      "page": "wiki/modules/recovery-views.md"
+    },
+    {
+      "check": "okf_conformance",
+      "severity": "warning",
+      "message": "Non-OKF top-level frontmatter key(s): resource (OKF v0.2 §4/§5 — producer-private fields belong under `metadata:`)",
+      "file": "wiki/modules/shared-contracts.md",
+      "suggestion": "Fold these keys under a `metadata:` node, or regenerate the page with the OKF frontmatter helper.",
+      "page": "wiki/modules/shared-contracts.md"
+    },
+    {
+      "check": "okf_conformance",
+      "severity": "warning",
+      "message": "Non-OKF top-level frontmatter key(s): resource (OKF v0.2 §4/§5 — producer-private fields belong under `metadata:`)",
+      "file": "wiki/modules/window-shell.md",
+      "suggestion": "Fold these keys under a `metadata:` node, or regenerate the page with the OKF frontmatter helper.",
+      "page": "wiki/modules/window-shell.md"
+    },
+    {
+      "check": "cycles",
+      "severity": "info",
+      "message": "Circular dependency detected: src\\main\\index.ts::launchSafeHarness → src\\main\\index.ts::showSafeMode → src\\main\\index.ts::showSplash → src\\main\\index.ts::launchHarness → src\\main\\index.ts::installMainWindowRendererRecovery...",
+      "components": [
+        "src\\main\\index.ts::launchSafeHarness",
+        "src\\main\\index.ts::showSafeMode",
+        "src\\main\\index.ts::showSplash",
+        "src\\main\\index.ts::launchHarness",
+        "src\\main\\index.ts::installMainWindowRendererRecovery",
+        "src\\main\\index.ts::createWindow",
+        "src\\main\\index.ts::waitForPluginRecoveryAction",
+        "src\\main\\index.ts::showPluginRecovery",
+        "src\\main\\index.ts::reloadMainWindowAfterRendererLoss"
+      ],
+      "suggestion": "Consider refactoring to break the cycle (e.g. via interface or event pattern)",
+      "page": ""
+    },
+    {
+      "check": "cycles",
+      "severity": "info",
+      "message": "Circular dependency detected: src\\preload\\index.ts::dismissCurrent → src\\preload\\index.ts::skipButton → src\\preload\\index.ts::render",
+      "components": [
+        "src\\preload\\index.ts::dismissCurrent",
+        "src\\preload\\index.ts::skipButton",
+        "src\\preload\\index.ts::render"
+      ],
+      "suggestion": "Consider refactoring to break the cycle (e.g. via interface or event pattern)",
+      "page": ""
+    },
+    {
+      "check": "isolated_components",
+      "severity": "info",
+      "message": "3 isolated component(s) in packages\\dsh-desktop-client-ui\\client.js: ConversationBrandMark, DesktopBrandMark, DesktopBrandName",
+      "file": "packages\\dsh-desktop-client-ui\\client.js",
+      "components": [
+        "packages\\dsh-desktop-client-ui\\client.js::ConversationBrandMark",
+        "packages\\dsh-desktop-client-ui\\client.js::DesktopBrandMark",
+        "packages\\dsh-desktop-client-ui\\client.js::DesktopBrandName"
+      ],
+      "suggestion": "These components have no dependency relationships. Verify they are not dead code, or document why they exist (e.g. plugin entry points, scripts, deprecated code).",
+      "page": "packages\\dsh-desktop-client-ui\\client.js"
+    },
+    {
+      "check": "isolated_components",
+      "severity": "info",
+      "message": "1 isolated component(s) in packages\\dsh-desktop-client-ui\\index.js: apply",
+      "file": "packages\\dsh-desktop-client-ui\\index.js",
+      "components": [
+        "packages\\dsh-desktop-client-ui\\index.js::apply"
+      ],
+      "suggestion": "These components have no dependency relationships. Verify they are not dead code, or document why they exist (e.g. plugin entry points, scripts, deprecated code).",
+      "page": "packages\\dsh-desktop-client-ui\\index.js"
+    },
+    {
+      "check": "isolated_components",
+      "severity": "info",
+      "message": "2 isolated component(s) in packages\\dsh-desktop-hmr-fallback\\index.js: ConfigWatchHmr, apply",
+      "file": "packages\\dsh-desktop-hmr-fallback\\index.js",
+      "components": [
+        "packages\\dsh-desktop-hmr-fallback\\index.js::ConfigWatchHmr",
+        "packages\\dsh-desktop-hmr-fallback\\index.js::apply"
+      ],
+      "suggestion": "These components have no dependency relationships. Verify they are not dead code, or document why they exist (e.g. plugin entry points, scripts, deprecated code).",
+      "page": "packages\\dsh-desktop-hmr-fallback\\index.js"
+    },
+    {
+      "check": "isolated_components",
+      "severity": "info",
+      "message": "2 isolated component(s) in packages\\dsh-desktop-market-installer\\client.js: UninstallConfirm, onKeyDown",
+      "file": "packages\\dsh-desktop-market-installer\\client.js",
+      "components": [
+        "packages\\dsh-desktop-market-installer\\client.js::UninstallConfirm",
+        "packages\\dsh-desktop-market-installer\\client.js::onKeyDown"
+      ],
+      "suggestion": "These components have no dependency relationships. Verify they are not dead code, or document why they exist (e.g. plugin entry points, scripts, deprecated code).",
+      "page": "packages\\dsh-desktop-market-installer\\client.js"
+    },
+    {
+      "check": "isolated_components",
+      "severity": "info",
+      "message": "1 isolated component(s) in packages\\dsh-desktop-market-installer\\generations\\installer.d.ts: GenerationInstallOptions",
+      "file": "packages\\dsh-desktop-market-installer\\generations\\installer.d.ts",
+      "components": [
+        "packages\\dsh-desktop-market-installer\\generations\\installer.d.ts::GenerationInstallOptions"
+      ],
+      "suggestion": "These components have no dependency relationships. Verify they are not dead code, or document why they exist (e.g. plugin entry points, scripts, deprecated code).",
+      "page": "packages\\dsh-desktop-market-installer\\generations\\installer.d.ts"
+    },
+    {
+      "check": "isolated_components",
+      "severity": "info",
+      "message": "1 isolated component(s) in packages\\dsh-desktop-market-installer\\generations\\projection.d.ts: ProjectionResult",
+      "file": "packages\\dsh-desktop-market-installer\\generations\\projection.d.ts",
+      "components": [
+        "packages\\dsh-desktop-market-installer\\generations\\projection.d.ts::ProjectionResult"
+      ],
+      "suggestion": "These components have no dependency relationships. Verify they are not dead code, or document why they exist (e.g. plugin entry points, scripts, deprecated code).",
+      "page": "packages\\dsh-desktop-market-installer\\generations\\projection.d.ts"
+    },
+    {
+      "check": "isolated_components",
+      "severity": "info",
+      "message": "1 isolated component(s) in packages\\dsh-desktop-market-installer\\generations\\registry.d.ts: RegistryLayout",
+      "file": "packages\\dsh-desktop-market-installer\\generations\\registry.d.ts",
+      "components": [
+        "packages\\dsh-desktop-market-installer\\generations\\registry.d.ts::RegistryLayout"
+      ],
+      "suggestion": "These components have no dependency relationships. Verify they are not dead code, or document why they exist (e.g. plugin entry points, scripts, deprecated code).",
+      "page": "packages\\dsh-desktop-market-installer\\generations\\registry.d.ts"
+    },
+    {
+      "check": "isolated_components",
+      "severity": "info",
+      "message": "2 isolated component(s) in packages\\dsh-desktop-market-installer\\index.js: append, release",
+      "file": "packages\\dsh-desktop-market-installer\\index.js",
+      "components": [
+        "packages\\dsh-desktop-market-installer\\index.js::append",
+        "packages\\dsh-desktop-market-installer\\index.js::release"
+      ],
+      "suggestion": "These components have no dependency relationships. Verify they are not dead code, or document why they exist (e.g. plugin entry points, scripts, deprecated code).",
+      "page": "packages\\dsh-desktop-market-installer\\index.js"
+    },
+    {
+      "check": "isolated_components",
+      "severity": "info",
+      "message": "1 isolated component(s) in src\\main\\context-menu-template.ts: ContextMenuLabels",
+      "file": "src\\main\\context-menu-template.ts",
+      "components": [
+        "src\\main\\context-menu-template.ts::ContextMenuLabels"
+      ],
+      "suggestion": "These components have no dependency relationships. Verify they are not dead code, or document why they exist (e.g. plugin entry points, scripts, deprecated code).",
+      "page": "src\\main\\context-menu-template.ts"
+    },
+    {
+      "check": "isolated_components",
+      "severity": "info",
+      "message": "2 isolated component(s) in src\\main\\index.ts: configureAppIdentity, isDevelopmentBuild",
+      "file": "src\\main\\index.ts",
+      "components": [
+        "src\\main\\index.ts::configureAppIdentity",
+        "src\\main\\index.ts::isDevelopmentBuild"
+      ],
+      "suggestion": "These components have no dependency relationships. Verify they are not dead code, or document why they exist (e.g. plugin entry points, scripts, deprecated code).",
+      "page": "src\\main\\index.ts"
+    },
+    {
+      "check": "isolated_components",
+      "severity": "info",
+      "message": "2 isolated component(s) in src\\main\\launchd-guard.ts: isDaemonLaunch, isUserInitiatedInstance",
+      "file": "src\\main\\launchd-guard.ts",
+      "components": [
+        "src\\main\\launchd-guard.ts::isDaemonLaunch",
+        "src\\main\\launchd-guard.ts::isUserInitiatedInstance"
+      ],
+      "suggestion": "These components have no dependency relationships. Verify they are not dead code, or document why they exist (e.g. plugin entry points, scripts, deprecated code).",
+      "page": "src\\main\\launchd-guard.ts"
+    },
+    {
+      "check": "isolated_components",
+      "severity": "info",
+      "message": "1 isolated component(s) in src\\main\\mobile\\cloudflared-tunnel.ts: findCloudflaredOnPath",
+      "file": "src\\main\\mobile\\cloudflared-tunnel.ts",
+      "components": [
+        "src\\main\\mobile\\cloudflared-tunnel.ts::findCloudflaredOnPath"
+      ],
+      "suggestion": "These components have no dependency relationships. Verify they are not dead code, or document why they exist (e.g. plugin entry points, scripts, deprecated code).",
+      "page": "src\\main\\mobile\\cloudflared-tunnel.ts"
+    },
+    {
+      "check": "isolated_components",
+      "severity": "info",
+      "message": "1 isolated component(s) in src\\main\\plugin-recovery-view.ts: displayPluginName",
+      "file": "src\\main\\plugin-recovery-view.ts",
+      "components": [
+        "src\\main\\plugin-recovery-view.ts::displayPluginName"
+      ],
+      "suggestion": "These components have no dependency relationships. Verify they are not dead code, or document why they exist (e.g. plugin entry points, scripts, deprecated code).",
+      "page": "src\\main\\plugin-recovery-view.ts"
+    },
+    {
+      "check": "isolated_components",
+      "severity": "info",
+      "message": "... and 6 more isolated components (showing first 20)",
+      "suggestion": "Run with component analysis to see the full list.",
+      "page": ""
+    },
+    {
+      "check": "coverage",
+      "severity": "info",
+      "message": "Documentation coverage: 588/593 components (99.2%)",
+      "covered": 588,
+      "total": 593,
+      "percentage": 99.2,
+      "suggestion": "Good coverage",
+      "page": ""
+    },
+    {
+      "check": "no_outlinks",
+      "severity": "info",
+      "message": "Page has no outgoing links to other wiki pages",
+      "file": "wiki\\modules\\architecture.md",
+      "suggestion": "Add cross-references to related pages for better navigation",
+      "page": "wiki\\modules\\architecture.md"
+    },
+    {
+      "check": "no_outlinks",
+      "severity": "info",
+      "message": "Page has no outgoing links to other wiki pages",
+      "file": "wiki\\modules\\development.md",
+      "suggestion": "Add cross-references to related pages for better navigation",
+      "page": "wiki\\modules\\development.md"
+    },
+    {
+      "check": "no_outlinks",
+      "severity": "info",
+      "message": "Page has no outgoing links to other wiki pages",
+      "file": "wiki\\modules\\preset-packages.md",
+      "suggestion": "Add cross-references to related pages for better navigation",
+      "page": "wiki\\modules\\preset-packages.md"
+    },
+    {
+      "check": "no_outlinks",
+      "severity": "info",
+      "message": "Page has no outgoing links to other wiki pages",
+      "file": "wiki\\modules\\release-runbook.md",
+      "suggestion": "Add cross-references to related pages for better navigation",
+      "page": "wiki\\modules\\release-runbook.md"
+    },
+    {
+      "check": "no_outlinks",
+      "severity": "info",
+      "message": "Page has no outgoing links to other wiki pages",
+      "file": "wiki\\modules\\wiki_overview.md",
+      "suggestion": "Add cross-references to related pages for better navigation",
+      "page": "wiki\\modules\\wiki_overview.md"
+    },
+    {
+      "check": "missing_aliases",
+      "severity": "info",
+      "message": "12 page(s) lack 'aliases' in frontmatter; adding alternate names improves search discoverability",
+      "count": 12,
+      "files": [
+        "wiki\\overview.md",
+        "wiki\\modules\\app-bootstrap.md",
+        "wiki\\modules\\auto-update.md",
+        "wiki\\modules\\build-tooling.md",
+        "wiki\\modules\\desktop-extensions.md",
+        "wiki\\modules\\harness-runtime.md",
+        "wiki\\modules\\mobile-bridge.md",
+        "wiki\\modules\\preload-ui.md",
+        "wiki\\modules\\profile-state.md",
+        "wiki\\modules\\recovery-views.md",
+        "wiki\\modules\\shared-contracts.md",
+        "wiki\\modules\\window-shell.md"
+      ],
+      "suggestion": "Add 'aliases: [<alt names>]' to frontmatter when generating docs",
+      "page": ""
+    }
+  ],
+  "summary": "Found 22 warning(s), 23 info. No critical issues.",
+  "health_score": 11
+}

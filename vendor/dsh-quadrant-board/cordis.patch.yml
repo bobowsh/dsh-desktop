@@ -1,0 +1,10 @@
+# dsh-quadrant-board bundle patch: one insert registering the plugin.
+# The row `name` must match lib/index.js's exported cordis `name`.
+# dataDir left empty: defaults to <DSH_HOME>\taskboard (inside the DSH
+# data folder - portable, no absolute path). Set it to override.
+- insert:
+    - id: quadrant-board
+      name: 'dsh-quadrant-board'
+      config:
+        # dataDir: ''   # 留空 = <DSH_HOME>\taskboard；如需自定义再取消注释
+        openShortcuts: true

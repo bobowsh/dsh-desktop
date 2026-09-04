@@ -1,0 +1,9 @@
+[
+  {
+    "id": "911fe5fea98e",
+    "name": "计算器",
+    "target": "c:\\windows\\system32\\calc.exe",
+    "kind": "app",
+    "icon": "builtin:app"
+  }
+]

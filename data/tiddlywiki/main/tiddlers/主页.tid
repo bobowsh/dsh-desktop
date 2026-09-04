@@ -1,0 +1,115 @@
+tags: 索引
+title: 主页
+type: text/vnd.tiddlywiki
+
+\whitespace trim
+
+\define quadrant-board()
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px;">
+<div style="border:1px solid rgba(128,128,128,0.22); border-radius:10px; padding:8px 12px; background:linear-gradient(135deg,#e74c3c1a,transparent);">
+<div style="font-weight:700; margin-bottom:6px;">🔴 重要 · 紧急 <span style="color:#888; font-weight:400; font-size:0.82em;">{{{[tag[todo]!tag[done]field:q[q1]count[]]}}} 件</span></div>
+<$list filter="[tag[todo]!tag[done]field:q[q1]sort[modified]]">
+<div style="display:flex; gap:6px; align-items:baseline; padding:3px 0; border-bottom:1px dashed rgba(128,128,128,0.15);">
+<$checkbox tiddler=<<currentTiddler>> tag="done"/>
+<$link to=<<currentTiddler>> style="flex:1;"><$view field="title"/></$link>
+<$list filter="[<currentTiddler>get[due]compare:date:lt<today>]"><span style="color:#c0392b; font-size:0.78em;">逾期</span></$list>
+<$list filter="[<currentTiddler>get[due]!is[blank]]"><span style="color:#888; font-size:0.8em;"><$view field="due" format="date" template="MM-DD"/></span></$list>
+</div>
+</$list>
+<$list filter="[tag[todo]!tag[done]field:q[q1]!count[]]"><div style="color:#aaa; font-size:0.85em;">（暂无）</div></$list>
+</div>
+<div style="border:1px solid rgba(128,128,128,0.22); border-radius:10px; padding:8px 12px; background:linear-gradient(135deg,#3498db1a,transparent);">
+<div style="font-weight:700; margin-bottom:6px;">🔵 重要 · 不紧急 <span style="color:#888; font-weight:400; font-size:0.82em;">{{{[tag[todo]!tag[done]field:q[q2]count[]]}}} 件</span></div>
+<$list filter="[tag[todo]!tag[done]field:q[q2]sort[modified]]">
+<div style="display:flex; gap:6px; align-items:baseline; padding:3px 0; border-bottom:1px dashed rgba(128,128,128,0.15);">
+<$checkbox tiddler=<<currentTiddler>> tag="done"/>
+<$link to=<<currentTiddler>> style="flex:1;"><$view field="title"/></$link>
+<$list filter="[<currentTiddler>get[due]compare:date:lt<today>]"><span style="color:#c0392b; font-size:0.78em;">逾期</span></$list>
+<$list filter="[<currentTiddler>get[due]!is[blank]]"><span style="color:#888; font-size:0.8em;"><$view field="due" format="date" template="MM-DD"/></span></$list>
+</div>
+</$list>
+<$list filter="[tag[todo]!tag[done]field:q[q2]!count[]]"><div style="color:#aaa; font-size:0.85em;">（暂无）</div></$list>
+</div>
+<div style="border:1px solid rgba(128,128,128,0.22); border-radius:10px; padding:8px 12px; background:linear-gradient(135deg,#f39c121a,transparent);">
+<div style="font-weight:700; margin-bottom:6px;">🟠 紧急 · 不重要 <span style="color:#888; font-weight:400; font-size:0.82em;">{{{[tag[todo]!tag[done]field:q[q3]count[]]}}} 件</span></div>
+<$list filter="[tag[todo]!tag[done]field:q[q3]sort[modified]]">
+<div style="display:flex; gap:6px; align-items:baseline; padding:3px 0; border-bottom:1px dashed rgba(128,128,128,0.15);">
+<$checkbox tiddler=<<currentTiddler>> tag="done"/>
+<$link to=<<currentTiddler>> style="flex:1;"><$view field="title"/></$link>
+<$list filter="[<currentTiddler>get[due]compare:date:lt<today>]"><span style="color:#c0392b; font-size:0.78em;">逾期</span></$list>
+<$list filter="[<currentTiddler>get[due]!is[blank]]"><span style="color:#888; font-size:0.8em;"><$view field="due" format="date" template="MM-DD"/></span></$list>
+</div>
+</$list>
+<$list filter="[tag[todo]!tag[done]field:q[q3]!count[]]"><div style="color:#aaa; font-size:0.85em;">（暂无）</div></$list>
+</div>
+<div style="border:1px solid rgba(128,128,128,0.22); border-radius:10px; padding:8px 12px; background:linear-gradient(135deg,#95a5a61a,transparent);">
+<div style="font-weight:700; margin-bottom:6px;">⚪ 不重要 · 不紧急 <span style="color:#888; font-weight:400; font-size:0.82em;">{{{[tag[todo]!tag[done]field:q[q4]count[]]}}} 件</span></div>
+<$list filter="[tag[todo]!tag[done]field:q[q4]sort[modified]]">
+<div style="display:flex; gap:6px; align-items:baseline; padding:3px 0; border-bottom:1px dashed rgba(128,128,128,0.15);">
+<$checkbox tiddler=<<currentTiddler>> tag="done"/>
+<$link to=<<currentTiddler>> style="flex:1;"><$view field="title"/></$link>
+<$list filter="[<currentTiddler>get[due]compare:date:lt<today>]"><span style="color:#c0392b; font-size:0.78em;">逾期</span></$list>
+<$list filter="[<currentTiddler>get[due]!is[blank]]"><span style="color:#888; font-size:0.8em;"><$view field="due" format="date" template="MM-DD"/></span></$list>
+</div>
+</$list>
+<$list filter="[tag[todo]!tag[done]field:q[q4]!count[]]"><div style="color:#aaa; font-size:0.85em;">（暂无）</div></$list>
+</div>
+</div>
+\end
+
+<$set name="today" value=<<now "YYYY0MM0DD">>>
+
+!! 🏠 主页
+
+<div class="tc-message-box">你的待办看板（四象限）与知识库入口。快速添加一行要事、选象限即建任务；点左侧方框即完成。下方入口直达所有标签统计与所有文章列表。</div>
+
+<div style="display:flex; gap:8px; flex-wrap:wrap; margin:8px 0;">
+<$button class="tc-btn-invisible tc-tiddlylink" style="padding:6px 16px; border:1px solid rgba(128,128,128,0.35); border-radius:8px; font-weight:600;">
+<$action-navigate $to="所有标签"/>
+🏷 所有标签
+</$button>
+<$button class="tc-btn-invisible tc-tiddlylink" style="padding:6px 16px; border:1px solid rgba(128,128,128,0.35); border-radius:8px; font-weight:600;">
+<$action-navigate $to="所有文章"/>
+📚 所有文章
+</$button>
+</div>
+
+!! ✅ 待办 · 四象限
+
+<div class="tc-message-box">输入一行要事、选好象限，点「➕ 添加」即建任务（默认 Q2 重要·不紧急）。你输入的这句话会直接成为任务标题，首页一目了然。点任务左侧方框即完成（自动加 <code>done</code> 标签并从看板消失）。给任意笔记打上 <code>todo</code> 标签也会被收集到下方「未分类」，补填 <code>q</code> 字段即进入象限。</div>
+
+<div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin:10px 0;">
+<$edit-text tiddler="$:/state/todo/title" tag="input" placeholder="快速添加：写一句要做的事，选象限后点 ➕…" style="flex:1; min-width:220px; padding:6px 10px; border-radius:6px; border:1px solid rgba(128,128,128,0.3);"/>
+<$select tiddler="$:/state/todo/quadrant" default="q2" style="padding:6px 10px; border-radius:6px; border:1px solid rgba(128,128,128,0.3);">
+<option value="q1">Q1 重要·紧急</option>
+<option value="q2">Q2 重要·不紧急</option>
+<option value="q3">Q3 紧急·不重要</option>
+<option value="q4">Q4 不重要·不紧急</option>
+</$select>
+<$button class="tc-btn-invisible" style="padding:6px 14px; border-radius:6px; border:1px solid rgba(128,128,128,0.35); font-weight:600;">
+<$list filter="[{$:/state/todo/title}!is[blank]]">
+<$action-createtiddler $basetitle={{{[{$:/state/todo/title}]}}} tags="todo" text={{{[{$:/state/todo/title}]}}} q={{{[{$:/state/todo/quadrant}!is[blank]else[q2]]}}}/>
+<$action-setfield $tiddler="$:/state/todo/title" text=""/>
+</$list>
+➕ 添加
+</$button>
+</div>
+
+<div style="margin:6px 0; color:#555;">📅 今日到期 <b>{{{[tag[todo]!tag[done]field:due<today>count[]]}}}</b> 件　·　⏰ 已逾期 <b>{{{[tag[todo]!tag[done]get[due]compare:date:lt<today>count[]]}}}</b> 件</div>
+
+<<quadrant-board>>
+
+<$list filter="[tag[todo]!tag[done]!has[q]count[]!match[0]]">
+<div style="margin-top:10px; border:1px dashed rgba(128,128,128,0.35); border-radius:10px; padding:8px 12px;">
+<div style="font-weight:700; margin-bottom:6px;">📥 未分类 <span style="color:#888; font-weight:400; font-size:0.82em;">{{{[tag[todo]!tag[done]!has[q]count[]]}}} 件</span></div>
+<$list filter="[tag[todo]!tag[done]!has[q]sort[modified]]">
+<div style="display:flex; gap:6px; align-items:baseline; padding:3px 0; border-bottom:1px dashed rgba(128,128,128,0.15);">
+<$checkbox tiddler=<<currentTiddler>> tag="done"/>
+<$link to=<<currentTiddler>> style="flex:1;"><$view field="title"/></$link>
+<$list filter="[<currentTiddler>get[due]compare:date:lt<today>]"><span style="color:#c0392b; font-size:0.78em;">逾期</span></$list>
+</div>
+</$list>
+</div>
+</$list>
+
+</$set>

@@ -112,6 +112,7 @@ import {
 import { buildPluginRecoveryViewModel } from './plugin-recovery-view'
 import { buildSafeModeViewModel, shouldStartInSafeMode } from './safe-mode'
 import { aboutDetail, bundledHarnessVersion } from './version-info'
+import { registerImcRegionCapture } from './imc-region-capture'
 import { windowsMenuViewBounds } from './windows-menu-view'
 import { shouldKeepRunningInBackground } from './close-to-tray'
 import {
@@ -2092,6 +2093,8 @@ async function bootstrap(): Promise<void> {
     onConnectedChange: (connected) => broadcastMobileStatus(connected)
   })
   if (!startInSafeMode) void mobileBridge.start().catch(showUnexpectedError)
+  // dsh-plugin-imc：全屏区域框选截图（透明置顶窗 + desktopCapturer）
+  registerImcRegionCapture()
   ipcMain.handle('directory-picker:open', async (event) => {
     if (
       !mainWindow ||
