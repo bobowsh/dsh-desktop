@@ -145,7 +145,6 @@ import {
   shouldReloadAfterMainWindowRendererLoss
 } from './main-window-recovery'
 
-<<<<<<< HEAD
 /**
  * Portable DSH_HOME path: beside the executable (packaged) or beside the
  * project root (dev).  All code that needs the harness data root must call
@@ -173,10 +172,7 @@ function setDshHomeEnv(): void {
   }
 }
 
-type PluginRecoveryAction = 'uninstall' | 'show-log' | 'quit' | 'restart' | 'refresh' | 'safe-mode'
-=======
 type PluginRecoveryAction = 'uninstall' | 'upgrade' | 'show-log' | 'quit' | 'restart' | 'refresh' | 'safe-mode'
->>>>>>> upstream/main
 type SafeModeAction =
   | { type: 'apply'; plugins: string[]; issues: string[] }
   | { type: 'upgrade'; plugins: string[] }
@@ -1328,12 +1324,8 @@ function launchSafeHarness(): Promise<void> {
 
   harnessLaunchOperation = (async () => {
     safeModeVisible = true
-<<<<<<< HEAD
     const dshHome = portableDshHome()
-=======
-    const dshHome = join(app.getPath('userData'), 'harness')
     await refreshMigrationRecoveryLock(dshHome)
->>>>>>> upstream/main
     await showSplash()
     await runtime.stop()
     await ensureSafeModeProfile(dshHome)

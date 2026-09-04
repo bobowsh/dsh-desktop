@@ -499,14 +499,9 @@ jobs:
     # WINDOWS_UKEY_SIGNING publishes the unsigned installer instead.
     if: >-
       always() &&
-<<<<<<< HEAD
-      startsWith(github.ref, 'refs/tags/v') &&
+      (startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != '') &&
       needs.windows-x64.result == 'success' &&
       vars.WINDOWS_UKEY_SIGNING == 'true'
-=======
-      (startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != '') &&
-      needs.windows-x64.result == 'success'
->>>>>>> upstream/main
     runs-on: [self-hosted, macOS, ARM64]
     env:
       CI: 'true'
@@ -612,17 +607,12 @@ jobs:
     if: >-
       always() &&
       startsWith(github.ref, 'refs/tags/v') &&
-<<<<<<< HEAD
+      startsWith(github.ref, 'refs/tags/v') &&
+      inputs.prerelease_tag == '' &&
       needs.windows-x64.result == 'success' &&
       (needs.macos-apple-silicon.result == 'success' || needs.macos-apple-silicon.result == 'skipped') &&
       (needs.macos-intel.result == 'success' || needs.macos-intel.result == 'skipped') &&
       (needs.sign-windows.result == 'success' || needs.sign-windows.result == 'skipped')
-=======
-      inputs.prerelease_tag == '' &&
-      needs.macos-apple-silicon.result == 'success' &&
-      needs.macos-intel.result == 'success' &&
-      needs.sign-windows.result == 'success'
->>>>>>> upstream/main
     needs:
       - windows-x64
       - macos-apple-silicon
@@ -674,15 +664,12 @@ jobs:
           MACOS_X64_RESULT: ${{ needs.macos-intel.result }}
         run: |
           set -euo pipefail
-<<<<<<< HEAD
           platforms="windows"
           if [ "$MACOS_ARM64_RESULT" = "success" ] || [ "$MACOS_X64_RESULT" = "success" ]; then
             platforms="all"
           fi
           echo "Verifying release assets for platforms: $platforms"
           node scripts/verify-release-assets.mjs release-assets "${GITHUB_REF_NAME#v}" --platforms "$platforms"
-=======
-          node scripts/verify-release-assets.mjs release-assets "${GITHUB_REF_NAME#v}"
       - name: Build GitHub release note prompt
         env:
           RELEASE_TAG: ${{ github.ref_name }}
@@ -715,7 +702,6 @@ jobs:
             echo "MODELS_TOKEN not set; using the deterministic GitHub release note."
             python3 .github/scripts/github_release_notes.py generate-fallback --tag "$RELEASE_TAG" --output "$out"
           fi
->>>>>>> upstream/main
       - name: Create or update release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -923,6 +909,7 @@ jobs:
               --repo "$GITHUB_REPOSITORY"
           fi
       - name: Mirror pre-release assets to ModelScope
+        if: false
         env:
           MODELSCOPE_TOKEN: ${{ secrets.MODELSCOPE_TOKEN }}
           MODELSCOPE_REPO_ID: alexyaojin/dsh-desktop

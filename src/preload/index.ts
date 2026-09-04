@@ -1,11 +1,7 @@
 import { contextBridge, ipcRenderer } from 'electron'
-<<<<<<< HEAD
-import type { UpdateStatus } from '../shared/contracts'
-import { ENABLE_MOBILE_BRIDGE } from '../shared/features'
-=======
 import type { AvailableRelease, UpdateStatus } from '../shared/contracts'
+import { ENABLE_MOBILE_BRIDGE } from '../shared/features'
 import { setupDesktopStoragePersistence } from './desktop-storage'
->>>>>>> upstream/main
 import {
   isUpdateDismissed,
   shouldShowUpdate,
@@ -325,16 +321,12 @@ function initializeUi(): void {
     mountWindowsTitlebarLayout({ document, ipcRenderer })
   }
   mount()
-<<<<<<< HEAD
+  mountAbout()
   if (ENABLE_MOBILE_BRIDGE) {
     mountMobileButton()
     void refreshMobileStatus()
   }
   void mountSafeModeBanner()
-=======
-  mountAbout()
-  mountMobileButton()
->>>>>>> upstream/main
   checkBootFailureInDom()
   domObserver.observe(document.documentElement, {
     childList: true,
