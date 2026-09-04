@@ -18,8 +18,8 @@ on:
           - all
           - windows
           - macos
-      windows_prerelease_tag:
-        description: Optional non-v tag for a Windows Dev pre-release
+      prerelease_tag:
+        description: Non-v semver tag for a production-parity pre-release (e.g. 2.1.0-rc.1)
         required: false
         type: string
 
@@ -49,6 +49,9 @@ jobs:
       - name: Set app version from release tag
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm version --no-git-tag-version --allow-same-version "${{ github.ref_name }}"
+      - name: Set app version from pre-release tag
+        if: inputs.prerelease_tag != ''
+        run: npm version --no-git-tag-version --allow-same-version "${{ inputs.prerelease_tag }}"
       - run: npm ci
       - name: Enable pnpm for web profile install
         run: |
@@ -64,7 +67,7 @@ jobs:
       - run: npm test
       - run: npm run typecheck
       - name: Validate Apple release secrets
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         env:
           CSC_LINK: ${{ secrets.DESKTOP_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.DESKTOP_CSC_KEY_PASSWORD }}
@@ -78,7 +81,7 @@ jobs:
             test -n "${!name}" || { echo "::error::Missing required secret: $name"; exit 1; }
           done
       - name: Prepare Apple notarization key
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         env:
           APPLE_API_KEY_CONTENT: ${{ secrets.DESKTOP_APPLE_API_KEY }}
           APPLE_API_KEY_ID: ${{ secrets.DESKTOP_APPLE_API_KEY_ID }}
@@ -93,27 +96,27 @@ jobs:
           echo "APPLE_API_ISSUER=$APPLE_API_ISSUER" >> "$GITHUB_ENV"
           echo "APPLE_TEAM_ID=$APPLE_TEAM_ID" >> "$GITHUB_ENV"
       - name: Prepare macOS signing keychain
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         id: signing_keychain
         env:
           CSC_LINK: ${{ secrets.DESKTOP_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.DESKTOP_CSC_KEY_PASSWORD }}
         run: node scripts/prepare-macos-signing-keychain.mjs
       - name: Build signed Apple Silicon package
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         env:
           CSC_KEYCHAIN: ${{ steps.signing_keychain.outputs.keychain }}
         run: npm run package:mac:arm64
       - name: Build isolated Apple Silicon development package
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') && inputs.prerelease_tag == '' }}
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
         run: npm run package:dev:mac:arm64
       - name: Preserve Apple Silicon update metadata
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         run: mv dist/latest-mac.yml dist/latest-mac-arm64.yml
       - name: Sign, notarize, and staple Apple Silicon DMG
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         env:
           CSC_KEYCHAIN: ${{ steps.signing_keychain.outputs.keychain }}
         run: |
@@ -129,7 +132,7 @@ jobs:
             --no-s3-acceleration
           xcrun stapler staple "$dmg_path"
       - name: Remove temporary signing keychain
-        if: always() && startsWith(github.ref, 'refs/tags/v')
+        if: always() && (startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != '')
         env:
           SIGNING_KEYCHAIN: ${{ steps.signing_keychain.outputs.keychain }}
           SIGNING_CERTIFICATE: ${{ steps.signing_keychain.outputs.certificate }}
@@ -147,7 +150,7 @@ jobs:
           test -z "$SIGNING_CERTIFICATE" || rm -f "$SIGNING_CERTIFICATE"
           test -z "$APPLE_API_KEY" || rm -f "$APPLE_API_KEY"
       - name: Verify signed and notarized Apple Silicon app
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         run: |
           app_path="dist/mac-arm64/DSH Desktop.app"
           codesign --verify --deep --strict --verbose=2 "$app_path"
@@ -157,7 +160,7 @@ jobs:
           spctl --assess --type open --context context:primary-signature --verbose=4 dist/dsh-desktop-mac-arm64.dmg
           xcrun stapler validate dist/dsh-desktop-mac-arm64.dmg
       - uses: actions/upload-artifact@v4
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         with:
           name: macos-apple-silicon
           path: |
@@ -167,7 +170,7 @@ jobs:
             dist/latest-mac-arm64.yml
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') && inputs.prerelease_tag == '' }}
         with:
           name: macos-apple-silicon-dev
           path: |
@@ -194,6 +197,9 @@ jobs:
       - name: Set app version from release tag
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm version --no-git-tag-version --allow-same-version "${{ github.ref_name }}"
+      - name: Set app version from pre-release tag
+        if: inputs.prerelease_tag != ''
+        run: npm version --no-git-tag-version --allow-same-version "${{ inputs.prerelease_tag }}"
       - run: npm ci
       - name: Enable pnpm for web profile install
         run: |
@@ -209,7 +215,7 @@ jobs:
       - run: npm test
       - run: npm run typecheck
       - name: Validate Apple release secrets
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         env:
           CSC_LINK: ${{ secrets.DESKTOP_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.DESKTOP_CSC_KEY_PASSWORD }}
@@ -223,7 +229,7 @@ jobs:
             test -n "${!name}" || { echo "::error::Missing required secret: $name"; exit 1; }
           done
       - name: Prepare Apple notarization key
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         env:
           APPLE_API_KEY_CONTENT: ${{ secrets.DESKTOP_APPLE_API_KEY }}
           APPLE_API_KEY_ID: ${{ secrets.DESKTOP_APPLE_API_KEY_ID }}
@@ -238,27 +244,27 @@ jobs:
           echo "APPLE_API_ISSUER=$APPLE_API_ISSUER" >> "$GITHUB_ENV"
           echo "APPLE_TEAM_ID=$APPLE_TEAM_ID" >> "$GITHUB_ENV"
       - name: Prepare macOS signing keychain
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         id: signing_keychain
         env:
           CSC_LINK: ${{ secrets.DESKTOP_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.DESKTOP_CSC_KEY_PASSWORD }}
         run: node scripts/prepare-macos-signing-keychain.mjs
       - name: Build signed Intel package
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         env:
           CSC_KEYCHAIN: ${{ steps.signing_keychain.outputs.keychain }}
         run: npm run package:mac:x64
       - name: Build isolated Intel development package
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') && inputs.prerelease_tag == '' }}
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
         run: npm run package:dev:mac:x64
       - name: Preserve Intel update metadata
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         run: mv dist/latest-mac.yml dist/latest-mac-x64.yml
       - name: Sign, notarize, and staple Intel DMG
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         env:
           CSC_KEYCHAIN: ${{ steps.signing_keychain.outputs.keychain }}
         run: |
@@ -274,7 +280,7 @@ jobs:
             --no-s3-acceleration
           xcrun stapler staple "$dmg_path"
       - name: Remove temporary signing keychain
-        if: always() && startsWith(github.ref, 'refs/tags/v')
+        if: always() && (startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != '')
         env:
           SIGNING_KEYCHAIN: ${{ steps.signing_keychain.outputs.keychain }}
           SIGNING_CERTIFICATE: ${{ steps.signing_keychain.outputs.certificate }}
@@ -292,7 +298,7 @@ jobs:
           test -z "$SIGNING_CERTIFICATE" || rm -f "$SIGNING_CERTIFICATE"
           test -z "$APPLE_API_KEY" || rm -f "$APPLE_API_KEY"
       - name: Verify signed and notarized Intel app
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         run: |
           app_path="dist/mac/DSH Desktop.app"
           codesign --verify --deep --strict --verbose=2 "$app_path"
@@ -302,7 +308,7 @@ jobs:
           spctl --assess --type open --context context:primary-signature --verbose=4 dist/dsh-desktop-mac-x64.dmg
           xcrun stapler validate dist/dsh-desktop-mac-x64.dmg
       - uses: actions/upload-artifact@v4
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         with:
           name: macos-intel
           path: |
@@ -312,7 +318,7 @@ jobs:
             dist/latest-mac-x64.yml
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') && inputs.prerelease_tag == '' }}
         with:
           name: macos-intel-dev
           path: |
@@ -326,7 +332,8 @@ jobs:
     if: >-
       startsWith(github.ref, 'refs/tags/v') ||
       github.event_name == 'pull_request' ||
-      (github.event_name == 'workflow_dispatch' && (inputs.target == 'all' || inputs.target == 'windows' || inputs.target == '' || inputs.windows_prerelease_tag != ''))
+      (github.event_name == 'workflow_dispatch' &&
+        (inputs.target == 'all' || inputs.target == 'windows' || inputs.prerelease_tag != ''))
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
@@ -340,6 +347,9 @@ jobs:
       - name: Set app version from release tag
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm version --no-git-tag-version --allow-same-version "${{ github.ref_name }}"
+      - name: Set app version from pre-release tag
+        if: inputs.prerelease_tag != ''
+        run: npm version --no-git-tag-version --allow-same-version "${{ inputs.prerelease_tag }}"
       - run: npm ci
       - name: Enable pnpm for web profile install
         run: |
@@ -362,18 +372,21 @@ jobs:
       - name: Stamp profile install-complete marker
         run: node scripts/stamp-profile-install-marker.mjs data/profiles/web
       - name: Build Windows release package
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         run: npm run package:win
       - name: Build isolated Windows development package
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') && inputs.prerelease_tag == '' }}
         run: npm run package:dev:win
       - name: Smoke test packaged Windows Harness
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
         shell: pwsh
+        env:
+          SMOKE_EXE: ${{ (startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != '') && 'dist\win-unpacked\DSH Desktop.exe' || 'dist-dev\win-unpacked\DSH Desktop Dev.exe' }}
+          SMOKE_USERDATA: ${{ (startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != '') && 'dsh-desktop' || 'dsh-desktop-dev' }}
         run: |
-          $userData = Join-Path $env:APPDATA 'dsh-desktop-dev'
+          $userData = Join-Path $env:APPDATA $env:SMOKE_USERDATA
           $logPath = Join-Path $userData 'logs\harness.log'
-          $executable = 'dist-dev\win-unpacked\DSH Desktop Dev.exe'
+          $executable = $env:SMOKE_EXE
           if (Test-Path $userData) { Remove-Item -Recurse -Force $userData }
           $desktop = Start-Process -FilePath $executable -PassThru
           try {
@@ -458,22 +471,8 @@ jobs:
             }
             if (-not $desktop.HasExited) { Stop-Process -Id $desktop.Id -Force }
           }
-      - name: Publish validated Windows development pre-release
-        if: github.event_name == 'workflow_dispatch' && inputs.windows_prerelease_tag != ''
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PRERELEASE_TAG: ${{ inputs.windows_prerelease_tag }}
-        run: |
-          gh release create $env:PRERELEASE_TAG `
-            --repo $env:GITHUB_REPOSITORY `
-            --target $env:GITHUB_SHA `
-            --prerelease `
-            --title 'DSH Desktop Windows Workspace Test' `
-            --notes "Windows x64 development build for validating workspace selection and session startup on affected machines. This build pins Koffi 3.1.5 for the stable native Windows binaries, uses an isolated app identity and user data directory, and has passed a packaged Harness smoke test that creates a Unicode-path workspace and session." `
-            'dist-dev/dsh-desktop-dev-windows-x64-setup.exe#DSH Desktop Dev Windows x64 Setup'
       - uses: actions/upload-artifact@v4
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != ''
         with:
           name: windows-x64-unsigned
           path: |
@@ -483,7 +482,7 @@ jobs:
           if-no-files-found: error
           retention-days: 1
       - uses: actions/upload-artifact@v4
-        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') && inputs.prerelease_tag == '' }}
         with:
           name: windows-x64-dev
           path: |
@@ -500,9 +499,14 @@ jobs:
     # WINDOWS_UKEY_SIGNING publishes the unsigned installer instead.
     if: >-
       always() &&
+<<<<<<< HEAD
       startsWith(github.ref, 'refs/tags/v') &&
       needs.windows-x64.result == 'success' &&
       vars.WINDOWS_UKEY_SIGNING == 'true'
+=======
+      (startsWith(github.ref, 'refs/tags/v') || inputs.prerelease_tag != '') &&
+      needs.windows-x64.result == 'success'
+>>>>>>> upstream/main
     runs-on: [self-hosted, macOS, ARM64]
     env:
       CI: 'true'
@@ -571,8 +575,13 @@ jobs:
           test -s "$installer.sig"
           rm -f "$installer.sig"
       - name: Rebuild Windows update metadata
+        env:
+          PRERELEASE_TAG: ${{ inputs.prerelease_tag }}
         run: |
-          version="${GITHUB_REF_NAME#v}"
+          # On a tag push the version is the tag; on a pre-release dispatch
+          # GITHUB_REF_NAME is the branch, so take it from the input instead.
+          version="${PRERELEASE_TAG:-${GITHUB_REF_NAME#v}}"
+          version="${version#v}"
           node scripts/finalize-windows-release.mjs \
             "$WINDOWS_SIGNING_WORK_DIR/release" \
             "$version"
@@ -603,10 +612,17 @@ jobs:
     if: >-
       always() &&
       startsWith(github.ref, 'refs/tags/v') &&
+<<<<<<< HEAD
       needs.windows-x64.result == 'success' &&
       (needs.macos-apple-silicon.result == 'success' || needs.macos-apple-silicon.result == 'skipped') &&
       (needs.macos-intel.result == 'success' || needs.macos-intel.result == 'skipped') &&
       (needs.sign-windows.result == 'success' || needs.sign-windows.result == 'skipped')
+=======
+      inputs.prerelease_tag == '' &&
+      needs.macos-apple-silicon.result == 'success' &&
+      needs.macos-intel.result == 'success' &&
+      needs.sign-windows.result == 'success'
+>>>>>>> upstream/main
     needs:
       - windows-x64
       - macos-apple-silicon
@@ -658,23 +674,61 @@ jobs:
           MACOS_X64_RESULT: ${{ needs.macos-intel.result }}
         run: |
           set -euo pipefail
+<<<<<<< HEAD
           platforms="windows"
           if [ "$MACOS_ARM64_RESULT" = "success" ] || [ "$MACOS_X64_RESULT" = "success" ]; then
             platforms="all"
           fi
           echo "Verifying release assets for platforms: $platforms"
           node scripts/verify-release-assets.mjs release-assets "${GITHUB_REF_NAME#v}" --platforms "$platforms"
+=======
+          node scripts/verify-release-assets.mjs release-assets "${GITHUB_REF_NAME#v}"
+      - name: Build GitHub release note prompt
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          mkdir -p .github/release-artifacts
+          git fetch --force --tags
+          python3 .github/scripts/github_release_notes.py build-prompt \
+            --tag "$RELEASE_TAG" \
+            --output .github/release-artifacts/github-release-prompt.txt
+      - name: Generate GitHub release note
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.MODELS_TOKEN }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          out=.github/release-artifacts/github-release-notes.md
+          if [ -n "${COPILOT_GITHUB_TOKEN:-}" ]; then
+            echo "Generating GitHub release note via Copilot CLI..."
+            npm install -g @github/copilot@latest || true
+            prompt="$(cat .github/release-artifacts/github-release-prompt.txt)"
+            if copilot -p "$prompt" -s --model gpt-5.6-terra --no-ask-user > "$out" 2>/dev/null && \
+               python3 .github/scripts/github_release_notes.py validate --tag "$RELEASE_TAG" --input "$out"; then
+              echo "✅ AI GitHub release note generated and validated."
+            else
+              echo "⚠️ Falling back to the deterministic GitHub release note."
+              python3 .github/scripts/github_release_notes.py generate-fallback --tag "$RELEASE_TAG" --output "$out"
+            fi
+          else
+            echo "MODELS_TOKEN not set; using the deterministic GitHub release note."
+            python3 .github/scripts/github_release_notes.py generate-fallback --tag "$RELEASE_TAG" --output "$out"
+          fi
+>>>>>>> upstream/main
       - name: Create or update release
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
+          notes=.github/release-artifacts/github-release-notes.md
           if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             gh release upload "$RELEASE_TAG" release-assets/* --clobber --repo "$GITHUB_REPOSITORY"
+            gh release edit "$RELEASE_TAG" --notes-file "$notes" --repo "$GITHUB_REPOSITORY"
           else
             gh release create "$RELEASE_TAG" release-assets/* \
               --verify-tag \
-              --generate-notes \
+              --notes-file "$notes" \
               --title "DSH Desktop $RELEASE_TAG" \
               --repo "$GITHUB_REPOSITORY"
           fi
@@ -698,6 +752,8 @@ jobs:
           tag = os.environ.get("GITHUB_REF_NAME", "unknown")
           src = pathlib.Path("release-assets")
 
+          version = tag[1:] if tag.startswith("v") else tag
+
           api.upload_folder(
               repo_id=repo_id,
               folder_path=str(src),
@@ -706,6 +762,52 @@ jobs:
               token=token,
           )
           print(f"✅ Uploaded {src} -> {repo_id}/releases/latest")
+
+          # Immutable per-version archive so the desktop client can roll back.
+          api.upload_folder(
+              repo_id=repo_id,
+              folder_path=str(src),
+              path_in_repo=f"releases/archive/{version}",
+              commit_message=f"Archive {tag}",
+              token=token,
+          )
+          print(f"✅ Archived {src} -> {repo_id}/releases/archive/{version}")
+
+          # Rebuild the rollback index from the versions we know exist: whatever
+          # the current published index lists, plus the one just archived. This
+          # avoids a read-modify-write race and any dependency on directory
+          # listing.
+          import json, subprocess, tempfile, urllib.request
+
+          known = {version}
+          try:
+              with urllib.request.urlopen(
+                  "https://dshdesktop.com/updates/versions.json", timeout=15
+              ) as response:
+                  current = json.load(response)
+              for entry in current.get("versions", []):
+                  name = entry.get("version")
+                  if isinstance(name, str) and name:
+                      known.add(name)
+          except Exception as error:  # first release, or index temporarily missing
+              print(f"⚠️ Could not read existing version index: {error}")
+
+          with tempfile.TemporaryDirectory() as work:
+              names_file = pathlib.Path(work) / "names.json"
+              index_file = pathlib.Path(work) / "versions.json"
+              names_file.write_text(json.dumps(sorted(known)))
+              subprocess.run(
+                  ["node", "scripts/build-version-index.mjs", str(names_file), str(index_file)],
+                  check=True,
+              )
+              api.upload_file(
+                  path_or_fileobj=str(index_file),
+                  path_in_repo="releases/versions.json",
+                  repo_id=repo_id,
+                  commit_message=f"Version index after {tag}",
+                  token=token,
+              )
+          print("✅ Rebuilt releases/versions.json")
           PY
 
       - name: Build Feishu release note prompt
@@ -760,3 +862,151 @@ jobs:
             --tag "$RELEASE_TAG" \
             --notes .github/release-artifacts/feishu-release-notes.md \
             --webhook "$FEISHU_RELEASE_WEBHOOK"
+
+  publish-prerelease:
+    name: Publish GitHub Pre-release
+    if: >-
+      always() &&
+      github.event_name == 'workflow_dispatch' &&
+      inputs.prerelease_tag != '' &&
+      needs.macos-apple-silicon.result == 'success' &&
+      needs.macos-intel.result == 'success' &&
+      needs.sign-windows.result == 'success'
+    needs:
+      - macos-apple-silicon
+      - macos-intel
+      - sign-windows
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: macos-*
+          path: release-assets
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: windows-x64
+          path: release-assets
+      - name: Merge macOS update metadata
+        run: |
+          set -euo pipefail
+          node scripts/merge-mac-update-metadata.mjs \
+            release-assets/latest-mac-arm64.yml \
+            release-assets/latest-mac-x64.yml \
+            release-assets/latest-mac.yml
+          find release-assets -maxdepth 1 \
+            \( -name latest-mac-arm64.yml -o -name latest-mac-x64.yml \) \
+            -delete
+      - name: Verify release assets before publication
+        run: node scripts/verify-release-assets.mjs release-assets "${{ inputs.prerelease_tag }}"
+      - name: Create or update pre-release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.prerelease_tag }}
+        run: |
+          if gh release view "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" release-assets/* --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$RELEASE_TAG" release-assets/* \
+              --prerelease \
+              --target "$GITHUB_SHA" \
+              --generate-notes \
+              --title "DSH Desktop $RELEASE_TAG（预发布）" \
+              --repo "$GITHUB_REPOSITORY"
+          fi
+      - name: Mirror pre-release assets to ModelScope
+        env:
+          MODELSCOPE_TOKEN: ${{ secrets.MODELSCOPE_TOKEN }}
+          MODELSCOPE_REPO_ID: alexyaojin/dsh-desktop
+          PRERELEASE_TAG: ${{ inputs.prerelease_tag }}
+        run: |
+          set -euo pipefail
+          test -n "$MODELSCOPE_TOKEN" || { echo "::error::Missing secret MODELSCOPE_TOKEN"; exit 1; }
+          python3 -m venv "$RUNNER_TEMP/ms-env"
+          "$RUNNER_TEMP/ms-env/bin/pip" install -q modelscope
+          "$RUNNER_TEMP/ms-env/bin/python3" <<'PY'
+          import os, pathlib
+          from modelscope.hub.api import HubApi
+
+          api = HubApi()
+          token = os.environ["MODELSCOPE_TOKEN"]
+          repo_id = os.environ["MODELSCOPE_REPO_ID"]
+          tag = os.environ["PRERELEASE_TAG"]
+          src = pathlib.Path("release-assets")
+
+          for path_in_repo in (f"releases/prerelease/{tag}", "releases/prerelease/latest"):
+              api.upload_folder(
+                  repo_id=repo_id,
+                  folder_path=str(src),
+                  path_in_repo=path_in_repo,
+                  commit_message=f"Pre-release {tag}",
+                  token=token,
+              )
+              print(f"✅ Uploaded {src} -> {repo_id}/{path_in_repo}")
+          PY
+
+      - name: Build Feishu prerelease note prompt
+        env:
+          RELEASE_TAG: ${{ inputs.prerelease_tag }}
+        run: |
+          set -euo pipefail
+          mkdir -p .github/release-artifacts
+          git fetch --force --tags
+          python3 .github/scripts/feishu_release_notes.py build-prompt \
+            --tag "$RELEASE_TAG" \
+            --prerelease \
+            --output .github/release-artifacts/feishu-release-prompt.txt
+
+      - name: Generate bilingual Feishu prerelease note
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.MODELS_TOKEN }}
+          RELEASE_TAG: ${{ inputs.prerelease_tag }}
+        run: |
+          set -euo pipefail
+          if [ -n "${COPILOT_GITHUB_TOKEN:-}" ]; then
+            echo "Generating prerelease notes via Copilot CLI..."
+            npm install -g @github/copilot@latest || true
+            prompt="$(cat .github/release-artifacts/feishu-release-prompt.txt)"
+            if copilot -p "$prompt" -s --model gpt-5.6-terra --no-ask-user > .github/release-artifacts/feishu-release-notes.md 2>/dev/null && \
+               python3 .github/scripts/feishu_release_notes.py validate --tag "$RELEASE_TAG" --prerelease --input .github/release-artifacts/feishu-release-notes.md; then
+              echo "✅ AI prerelease notes generated and validated."
+            else
+              echo "⚠️ AI generation fell back to deterministic release note generator."
+              python3 .github/scripts/feishu_release_notes.py generate-fallback \
+                --tag "$RELEASE_TAG" \
+                --prerelease \
+                --output .github/release-artifacts/feishu-release-notes.md
+            fi
+          else
+            echo "Generating prerelease notes from git evidence..."
+            python3 .github/scripts/feishu_release_notes.py generate-fallback \
+              --tag "$RELEASE_TAG" \
+              --prerelease \
+              --output .github/release-artifacts/feishu-release-notes.md
+          fi
+
+      - name: Send Feishu prerelease success notification
+        if: success()
+        env:
+          FEISHU_RELEASE_WEBHOOK: ${{ secrets.FEISHU_RELEASE_WEBHOOK }}
+          RELEASE_TAG: ${{ inputs.prerelease_tag }}
+        run: |
+          set -euo pipefail
+          if [ -z "${FEISHU_RELEASE_WEBHOOK:-}" ]; then
+            echo "⚠️ FEISHU_RELEASE_WEBHOOK secret not set; skipping notification."
+            exit 0
+          fi
+          python3 .github/scripts/feishu_release_notes.py send \
+            --tag "$RELEASE_TAG" \
+            --prerelease \
+            --notes .github/release-artifacts/feishu-release-notes.md \
+            --webhook "$FEISHU_RELEASE_WEBHOOK"
+

@@ -21,12 +21,12 @@ describe('DSH Desktop available-model picker', () => {
   it('ships one state-driven select-all toggle', async () => {
     const client = await readFile(settingsModelsClient, 'utf8')
 
-    expect(client).toContain('const allCandidatesPicked =')
-    expect(client).toContain('activeCandidates.every((candidate) => picked.has(candidate.id))')
+    expect(client).toContain('const allVisibleCandidatesPicked =')
+    expect(client).toContain('visibleCandidates.every((candidate) => picked.has(candidate.id))')
     expect(client).toContain(
-      'children: t(allCandidatesPicked ? "fetchDeselectAll" : "fetchSelectAll")'
+      'children: t(allVisibleCandidatesPicked ? "fetchDeselectAll" : "fetchSelectAll")'
     )
-    expect(client).toContain('const toggleAllCandidates =')
+    expect(client).toContain('const toggleVisibleCandidates =')
   })
 
   it('includes English and Chinese copy for both toggle states', async () => {

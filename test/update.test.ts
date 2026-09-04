@@ -90,6 +90,24 @@ describe('macOS update metadata', () => {
   })
 })
 
+describe('installing a specific version', () => {
+  it('wires the list and install IPC handlers and the downgrade-safe feed swap', async () => {
+    const manager = await readFile(
+      path.join(projectRoot, 'src/main/update/update-manager.ts'),
+      'utf8'
+    )
+    expect(manager).toContain("ipcMain.handle('updates:list-versions'")
+    expect(manager).toContain("ipcMain.handle('updates:install-version'")
+    expect(manager).toContain('fetchAvailableReleases(app.getVersion())')
+    expect(manager).toContain('export async function installSpecificVersion')
+    expect(manager).toContain('archiveFeedUrl(version)')
+    expect(manager).toContain('autoUpdater.allowDowngrade = true')
+    expect(manager).toContain("setFeedURL({ provider: 'generic', url: STABLE_FEED_URL })")
+    expect(manager).toContain('autoUpdater.allowDowngrade = false')
+    expect(manager).toContain('downloadAvailableUpdate()')
+  })
+})
+
 function metadata(architecture: 'arm64' | 'x64', releaseDate: string) {
   return {
     version: '0.2.0',

@@ -7,6 +7,7 @@ import {
   gpuFallbackStateEquals,
   gpuFallbackSwitches,
   isGpuLossFatal,
+  isRendererGpuFallbackCandidate,
   parseGpuFallbackState,
   planGpuFallbackResponse,
   planStableLaunch,
@@ -46,6 +47,64 @@ describe('gpu loss classification', () => {
     expect(isGpuLossFatal('abnormal-exit')).toBe(true)
     expect(isGpuLossFatal('launch-failed')).toBe(true)
     expect(isGpuLossFatal('oom')).toBe(true)
+  })
+
+  it('recognizes the signed Windows renderer exceptions from the field report', () => {
+    expect(
+      isRendererGpuFallbackCandidate({
+        platform: 'win32',
+        reason: 'crashed',
+        exitCode: -1073741819
+      })
+    ).toBe(true)
+    expect(
+      isRendererGpuFallbackCandidate({
+        platform: 'win32',
+        reason: 'crashed',
+        exitCode: -2147483645
+      })
+    ).toBe(true)
+  })
+
+  it('also accepts the unsigned NTSTATUS representation Electron may expose', () => {
+    expect(
+      isRendererGpuFallbackCandidate({
+        platform: 'win32',
+        reason: 'crashed',
+        exitCode: 0xc0000005
+      })
+    ).toBe(true)
+    expect(
+      isRendererGpuFallbackCandidate({
+        platform: 'win32',
+        reason: 'crashed',
+        exitCode: 0x80000003
+      })
+    ).toBe(true)
+  })
+
+  it('does not degrade for unrelated renderer failures or other platforms', () => {
+    expect(
+      isRendererGpuFallbackCandidate({
+        platform: 'win32',
+        reason: 'oom',
+        exitCode: -1073741819
+      })
+    ).toBe(false)
+    expect(
+      isRendererGpuFallbackCandidate({
+        platform: 'win32',
+        reason: 'crashed',
+        exitCode: 1
+      })
+    ).toBe(false)
+    expect(
+      isRendererGpuFallbackCandidate({
+        platform: 'darwin',
+        reason: 'crashed',
+        exitCode: -1073741819
+      })
+    ).toBe(false)
   })
 })
 

@@ -1,9 +1,14 @@
 import { existsSync } from 'node:fs'
-import { lstat, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { execFile } from 'node:child_process'
+import { lstat, mkdir, mkdtemp, readFile, readlink, rm, writeFile } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
-import { afterEach, describe, expect, it } from 'vitest'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { promisify } from 'node:util'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { projectGenerations } from '../packages/dsh-desktop-market-installer/generations/projection'
+import { suspendGenerationProjectionForPnpm } from '../packages/dsh-desktop-market-installer/pnpm-runner.mjs'
 import {
   ensureRegistryDirectories,
   registryLayout,
@@ -11,7 +16,36 @@ import {
   writeGenerationMeta
 } from '../packages/dsh-desktop-market-installer/generations/registry'
 
+const generationMetaReadFault: {
+  matches?: (path: string) => boolean
+} = vi.hoisted(() => ({}))
+
+vi.mock('node:fs/promises', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:fs/promises')>()
+  const actualReadFile = actual.readFile as (...args: any[]) => Promise<any>
+  return {
+    ...actual,
+    readFile: async (path: Parameters<typeof actual.readFile>[0], ...args: any[]) => {
+      if (
+        generationMetaReadFault.matches &&
+        typeof path === 'string' &&
+        generationMetaReadFault.matches(path)
+      ) {
+        throw Object.assign(new Error('EPERM: generation.json is temporarily locked'), {
+          code: 'EPERM'
+        })
+      }
+      return actualReadFile(path, ...args)
+    }
+  }
+})
+
 describe('generation projection onto the app-boot contract', () => {
+  const execFileAsync = promisify(execFile)
+  const pnpmEntry = join(dirname(createRequire(import.meta.url).resolve('pnpm')), 'bin', 'pnpm.cjs')
+  const pnpmRunner = fileURLToPath(
+    new URL('../packages/dsh-desktop-market-installer/pnpm-runner.mjs', import.meta.url)
+  )
   const homes: string[] = []
 
   async function freshHome(): Promise<string> {
@@ -56,6 +90,7 @@ describe('generation projection onto the app-boot contract', () => {
   }
 
   afterEach(async () => {
+    generationMetaReadFault.matches = undefined
     await Promise.all(homes.map((home) => rm(home, { recursive: true, force: true })))
     homes.length = 0
   })
@@ -91,7 +126,12 @@ describe('generation projection onto the app-boot contract', () => {
       '@linxin666/dsh-pet',
       'dsh-better-sidebar'
     ])
-    expect(manifest.dependencies['dsh-better-sidebar']).toMatch(/^link:/u) // generations are link: deps
+    expect(manifest.dependencies['dsh-better-sidebar']).toBe('0.17.1')
+    expect(manifest.pnpm.overrides['dsh-better-sidebar']).toMatch(/^link:/u)
+    expect(manifest.dsh.desktop.generationProjection.plugins['dsh-better-sidebar']).toMatchObject({
+      generationId: 'sidebar+0.17.1+aaaa',
+      visibleVersion: '0.17.1'
+    })
     expect(manifest.dependencies.dshmarket).toBe('^1.35.0')
   })
 
@@ -115,7 +155,88 @@ describe('generation projection onto the app-boot contract', () => {
       await readFile(join(home, 'profiles', 'web', 'package.json'), 'utf8')
     )
     expect(manifest.dsh.profile.bundles).not.toContain('plugin-b')
-    expect(manifest.dependencies['plugin-b']).toBeUndefined() // unlinked plugin dropped from deps
+    expect(manifest.dependencies['plugin-b']).toBeUndefined()
+    expect(manifest.pnpm?.overrides?.['plugin-b']).toBeUndefined()
+    expect(manifest.dsh.desktop?.generationProjection?.plugins?.['plugin-b']).toBeUndefined()
+  })
+
+  it('restores a profile-owned pnpm override after the generation is disabled', async () => {
+    const home = await freshHome()
+    await ensureRegistryDirectories(home)
+    await initProfile(home)
+    const manifestPath = join(home, 'profiles', 'web', 'package.json')
+    const manifest = JSON.parse(await readFile(manifestPath, 'utf8'))
+    manifest.pnpm = { overrides: { 'plugin-a': '1.0.1', unrelated: '3.0.0' } }
+    await writeFile(manifestPath, JSON.stringify(manifest))
+    await fakeGeneration(home, 'a+1+x', 'plugin-a', '1.0.0')
+
+    await writeDesired(home, ['a+1+x'])
+    await projectGenerations(home)
+    let projected = JSON.parse(await readFile(manifestPath, 'utf8'))
+    expect(projected.pnpm.overrides['plugin-a']).toMatch(/^link:/u)
+    expect(projected.pnpm.overrides.unrelated).toBe('3.0.0')
+
+    await writeDesired(home, [])
+    await projectGenerations(home)
+    projected = JSON.parse(await readFile(manifestPath, 'utf8'))
+    expect(projected.pnpm.overrides['plugin-a']).toBe('1.0.1')
+    expect(projected.pnpm.overrides.unrelated).toBe('3.0.0')
+  })
+
+  it('keeps projected generations outside pnpm while the manifest exposes a version', async () => {
+    const home = await freshHome()
+    await ensureRegistryDirectories(home)
+    const dir = join(home, 'profiles', 'web')
+    await mkdir(dir, { recursive: true })
+    await writeFile(
+      join(dir, 'package.json'),
+      JSON.stringify({ name: 'dsh-profile-web', private: true, dependencies: {}, dsh: { profile: { bundles: [] } } })
+    )
+    await fakeGeneration(home, 'a+1+x', 'plugin-a', '1.0.0')
+    await writeDesired(home, ['a+1+x'])
+    await projectGenerations(home)
+    const link = join(dir, 'node_modules', 'plugin-a')
+    const targetBefore = await readlink(link)
+
+    const result = await execFileAsync(
+      process.execPath,
+      [pnpmRunner, pnpmEntry, 'install', '--ignore-scripts', '--no-frozen-lockfile', '--offline'],
+      { cwd: dir }
+    )
+
+    expect(result.stderr).toContain('excluded 1 generation projection(s) from pnpm')
+    expect(result.stderr).toContain('restored 1 generation projection(s) after pnpm')
+    const manifest = JSON.parse(await readFile(join(dir, 'package.json'), 'utf8'))
+    expect(manifest.dependencies['plugin-a']).toBe('1.0.0')
+    expect(await readlink(link)).toBe(targetBefore)
+    const installed = JSON.parse(await readFile(join(link, 'package.json'), 'utf8'))
+    expect(installed.version).toBe('1.0.0')
+    expect(await readFile(join(dir, 'pnpm-lock.yaml'), 'utf8')).not.toContain('plugin-a')
+  })
+
+  it('reconstructs market-facing fields at cold start after an interrupted pnpm run', async () => {
+    const home = await freshHome()
+    await ensureRegistryDirectories(home)
+    const dir = join(home, 'profiles', 'web')
+    await mkdir(dir, { recursive: true })
+    await writeFile(
+      join(dir, 'package.json'),
+      JSON.stringify({ name: 'dsh-profile-web', dependencies: {}, dsh: { profile: { bundles: [] } } })
+    )
+    await fakeGeneration(home, 'a+1+x', 'plugin-a', '1.0.0')
+    await writeDesired(home, ['a+1+x'])
+    await projectGenerations(home)
+
+    const isolation = await suspendGenerationProjectionForPnpm(dir)
+    expect(isolation.plugins).toEqual(['plugin-a'])
+    const interrupted = JSON.parse(await readFile(join(dir, 'package.json'), 'utf8'))
+    expect(interrupted.dependencies['plugin-a']).toBeUndefined()
+    expect(interrupted.dsh.desktop.generationProjection.plugins).toHaveProperty('plugin-a')
+
+    await projectGenerations(home)
+    const repaired = JSON.parse(await readFile(join(dir, 'package.json'), 'utf8'))
+    expect(repaired.dependencies['plugin-a']).toBe('1.0.0')
+    expect(repaired.pnpm.overrides['plugin-a']).toMatch(/^link:/u)
   })
 
   it('never touches a real pnpm-managed directory in node_modules', async () => {
@@ -132,5 +253,98 @@ describe('generation projection onto the app-boot contract', () => {
     // still a real directory, still readable
     expect((await lstat(realDir)).isDirectory()).toBe(true)
     expect((await lstat(realDir)).isSymbolicLink()).toBe(false)
+  })
+
+  it('does not overwrite or project links onto an existing corrupt profile manifest', async () => {
+    const home = await freshHome()
+    await ensureRegistryDirectories(home)
+    await fakeGeneration(home, 'keep+1+x', 'keeper', '1.0.0')
+    await writeDesired(home, ['keep+1+x'])
+    const profile = join(home, 'profiles', 'web')
+    const manifestPath = join(profile, 'package.json')
+    const corrupt = '{"name":"dsh-profile-web",broken\n'
+    await mkdir(profile, { recursive: true })
+    await writeFile(manifestPath, corrupt, 'utf8')
+
+    await expect(projectGenerations(home)).rejects.toThrow(/Profile manifest is invalid JSON/u)
+    expect(await readFile(manifestPath, 'utf8')).toBe(corrupt)
+    expect(existsSync(join(profile, 'node_modules', 'keeper'))).toBe(false)
+  })
+
+  async function projectedProfileForMetadataFailure(kind: string): Promise<{
+    home: string
+    generationDirectory: string
+    manifestPath: string
+    manifestBefore: string
+    linkPath: string
+    linkTarget: string
+  }> {
+    const home = await freshHome()
+    await ensureRegistryDirectories(home)
+    await initProfile(home)
+    const id = `${kind}+1+x`
+    await fakeGeneration(home, id, `${kind}-plugin`, '1.0.0')
+    await writeDesired(home, [id])
+    await projectGenerations(home)
+    const generationDirectory = join(registryLayout(home).generations, id)
+    const manifestPath = join(home, 'profiles', 'web', 'package.json')
+    const linkPath = join(home, 'profiles', 'web', 'node_modules', `${kind}-plugin`)
+    return {
+      home,
+      generationDirectory,
+      manifestPath,
+      manifestBefore: await readFile(manifestPath, 'utf8'),
+      linkPath,
+      linkTarget: await readlink(linkPath)
+    }
+  }
+
+  async function expectProjectionFailurePreservesProfile(
+    fixture: Awaited<ReturnType<typeof projectedProfileForMetadataFailure>>,
+    message: RegExp
+  ): Promise<void> {
+    await expect(projectGenerations(fixture.home)).rejects.toThrow(message)
+    expect(await readFile(fixture.manifestPath, 'utf8')).toBe(fixture.manifestBefore)
+    expect((await lstat(fixture.linkPath)).isSymbolicLink()).toBe(true)
+    expect(await readlink(fixture.linkPath)).toBe(fixture.linkTarget)
+  }
+
+  it('preserves the existing projection when desired generation metadata is temporarily unreadable', async () => {
+    const fixture = await projectedProfileForMetadataFailure('locked')
+    generationMetaReadFault.matches = (path) =>
+      path === join(fixture.generationDirectory, 'generation.json')
+
+    await expectProjectionFailurePreservesProfile(fixture, /Generation metadata could not be read/u)
+  })
+
+  it('preserves the existing projection when generation metadata contains invalid JSON', async () => {
+    const fixture = await projectedProfileForMetadataFailure('broken')
+    await writeFile(join(fixture.generationDirectory, 'generation.json'), '{broken metadata\n', 'utf8')
+
+    await expectProjectionFailurePreservesProfile(fixture, /Generation metadata is invalid JSON/u)
+  })
+
+  it('preserves the existing projection when generation metadata contains an unsafe package name', async () => {
+    const fixture = await projectedProfileForMetadataFailure('unsafe')
+    await writeFile(
+      join(fixture.generationDirectory, 'generation.json'),
+      JSON.stringify({ pluginName: '../../outside', version: '1.0.0' }),
+      'utf8'
+    )
+
+    await expectProjectionFailurePreservesProfile(fixture, /safe npm package name/u)
+  })
+
+  it('preserves the existing projection when a desired generation loses its package root', async () => {
+    const fixture = await projectedProfileForMetadataFailure('missing-root')
+    await rm(
+      join(fixture.generationDirectory, 'node_modules', 'missing-root-plugin'),
+      { recursive: true, force: true }
+    )
+
+    await expectProjectionFailurePreservesProfile(
+      fixture,
+      /Enabled generation package root is missing or unreadable/u
+    )
   })
 })

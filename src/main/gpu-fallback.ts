@@ -59,8 +59,37 @@ export const GPU_FALLBACK_PROBE_LAUNCHES = 20
  */
 const survivableReasons: ReadonlySet<string> = new Set(['clean-exit', 'killed'])
 
+/**
+ * Native Windows exceptions observed when Chromium's renderer follows a
+ * broken graphics stack down. Electron reports Windows process exit codes as
+ * signed numbers, while crash reports and Event Viewer normally print the
+ * same bits as unsigned hexadecimal NTSTATUS values.
+ */
+const windowsRendererFallbackCodes: ReadonlySet<number> = new Set([
+  0xc0000005, // STATUS_ACCESS_VIOLATION
+  0x80000003 // STATUS_BREAKPOINT
+])
+
 export function isGpuLossFatal(reason: string): boolean {
   return !survivableReasons.has(reason)
+}
+
+/**
+ * Whether a renderer loss is strong enough evidence to try the GPU fallback.
+ *
+ * A renderer can crash for many reasons, so ordinary crashes, load failures,
+ * out-of-memory exits and non-Windows platforms stay on the bounded reload
+ * path. These two native exceptions are the signatures seen when affected
+ * Windows display/virtual-display stacks kill the renderer without Electron
+ * reporting a separate `child-process-gone` event for the GPU process.
+ */
+export function isRendererGpuFallbackCandidate(options: {
+  platform: NodeJS.Platform
+  reason: string
+  exitCode: number
+}): boolean {
+  if (options.platform !== 'win32' || options.reason !== 'crashed') return false
+  return windowsRendererFallbackCodes.has(options.exitCode >>> 0)
 }
 
 /**

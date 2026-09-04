@@ -204,6 +204,37 @@ export function buildHarnessArguments(
   ]
 }
 
+/**
+ * The captured PATH, looked up the way Windows actually stores it.
+ *
+ * `resolveShellEnvironment()` returns a plain object built by `parseEnvOutput`,
+ * keyed by whatever case the environment block reported — and Windows does not
+ * normalise that case, it follows the registry value name. A machine whose
+ * PATH value name is stored lowercase yields the key `path`, which an
+ * exact-case read misses entirely, launching the Harness with an empty PATH
+ * (issue #232). `process.env` never has this problem because Node makes it
+ * case-insensitive on win32 — but spreading it into a plain object keeps
+ * only the stored casing, so every copy needs this lookup too.
+ *
+ * POSIX keeps the exact read: there `path` and `PATH` are genuinely
+ * different variables.
+ */
+export function resolveEnvironmentPath(
+  environment: NodeJS.ProcessEnv,
+  platform: NodeJS.Platform = process.platform
+): string {
+  if (platform !== 'win32') return environment.PATH ?? ''
+  // Exact-case reads first; the scan is the last resort for other casings.
+  // A real Windows block stores a single casing, so the order between them
+  // is never observable outside synthetic inputs.
+  const direct = environment.Path ?? environment.PATH
+  if (direct !== undefined) return direct
+  for (const [name, value] of Object.entries(environment)) {
+    if (/^path$/iu.test(name) && value !== undefined) return value
+  }
+  return ''
+}
+
 export function buildHarnessSpawnOptions(
   launchDirectory: string,
   dshHome: string,
@@ -255,7 +286,7 @@ export function buildHarnessSpawnOptions(
       // the dedicated lock-recovery runner instead (see pnpm-runner.mjs).
       npm_config_side_effects_cache: 'false',
       PNPM_CONFIG_SIDE_EFFECTS_CACHE: 'false',
-      [pathKey]: environment[pathKey] ?? environment.PATH ?? ''
+      [pathKey]: resolveEnvironmentPath(environment, platform)
     },
     stdio: ['pipe', 'pipe', 'pipe'],
     windowsHide: true,
@@ -647,10 +678,15 @@ function extractPluginReferences(
   accepts: (value: string) => boolean
 ): string[] {
   const plugins = new Set<string>()
+  const attemptLogs = latestHarnessAttemptLogs(logLines)
+  const hasDuplicatePrefixRoute = attemptLogs.some((line) =>
+    line.startsWith('[stderr] ') && /duplicate prefix route ["'][^"']+["']/i.test(line)
+  )
 
-  for (const line of latestHarnessAttemptLogs(logLines)) {
+  for (const line of attemptLogs) {
     if (!line.startsWith('[stderr] ')) continue
     const text = line.slice(8)
+    const bootFailureLines = text.split(/\r?\n/).map((value) => value.trim())
 
     // Loader failures are nested (for example the internal `cordis:include`
     // entry wrapping a third-party bundle). Collect every entry in the chain;
@@ -676,7 +712,28 @@ function extractPluginReferences(
       plugins.add(m5[1].trim())
     }
 
-    const bootFailureLines = text.split(/\r?\n/).map((value) => value.trim())
+    for (const candidate of bootFailureLines) {
+      const pendingEntry = candidate.match(
+        /^((?:@[a-z0-9][a-z0-9._-]*\/)?[a-z0-9][a-z0-9._-]*):\s*pending\s*\(waiting for service:\s*[^)]+\)\s*$/i
+      )
+      if (pendingEntry?.[1] && accepts(pendingEntry[1])) {
+        plugins.add(pendingEntry[1].trim())
+      }
+    }
+
+    // Some Harness errors do not include the loader wrapper that normally
+    // names the bundle. For duplicate routes, the first profile stack frame is
+    // still direct ownership evidence. Restrict stack extraction to that
+    // failure class so unrelated warnings cannot turn into removal suspects.
+    if (hasDuplicatePrefixRoute) {
+      for (const match of text.matchAll(
+        /[\\/]profiles[\\/][^\\/\s]+[\\/]node_modules[\\/]((?:@[^\\/\s]+[\\/])?[^\\/\s)]+)/gi
+      )) {
+        const candidate = match[1]?.replace(/\\/g, '/')
+        if (candidate && accepts(candidate)) plugins.add(candidate.trim())
+      }
+    }
+
     const bootFailureTitle = bootFailureLines.findIndex((value) => value === 'Failed to load plugins')
     if (bootFailureTitle >= 0) {
       for (const candidate of bootFailureLines.slice(bootFailureTitle + 1)) {

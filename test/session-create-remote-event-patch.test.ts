@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises'
-import { isJsonValue } from '@deepseek-ai/dsh-session'
+import { isJsonValue } from '@deepseek-ai/dsh-util-values'
 import { describe, expect, it } from 'vitest'
 import { patchPath } from './patch-path'
 

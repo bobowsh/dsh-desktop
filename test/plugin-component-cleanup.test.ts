@@ -1,10 +1,13 @@
 import { existsSync } from 'node:fs'
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   cleanupPluginOwnedComponents,
+  discoverLegacyPluginOwnedComponents,
   orphanedPluginPackageDirectories,
+  readPluginOwnedComponentBackups,
+  restorePluginOwnedComponents,
   type LaunchAgentDescription
 } from '../src/main/state/plugin-component-cleanup'
 
@@ -133,6 +136,283 @@ describe('plugin component cleanup', () => {
     ])
     expect(existsSync(plistPath)).toBe(false)
     expect(result.quarantined).toHaveLength(1)
+  })
+
+  it('journals the removal id and original path before moving an owned LaunchAgent', async () => {
+    const doctorDirectory = await installPluginGraph()
+    const plistPath = join(launchAgents, 'com.example.doctor.plist')
+    const removalId = '2026-08-29T12-00-00-000Z-fixture'
+    const backupDirectory = join(dshHome, 'recovery', 'plugin-removals', removalId, 'example__plugin-all')
+    await writeFile(plistPath, 'fixture')
+    const common = {
+      dshHome,
+      pluginName: plugin,
+      removalId,
+      backupDirectory,
+      platform: 'darwin' as const,
+      homeDirectory: home,
+      uid: 501,
+      readLaunchAgent: async () => ({
+        Label: 'com.example.doctor',
+        ProgramArguments: ['/usr/bin/node', join(doctorDirectory, 'lib', 'cli.mjs')]
+      }),
+      bootoutLaunchAgent: async () => ({ code: 0, stdout: '', stderr: '' })
+    }
+
+    const interrupted = await cleanupPluginOwnedComponents({
+      ...common,
+      moveComponent: async () => { throw new Error('simulated rename failure') }
+    })
+
+    expect(interrupted.ok).toBe(false)
+    expect(existsSync(plistPath)).toBe(true)
+    const journaled = await readPluginOwnedComponentBackups(backupDirectory, removalId, plugin)
+    expect(journaled).toEqual([{
+      kind: 'launch-agent',
+      label: 'com.example.doctor',
+      originalPath: plistPath,
+      backupRelativePath: 'owned-components/launch-agents/com.example.doctor.plist'
+    }])
+
+    const retried = await cleanupPluginOwnedComponents(common)
+    expect(retried.ok).toBe(true)
+    expect(retried.componentBackups).toEqual(journaled)
+    expect(existsSync(plistPath)).toBe(false)
+    expect(existsSync(join(
+      backupDirectory,
+      'owned-components',
+      'launch-agents',
+      'com.example.doctor.plist'
+    ))).toBe(true)
+
+    // If the service recreates its plist after the package was detached, the
+    // durable component record still owns the exact path and stops it again.
+    await writeProfile({})
+    await rm(join(profile, 'node_modules'), { recursive: true, force: true })
+    await writeFile(plistPath, 'recreated fixture')
+    const afterDetach = await cleanupPluginOwnedComponents(common)
+    expect(afterDetach.ok).toBe(true)
+    expect(existsSync(plistPath)).toBe(false)
+    expect(afterDetach.quarantined).toHaveLength(1)
+    expect(await readFile(afterDetach.quarantined[0] as string, 'utf8')).toBe('recreated fixture')
+  })
+
+  it('does not boot out or move a LaunchAgent through an owned-components junction', async () => {
+    const doctorDirectory = await installPluginGraph()
+    const plistPath = join(launchAgents, 'com.example.linked-backup.plist')
+    const removalId = '2026-08-29T12-02-00-000Z-fixture'
+    const backupDirectory = join(
+      dshHome,
+      'recovery',
+      'plugin-removals',
+      removalId,
+      'example__plugin-all'
+    )
+    const external = join(testRoot, 'external-owned-components')
+    await mkdir(backupDirectory, { recursive: true })
+    await mkdir(external, { recursive: true })
+    await symlink(
+      external,
+      join(backupDirectory, 'owned-components'),
+      process.platform === 'win32' ? 'junction' : 'dir'
+    )
+    await writeFile(plistPath, 'fixture')
+    const bootout = vi.fn(async () => ({ code: 0, stdout: '', stderr: '' }))
+    const move = vi.fn(async () => undefined)
+
+    await expect(cleanupPluginOwnedComponents({
+      dshHome,
+      pluginName: plugin,
+      removalId,
+      backupDirectory,
+      platform: 'darwin',
+      homeDirectory: home,
+      uid: 501,
+      readLaunchAgent: async () => ({
+        Label: 'com.example.linked-backup',
+        ProgramArguments: ['/usr/bin/node', join(doctorDirectory, 'lib', 'cli.mjs')]
+      }),
+      bootoutLaunchAgent: bootout,
+      moveComponent: move
+    })).rejects.toThrow(/symbolic link|junction/u)
+
+    expect(bootout).not.toHaveBeenCalled()
+    expect(move).not.toHaveBeenCalled()
+    expect(await readFile(plistPath, 'utf8')).toBe('fixture')
+    expect(await readdir(external)).toEqual([])
+  })
+
+  it('refuses a LaunchAgents junction before inspecting or moving active components', async () => {
+    const doctorDirectory = await installPluginGraph()
+    const external = join(testRoot, 'external-launch-agents')
+    await rm(launchAgents, { recursive: true, force: true })
+    await mkdir(external, { recursive: true })
+    await symlink(
+      external,
+      launchAgents,
+      process.platform === 'win32' ? 'junction' : 'dir'
+    )
+    const plistPath = join(external, 'com.example.external.plist')
+    await writeFile(plistPath, 'fixture')
+    const readLaunchAgent = vi.fn(async () => ({
+      Label: 'com.example.external',
+      ProgramArguments: ['/usr/bin/node', join(doctorDirectory, 'lib', 'cli.mjs')]
+    }))
+    const bootout = vi.fn(async () => ({ code: 0, stdout: '', stderr: '' }))
+    const move = vi.fn(async () => undefined)
+
+    await expect(cleanupPluginOwnedComponents({
+      dshHome,
+      pluginName: plugin,
+      platform: 'darwin',
+      homeDirectory: home,
+      uid: 501,
+      readLaunchAgent,
+      bootoutLaunchAgent: bootout,
+      moveComponent: move
+    })).rejects.toThrow(/symbolic link|junction/u)
+
+    expect(readLaunchAgent).not.toHaveBeenCalled()
+    expect(bootout).not.toHaveBeenCalled()
+    expect(move).not.toHaveBeenCalled()
+    expect(await readFile(plistPath, 'utf8')).toBe('fixture')
+  })
+
+  it('attributes every absolute owner argument but ignores relative node_modules decoys', async () => {
+    const legacyDirectory = join(
+      dshHome,
+      'recovery',
+      'uninstalled-components',
+      '2026-08-29T12-03-00-000Z'
+    )
+    const source = join(legacyDirectory, 'com.example.owners.plist')
+    await mkdir(legacyDirectory, { recursive: true })
+    await writeFile(source, 'fixture')
+
+    const discovery = await discoverLegacyPluginOwnedComponents({
+      dshHome,
+      homeDirectory: home,
+      readLaunchAgent: async () => ({
+        Label: 'com.example.owners',
+        Program: '/opt/runtime/node_modules/@example/plugin-a/agent.mjs',
+        ProgramArguments: [
+          'node_modules/relative-decoy/agent.mjs',
+          '/opt/runtime/node_modules/@example/plugin-b/helper.mjs'
+        ]
+      })
+    })
+
+    expect(discovery.unverified).toEqual([])
+    expect(discovery.candidates).toHaveLength(1)
+    expect(discovery.candidates[0]?.packageOwners).toEqual([
+      '@example/plugin-a',
+      '@example/plugin-b'
+    ])
+    expect(discovery.candidates[0]?.quarantinedAt).toBe('2026-08-29T12:03:00.000Z')
+  })
+
+  it('keeps the component backup and retries after LaunchAgent bootstrap fails', async () => {
+    const doctorDirectory = await installPluginGraph()
+    const plistPath = join(launchAgents, 'com.example.doctor.plist')
+    const removalId = '2026-08-29T12-05-00-000Z-fixture'
+    const backupDirectory = join(dshHome, 'recovery', 'plugin-removals', removalId, 'example__plugin-all')
+    const launchAgent = {
+      Label: 'com.example.doctor',
+      ProgramArguments: ['/usr/bin/node', join(doctorDirectory, 'lib', 'cli.mjs')]
+    }
+    await writeFile(plistPath, 'fixture')
+    const removed = await cleanupPluginOwnedComponents({
+      dshHome,
+      pluginName: plugin,
+      removalId,
+      backupDirectory,
+      platform: 'darwin',
+      homeDirectory: home,
+      uid: 501,
+      readLaunchAgent: async () => launchAgent,
+      bootoutLaunchAgent: async () => ({ code: 0, stdout: '', stderr: '' })
+    })
+    const expectedComponents = removed.componentBackups ?? []
+    const backupPath = join(
+      backupDirectory,
+      'owned-components',
+      'launch-agents',
+      'com.example.doctor.plist'
+    )
+
+    await expect(restorePluginOwnedComponents({
+      dshHome,
+      pluginName: plugin,
+      removalId,
+      backupDirectory,
+      expectedComponents,
+      platform: 'darwin',
+      homeDirectory: home,
+      uid: 501,
+      readLaunchAgent: async () => launchAgent,
+      bootstrapLaunchAgent: async () => ({ code: 5, stdout: '', stderr: 'not permitted' }),
+      inspectLaunchAgent: async () => ({ code: 113, stdout: '', stderr: 'not loaded' })
+    })).rejects.toThrow(/bootstrap failed/u)
+    expect(await readFile(plistPath, 'utf8')).toBe('fixture')
+    expect(await readFile(backupPath, 'utf8')).toBe('fixture')
+
+    const bootstrap = vi.fn(async () => ({ code: 0, stdout: '', stderr: '' }))
+    await restorePluginOwnedComponents({
+      dshHome,
+      pluginName: plugin,
+      removalId,
+      backupDirectory,
+      expectedComponents,
+      platform: 'darwin',
+      homeDirectory: home,
+      uid: 501,
+      readLaunchAgent: async () => launchAgent,
+      bootstrapLaunchAgent: bootstrap,
+      inspectLaunchAgent: async () => ({ code: 0, stdout: 'service = { }', stderr: '' })
+    })
+    expect(bootstrap).toHaveBeenCalledWith('gui/501', plistPath)
+    expect(await readFile(backupPath, 'utf8')).toBe('fixture')
+  })
+
+  it('does not overwrite a conflicting LaunchAgent during component restore', async () => {
+    const doctorDirectory = await installPluginGraph()
+    const plistPath = join(launchAgents, 'com.example.doctor.plist')
+    const removalId = '2026-08-29T12-10-00-000Z-fixture'
+    const backupDirectory = join(dshHome, 'recovery', 'plugin-removals', removalId, 'example__plugin-all')
+    const launchAgent = {
+      Label: 'com.example.doctor',
+      ProgramArguments: ['/usr/bin/node', join(doctorDirectory, 'lib', 'cli.mjs')]
+    }
+    await writeFile(plistPath, 'original')
+    const removed = await cleanupPluginOwnedComponents({
+      dshHome,
+      pluginName: plugin,
+      removalId,
+      backupDirectory,
+      platform: 'darwin',
+      homeDirectory: home,
+      uid: 501,
+      readLaunchAgent: async () => launchAgent,
+      bootoutLaunchAgent: async () => ({ code: 0, stdout: '', stderr: '' })
+    })
+    await writeFile(plistPath, 'new owner material')
+    const bootstrap = vi.fn(async () => ({ code: 0, stdout: '', stderr: '' }))
+
+    await expect(restorePluginOwnedComponents({
+      dshHome,
+      pluginName: plugin,
+      removalId,
+      backupDirectory,
+      expectedComponents: removed.componentBackups ?? [],
+      platform: 'darwin',
+      homeDirectory: home,
+      uid: 501,
+      readLaunchAgent: async () => launchAgent,
+      bootstrapLaunchAgent: bootstrap,
+      inspectLaunchAgent: async () => ({ code: 0, stdout: '', stderr: '' })
+    })).rejects.toThrow(/different material/u)
+    expect(await readFile(plistPath, 'utf8')).toBe('new owner material')
+    expect(bootstrap).not.toHaveBeenCalled()
   })
 
   it('leaves an unrelated LaunchAgent and plugin data untouched', async () => {

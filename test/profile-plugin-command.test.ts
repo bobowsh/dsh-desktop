@@ -3,7 +3,10 @@ import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   buildPnpmShimCommand,
+  buildProfilePluginCommandEnvironment,
+  buildProfilePluginRemoveArguments,
   diagnosticLine,
+  ensureProfilePnpmShim,
   removeProfilePluginWithDsh
 } from '../src/main/runtime/profile-plugin-command'
 
@@ -20,6 +23,18 @@ describe('profile-plugin-command', () => {
 
   afterEach(async () => {
     await rm(testDir, { recursive: true, force: true })
+  })
+
+  it('can target a workspace-root package explicitly', () => {
+    expect(buildProfilePluginRemoveArguments('/app/dsh/bin.js', 'dshmarket', true)).toEqual([
+      '/app/dsh/bin.js',
+      'plugin',
+      '--profile',
+      'web',
+      'remove',
+      '--workspace-root',
+      'dshmarket'
+    ])
   })
 
   it('runs the DSH remove command with the bundled pnpm shim on PATH', async () => {
@@ -113,6 +128,36 @@ describe('profile pnpm shim and failure reporting', () => {
     ).toEqual([existingRunnerPath, '/app/pnpm.cjs'])
   })
 
+  it('fails closed when a projected profile would bypass the generation-aware runner', async () => {
+    const home = join(__dirname, '.temp-profile-plugin-command-runner-test')
+    try {
+      await mkdir(join(home, 'profiles', 'web'), { recursive: true })
+      await writeFile(
+        join(home, 'profiles', 'web', 'package.json'),
+        JSON.stringify({
+          dsh: {
+            desktop: {
+              generationProjection: {
+                version: 1,
+                plugins: { 'generation-plugin': { visibleVersion: '1.0.0' } }
+              }
+            }
+          }
+        })
+      )
+
+      await expect(ensureProfilePnpmShim({
+        dshHome: home,
+        dshEntryPath: '/app/dsh/bin.js',
+        nodeExecutablePath: '/app/node',
+        pnpmEntryPath: '/app/pnpm.cjs',
+        pnpmRunnerPath: '/app/missing-runner.mjs'
+      })).rejects.toThrow(/generation-aware pnpm runner is unavailable/u)
+    } finally {
+      await rm(home, { recursive: true, force: true })
+    }
+  })
+
   it('reports the failure that names a cause, not dsh’s wrapper line', () => {
     // dsh always ends with "pnpm failed in profile directory …", which names
     // nothing — reporting that turns every failure into a dead end.
@@ -127,5 +172,26 @@ describe('profile pnpm shim and failure reporting', () => {
     ).toContain('EPERM')
     expect(diagnosticLine('a\nb\nlast line')).toBe('last line')
     expect(diagnosticLine('   ')).toBeUndefined()
+  })
+})
+
+describe('buildProfilePluginCommandEnvironment', () => {
+  it('keeps the user PATH when the environment block stores it lowercase', () => {
+    // Spreading `process.env` keeps only the casing the OS block stores, so
+    // on a machine whose registry PATH value name is lowercase the previous
+    // exact-case read produced an empty base PATH — plugin commands then ran
+    // with just the shim and bundled-node directories (issue #232).
+    const userPath = 'C:\\Windows\\System32;C:\\Users\\tester\\bin'
+    const result = buildProfilePluginCommandEnvironment(
+      { path: userPath },
+      'C:\\shim',
+      'C:\\bundled\\node.exe'
+    )
+    if (process.platform === 'win32') {
+      expect(result.PATH).toContain(userPath)
+    } else {
+      // POSIX: `path` is a different variable and must stay out of PATH.
+      expect(result.PATH).not.toContain(userPath)
+    }
   })
 })

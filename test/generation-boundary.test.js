@@ -1,9 +1,10 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
+import { lstat, mkdir, mkdtemp, readFile, readlink, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import { createDesktopPnpmService } from '../packages/dsh-desktop-market-installer/index.js'
 import { installGeneration } from '../packages/dsh-desktop-market-installer/generations/installer.mjs'
+import { projectGenerations } from '../packages/dsh-desktop-market-installer/generations/projection.mjs'
 import {
   listGenerations,
   readDesired
@@ -84,7 +85,7 @@ describe('the market install boundary', () => {
     expect(typeof svc.runExternalMarketPluginInstall).toBe('function')
   })
 
-  it('installs a generation, points desired at it, and reprojects', async () => {
+  it('exposes a new generation for market validation and defers bundle activation until cold start', async () => {
     const home = await freshHome()
     const svc = service(home, stubGenerationInstall('demo-plugin', '9.9.9'))
 
@@ -97,15 +98,119 @@ describe('the market install boundary', () => {
 
     expect(result.exitCode).toBe(0)
     expect(result.stdout).toContain('isolated generation')
-    expect(result.stdout).toContain('enabled: demo-plugin')
+    expect(result.stdout).toContain('staged for next restart: demo-plugin')
 
     const desired = await readDesired(home)
     expect(desired).toHaveLength(1)
     expect(desired[0]).toMatch(/^demo-plugin\+9\.9\.9\+/u)
 
     const manifest = JSON.parse(await readFile(join(home, 'profiles', 'web', 'package.json'), 'utf8'))
-    expect(manifest.dsh.profile.bundles).toContain('demo-plugin')
-    expect(manifest.dependencies['demo-plugin']).toMatch(/^link:/u) // generation is a link: dep
+    expect(manifest.dsh.profile.bundles).not.toContain('demo-plugin')
+    expect(manifest.dependencies['demo-plugin']).toBe('9.9.9')
+    expect(manifest.pnpm.overrides['demo-plugin']).toMatch(/^link:/u)
+    const link = join(home, 'profiles', 'web', 'node_modules', 'demo-plugin')
+    expect((await lstat(link)).isSymbolicLink()).toBe(true)
+    const validationTarget = await readlink(link)
+
+    await projectGenerations(home)
+    expect((await lstat(link)).isSymbolicLink()).toBe(true)
+    expect(await readlink(link)).toBe(validationTarget)
+    const activeManifest = JSON.parse(
+      await readFile(join(home, 'profiles', 'web', 'package.json'), 'utf8')
+    )
+    expect(activeManifest.dsh.profile.bundles).toContain('demo-plugin')
+  })
+
+  it('routes a market removal through desired.json instead of the shared profile CLI', async () => {
+    const home = await freshHome()
+    const svc = service(home, stubGenerationInstall('demo-plugin', '9.9.9'))
+    await drainHandle(
+      svc.runExternalMarketPluginInstall(
+        ['add', 'demo-plugin@9.9.9'],
+        join(home, 'profiles', 'web')
+      )
+    )
+    await projectGenerations(home)
+    const link = join(home, 'profiles', 'web', 'node_modules', 'demo-plugin')
+    const activeTarget = await readlink(link)
+
+    const result = await drainHandle(
+      svc.runPlugin(['remove', '--workspace-root', 'demo-plugin'], join(home, 'profiles', 'web'))
+    )
+
+    expect(result.exitCode).toBe(0)
+    expect(result.stdout).toContain('Disabling demo-plugin generation for the next restart')
+    expect(await readDesired(home)).toEqual([])
+    const manifest = JSON.parse(await readFile(join(home, 'profiles', 'web', 'package.json'), 'utf8'))
+    expect(manifest.dependencies['demo-plugin']).toBeUndefined()
+    expect(manifest.pnpm?.overrides?.['demo-plugin']).toBeUndefined()
+    // Uninstall immediately removes the plugin from the next Harness boot's
+    // composition. Its active link remains intact until the process stops.
+    expect(manifest.dsh.profile.bundles).not.toContain('demo-plugin')
+    expect(await readlink(link)).toBe(activeTarget)
+
+    await projectGenerations(home)
+    await expect(lstat(link)).rejects.toMatchObject({ code: 'ENOENT' })
+    const inactiveManifest = JSON.parse(
+      await readFile(join(home, 'profiles', 'web', 'package.json'), 'utf8')
+    )
+    expect(inactiveManifest.dsh.profile.bundles).not.toContain('demo-plugin')
+  })
+
+  it('replaces a stale validation-only link when a rejected install is retried', async () => {
+    const home = await freshHome()
+    const firstService = service(home, stubGenerationInstall('broken-plugin', '1.0.0'))
+    await drainHandle(
+      firstService.runExternalMarketPluginInstall(
+        ['add', 'broken-plugin@1.0.0'],
+        join(home, 'profiles', 'web')
+      )
+    )
+    const link = join(home, 'profiles', 'web', 'node_modules', 'broken-plugin')
+    expect((await lstat(link)).isSymbolicLink()).toBe(true)
+    const rejectedTarget = await readlink(link)
+
+    await drainHandle(
+      firstService.runPlugin(['remove', 'broken-plugin'], join(home, 'profiles', 'web'))
+    )
+    expect(await readlink(link)).toBe(rejectedTarget)
+
+    await drainHandle(
+      service(home, stubGenerationInstall('broken-plugin', '2.0.0')).runExternalMarketPluginInstall(
+        ['add', 'broken-plugin@2.0.0'],
+        join(home, 'profiles', 'web')
+      )
+    )
+
+    expect(await readlink(link)).not.toBe(rejectedTarget)
+    expect((await readDesired(home))[0]).toMatch(/^broken-plugin\+2\.0\.0\+/u)
+  })
+
+  it('keeps the active generation link unchanged until an update reaches cold start', async () => {
+    const home = await freshHome()
+    await drainHandle(
+      service(home, stubGenerationInstall('widget', '1.0.0')).runExternalMarketPluginInstall(
+        ['add', 'widget@1.0.0'],
+        join(home, 'profiles', 'web')
+      )
+    )
+    await projectGenerations(home)
+    const link = join(home, 'profiles', 'web', 'node_modules', 'widget')
+    const firstTarget = await readlink(link)
+
+    await drainHandle(
+      service(home, stubGenerationInstall('widget', '2.0.0')).runExternalMarketPluginInstall(
+        ['add', 'widget@2.0.0'],
+        join(home, 'profiles', 'web')
+      )
+    )
+
+    expect(await readlink(link)).toBe(firstTarget)
+    const staged = JSON.parse(await readFile(join(home, 'profiles', 'web', 'package.json'), 'utf8'))
+    expect(staged.dependencies.widget).toBe('2.0.0')
+
+    await projectGenerations(home)
+    expect(await readlink(link)).not.toBe(firstTarget)
   })
 
   it('replaces an earlier generation of the same plugin', async () => {

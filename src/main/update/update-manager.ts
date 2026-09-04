@@ -20,6 +20,12 @@ import {
   skippedVersionPath,
   writeSkippedVersion
 } from './skipped-version'
+import {
+  archiveFeedUrl,
+  compareVersions,
+  fetchAvailableReleases,
+  STABLE_FEED_URL
+} from './version-catalog'
 
 const { autoUpdater } = electronUpdater
 const TRANSIENT_STATUS_MS = 8_000
@@ -38,6 +44,7 @@ let handlersRegistered = false
 let skippedVersion: string | undefined
 let skipLoaded = false
 let manualCheck = false
+let pendingDowngrade = false
 
 export function getUpdateStatus(): UpdateStatus {
   return { ...status }
@@ -47,9 +54,14 @@ export function registerUpdateHandlers(): void {
   if (handlersRegistered) return
   handlersRegistered = true
   ipcMain.handle('updates:status', () => getUpdateStatus())
+  ipcMain.handle('updates:check', () => checkForUpdates(true))
   ipcMain.handle('updates:install', () => installDownloadedUpdate())
   ipcMain.handle('updates:skip', (_event, version: unknown) => skipUpdate(version))
   ipcMain.handle('updates:download', () => downloadAvailableUpdate())
+  ipcMain.handle('updates:list-versions', () => fetchAvailableReleases(app.getVersion()))
+  ipcMain.handle('updates:install-version', (_event, version: unknown) =>
+    installSpecificVersion(version)
+  )
 }
 
 function skipFile(): string {
@@ -155,6 +167,48 @@ export async function downloadAvailableUpdate(): Promise<UpdateStatus> {
   return getUpdateStatus()
 }
 
+/**
+ * Install a specific past release, downgrades included. The feed is pointed at
+ * that version's archive directory for one check + download, then restored to
+ * the stable channel. A successful install resumes normal `latest` auto-updates
+ * — there is no version pinning.
+ */
+export async function installSpecificVersion(version: unknown): Promise<UpdateStatus> {
+  if (typeof version !== 'string' || !version) return getUpdateStatus()
+  if (!supportsUpdates()) return getUpdateStatus()
+  if (checkPromise || ['checking', 'downloading', 'downloaded'].includes(status.phase)) {
+    return getUpdateStatus()
+  }
+
+  pendingDowngrade = compareVersions(version, app.getVersion()) < 0
+  autoUpdater.setFeedURL({ provider: 'generic', url: archiveFeedUrl(version) })
+  autoUpdater.allowDowngrade = true
+  manualCheck = true
+  transition({ type: 'check', manual: true })
+  lastCheckedAt = Date.now()
+  checkPromise = autoUpdater.checkForUpdates()
+
+  try {
+    await checkPromise
+    if (status.phase === 'available' && status.availableVersion === version) {
+      await downloadAvailableUpdate()
+    } else if (status.phase !== 'downloading' && status.phase !== 'downloaded') {
+      transition({ type: 'error', message: '在更新源未找到该版本' })
+      scheduleReset()
+    }
+  } catch (error) {
+    transition({ type: 'error', message: errorMessage(error) })
+    scheduleReset()
+  } finally {
+    checkPromise = undefined
+    autoUpdater.setFeedURL({ provider: 'generic', url: STABLE_FEED_URL })
+    autoUpdater.allowDowngrade = false
+    pendingDowngrade = false
+  }
+
+  return getUpdateStatus()
+}
+
 export async function installDownloadedUpdate(): Promise<void> {
   if (status.phase !== 'downloaded' || installing) return
   installing = true
@@ -183,6 +237,9 @@ function configureUpdater(): void {
   // The download is ours to start: an update the user skipped should not be
   // fetched at all, and update-available is the only place that is known.
   autoUpdater.autoDownload = false
+  // Reset here too: `installSpecificVersion` turns this on transiently, and its
+  // `finally` may not run if the process is killed mid-flow.
+  autoUpdater.allowDowngrade = false
   autoUpdater.autoInstallOnAppQuit = AUTO_INSTALL_ON_APP_QUIT
   autoUpdater.allowPrerelease = false
   autoUpdater.logger = {
@@ -229,6 +286,7 @@ function transition(event: UpdateStateEvent, manualOverride?: boolean): void {
 
   status = reduceUpdateStatus(status, event)
   if (manualOverride !== undefined) status.manual = manualOverride
+  if (pendingDowngrade && event.type !== 'reset') status.downgrade = true
 
   console.info('[updater] status', status.phase, status.percent ?? '')
   for (const window of BrowserWindow.getAllWindows()) {

@@ -10,7 +10,7 @@ describe('cordis-plugin-loader resolution patch', () => {
       path.join(
         projectRoot,
         'patches',
-        '@deepseek-ai+cordis-plugin-loader+1.0.2.patch'
+        '@deepseek-ai+cordis-plugin-loader+1.0.3.patch'
       ),
       'utf8'
     )

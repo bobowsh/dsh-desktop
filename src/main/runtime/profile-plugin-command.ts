@@ -1,7 +1,8 @@
 import { spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
-import { chmod, mkdir, readdir, stat, writeFile } from 'node:fs/promises'
+import { chmod, mkdir, readFile, readdir, stat, writeFile } from 'node:fs/promises'
 import { delimiter, dirname, join } from 'node:path'
+import { resolveEnvironmentPath } from './harness-runtime'
 
 const PROFILE = 'web'
 const OPERATION_TIMEOUT_MS = 15 * 60 * 1000
@@ -57,9 +58,18 @@ function shellQuote(value: string): string {
 
 export function buildProfilePluginRemoveArguments(
   dshEntryPath: string,
-  pluginName: string
+  pluginName: string,
+  workspaceRoot = false
 ): string[] {
-  return [dshEntryPath, 'plugin', '--profile', PROFILE, 'remove', pluginName]
+  return [
+    dshEntryPath,
+    'plugin',
+    '--profile',
+    PROFILE,
+    'remove',
+    ...(workspaceRoot ? ['--workspace-root'] : []),
+    pluginName
+  ]
 }
 
 /**
@@ -93,6 +103,11 @@ export async function ensureProfilePnpmShim(options: ProfilePluginCommandOptions
   const directory = join(options.dshHome, '.desktop-bin')
   await mkdir(directory, { recursive: true })
   const command = buildPnpmShimCommand(options)
+  if (command.length === 1 && await profileHasGenerationProjection(options.dshHome)) {
+    throw new Error(
+      'The generation-aware pnpm runner is unavailable; refusing to mutate the projected Profile.'
+    )
+  }
 
   if (process.platform === 'win32') {
     await writeFile(
@@ -129,6 +144,20 @@ export async function ensureProfilePnpmShim(options: ProfilePluginCommandOptions
   return directory
 }
 
+async function profileHasGenerationProjection(dshHome: string): Promise<boolean> {
+  try {
+    const manifest = JSON.parse(
+      await readFile(join(dshHome, 'profiles', PROFILE, 'package.json'), 'utf8')
+    ) as {
+      dsh?: { desktop?: { generationProjection?: { plugins?: unknown } } }
+    }
+    const plugins = manifest.dsh?.desktop?.generationProjection?.plugins
+    return typeof plugins === 'object' && plugins !== null && Object.keys(plugins).length > 0
+  } catch {
+    return false
+  }
+}
+
 export function buildProfilePluginCommandEnvironment(
   environment: NodeJS.ProcessEnv,
   shimDirectory: string,
@@ -137,11 +166,10 @@ export function buildProfilePluginCommandEnvironment(
   const result = { ...environment }
   delete result.ELECTRON_RUN_AS_NODE
 
-  const currentPath =
-    (process.platform === 'win32' ? result.Path : result.PATH) ??
-    result.PATH ??
-    result.Path ??
-    ''
+  // The spread above keeps only the casing the OS block actually stores —
+  // even for `process.env`, whose case-insensitivity does not survive a
+  // copy — so the PATH read must be case-insensitive itself (issue #232).
+  const currentPath = resolveEnvironmentPath(result)
   const parts = currentPath.split(delimiter).filter(Boolean)
   const additions = [shimDirectory, dirname(nodeExecutablePath)].filter(
     (directory) => !parts.includes(directory)
@@ -253,9 +281,15 @@ function killProcessTree(child: ReturnType<typeof spawn>): void {
 
 export async function removeProfilePluginWithDsh(
   options: ProfilePluginCommandOptions,
-  pluginName: string
+  pluginName: string,
+  workspaceRoot = false
 ): Promise<ProfilePluginCommandResult> {
-  return runProfileCommand(options, buildProfilePluginRemoveArguments(options.dshEntryPath, pluginName), 'Plugin removal', OPERATION_TIMEOUT_MS)
+  return runProfileCommand(
+    options,
+    buildProfilePluginRemoveArguments(options.dshEntryPath, pluginName, workspaceRoot),
+    'Plugin removal',
+    OPERATION_TIMEOUT_MS
+  )
 }
 
 /**

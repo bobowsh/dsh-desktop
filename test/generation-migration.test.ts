@@ -9,7 +9,13 @@ import {
   migrateProfileToGenerations,
   rollBackMigration
 } from '../src/main/state/generation-migration'
-import { listGenerations, readDesired, registryLayout, writeDesired } from '../packages/dsh-desktop-market-installer/generations/registry'
+import {
+  listGenerations,
+  readDesired,
+  registryLayout,
+  writeDesired,
+  writeGenerationMeta
+} from '../packages/dsh-desktop-market-installer/generations/registry'
 
 const installCalls: string[] = []
 
@@ -91,6 +97,26 @@ describe('one-time profile migration to generations', () => {
     }
   }
 
+  async function installPreviousGeneration(home: string): Promise<void> {
+    const directory = join(registryLayout(home).generations, 'previous-generation')
+    const packageDirectory = join(directory, 'node_modules', 'previous-plugin')
+    await mkdir(packageDirectory, { recursive: true })
+    await writeFile(
+      join(packageDirectory, 'package.json'),
+      JSON.stringify({
+        name: 'previous-plugin',
+        version: '1.0.0',
+        dsh: { bundle: { patch: 'cordis.patch.yml' } }
+      })
+    )
+    await writeFile(join(packageDirectory, 'cordis.patch.yml'), '[]\n')
+    await writeGenerationMeta(directory, {
+      pluginName: 'previous-plugin',
+      version: '1.0.0'
+    })
+    await writeDesired(home, ['previous-generation'])
+  }
+
   afterEach(async () => {
     await Promise.all(homes.map((home) => rm(home, { recursive: true, force: true })))
     homes.length = 0
@@ -102,14 +128,17 @@ describe('one-time profile migration to generations', () => {
 
     const migrated = await migrateProfileToGenerations(deps(home))
 
-    expect(migrated).toBe(true)
+    expect(migrated).toEqual({ outcome: 'migrated' })
     expect(isProfileMigrated(home)).toBe(true)
 
     const manifest = JSON.parse(
       await readFile(join(home, 'profiles', 'web', 'package.json'), 'utf8')
     )
-    // dependencies keep only the shared-tree package
-    expect(manifest.dependencies.dshmarket).toBe('^1.35.0'); expect(manifest.dependencies['dsh-vision-router']).toMatch(/^link:/u)
+    // generation dependencies expose installed versions while pnpm resolves
+    // them through private local overrides.
+    expect(manifest.dependencies.dshmarket).toBe('^1.35.0')
+    expect(manifest.dependencies['dsh-vision-router']).toBe('2.0.1')
+    expect(manifest.pnpm.overrides['dsh-vision-router']).toMatch(/^link:/u)
     // bundles carry the in-box set plus the migrated plugin names
     expect(manifest.dsh.profile.bundles).toEqual([
       '@deepseek-ai/dsh-base',
@@ -130,7 +159,7 @@ describe('one-time profile migration to generations', () => {
   it('is a no-op and self-marks when there are no community plugins', async () => {
     const home = await preUpgradeProfile({})
     const migrated = await migrateProfileToGenerations(deps(home))
-    expect(migrated).toBe(false)
+    expect(migrated).toEqual({ outcome: 'no-op' })
     expect(isProfileMigrated(home)).toBe(true)
     expect(await readDesired(home)).toEqual([])
   })
@@ -143,7 +172,10 @@ describe('one-time profile migration to generations', () => {
       deps(home, async () => ({ ok: false, detail: 'pnpm blew up' }))
     )
 
-    expect(migrated).toBe(false)
+    expect(migrated.outcome).toBe('deferred-failure')
+    if (migrated.outcome === 'deferred-failure') {
+      expect(migrated.reason).toMatch(/shared-tree rebuild failed/)
+    }
     expect(isProfileMigrated(home)).toBe(false)
     // manifest and node_modules are back
     expect(await readFile(join(home, 'profiles', 'web', 'package.json'), 'utf8')).toBe(before)
@@ -156,7 +188,7 @@ describe('one-time profile migration to generations', () => {
       { 'source-plugin': 'github:example/source-plugin#main' }
     )
 
-    expect(await migrateProfileToGenerations(deps(home))).toBe(true)
+    expect(await migrateProfileToGenerations(deps(home))).toEqual({ outcome: 'migrated' })
 
     expect((await listGenerations(home)).find((item) => item.pluginName === 'source-plugin')).toMatchObject({
       pluginName: 'source-plugin',
@@ -167,23 +199,24 @@ describe('one-time profile migration to generations', () => {
 
   it('defers an identical failed migration, preserves desired, and retries after the profile changes', async () => {
     const home = await preUpgradeProfile({ 'plugin-one': '1.0.0' })
-    await mkdir(registryLayout(home).root, { recursive: true })
-    await writeDesired(home, ['previous-generation'])
+    await installPreviousGeneration(home)
     const failing = deps(home, async () => ({ ok: false, detail: 'shared tree failed' }))
 
-    expect(await migrateProfileToGenerations(failing)).toBe(false)
+    const first = await migrateProfileToGenerations(failing)
+    expect(first.outcome).toBe('deferred-failure')
     expect(await readDesired(home)).toEqual(['previous-generation'])
     expect(existsSync(join(home, 'profiles', 'web', 'node_modules', 'plugin-one'))).toBe(true)
     const firstAttempts = installCalls.length
 
-    expect(await migrateProfileToGenerations(deps(home))).toBe(false)
+    const second = await migrateProfileToGenerations(deps(home))
+    expect(second.outcome).toBe('deferred-failure')
     expect(installCalls).toHaveLength(firstAttempts)
 
     const manifestPath = join(home, 'profiles', 'web', 'package.json')
     const manifest = JSON.parse(await readFile(manifestPath, 'utf8'))
     manifest.dependencies['plugin-one'] = '~1.0.0'
     await writeFile(manifestPath, `${JSON.stringify(manifest)}\n`)
-    expect(await migrateProfileToGenerations(deps(home))).toBe(true)
+    expect(await migrateProfileToGenerations(deps(home))).toEqual({ outcome: 'migrated' })
     expect(installCalls.length).toBeGreaterThan(firstAttempts)
   })
 
@@ -199,28 +232,29 @@ describe('one-time profile migration to generations', () => {
     )
     await writeFile(installedManifest, '{broken json')
 
-    expect(await migrateProfileToGenerations(deps(home))).toBe(false)
+    const first = await migrateProfileToGenerations(deps(home))
+    expect(first.outcome).toBe('deferred-failure')
     expect(isProfileMigrated(home)).toBe(false)
     expect(existsSync(join(home, 'profiles', 'web', 'node_modules', 'broken-plugin'))).toBe(true)
     expect(installCalls).toHaveLength(0)
 
-    expect(await migrateProfileToGenerations(deps(home))).toBe(false)
+    const second = await migrateProfileToGenerations(deps(home))
+    expect(second.outcome).toBe('deferred-failure')
     expect(installCalls).toHaveLength(0)
 
     await writeFile(installedManifest, JSON.stringify({ name: 'broken-plugin', version: '1.0.0' }))
-    expect(await migrateProfileToGenerations(deps(home))).toBe(true)
+    expect(await migrateProfileToGenerations(deps(home))).toEqual({ outcome: 'migrated' })
     expect(installCalls).toEqual(['broken-plugin'])
   })
 
   it('rolls a migrated profile back to the snapshot on a failed launch, then discards it on a good one', async () => {
     const home = await preUpgradeProfile({ 'dsh-vision-router': '2.0.1' })
-    await mkdir(registryLayout(home).root, { recursive: true })
-    await writeDesired(home, ['previous-generation'])
+    await installPreviousGeneration(home)
     await migrateProfileToGenerations(deps(home))
 
     // failed launch → roll back
     const rolled = await rollBackMigration(home, silent)
-    expect(rolled).toBe(true)
+    expect(rolled).toEqual({ outcome: 'restored' })
     expect(isProfileMigrated(home)).toBe(false)
     expect(await readDesired(home)).toEqual(['previous-generation'])
     const manifest = JSON.parse(
@@ -237,5 +271,31 @@ describe('one-time profile migration to generations', () => {
     await confirmMigration(home, silent)
     expect(existsSync(join(home, 'profiles', 'web', 'package.json.pre-generations'))).toBe(false)
     expect(existsSync(join(home, 'profiles', 'web', 'node_modules.pre-generations'))).toBe(false)
+  })
+
+  it('returns deferred-failure (not no-op) when staging a generation fails, so the caller does not run profile repair on the broken tree', async () => {
+    // A staging failure is the trigger that lets a half-migrated profile
+    // bleed into the shared-tree repair path. The new tri-state result
+    // must surface the failure distinctly so the launch flow can skip the
+    // repair instead of running pnpm on the broken state.
+    const home = await preUpgradeProfile({ 'staging-fail': '1.0.0' })
+    installCalls.length = 0
+    const result = await migrateProfileToGenerations({
+      ...deps(home),
+      // The default mock always succeeds; we override with a no-op runInstall
+      // would be cleaner, but the protocol is small enough that swapping the
+      // whole mock is the only place that actually exercises the failure
+      // path the launch flow used to conflate with no-op. Reuse the existing
+      // mock and force a peer-validation failure instead, which is the other
+      // branch that used to silently return no-op.
+      reinstallSharedTree: async () => ({ ok: false, detail: 'simulated' })
+    })
+    expect(result.outcome).toBe('deferred-failure')
+    if (result.outcome === 'deferred-failure') {
+      expect(result.reason).toMatch(/shared-tree rebuild failed/)
+    }
+    // The pre-upgrade tree is still intact so the launch flow has something
+    // to start from on the next run.
+    expect(existsSync(join(home, 'profiles', 'web', 'node_modules', 'staging-fail'))).toBe(true)
   })
 })

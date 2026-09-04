@@ -1,4 +1,5 @@
 import type { ProfileCompatibilityIssue } from './state/profile-compatibility'
+import type { PluginHealthReport, PluginHealthStatus } from './state/plugin-market-check'
 
 export type SafeModeLocale = 'en' | 'zh'
 
@@ -24,8 +25,32 @@ export interface SafeModeIssueGroupViewModel {
 export interface SafeModePluginViewModel {
   name: string
   statusLabel?: string
+  statusTone?: 'warning' | 'danger' | 'success'
   actionLabel: string
   incompatible: boolean
+  suspected: boolean
+  healthStatus?: PluginHealthStatus
+  healthLabel?: string
+  installedVersion?: string
+  latestVersion?: string
+  upgradeReady?: boolean
+  upgradeVersion?: string
+  upgradeButtonLabel?: string
+}
+
+export interface SafeModeBackupViewModel {
+  removalId: string
+  pluginName: string
+  backupDirectory: string
+  disabledAtLabel: string
+  generationLabel?: string
+  cleanupReady: boolean
+  restoreReady: boolean
+  statusLabel: string
+  openLabel: string
+  restoreLabel: string
+  deleteLabel: string
+  deleteConfirm: string
 }
 
 export interface SafeModeViewModel {
@@ -37,6 +62,11 @@ export interface SafeModeViewModel {
   plugins: string[]
   pluginItems: SafeModePluginViewModel[]
   issueGroups: SafeModeIssueGroupViewModel[]
+  backupItems: SafeModeBackupViewModel[]
+  backupHeading: string
+  backupSummary: string
+  recoveryLocked: boolean
+  recoveryOpenLabel: string
   emptyMessage: string
   selectionHint: string
   safetyNote: string
@@ -51,6 +81,9 @@ export interface SafeModeViewModel {
   quitLabel: string
   notice?: string
   noticeTone?: 'success' | 'error'
+  upgradeAllLabel?: string
+  upgradeAllBusyLabel?: string
+  upgradeReadyCount: number
 }
 
 export function shouldStartInSafeMode(argv: readonly string[]): boolean {
@@ -60,7 +93,27 @@ export function shouldStartInSafeMode(argv: readonly string[]): boolean {
 export function buildSafeModeViewModel(options: {
   locale: SafeModeLocale
   plugins: readonly string[]
+  suspectedPlugins?: readonly string[]
   issues?: readonly ProfileCompatibilityIssue[]
+  healthReports?: readonly PluginHealthReport[]
+  backups?: readonly {
+    removalId: string
+    pluginName: string
+    backupDirectory: string
+    disabledAt: string
+    bootVerifiedAt?: string
+    restoreStartedAt?: string
+    restoreFailure?: string
+    restoredAt?: string
+    generationIds?: readonly string[]
+    status?: 'backup-pending' | 'disabled' | 'cleanup-pending' | 'removed'
+    integrity?: 'verified' | 'legacy-unverified' | 'incomplete'
+    integrityDetail?: string
+    canRestore?: boolean
+  }[]
+  recoveryLocked?: boolean
+  backupRestoreLocked?: boolean
+  allowedRestoreId?: string
   notice?: string
   noticeTone?: 'success' | 'error'
 }): SafeModeViewModel {
@@ -103,21 +156,64 @@ export function buildSafeModeViewModel(options: {
   })
   const pluginIssues = issues.filter((issue) => issue.resolution === 'disable-plugin')
   const incompatiblePlugins = new Set(pluginIssues.map((issue) => issue.target))
+  const suspectedPlugins = new Set(options.suspectedPlugins ?? [])
   const plugins = [...new Set([
     ...options.plugins,
-    ...incompatiblePlugins
-  ])]
+    ...incompatiblePlugins,
+    ...suspectedPlugins
+  ])].sort((left, right) => Number(suspectedPlugins.has(right)) - Number(suspectedPlugins.has(left)))
+  const healthReportByPlugin = new Map(
+    (options.healthReports ?? []).map((report) => [report.packageName, report])
+  )
   const pluginItems = plugins.map((name): SafeModePluginViewModel => {
     const incompatible = incompatiblePlugins.has(name)
+    const suspected = suspectedPlugins.has(name)
+    const report = healthReportByPlugin.get(name)
+    const labels = [
+      ...(suspected
+        ? [options.locale === 'zh' ? '本次启动日志推断' : 'inferred from this startup log']
+        : []),
+      ...(incompatible
+        ? [options.locale === 'zh' ? '版本不兼容' : 'version incompatible']
+        : [])
+    ]
+    if (report?.healthLabel && !incompatible && !suspected) {
+      labels.push(report.healthLabel)
+    }
+    const statusTone = incompatible
+      ? 'danger'
+      : suspected
+        ? 'warning'
+        : report?.upgradeReady
+          ? 'success'
+          : undefined
+    const upgradeButtonLabel = report?.upgradeReady && report.upgradeVersion
+      ? options.locale === 'zh'
+        ? `升级至 v${report.upgradeVersion}`
+        : `Upgrade to v${report.upgradeVersion}`
+      : undefined
+
     return {
       name,
-      statusLabel: incompatible
-        ? options.locale === 'zh' ? '（版本不兼容）' : '(version incompatible)'
+      statusLabel: labels.length > 0
+        ? options.locale === 'zh'
+          ? `（${labels.join('，')}）`
+          : `(${labels.join(', ')})`
         : undefined,
+      statusTone,
       actionLabel: options.locale === 'zh' ? '卸载插件' : 'Remove plugin',
-      incompatible
+      incompatible,
+      suspected,
+      ...(report?.healthStatus !== undefined ? { healthStatus: report.healthStatus } : {}),
+      ...(report?.healthLabel !== undefined ? { healthLabel: report.healthLabel } : {}),
+      ...(report?.installedVersion !== undefined ? { installedVersion: report.installedVersion } : {}),
+      ...(report?.latestVersion !== undefined ? { latestVersion: report.latestVersion } : {}),
+      ...(report?.upgradeReady !== undefined ? { upgradeReady: report.upgradeReady } : {}),
+      ...(report?.upgradeVersion !== undefined ? { upgradeVersion: report.upgradeVersion } : {}),
+      ...(upgradeButtonLabel !== undefined ? { upgradeButtonLabel } : {})
     }
   })
+  const upgradeReadyCount = pluginItems.filter((item) => item.upgradeReady).length
   const groups = new Map<string, SafeModeIssueViewModel[]>()
   for (const issue of issues.filter((issue) => issue.resolution !== 'disable-plugin')) {
     const id = issue.groupId ?? `${issue.resolution}:${issue.target}`
@@ -136,7 +232,7 @@ export function buildSafeModeViewModel(options: {
           : 'profile'
     )
     const name = groupKind === 'profile'
-      ? zh ? 'Profile 核心依赖' : 'Profile core dependencies'
+      ? 'Profile'
       : first.groupName ?? first.packageName
     const actionLabel = [...new Set(grouped.map((issue) => issue.actionLabel))].join(zh ? '；' : '; ')
     return {
@@ -160,6 +256,63 @@ export function buildSafeModeViewModel(options: {
       .filter((issue) => issue.severity === 'blocking')
       .map((issue) => issue.groupId ?? `${issue.resolution}:${issue.target}`)
   ).size
+  const backupItems = (options.backups ?? []).map((backup): SafeModeBackupViewModel => {
+    const zh = options.locale === 'zh'
+    const cleanupReady = backup.bootVerifiedAt !== undefined && backup.restoreStartedAt === undefined
+    const generationCount = backup.generationIds?.length ?? 0
+    const incomplete = backup.integrity === 'incomplete'
+    const restoreLocked = options.backupRestoreLocked ?? options.recoveryLocked
+    const restoreReady = backup.canRestore === true && (
+      restoreLocked !== true || options.allowedRestoreId === backup.removalId
+    )
+    const statusLabel = incomplete
+      ? zh
+        ? `备份校验失败：${backup.integrityDetail ?? '内容不完整'}。已禁止自动恢复。`
+        : `Backup verification failed: ${backup.integrityDetail ?? 'content is incomplete'}. Automatic restore is blocked.`
+      : backup.restoreStartedAt !== undefined
+        ? zh
+          ? `上次恢复未完成，正常 Profile 已锁定。请重试恢复；备份仍保留。${backup.restoreFailure ? ` ${backup.restoreFailure}` : ''}`
+          : `The previous restore is incomplete and the normal Profile is locked. Retry restore; the backup is still kept.${backup.restoreFailure ? ` ${backup.restoreFailure}` : ''}`
+      : backup.integrity === 'legacy-unverified'
+        ? zh
+          ? '这是旧版保留的备份，没有内容校验清单；恢复前请先检查目录。'
+          : 'This backup was kept by an older version and has no checksum inventory; inspect it before restoring.'
+      : backup.status !== undefined && backup.status !== 'removed'
+        ? zh
+          ? `卸载尚未完成（${backup.status}）；恢复材料继续保留。`
+          : `Removal is incomplete (${backup.status}); recovery material is still kept.`
+        : backup.restoredAt !== undefined
+          ? zh
+            ? `已于 ${backup.restoredAt} 恢复；备份仍会保留，直到你明确删除。`
+            : `Restored ${backup.restoredAt}; the backup remains until you explicitly delete it.`
+          : cleanupReady
+            ? zh ? '已通过正常启动验证；仍会保留，直到你确认删除' : 'Boot verified; kept until you confirm deletion'
+            : zh ? '尚未通过正常启动验证，禁止删除' : 'Not boot verified; deletion is blocked'
+    return {
+      removalId: backup.removalId,
+      pluginName: backup.pluginName,
+      backupDirectory: backup.backupDirectory,
+      disabledAtLabel: zh ? `卸载于 ${backup.disabledAt}` : `Removed ${backup.disabledAt}`,
+      ...(generationCount === 0
+        ? {}
+        : {
+            generationLabel: zh
+              ? `包含 ${generationCount} 个 generation 备份`
+              : `${generationCount} generation backup${generationCount === 1 ? '' : 's'}`
+          }),
+      cleanupReady: cleanupReady &&
+        (backup.status ?? 'removed') === 'removed' &&
+        options.recoveryLocked !== true,
+      restoreReady,
+      statusLabel,
+      openLabel: zh ? '打开备份' : 'Open backup',
+      restoreLabel: zh ? '恢复插件…' : 'Restore plugin…',
+      deleteLabel: zh ? '永久删除…' : 'Delete permanently…',
+      deleteConfirm: zh
+        ? `永久删除 ${backup.pluginName} 的这份恢复备份？此操作不可撤销。`
+        : `Permanently delete this recovery backup for ${backup.pluginName}? This cannot be undone.`
+    }
+  })
 
   if (options.locale === 'zh') {
     return {
@@ -171,6 +324,15 @@ export function buildSafeModeViewModel(options: {
       plugins,
       pluginItems,
       issueGroups,
+      backupItems,
+      backupHeading: '插件恢复备份',
+      backupSummary: options.recoveryLocked
+        ? options.allowedRestoreId !== undefined
+          ? '正常 Profile 已锁定；只允许重试对应的插件备份恢复。备份不能删除。'
+          : '恢复事务尚未完成。恢复材料已锁定，只允许查看，不能修复、卸载或删除，也不能恢复。'
+        : '备份不会按启动次数自动删除。你可以打开目录检查；只有正常模式稳定启动后，才允许逐份永久清理。',
+      recoveryLocked: options.recoveryLocked === true,
+      recoveryOpenLabel: '打开恢复材料目录',
       emptyMessage: '当前 Profile 中没有可卸载的第三方插件。',
       selectionHint: '选择要卸载的插件',
       safetyNote: '工作区、会话、模型配置和未选中的插件不会被删除。',
@@ -186,7 +348,12 @@ export function buildSafeModeViewModel(options: {
         : undefined,
       quitLabel: '退出 DSH Desktop',
       notice: options.notice,
-      noticeTone: options.noticeTone
+      noticeTone: options.noticeTone,
+      upgradeAllLabel: upgradeReadyCount > 0
+        ? `一键升级 ${upgradeReadyCount} 个已适配插件`
+        : undefined,
+      upgradeAllBusyLabel: '正在批量升级…',
+      upgradeReadyCount
     }
   }
 
@@ -199,6 +366,15 @@ export function buildSafeModeViewModel(options: {
     plugins,
     pluginItems,
     issueGroups,
+    backupItems,
+    backupHeading: 'Plugin recovery backups',
+    backupSummary: options.recoveryLocked
+      ? options.allowedRestoreId !== undefined
+        ? 'The normal Profile is locked; only the matching plugin-backup restore retry is allowed. Backups cannot be deleted.'
+        : 'A recovery transaction is incomplete. Recovery material is inspection-only; repair, removal, restore, and deletion are blocked.'
+      : 'Backups are never deleted by launch count. Inspect them first; permanent per-backup cleanup is enabled only after a stable normal boot.',
+    recoveryLocked: options.recoveryLocked === true,
+    recoveryOpenLabel: 'Open recovery material folder',
     emptyMessage: 'There are no removable third-party plugins in this profile.',
     selectionHint: 'Select plugins to remove',
     safetyNote: 'Workspaces, sessions, model settings, and unselected plugins will not be removed.',
@@ -214,6 +390,11 @@ export function buildSafeModeViewModel(options: {
       : undefined,
     quitLabel: 'Quit DSH Desktop',
     notice: options.notice,
-    noticeTone: options.noticeTone
+    noticeTone: options.noticeTone,
+    upgradeAllLabel: upgradeReadyCount > 0
+      ? `Upgrade ${upgradeReadyCount} compatible plugin${upgradeReadyCount === 1 ? '' : 's'}`
+      : undefined,
+    upgradeAllBusyLabel: 'Upgrading plugins…',
+    upgradeReadyCount
   }
 }

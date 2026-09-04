@@ -6,12 +6,9 @@ import {
   resolveProfileDir
 } from '@deepseek-ai/dsh-app-boot'
 import {
-  commitLastKnownGood,
   disableGeneration,
   isGenerationPlugin,
-  readDesired,
-  readLastKnownGood,
-  revertToLastKnownGood,
+  resolveEnabledGenerations,
   sweepRegistry
 } from 'dsh-desktop-market-installer/generations/registry'
 import { projectGenerations } from 'dsh-desktop-market-installer/generations/projection'
@@ -35,26 +32,26 @@ type Note = (line: string) => void
  * generation while it runs.
  */
 export async function prepareGenerationsForLaunch(dshHome: string, note: Note): Promise<void> {
+  const { removed, failed } = await sweepRegistry(dshHome)
+  if (removed.length > 0) {
+    note(`[desktop] swept ${removed.length} unreferenced plugin generation(s)`)
+  }
+  if (failed.length > 0) {
+    // Inert — nothing resolves against them; the next cold start retries.
+    note(`[desktop] ${failed.length} generation(s) could not be removed yet, will retry`)
+  }
+  // Projection must not invent an empty profile manifest. On a first launch,
+  // doing so prevents app-boot from installing the shipped web bundles and
+  // leaves Desktop overlays waiting forever for services such as connection.
+  // Use the same initializer and template app-boot itself uses so its defaults
+  // remain the single source of truth.
+  const profileDir = resolveProfileDir('web', dshHome)
+  if (!existsSync(join(profileDir, 'package.json'))) {
+    const template = PROFILE_TEMPLATES.web
+    if (template === undefined) throw new Error('Harness does not define the web profile template')
+    initProfile(profileDir, template.bundles, template.patchReload)
+  }
   try {
-    const { removed, failed } = await sweepRegistry(dshHome)
-    if (removed.length > 0) {
-      note(`[desktop] swept ${removed.length} unreferenced plugin generation(s)`)
-    }
-    if (failed.length > 0) {
-      // Inert — nothing resolves against them; the next cold start retries.
-      note(`[desktop] ${failed.length} generation(s) could not be removed yet, will retry`)
-    }
-    // Projection must not invent an empty profile manifest. On a first launch,
-    // doing so prevents app-boot from installing the shipped web bundles and
-    // leaves Desktop overlays waiting forever for services such as connection.
-    // Use the same initializer and template app-boot itself uses so its defaults
-    // remain the single source of truth.
-    const profileDir = resolveProfileDir('web', dshHome)
-    if (!existsSync(join(profileDir, 'package.json'))) {
-      const template = PROFILE_TEMPLATES.web
-      if (template === undefined) throw new Error('Harness does not define the web profile template')
-      initProfile(profileDir, template.bundles, template.patchReload)
-    }
     const projection = await projectGenerations(dshHome)
     if (projection.linked.length > 0 || projection.unlinked.length > 0) {
       note(
@@ -63,36 +60,10 @@ export async function prepareGenerationsForLaunch(dshHome: string, note: Note): 
       )
     }
   } catch (error) {
-    // A projection failure is recoverable on the next launch and must not block
-    // this one — Harness reports whatever it can resolve.
-    note(`[desktop] generation projection failed: ${error instanceof Error ? error.message : error}`)
+    const detail = error instanceof Error ? error.message : String(error)
+    note(`[desktop] generation projection failed: ${detail}`)
+    throw new Error(`generation projection failed: ${detail}`)
   }
-}
-
-/**
- * Whether `desired` has moved ahead of the set that last booted. A failed
- * launch after this is true is a new generation set that did not work, and the
- * fix is to fall back — not to a hash that only meant "pnpm exited zero".
- */
-export async function desiredIsUntried(dshHome: string): Promise<boolean> {
-  const [desired, lkg] = await Promise.all([readDesired(dshHome), readLastKnownGood(dshHome)])
-  if (desired.length !== lkg.length) return true
-  const known = new Set(lkg)
-  return desired.some((id) => !known.has(id))
-}
-
-/**
- * Roll `desired` back to the last set that rendered a window, reproject, and
- * report it. The caller relaunches Harness once after this.
- */
-export async function rollBackToLastKnownGood(dshHome: string, note: Note): Promise<boolean> {
-  const reverted = await revertToLastKnownGood(dshHome)
-  await projectGenerations(dshHome).catch(() => undefined)
-  note(
-    `[desktop] a new plugin set failed to boot; rolled back to the last working set ` +
-      `(${reverted.length} generation(s))`
-  )
-  return true
 }
 
 /**
@@ -110,31 +81,25 @@ export async function uninstallGenerationPlugin(
   note: Note
 ): Promise<boolean> {
   if (!(await isGenerationPlugin(dshHome, pluginName).catch(() => false))) return false
-  const removed = await disableGeneration(dshHome, pluginName).catch(() => false)
-  await projectGenerations(dshHome).catch(() => undefined)
-  note(
-    removed
-      ? `[desktop] disabled the ${pluginName} generation; it will be swept on a later cold start`
-      : `[desktop] ${pluginName} was already not an enabled generation`
-  )
-  return true
-}
-
-/**
- * Record the currently-desired generation set as known good. Call this only
- * once Harness has reported ready AND the window has rendered — the window is
- * the proof the set works, which `.install-complete` never was.
- */
-export async function markGenerationsBooted(dshHome: string, note: Note): Promise<void> {
   try {
-    const before = await readLastKnownGood(dshHome)
-    await commitLastKnownGood(dshHome)
-    const after = await readLastKnownGood(dshHome)
-    if (before.length !== after.length || after.some((id) => !before.includes(id))) {
-      note('[desktop] committed the current plugin set as last-known-good')
+    const removed = await disableGeneration(dshHome, pluginName)
+    await projectGenerations(dshHome)
+    const stillEnabled = (await resolveEnabledGenerations(dshHome)).has(pluginName)
+    if (stillEnabled) {
+      note(`[desktop] failed to disable the ${pluginName} generation`)
+      return false
     }
-  } catch {
-    // A missing LKG file just means the next failed launch has nothing to roll
-    // back to — not a reason to fault a successful one.
+    note(
+      removed
+        ? `[desktop] disabled the ${pluginName} generation; it will be swept on a later cold start`
+        : `[desktop] ${pluginName} was already not an enabled generation`
+    )
+    return true
+  } catch (error) {
+    note(
+      `[desktop] failed to disable the ${pluginName} generation: ` +
+        `${error instanceof Error ? error.message : error}`
+    )
+    return false
   }
 }

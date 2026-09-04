@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { chmod, copyFile, mkdir, readFile, readdir, rename, rm, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { homedir } from 'node:os'
@@ -9,8 +9,12 @@ import { fileURLToPath } from 'node:url'
 import { PassThrough } from 'node:stream'
 
 import { installGeneration } from './generations/installer.mjs'
-import { projectGenerations } from './generations/projection.mjs'
 import {
+  exposeMissingGenerationLinks,
+  publishGenerationManifest
+} from './generations/projection.mjs'
+import {
+  disableGeneration,
   listGenerations,
   readDesired,
   withRegistryLock,
@@ -19,7 +23,7 @@ import {
 import { SIDELINE_MARKER } from './pnpm-runner.mjs'
 import { removeTree } from './remove-tree.mjs'
 
-export const RECOMMENDED_MARKET_VERSION = 'latest'
+export const RECOMMENDED_MARKET_VERSION = '^1.40.0'
 export const MARKET_PACKAGE = 'dshmarket'
 export const MARKET_PROFILE = 'web'
 export const STATUS_PATH = '/dsh-desktop/market-installer/status'
@@ -222,6 +226,9 @@ export async function ensurePnpmShim(home = dshHome()) {
   // has to say so rather than leaving a stale shim to be mistaken for a fresh
   // one.
   const runnerPath = await stagePnpmRunner(directory)
+  if (runnerPath === undefined && hasGenerationProjection(home)) {
+    throw new Error('The generation-aware pnpm runner is unavailable; refusing to mutate the projected Profile.')
+  }
   const pnpmCommand = runnerPath === undefined ? [pnpmEntry] : [runnerPath, pnpmEntry]
   process.stdout.write(
     runnerPath === undefined
@@ -376,6 +383,44 @@ function validatePluginOperation(args, invokingDir) {
   }
 }
 
+function removalTarget(args) {
+  if (args[0] !== 'remove') return undefined
+  return args.slice(1).find((argument) => !argument.startsWith('-'))
+}
+
+/**
+ * dsh-market routes ordinary removals through `runPlugin`. Generation plugins
+ * must instead update desired.json, otherwise the next projection resurrects
+ * the dependency the CLI just removed. The marker is written by the projector
+ * into an otherwise market-transparent manifest field.
+ */
+export function projectedGenerationRemoval(args, home = dshHome()) {
+  const target = removalTarget(args)
+  if (target === undefined) return undefined
+  try {
+    const manifest = JSON.parse(readFileSync(join(profileDirectory(home), 'package.json'), 'utf8'))
+    const plugins = manifest.dsh?.desktop?.generationProjection?.plugins
+    if (typeof plugins === 'object' && plugins !== null && Object.hasOwn(plugins, target)) {
+      return target
+    }
+    // Compatibility with profiles projected by an earlier Desktop build.
+    const spec = manifest.dependencies?.[target]
+    return typeof spec === 'string' && spec.includes('.generations/live/') ? target : undefined
+  } catch {
+    return undefined
+  }
+}
+
+function hasGenerationProjection(home) {
+  try {
+    const manifest = JSON.parse(readFileSync(join(profileDirectory(home), 'package.json'), 'utf8'))
+    const plugins = manifest.dsh?.desktop?.generationProjection?.plugins
+    return typeof plugins === 'object' && plugins !== null && Object.keys(plugins).length > 0
+  } catch {
+    return false
+  }
+}
+
 export function createDesktopPnpmService(options) {
   const {
     binDirectory,
@@ -428,8 +473,9 @@ export function createDesktopPnpmService(options) {
    *
    * The plugin is installed as its own immutable generation rather than into
    * the shared hoisted tree: a fresh directory, promoted by one rename, never
-   * replaced. On Windows that is the whole fix — the shared tree's in-place
-   * package replacement is the operation pnpm cannot do there.
+   * replaced. Only a missing link may be created while Harness is live so the
+   * market can validate a new install; an existing node_modules junction and
+   * the bundle composition change only on the next cold start.
    */
   const runExternalMarketPluginInstall = (args, invokingDir, signal) => {
     validatePluginOperation(args, invokingDir)
@@ -462,9 +508,14 @@ export function createDesktopPnpmService(options) {
           return generation === undefined || generation.pluginName !== install.generation.pluginName
         })
         await writeDesired(home, [...kept, install.generation.id])
-        const projection = await projectGenerations(home)
-        write(`enabled: ${projection.linked.join(', ')}`)
-        write(`bundles: ${JSON.stringify(projection.bundles)}`)
+        // dsh-market validates a clean add against node_modules immediately.
+        // Creating a missing path cannot hit Windows' replace-existing rename;
+        // existing links (updates) remain untouched until cold start.
+        const exposed = await exposeMissingGenerationLinks(home)
+        const published = await publishGenerationManifest(home)
+        if (exposed.length > 0) write(`available for validation: ${exposed.join(', ')}`)
+        write(`staged for next restart: ${published.plugins.join(', ')}`)
+        write(`bundles: ${JSON.stringify(published.bundles)}`)
         return { exitCode: 0 }
       })
     )
@@ -482,6 +533,33 @@ export function createDesktopPnpmService(options) {
     if (closed) throw new Error('The DSH Desktop pnpm service has been disposed.')
     if (signal?.aborted) throw signal.reason ?? new Error('The package operation was aborted.')
     if (active) throw new Error('Another desktop pnpm operation is already running.')
+
+    const generationRemoval = projectedGenerationRemoval(args, home)
+    if (generationRemoval !== undefined) {
+      const handle = asHandle(async ({ write, isCancelled }) =>
+        withRegistryLock(home, async () => {
+          if (isCancelled()) return { exitCode: 1, message: 'The package operation was aborted.' }
+          write(`Disabling ${generationRemoval} generation for the next restart…`)
+          await disableGeneration(home, generationRemoval)
+          // Do not replace the active link while Harness is running, but do
+          // remove this bundle from the next boot's composition now. Waiting
+          // for startup projection leaves an uninstalled plugin live forever
+          // when an unrelated migration preflight is deferred.
+          const published = await publishGenerationManifest(home, MARKET_PROFILE, {
+            syncBundles: true
+          })
+          write(`staged for next restart: ${published.plugins.join(', ')}`)
+          return { exitCode: 0 }
+        })
+      )
+      active = handle
+      signal?.addEventListener('abort', handle.cancel, { once: true })
+      void handle.done.finally(() => {
+        signal?.removeEventListener('abort', handle.cancel)
+        if (active === handle) active = undefined
+      })
+      return handle
+    }
 
     void cleanStaleTemporaryDirectories(home).catch(() => undefined)
 
@@ -549,13 +627,30 @@ export function buildInstallArguments(dshEntry = resolveDshEntry()) {
     'plugin',
     '--profile',
     MARKET_PROFILE,
-    'add',
-    `${MARKET_PACKAGE}@${RECOMMENDED_MARKET_VERSION}`
+    ...buildMarketInstallArguments()
   ]
 }
 
 export function buildUninstallArguments(dshEntry = resolveDshEntry()) {
-  return [dshEntry, 'plugin', '--profile', MARKET_PROFILE, 'remove', MARKET_PACKAGE]
+  return [
+    dshEntry,
+    'plugin',
+    '--profile',
+    MARKET_PROFILE,
+    ...buildMarketUninstallArguments()
+  ]
+}
+
+function buildMarketInstallArguments() {
+  return [
+    'add',
+    '--workspace-root',
+    `${MARKET_PACKAGE}@${RECOMMENDED_MARKET_VERSION}`
+  ]
+}
+
+function buildMarketUninstallArguments() {
+  return ['remove', '--workspace-root', MARKET_PACKAGE]
 }
 
 async function atomicWrite(path, contents) {
@@ -702,10 +797,7 @@ export async function apply(ctx) {
     }
 
     try {
-      await runProfileCommand(
-        ['add', `${MARKET_PACKAGE}@${RECOMMENDED_MARKET_VERSION}`],
-        'Installation'
-      )
+      await runProfileCommand(buildMarketInstallArguments(), 'Installation')
 
       const installed = await readMarketInstallation(home)
       if (!installed.installedVersion) {
@@ -748,7 +840,7 @@ export async function apply(ctx) {
     }
 
     try {
-      await runProfileCommand(['remove', MARKET_PACKAGE], 'Uninstallation')
+      await runProfileCommand(buildMarketUninstallArguments(), 'Uninstallation')
 
       const removed = await readMarketInstallation(home)
       if (removed.dependency || removed.installedVersion) {

@@ -4,6 +4,7 @@ import type { UpdateStatus } from '../src/shared/contracts'
 import {
   isUpdateDismissed,
   shouldShowUpdate,
+  updateHeadline,
   updateMessage
 } from '../src/preload/update-view'
 
@@ -70,6 +71,23 @@ describe('secure update card wiring', () => {
   })
 })
 
+describe('downgrade copy', () => {
+  it('names the downgrade in both locales', () => {
+    const status: UpdateStatus = {
+      phase: 'downloading',
+      currentVersion: '1.5.0',
+      availableVersion: '1.2.0',
+      manual: true,
+      downgrade: true,
+      percent: 30
+    }
+    expect(updateHeadline(status, 'zh').title).toContain('降级')
+    expect(updateMessage(status, 'zh')).toContain('1.2.0')
+    expect(updateHeadline(status, 'en').title.toLowerCase()).toContain('downgrad')
+    expect(updateMessage(status, 'en')).toContain('1.2.0')
+  })
+})
+
 describe('accepting an update is what starts the download', () => {
   it('asks rather than announcing a download already under way', () => {
     const available: UpdateStatus = {
@@ -82,3 +100,20 @@ describe('accepting an update is what starts the download', () => {
     expect(updateMessage(available, 'en')).toBe('DSH Desktop 0.4.4 is available. Update now?')
   })
 })
+
+describe('about dialog and version selection wiring', () => {
+  it('wires about modal with top-right close and version picker alongside check for updates', async () => {
+    const [main, preload] = await Promise.all([
+      readFile('src/main/index.ts', 'utf8'),
+      readFile('src/preload/index.ts', 'utf8')
+    ])
+
+    expect(main).toContain("window.webContents.send('desktop:show-about', info)")
+    expect(preload).toContain("ipcRenderer.on('desktop:show-about'")
+    expect(preload).toContain("zh ? '选择版本' : 'Select version'")
+    expect(preload).toContain("zh ? '检查更新' : 'Check for updates'")
+    expect(preload).toContain("button('×', 'about-close')")
+    expect(preload).toContain('mountAbout()')
+  })
+})
+

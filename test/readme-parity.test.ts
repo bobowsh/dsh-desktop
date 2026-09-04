@@ -12,7 +12,7 @@ const readmes = [
 ]
 
 const requiredFacts = [
-  '@deepseek-ai/dsh@0.1.1-rc.2',
+  '@deepseek-ai/dsh@0.1.2-rc.1',
   '--safe-mode',
   'Cloudflare Quick Tunnel',
   'NSIS',

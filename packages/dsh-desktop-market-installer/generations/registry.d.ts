@@ -12,7 +12,6 @@ export interface RegistryLayout {
   staging: string
   trash: string
   desiredPointer: string
-  lastKnownGoodPointer: string
   lockFile: string
 }
 
@@ -30,10 +29,7 @@ export function writeGenerationMeta(
 ): Promise<void>
 export function listGenerations(dshHome: string): Promise<Generation[]>
 export function readDesired(dshHome: string): Promise<string[]>
-export function readLastKnownGood(dshHome: string): Promise<string[]>
 export function writeDesired(dshHome: string, generationIds: string[]): Promise<void>
-export function commitLastKnownGood(dshHome: string): Promise<void>
-export function revertToLastKnownGood(dshHome: string): Promise<string[]>
 export function disableGeneration(dshHome: string, pluginName: string): Promise<boolean>
 export function isGenerationPlugin(dshHome: string, pluginName: string): Promise<boolean>
 export function resolveEnabledGenerations(dshHome: string): Promise<Map<string, Generation>>

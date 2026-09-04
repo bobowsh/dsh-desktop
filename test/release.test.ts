@@ -46,6 +46,43 @@ describe('GitHub release contract', () => {
     expect(peerOnlyRuntimePackages).toEqual([])
   })
 
+  it('vendors upstream-new closure packages as file: production deps with no registry resolution', async () => {
+    const packageJson = JSON.parse(
+      await readFile(path.join(projectRoot, 'package.json'), 'utf8')
+    ) as { dependencies: Record<string, string> }
+    const packageLockRaw = await readFile(
+      path.join(projectRoot, 'package-lock.json'),
+      'utf8'
+    )
+    const packageLock = JSON.parse(packageLockRaw) as {
+      packages: Record<string, { resolved?: string }>
+    }
+
+    // alpha.3 introduced these as transitive deps of shipped packages; they must
+    // resolve from the vendored tarballs, not registry.npmmirror.com.
+    const promotedClosurePackages = [
+      '@deepseek-ai/dsh-client-ui-schedule',
+      '@deepseek-ai/dsh-deque',
+      '@deepseek-ai/dsh-session-turn-outline',
+      '@deepseek-ai/dsh-util-time',
+      '@deepseek-ai/dsh-util-values'
+    ]
+
+    for (const packageName of promotedClosurePackages) {
+      expect(packageJson.dependencies[packageName]).toMatch(
+        /^file:packages\/harness-0\.1\.2-rc\.1\/npm-dsh\/.+\.tgz$/
+      )
+      expect(packageLock.packages[`node_modules/${packageName}`]?.resolved).toMatch(
+        /^file:packages\/harness-0\.1\.2-rc\.1\/npm-dsh\//
+      )
+    }
+
+    // No @deepseek-ai/dsh-* package may resolve from a remote registry URL.
+    expect(packageLockRaw).not.toMatch(
+      /"resolved":\s*"https?:\/\/[^"]*deepseek-ai[/-]dsh/
+    )
+  })
+
   it('does not promote optional Harness providers and test support into the desktop runtime', async () => {
     const packageJson = JSON.parse(
       await readFile(path.join(projectRoot, 'package.json'), 'utf8')
@@ -59,6 +96,8 @@ describe('GitHub release contract', () => {
       '@deepseek-ai/dsh-agent-loop-testkit',
       '@deepseek-ai/dsh-client-test-runtime',
       '@deepseek-ai/dsh-client-web',
+      // upstream 0.1.2-rc.1 moved this to packages/experimental/ (out of the
+      // dsh family tarball set); desktop continues not to bundle it.
       '@deepseek-ai/dsh-code-runtime-python',
       '@deepseek-ai/dsh-e2b',
       '@deepseek-ai/dsh-fs-e2b',
@@ -68,7 +107,9 @@ describe('GitHub release contract', () => {
       '@deepseek-ai/dsh-lsp',
       '@deepseek-ai/dsh-lsp-stdio',
       '@deepseek-ai/dsh-sdk-client',
-      '@deepseek-ai/dsh-session-persistence-sqlite',
+      // NOTE: @deepseek-ai/dsh-session-persistence-sqlite was removed upstream in
+      // 0.1.2-alpha.3, so its exclusion assertion is gone. dsh-storage-sqlite is
+      // likewise no longer in the closure but its guard is kept defensively.
       '@deepseek-ai/dsh-session-snapshot',
       '@deepseek-ai/dsh-session-title-all-prompts-llm',
       '@deepseek-ai/dsh-storage-sqlite',
@@ -111,6 +152,10 @@ describe('GitHub release contract', () => {
       to: 'icon.png'
     })
     expect(packageJson.build.extraResources).toContainEqual({
+      from: 'build/windows-child-process-hide.mjs',
+      to: 'windows-child-process-hide.mjs'
+    })
+    expect(packageJson.build.extraResources).toContainEqual({
       from: 'build/splash.html',
       to: 'splash.html'
     })
@@ -132,6 +177,17 @@ describe('GitHub release contract', () => {
     expect(packageJson.build.nsis.include).toBe('build/installer.nsh')
     expect(packageJson.build.win.target).toEqual([{ target: 'nsis', arch: ['x64'] }])
     expect(packageJson.build.portable).toBeUndefined()
+  })
+
+  it('keeps update metadata on the latest channel for pre-release versions', async () => {
+    const packageJson = JSON.parse(
+      await readFile(path.join(projectRoot, 'package.json'), 'utf8')
+    ) as { build: { detectUpdateChannel?: boolean } }
+
+    // A version like 0.8.0-rc.1 would otherwise make electron-builder write
+    // rc-mac.yml / rc.yml instead of latest-mac.yml / latest.yml, which every
+    // downstream release step expects by name.
+    expect(packageJson.build.detectUpdateChannel).toBe(false)
   })
 
   it('turns a selected Windows drive root into an application directory', async () => {
@@ -256,6 +312,10 @@ describe('GitHub release contract', () => {
       'utf8'
     )
     const main = await readFile(path.join(projectRoot, 'src', 'main', 'index.ts'), 'utf8')
+    const targetVerifier = await readFile(
+      path.join(projectRoot, 'scripts', 'verify-target.mjs'),
+      'utf8'
+    )
 
     expect(packageJson.scripts['package:dev:dir']).toContain('npm run build')
     expect(packageJson.scripts['package:dev:dir']).toContain('electron-builder.dev.cjs')
@@ -279,6 +339,9 @@ describe('GitHub release contract', () => {
     expect(main).toContain("app.setPath('userData', join(app.getPath('appData'), 'dsh-desktop-dev'))")
     expect(main).toContain("app.setPath('userData', join(app.getPath('appData'), 'dsh-desktop'))")
     expect(main).toContain('if (!developmentBuild)')
+    expect(targetVerifier).toContain("resolve('node_modules', 'node', 'bin', executable)")
+    expect(targetVerifier).toContain('Bundled Node.js runtime was not found or is not executable')
+    expect(targetVerifier).toContain('spawnSync')
   })
 
   it('builds and publishes the Windows platform', async () => {
@@ -290,7 +353,8 @@ describe('GitHub release contract', () => {
     expect(workflow).toContain('runs-on: windows-2022')
     expect(workflow).toContain('npm run package:dev:win')
     expect(workflow).toContain('Smoke test packaged Windows Harness')
-    expect(workflow).toContain("$executable = 'dist-dev\\win-unpacked\\DSH Desktop Dev.exe'")
+    expect(workflow).toContain('$executable = $env:SMOKE_EXE')
+    expect(workflow).toContain("'dist-dev\\win-unpacked\\DSH Desktop Dev.exe'")
     expect(workflow).toContain('if (-not [string]::IsNullOrEmpty($log))')
     expect(workflow).toContain("dsh web: (http://127\\.0\\.0\\.1:\\d+/\\?token=[^\\s]+)")
     expect(workflow).toContain('-SessionVariable harnessSession')
@@ -300,9 +364,7 @@ describe('GitHub release contract', () => {
     expect(workflow).toContain("Invoke-HarnessRpc 'workspace/create'")
     expect(workflow).toContain("Invoke-HarnessRpc 'session/create'")
     expect(workflow).toContain('Harness process exited after workspace and session creation.')
-    expect(workflow).toContain('windows_prerelease_tag:')
-    expect(workflow).toContain('Publish validated Windows development pre-release')
-    expect(workflow).toContain('gh release create $env:PRERELEASE_TAG')
+    expect(workflow).toContain('prerelease_tag:')
     expect(workflow).toContain('--prerelease')
     expect(workflow).toContain('name: windows-x64-dev')
     expect(workflow).toContain('dist-dev/dsh-desktop-dev-windows-x64-setup.exe')
@@ -365,7 +427,8 @@ describe('GitHub release contract', () => {
     expect(workflow).not.toContain('security find-generic-password')
     expect(workflow).not.toContain('WINDOWS_SIGNING_KEYCHAIN_SERVICE')
     expect(workflow).toContain('finalize-windows-release.mjs')
-    expect(workflow).toContain('version="${GITHUB_REF_NAME#v}"')
+    // Version comes from the pre-release input on a dispatch, else the tag ref.
+    expect(workflow).toContain('version="${PRERELEASE_TAG:-${GITHUB_REF_NAME#v}}"')
     expect(workflow).toContain('pattern: macos-*')
     expect(workflow).toMatch(
       /publish:[\s\S]*?needs\.sign-windows\.result == 'success'[\s\S]*?- sign-windows/
@@ -390,5 +453,76 @@ describe('GitHub release contract', () => {
         expect(readme).not.toContain(`releases/latest/download/${asset}`)
       }
     }
+  })
+})
+
+describe('prerelease parity workflow', () => {
+  const load = () =>
+    readFile(path.join(projectRoot, '.github/workflows/release.yml'), 'utf8')
+
+  it('replaces the windows-only prerelease input with a general one', async () => {
+    const yml = await load()
+    expect(yml).toContain('prerelease_tag:')
+    expect(yml).not.toContain('windows_prerelease_tag')
+    expect(yml).not.toContain('Publish validated Windows development pre-release')
+  })
+
+  it('gates signing and both publish jobs so prerelease and release never overlap', async () => {
+    const yml = await load()
+    expect(yml).toContain('publish-prerelease:')
+    expect(yml).toMatch(/publish:[\s\S]*inputs\.prerelease_tag == ''/)
+    expect(yml).toMatch(/publish-prerelease:[\s\S]*inputs\.prerelease_tag != ''/)
+    expect(yml).toMatch(/sign-windows:[\s\S]*inputs\.prerelease_tag != ''/)
+  })
+
+  it('mirrors a prerelease to an isolated ModelScope directory', async () => {
+    const yml = await load()
+    expect(yml).toContain('releases/prerelease/')
+  })
+
+  it('parametrises the Windows smoke test executable', async () => {
+    const yml = await load()
+    expect(yml).toContain('SMOKE_EXE')
+    expect(yml).toContain('SMOKE_USERDATA')
+  })
+})
+
+describe('rollback catalog publication', () => {
+  it('archives each release and rebuilds the version index', async () => {
+    const yml = await readFile(
+      path.join(projectRoot, '.github/workflows/release.yml'),
+      'utf8'
+    )
+    expect(yml).toContain('releases/archive/')
+    expect(yml).toContain('scripts/build-version-index.mjs')
+    expect(yml).toContain('releases/versions.json')
+  })
+})
+
+describe('AI-organized GitHub release body', () => {
+  const load = () =>
+    readFile(path.join(projectRoot, '.github/workflows/release.yml'), 'utf8')
+
+  it('drops --generate-notes for the real release and uses a notes file', async () => {
+    const yml = await load()
+    const publishJob = yml.slice(
+      yml.indexOf('\n  publish:'),
+      yml.indexOf('\n  publish-prerelease:')
+    )
+    expect(publishJob).not.toContain('--generate-notes')
+    expect(publishJob).toContain('--notes-file')
+    expect(publishJob).toContain('github_release_notes.py')
+    expect(publishJob).toContain('github-release-notes.md')
+  })
+
+  it('still lets the prerelease job use --generate-notes', async () => {
+    const yml = await load()
+    const preJob = yml.slice(yml.indexOf('\n  publish-prerelease:'))
+    expect(preJob).toContain('--generate-notes')
+  })
+
+  it('ships a RELEASE_NOTES.md style reference', async () => {
+    const notes = await readFile(path.join(projectRoot, 'RELEASE_NOTES.md'), 'utf8')
+    expect(notes.startsWith('# ')).toBe(true)
   })
 })

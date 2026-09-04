@@ -4,16 +4,11 @@ import { join } from 'node:path'
 import { PROFILE_TEMPLATES } from '@deepseek-ai/dsh-app-boot'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
-  desiredIsUntried,
-  markGenerationsBooted,
-  prepareGenerationsForLaunch,
-  rollBackToLastKnownGood
+  prepareGenerationsForLaunch
 } from '../src/main/state/generation-launch'
 import {
-  commitLastKnownGood,
   ensureRegistryDirectories,
   readDesired,
-  readLastKnownGood,
   registryLayout,
   writeDesired,
   writeGenerationMeta
@@ -75,9 +70,14 @@ describe('the launch-process half of the generation model', () => {
   it('is a no-op on a profile that has never used a generation', async () => {
     const home = await freshHome()
     await expect(prepareGenerationsForLaunch(home, silent)).resolves.toBeUndefined()
-    expect(await desiredIsUntried(home)).toBe(false)
-    await markGenerationsBooted(home, silent)
-    expect(await readLastKnownGood(home)).toEqual([])
+    expect(await readDesired(home)).toEqual([])
+  })
+
+  it('does not wire failed Harness startup to a generation-set rollback', async () => {
+    const main = await readFile('src/main/index.ts', 'utf8')
+    expect(main).not.toContain('rollBackToLastKnownGood')
+    expect(main).not.toContain('desiredIsUntried')
+    expect(main).toContain("A failed launch must not rewrite the user's enabled plugin set")
   })
 
   it('sweeps an unreferenced generation and projects the desired one on launch', async () => {
@@ -99,43 +99,23 @@ describe('the launch-process half of the generation model', () => {
     expect(manifest.dsh.profile.bundles).toContain('keeper')
   })
 
-  it('detects when desired has moved ahead of last-known-good', async () => {
+  it('does not retain or restore generations from a stale rollback pointer', async () => {
     const home = await freshHome()
     await ensureRegistryDirectories(home)
-    await writeDesired(home, ['a+1+x'])
-    await commitLastKnownGood(home)
-    expect(await desiredIsUntried(home)).toBe(false)
+    await fakeGeneration(home, 'keep+1+x', 'keeper')
+    await fakeGeneration(home, 'old+1+y', 'old-plugin')
+    await writeDesired(home, ['keep+1+x'])
+    await writeFile(
+      join(registryLayout(home).root, 'last-known-good.json'),
+      `${JSON.stringify(['old+1+y'])}\n`,
+      'utf8'
+    )
 
-    await writeDesired(home, ['a+1+x', 'b+2+y'])
-    expect(await desiredIsUntried(home)).toBe(true)
-  })
-
-  it('rolls desired back to last-known-good and reprojects', async () => {
-    const home = await freshHome()
-    await ensureRegistryDirectories(home)
-    await fakeGeneration(home, 'good+1+x', 'good')
-    await writeDesired(home, ['good+1+x'])
-    await commitLastKnownGood(home)
     await prepareGenerationsForLaunch(home, silent)
 
-    // a new plugin is desired but its generation is broken/missing
-    await writeDesired(home, ['good+1+x', 'broken+2+y'])
-    await rollBackToLastKnownGood(home, silent)
-
-    expect(await readDesired(home)).toEqual(['good+1+x'])
-    const manifest = JSON.parse(await readFile(join(home, 'profiles', 'web', 'package.json'), 'utf8'))
-    expect(manifest.dsh.profile.bundles).toEqual([
-      '@deepseek-ai/dsh-base',
-      '@deepseek-ai/dsh-web-app',
-      'good'
-    ])
-  })
-
-  it('commits last-known-good from the current desired set', async () => {
-    const home = await freshHome()
-    await ensureRegistryDirectories(home)
-    await writeDesired(home, ['x+1+a', 'y+2+b'])
-    await markGenerationsBooted(home, silent)
-    expect(await readLastKnownGood(home)).toEqual(['x+1+a', 'y+2+b'])
+    const { existsSync } = await import('node:fs')
+    expect(await readDesired(home)).toEqual(['keep+1+x'])
+    expect(existsSync(join(registryLayout(home).generations, 'old+1+y'))).toBe(false)
+    expect(existsSync(join(registryLayout(home).generations, 'keep+1+x'))).toBe(true)
   })
 })

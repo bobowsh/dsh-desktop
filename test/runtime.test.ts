@@ -14,6 +14,7 @@ import {
   extractSlotConflictName,
   formatExitCode,
   isHarnessStartupProbeHealthy,
+  resolveEnvironmentPath,
   resolveShellEnvironment,
   updateReadyStability
 } from '../src/main/runtime/harness-runtime'
@@ -159,6 +160,25 @@ describe('Harness launch contract', () => {
     }
   })
 
+  it('finds the Windows PATH when the environment block stores it lowercase', () => {
+    // Windows environment variable names are case-insensitive and the captured
+    // block is not normalised, so a machine whose registry PATH value name is
+    // lowercase hands `resolveShellEnvironment()` the key `path`. An exact-case
+    // read misses it and the Harness launches with no PATH at all — every
+    // PATH-resolved tool call fails with ENOENT (issue #232).
+    const userPath = 'C:\\Windows\\System32;C:\\Users\\tester\\bin'
+    const options = buildHarnessSpawnOptions('C:\\launch-root', 'C:\\harness', 'win32', {
+      path: userPath
+    })
+    // Every key spelling PATH must carry the value: whichever of them survives
+    // Node's win32 case-dedupe, the child receives the user's PATH.
+    const pathEntries = Object.entries(options.env ?? {}).filter(([name]) =>
+      /^path$/iu.test(name)
+    )
+    expect(pathEntries.length).toBeGreaterThan(0)
+    for (const [, value] of pathEntries) expect(value).toBe(userPath)
+  })
+
   it('passes the internal-loader flag directly to bundled Node.js', () => {
     expect(
       buildNodeArguments(
@@ -275,8 +295,8 @@ describe('shell environment resolution', () => {
     () => {
       const env = resolveShellEnvironment()
       expect(env).toBeDefined()
-      // Windows may preserve the conventional mixed-case key.
-      expect(env.PATH ?? env.Path).toBeTruthy()
+      // Windows preserves whatever casing the environment block stores.
+      expect(resolveEnvironmentPath(env)).toBeTruthy()
     },
     20_000
   )
@@ -290,7 +310,7 @@ describe('shell environment resolution', () => {
 
   it('produces a PATH that includes platform-standard system directories', () => {
     const env = resolveShellEnvironment()
-    const path = env.PATH ?? env.Path ?? ''
+    const path = resolveEnvironmentPath(env)
     if (process.platform === 'win32') {
       expect(path).toMatch(/[A-Za-z]:\\/)
     } else {
@@ -396,6 +416,33 @@ describe('offending plugin extraction', () => {
       '[stderr] [harness-node] DSH entry failed: Error: dsh: plugin tree failed to load: failed to apply loader entry abc (@linxin666/dsh-web-ui-all): error message'
     ]
     expect(extractOffendingPlugin(logs)).toBe('@linxin666/dsh-web-ui-all')
+  })
+
+  it('extracts a plugin from a Windows profile stack after a duplicate route failure', () => {
+    const logs = [
+      '[stderr] [harness-node] DSH entry failed: Error: webserver: duplicate prefix route "/checkpoint-diff"',
+      '[stderr]     at Proxy.register (file:///D:/Program%20Files/DSH%20Desktop/resources/app/node_modules/@deepseek-ai/dsh-host-webserver/lib/index.js:178:36)',
+      '[stderr]     at Fiber.<anonymous> (file:///C:/Users/Administrator/AppData/Roaming/dsh-desktop/harness/profiles/web/node_modules/dsh-checkpoint-diff/index.mjs:191:29)'
+    ]
+    expect(extractPluginFailureReferences(logs)).toEqual(['dsh-checkpoint-diff'])
+    expect(extractOffendingPlugins(logs)).toEqual(['dsh-checkpoint-diff'])
+  })
+
+  it('does not treat an unrelated profile stack as duplicate-route ownership evidence', () => {
+    const logs = [
+      '[stderr] [harness-node] DSH entry failed: Error: unrelated core failure',
+      '[stderr]     at run (file:///C:/Users/Administrator/AppData/Roaming/dsh-desktop/harness/profiles/web/node_modules/unrelated-plugin/index.mjs:10:2)'
+    ]
+    expect(extractPluginFailureReferences(logs)).toEqual([])
+  })
+
+  it('extracts a scoped entry waiting for a missing service', () => {
+    const logs = [
+      '[stderr] [harness-node] DSH entry failed: Error: dsh: plugin tree failed to load: dsh: 1 entry did not activate',
+      '[stderr] @xmanrui/dsh-im: pending (waiting for service: apiProxy)'
+    ]
+    expect(extractPluginFailureReferences(logs)).toEqual(['@xmanrui/dsh-im'])
+    expect(extractOffendingPlugins(logs)).toEqual(['@xmanrui/dsh-im'])
   })
 
   it('extracts the third-party plugin nested under the internal include entry', () => {
@@ -600,10 +647,10 @@ describe('Harness window activation', () => {
 
   it('stamps Windows renderer URLs so plugins can avoid the native titlebar overlay', () => {
     expect(desktopHarnessUrl('http://127.0.0.1:43127', 'win32')).toBe(
-      'http://127.0.0.1:43127/?dsh-desktop-mode=advanced&dsh-desktop-platform=win32'
+      'http://127.0.0.1:43127/?dsh-desktop-mode=advanced&dsh-desktop-platform=win32&dsh-desktop-titlebar-inset=36'
     )
     expect(desktopHarnessUrl('http://127.0.0.1:43127/?workspace=demo', 'win32')).toBe(
-      'http://127.0.0.1:43127/?workspace=demo&dsh-desktop-mode=advanced&dsh-desktop-platform=win32'
+      'http://127.0.0.1:43127/?workspace=demo&dsh-desktop-mode=advanced&dsh-desktop-platform=win32&dsh-desktop-titlebar-inset=36'
     )
     expect(desktopHarnessUrl('http://127.0.0.1:43127', 'darwin')).toBe(
       'http://127.0.0.1:43127'

@@ -26,8 +26,8 @@ describe('Safe Mode', () => {
     expect(model.summary).toContain('但不会删除插件')
     expect(model.plugins).toEqual(['plugin-a', '@example/plugin-b'])
     expect(model.pluginItems).toEqual([
-      { name: 'plugin-a', actionLabel: '卸载插件', incompatible: false },
-      { name: '@example/plugin-b', actionLabel: '卸载插件', incompatible: false }
+      { name: 'plugin-a', actionLabel: '卸载插件', incompatible: false, suspected: false },
+      { name: '@example/plugin-b', actionLabel: '卸载插件', incompatible: false, suspected: false }
     ])
     expect(model.safetyNote).toBe('工作区、会话、模型配置和未选中的插件不会被删除。')
   })
@@ -80,8 +80,10 @@ describe('Safe Mode', () => {
     expect(model.pluginItems[0]).toEqual({
       name: 'dsh-dream-skin',
       statusLabel: '（版本不兼容）',
+      statusTone: 'danger',
       actionLabel: '卸载插件',
-      incompatible: true
+      incompatible: true,
+      suspected: false
     })
     expect(model.issueGroups).toEqual([])
     expect(model.restartLabel).toBe('退出安全模式并重启')
@@ -108,10 +110,10 @@ describe('Safe Mode', () => {
       }]
     })
     expect(model.pluginItems).toEqual([
-      { name: 'plugin-a', actionLabel: '卸载插件', incompatible: false }
+      { name: 'plugin-a', actionLabel: '卸载插件', incompatible: false, suspected: false }
     ])
     expect(model.issueGroups[0]).toMatchObject({
-      name: 'Profile 核心依赖',
+      name: 'Profile',
       kindLabel: 'Profile',
       issueIds: ['core-version-mismatch:@deepseek-ai/example']
     })
@@ -128,6 +130,110 @@ describe('Safe Mode', () => {
     expect(model.noticeTone).toBe('success')
   })
 
+  it('shows every removal generation as a separate backup and blocks cleanup until a healthy boot', () => {
+    const model = buildSafeModeViewModel({
+      locale: 'zh',
+      plugins: [],
+      backups: [{
+        removalId: 'removal-1',
+        pluginName: 'paid-plugin',
+        backupDirectory: '/recovery/removal-1',
+        disabledAt: '2026-08-29T13:00:00.000Z',
+        status: 'removed',
+        integrity: 'verified',
+        canRestore: true,
+        generationIds: ['paid-plugin+1.0.0+abc']
+      }, {
+        removalId: 'removal-2',
+        pluginName: 'paid-plugin',
+        backupDirectory: '/recovery/removal-2',
+        disabledAt: '2026-08-29T14:00:00.000Z',
+        bootVerifiedAt: '2026-08-29T14:10:00.000Z',
+        status: 'removed',
+        integrity: 'verified',
+        canRestore: true,
+        generationIds: ['paid-plugin+2.0.0+def']
+      }]
+    })
+    expect(model.backupItems).toHaveLength(2)
+    expect(model.backupItems.map((entry) => entry.removalId)).toEqual(['removal-1', 'removal-2'])
+    expect(model.backupItems[0]?.cleanupReady).toBe(false)
+    expect(model.backupItems[0]?.restoreReady).toBe(true)
+    expect(model.backupItems[1]?.cleanupReady).toBe(true)
+    expect(model.backupSummary).toContain('不会按启动次数自动删除')
+  })
+
+  it('locks every mutating recovery action while migration rollback is incomplete', () => {
+    const model = buildSafeModeViewModel({
+      locale: 'zh',
+      plugins: ['plugin-a'],
+      recoveryLocked: true,
+      backups: [{
+        removalId: 'locked-backup',
+        pluginName: 'plugin-a',
+        backupDirectory: '/recovery/locked-backup',
+        disabledAt: '2026-08-29T14:00:00.000Z',
+        bootVerifiedAt: '2026-08-29T14:10:00.000Z',
+        status: 'removed',
+        integrity: 'verified',
+        canRestore: true
+      }]
+    })
+    expect(model.recoveryLocked).toBe(true)
+    expect(model.backupItems[0]).toMatchObject({ cleanupReady: false, restoreReady: false })
+    expect(model.backupSummary).toContain('不能修复、卸载或删除')
+  })
+
+  it('allows only the matching backup retry for an incomplete plugin restore', () => {
+    const model = buildSafeModeViewModel({
+      locale: 'zh',
+      plugins: [],
+      recoveryLocked: true,
+      backupRestoreLocked: true,
+      allowedRestoreId: 'retry-this',
+      backups: [{
+        removalId: 'retry-this',
+        pluginName: 'plugin-a',
+        backupDirectory: '/recovery/retry-this',
+        disabledAt: '2026-08-29T14:00:00.000Z',
+        restoreStartedAt: '2026-08-29T14:05:00.000Z',
+        restoreFailure: 'projection failed',
+        status: 'removed',
+        integrity: 'verified',
+        canRestore: true
+      }, {
+        removalId: 'not-this-one',
+        pluginName: 'plugin-b',
+        backupDirectory: '/recovery/not-this-one',
+        disabledAt: '2026-08-29T13:00:00.000Z',
+        status: 'removed',
+        integrity: 'verified',
+        canRestore: true
+      }]
+    })
+    expect(model.backupItems[0]).toMatchObject({ restoreReady: true, cleanupReady: false })
+    expect(model.backupItems[0]?.statusLabel).toContain('上次恢复未完成')
+    expect(model.backupItems[1]?.restoreReady).toBe(false)
+    expect(model.backupSummary).toContain('只允许重试')
+  })
+
+  it('puts harness-log suspects first and marks them without preselecting removal', () => {
+    const model = buildSafeModeViewModel({
+      locale: 'zh',
+      plugins: ['plugin-a', 'plugin-b'],
+      suspectedPlugins: ['plugin-b']
+    })
+    expect(model.plugins).toEqual(['plugin-b', 'plugin-a'])
+    expect(model.pluginItems[0]).toEqual({
+      name: 'plugin-b',
+      statusLabel: '（本次启动日志推断）',
+      statusTone: 'warning',
+      actionLabel: '卸载插件',
+      incompatible: false,
+      suspected: true
+    })
+  })
+
   it('ships a selectable management page with no remote content', async () => {
     const html = await readFile('build/safe-mode.html', 'utf8')
     expect(html).toContain('id="items"')
@@ -136,10 +242,16 @@ describe('Safe Mode', () => {
     expect(html).toContain('model.issueGroups')
     expect(html).toContain('model.pluginItems')
     expect(html).toContain('plugin.statusLabel')
+    expect(html).toContain("plugin.statusTone === 'warning'")
     expect(html.match(/<section class="list-card"/g)).toHaveLength(1)
     expect(html).toContain('checkbox.dataset.issueIds')
     expect(html).toContain("document.createElement('details')")
     expect(html).toContain("window.dshSafeMode.action('agent', {})")
+    expect(html).not.toContain('id="backup-card"')
+    expect(html).not.toContain("window.dshSafeMode.action('backup-open'")
+    expect(html).not.toContain("window.dshSafeMode.action('backup-restore'")
+    expect(html).not.toContain("window.dshSafeMode.action('backup-delete'")
+    expect(html).toContain('id="recovery-open"')
     expect(html).toContain('class="close" id="agent"')
     expect(html).toContain('class="button primary" id="restart"')
     expect(html).toContain('class="actions"')
@@ -165,14 +277,33 @@ describe('Safe Mode', () => {
     expect(main).toContain('shouldStartInSafeMode(process.argv)')
     expect(main).toContain('ensureSafeModeProfile(dshHome)')
     expect(main).toContain('runtime.start(launchDirectory, SAFE_MODE_PROFILE)')
+    expect(main).toContain('inspectMigrationRecoveryLock(dshHome)')
+    expect(main).toContain('let recoveryLocked = await refreshMigrationRecoveryLock(dshHome)')
+    expect(main.match(/refreshMigrationRecoveryLock\(dshHome\)/g)?.length ?? 0)
+      .toBeGreaterThanOrEqual(7)
     expect(main).toContain("ipcMain.handle('safe-mode:action'")
+    expect(main).toContain("action !== 'backup-open'")
+    expect(main).toContain("action !== 'backup-restore'")
+    expect(main).toContain("action !== 'backup-delete'")
+    expect(main).toContain('cleanupVerifiedRemovalBackup(')
+    expect(main).toContain('restorePluginRemovalBackup(')
+    expect(main).toContain('snapshotPluginRemovalLedger(dshHome)')
+    expect(main).toContain('canRetryLockedPluginRestore(dshHome, action.removalId)')
+    expect(main.indexOf('removalBackups = await snapshotPluginRemovalLedger(dshHome)'))
+      .toBeLessThan(main.indexOf('pendingRemovals = await listPendingPluginRemovals(dshHome)'))
+    expect(main).toContain("ipcMain.handle('harness:renderer-healthy'")
+    expect(main).toContain('confirmMigration(dshHome, (line) => runtime.note(line), healthy)')
     expect(main).toContain('inspectProfileCompatibility(')
     expect(main).toContain('repairSafeModeCompatibilityIssues(')
+    expect(main).toContain('reconcileLegacyProfile: async () =>')
+    expect(main).toContain('rebuilding the web profile after removing')
+    expect(main).toContain('normal mode remains blocked by')
     expect(main).toContain('[safe-mode] user exited with')
     expect(main).toContain("ipcMain.handle('safe-mode:manage'")
     expect(main).toContain("ipcMain.handle('safe-mode:exit', async")
     expect(main).toContain("return { ok: false, blocked: true }")
     expect(main).toContain('safeModeManagerWindow')
+    expect(main).toContain('safeModeSuspectedPlugins = [...new Set(detection.plugins)]')
     expect(main).toContain('modal: true')
     expect(main).toContain('assertTrustedSafeModeManagerEvent(event)')
     expect(main).toContain('`处理完成：修复 ${repaired} 项，卸载 ${selectedPlugins.length} 个插件。`')
@@ -183,6 +314,13 @@ describe('Safe Mode', () => {
     expect(preload).toContain("safeModeLocale === 'zh' ? '退出安全模式' : 'Exit Safe Mode'")
     expect(preload).toContain("safeModeLocale === 'zh'")
     expect(preload).toContain("ipcRenderer.invoke('safe-mode:action', action, selection)")
+    expect(preload).toContain("ipcRenderer.invoke('harness:renderer-healthy')")
+    expect(preload).toContain('RENDERER_HEALTH_HEARTBEAT_MS')
+    expect(main).toContain('PROFILE_BOOT_STABILITY_MS = 60_000')
+    expect(main).toContain('clearProfileBootConfirmation()')
+    expect(main).toContain('reportProfileConsistency: () => reportProfileConsistency(dshHome)')
+    expect(main).not.toContain('repairProfilePackages:')
+    expect(main).not.toContain('pruneMissingProfileBundles:')
     expect(JSON.parse(manifest).build.extraResources).toContainEqual({
       from: 'build/safe-mode.html',
       to: 'safe-mode.html'
@@ -210,5 +348,40 @@ describe('Safe Mode', () => {
     } finally {
       await rm(dshHome, { recursive: true, force: true })
     }
+  })
+
+  it('enriches plugin items with health reports and upgrade candidates', () => {
+    const model = buildSafeModeViewModel({
+      locale: 'zh',
+      plugins: ['plugin-a', 'plugin-b'],
+      healthReports: [
+        {
+          packageName: 'plugin-a',
+          installedVersion: '1.0.0',
+          latestVersion: '2.0.0',
+          healthStatus: 'incompatible-fixed-in-latest',
+          healthLabel: '不兼容（最新版 v2.0.0 已适配）',
+          upgradeReady: true,
+          upgradeVersion: '2.0.0'
+        },
+        {
+          packageName: 'plugin-b',
+          installedVersion: '1.2.0',
+          latestVersion: '1.2.0',
+          healthStatus: 'up-to-date',
+          healthLabel: '已是最新版',
+          upgradeReady: false
+        }
+      ]
+    })
+    expect(model.upgradeReadyCount).toBe(1)
+    expect(model.upgradeAllLabel).toBe('一键升级 1 个已适配插件')
+    const itemA = model.pluginItems.find((p) => p.name === 'plugin-a')
+    expect(itemA?.upgradeReady).toBe(true)
+    expect(itemA?.upgradeVersion).toBe('2.0.0')
+    expect(itemA?.upgradeButtonLabel).toBe('升级至 v2.0.0')
+    const itemB = model.pluginItems.find((p) => p.name === 'plugin-b')
+    expect(itemB?.upgradeReady).toBe(false)
+    expect(itemB?.upgradeButtonLabel).toBeUndefined()
   })
 })

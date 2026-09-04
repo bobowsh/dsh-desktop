@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { withoutUndecodableValues } from '../src/main/runtime/harness-runtime'
+import {
+  resolveEnvironmentPath,
+  withoutUndecodableValues
+} from '../src/main/runtime/harness-runtime'
 
 /**
  * Windows PowerShell writes stdout in the console codepage. Decoding that as
@@ -41,5 +44,18 @@ describe('captured shell environment', () => {
 
   it('preserves an empty value', () => {
     expect(withoutUndecodableValues({ EMPTY: '' }, {})).toEqual({ EMPTY: '' })
+  })
+
+  // Windows does not normalise environment variable name casing either — the
+  // captured block follows the registry value name, so PATH can arrive as
+  // `path` or any other spelling and an exact-case read misses it (issue #232).
+  it('reads PATH case-insensitively only on Windows', () => {
+    expect(resolveEnvironmentPath({ path: 'C:\\lower' }, 'win32')).toBe('C:\\lower')
+    expect(resolveEnvironmentPath({ PaTh: 'C:\\mixed' }, 'win32')).toBe('C:\\mixed')
+    // POSIX: `path` is a different variable, not a spelling of PATH.
+    expect(resolveEnvironmentPath({ path: '/ignored' }, 'linux')).toBe('')
+    expect(resolveEnvironmentPath({ PATH: '/usr/bin', path: '/ignored' }, 'linux')).toBe(
+      '/usr/bin'
+    )
   })
 })

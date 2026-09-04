@@ -80,3 +80,7 @@ data/prompt-library/
 design/
 # 打包安装器绝不可覆盖的 API key（防御性忽略：extraFiles filter 已排除，这里双保险）
 data/.credentials.yaml
+
+# Python bytecode from release-note scripts / tests
+__pycache__/
+*.pyc

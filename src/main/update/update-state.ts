@@ -18,7 +18,11 @@ export function reduceUpdateStatus(
   current: UpdateStatus,
   event: UpdateStateEvent
 ): UpdateStatus {
-  const base = { currentVersion: current.currentVersion, manual: current.manual }
+  const base = {
+    currentVersion: current.currentVersion,
+    manual: current.manual,
+    downgrade: current.downgrade
+  }
 
   switch (event.type) {
     case 'check':

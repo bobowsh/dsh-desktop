@@ -200,4 +200,60 @@ describe('plugin recovery detection', () => {
 
     expect(detection.plugins).toEqual(['dynamic-plugin'])
   })
+
+  it('identifies a configured plugin from a duplicate-route profile stack', async () => {
+    await writeFile(
+      profilePackageJsonPath(testDir),
+      JSON.stringify({
+        dependencies: { 'dsh-checkpoint-diff': '^1.0.0' },
+        dsh: {
+          profile: {
+            bundles: [
+              '@deepseek-ai/dsh-base',
+              '@deepseek-ai/dsh-web-app',
+              'dsh-checkpoint-diff'
+            ]
+          }
+        }
+      })
+    )
+
+    const detection = await detectPluginRecovery({
+      dshHome: testDir,
+      initialLogs: [
+        '[stderr] [harness-node] DSH entry failed: Error: webserver: duplicate prefix route "/checkpoint-diff"',
+        '[stderr]     at Fiber.<anonymous> (file:///C:/Users/Administrator/AppData/Roaming/dsh-desktop/harness/profiles/web/node_modules/dsh-checkpoint-diff/index.mjs:191:29)'
+      ]
+    })
+
+    expect(detection.plugins).toEqual(['dsh-checkpoint-diff'])
+  })
+
+  it('identifies a configured scoped plugin waiting for a missing service', async () => {
+    await writeFile(
+      profilePackageJsonPath(testDir),
+      JSON.stringify({
+        dependencies: { '@xmanrui/dsh-im': '^1.0.0' },
+        dsh: {
+          profile: {
+            bundles: [
+              '@deepseek-ai/dsh-base',
+              '@deepseek-ai/dsh-web-app',
+              '@xmanrui/dsh-im'
+            ]
+          }
+        }
+      })
+    )
+
+    const detection = await detectPluginRecovery({
+      dshHome: testDir,
+      initialLogs: [
+        '[stderr] [harness-node] DSH entry failed: Error: dsh: plugin tree failed to load: dsh: 1 entry did not activate',
+        '[stderr] @xmanrui/dsh-im: pending (waiting for service: apiProxy)'
+      ]
+    })
+
+    expect(detection.plugins).toEqual(['@xmanrui/dsh-im'])
+  })
 })

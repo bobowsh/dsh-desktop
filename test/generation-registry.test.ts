@@ -6,15 +6,12 @@ import {
   collectUnreferencedGenerations,
   disableGeneration,
   isGenerationPlugin,
-  commitLastKnownGood,
   ensureRegistryDirectories,
   generationId,
   listGenerations,
   readDesired,
-  readLastKnownGood,
   registryLayout,
   resolveEnabledGenerations,
-  revertToLastKnownGood,
   sweepRegistry,
   withRegistryLock,
   writeDesired,
@@ -61,60 +58,61 @@ describe('the plugin generation registry', () => {
     expect(generationId('name', '2.0.1', 'same')).toBe(generationId('name', '2.0.1', 'same'))
   })
 
-  it('starts with empty pointers and no generations', async () => {
+  it('starts with an empty desired pointer and no generations', async () => {
     const home = await freshHome()
     await ensureRegistryDirectories(home)
     expect(await readDesired(home)).toEqual([])
-    expect(await readLastKnownGood(home)).toEqual([])
     expect(await listGenerations(home)).toEqual([])
   })
 
-  it('resolves only the generations that desired points at and that exist on disk', async () => {
+  it('resolves desired generations and fails closed when the pointer references a missing id', async () => {
     const home = await freshHome()
     await ensureRegistryDirectories(home)
     await fakeGeneration(home, 'sidebar+0.17.1+aaaa', 'dsh-better-sidebar', '0.17.1')
     await fakeGeneration(home, 'pet+1.0.0+bbbb', '@linxin666/dsh-pet', '1.0.0')
 
-    await writeDesired(home, ['sidebar+0.17.1+aaaa', 'missing+9.9.9+cccc'])
+    await writeDesired(home, ['sidebar+0.17.1+aaaa'])
     const enabled = await resolveEnabledGenerations(home)
 
     expect([...enabled.keys()]).toEqual(['dsh-better-sidebar'])
     expect(enabled.get('dsh-better-sidebar')?.version).toBe('0.17.1')
     // pet exists on disk but is not desired, so resolution cannot see it.
     expect(enabled.has('@linxin666/dsh-pet')).toBe(false)
+
+    await writeDesired(home, ['sidebar+0.17.1+aaaa', 'missing+9.9.9+cccc'])
+    await expect(resolveEnabledGenerations(home)).rejects.toThrow(
+      /Desired generation is missing or unreadable: missing\+9\.9\.9\+cccc/u
+    )
+    await expect(sweepRegistry(home)).rejects.toThrow(
+      /Desired generation is missing or unreadable: missing\+9\.9\.9\+cccc/u
+    )
+    expect((await listGenerations(home)).map((generation) => generation.id).sort()).toEqual([
+      'pet+1.0.0+bbbb',
+      'sidebar+0.17.1+aaaa'
+    ])
   })
 
-  it('commits last-known-good from desired, never the other way round', async () => {
-    const home = await freshHome()
-    await ensureRegistryDirectories(home)
-
-    await writeDesired(home, ['a+1+x'])
-    await commitLastKnownGood(home)
-    expect(await readLastKnownGood(home)).toEqual(['a+1+x'])
-
-    // A new install moves desired forward but not LKG.
-    await writeDesired(home, ['a+1+x', 'b+2+y'])
-    expect(await readLastKnownGood(home)).toEqual(['a+1+x'])
-
-    // A failed launch reverts desired to the set that booted.
-    const reverted = await revertToLastKnownGood(home)
-    expect(reverted).toEqual(['a+1+x'])
-    expect(await readDesired(home)).toEqual(['a+1+x'])
+  it('rejects package names and versions that could escape or corrupt a generation path', () => {
+    expect(() => generationId('../outside', '1.0.0', 'lock')).toThrow(/safe npm package name/u)
+    expect(() => generationId('safe-plugin', '../1.0.0', 'lock')).toThrow(/safe for a generation id/u)
+    expect(() => generationId('safe-plugin', '..', 'lock')).toThrow(/safe for a generation id/u)
   })
 
-  it('treats a generation as unreferenced only when neither pointer names it', async () => {
+  it('treats desired as the sole authority for generation retention', async () => {
     const home = await freshHome()
     await ensureRegistryDirectories(home)
     await fakeGeneration(home, 'a+1+x', 'a', '1')
     await fakeGeneration(home, 'b+2+y', 'b', '2')
     await fakeGeneration(home, 'c+3+z', 'c', '3')
 
-    await writeDesired(home, ['a+1+x'])
-    await commitLastKnownGood(home)
     await writeDesired(home, ['b+2+y'])
-    // a is still LKG, b is desired, c is neither.
+    await writeFile(
+      join(registryLayout(home).root, 'last-known-good.json'),
+      `${JSON.stringify(['a+1+x'])}\n`,
+      'utf8'
+    )
 
-    expect(await collectUnreferencedGenerations(home)).toEqual(['c+3+z'])
+    expect((await collectUnreferencedGenerations(home)).sort()).toEqual(['a+1+x', 'c+3+z'])
   })
 
   it('sweeps unreferenced generations and staging leftovers, keeps referenced ones', async () => {
@@ -132,6 +130,22 @@ describe('the plugin generation registry', () => {
     expect(removed).toContain('staging/abandoned-uuid')
     const survivors = (await listGenerations(home)).map((generation) => generation.id)
     expect(survivors).toEqual(['keep+1+x'])
+  })
+
+  it('fails closed without sweeping generations when desired.json is corrupt', async () => {
+    const home = await freshHome()
+    const layout = await ensureRegistryDirectories(home)
+    await fakeGeneration(home, 'keep+1+x', 'keep', '1')
+    await writeFile(layout.desiredPointer, '{not-json\n', 'utf8')
+
+    await expect(sweepRegistry(home)).rejects.toThrow(/Generation pointer is invalid JSON/u)
+    expect((await listGenerations(home)).map((generation) => generation.id)).toEqual(['keep+1+x'])
+
+    await writeFile(layout.desiredPointer, JSON.stringify(['keep+1+x', 42]), 'utf8')
+    await expect(readDesired(home)).rejects.toThrow(
+      /Generation pointer must be an array of generation ids/u
+    )
+    expect((await listGenerations(home)).map((generation) => generation.id)).toEqual(['keep+1+x'])
   })
 
   it('serialises operations across the cross-process lock', async () => {
