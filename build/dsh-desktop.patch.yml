@@ -18,33 +18,27 @@
     # DSH Desktop owns the fixed-target dsh-market installer and its lightweight
     # settings entry. After dshmarket is installed and Harness restarts, the
     # community plugin replaces the placeholder with its complete market UI.
-    # Disabled 2026-08-17 at user's request; dependency removed from packaging
-    # 2026-08-18 (the desktop-shell market entry / pnpm shim no longer ships).
-    # Community dshmarket plugin is unaffected (it lives in the profile's own
-    # dependencies).
+    #
+    # Upstream rc.1 now inlines dshmarket (packages/dshmarket) into the desktop
+    # build and ships the market-installer service, so the 2026-08-17 deadlock
+    # (community dsh-market waited for a service nobody provided) is resolved —
+    # the installer entry is re-enabled and dsh-market's desktopProfiles inject
+    # below has a real service to attach to again.
+    - id: dsh-desktop-market-installer
+      name: dsh-desktop-market-installer
 
     # Kimi PPT owns one direct PPTD workflow and one standard Composer client.
     # The package contains no Tencent editor runtime or SlideP route.
     - id: experimental-kimi-ppt-standard-adapter
       name: '@deepseek-ai/dsh-experimental-kimi-ppt-standard-adapter'
-      # 2026-09-05 临时禁用：这两个 file: tgz 尚未装进 node_modules → profile 目录
-      # 解析不到包 → ERR_MODULE_NOT_FOUND → 整个 plugin tree 加载失败、harness 起不来
-      # （web / desktop-safe-mode 两个 profile 同时挂）。依赖装好后删掉这一行恢复。
-      disabled: true
       config:
         root: !!js dshHomePath('kimi-ppt')
 
 # dsh-market normally offers to restart its own Node process after mutations.
 # The desktop shell has the real lifecycle authority, so keep that behavior off
 # whenever the optional plugin is present in the composed profile.
-#
-# The `inject: [desktopProfiles]` that used to be here was removed: the desktop
-# shell's own market-installer plugin (which provides that service) was disabled
-# 2026-08-17, so the hard inject created a deadlock — the community dsh-market
-# plugin waited forever for a service nobody provides. The plugin's own code
-# handles the missing service gracefully (falls back to CLI mode using
-# config.profile / argvProfile), so the inject is unnecessary.
 - id: dsh-market
+  inject: [desktopProfiles]
   config:
     profile: web
     allowRestart: false
