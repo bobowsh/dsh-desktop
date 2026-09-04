@@ -760,3 +760,53 @@
 {"at":"2026-09-04T13:39:30.604Z","level":"info","event":"toggle","detail":"dsh-bookmarks: no loader entry matched"}
 {"at":"2026-09-04T13:39:30.605Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: no loader entry matched"}
 {"at":"2026-09-04T13:39:31.563Z","level":"info","event":"region","detail":"no region on record; network check chose china"}
+{"at":"2026-09-04T13:46:35.062Z","level":"info","event":"hot-mount","detail":"dsh-session-repair: live"}
+{"at":"2026-09-04T13:46:35.330Z","level":"info","event":"install","detail":"dsh-session-repair exit=0 hot=true"}
+{"at":"2026-09-04T13:47:42.069Z","level":"info","event":"hot-mount","detail":"dsh-session-folders: live"}
+{"at":"2026-09-04T13:47:42.326Z","level":"info","event":"install","detail":"dsh-session-folders exit=0 hot=true"}
+{"at":"2026-09-04T13:49:15.087Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui: no loader entry matched"}
+{"at":"2026-09-04T13:49:15.111Z","level":"info","event":"toggle","detail":"@liustack/modlens: no loader entry matched"}
+{"at":"2026-09-04T13:49:15.112Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-04T13:49:15.112Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities: no loader entry matched"}
+{"at":"2026-09-04T13:49:15.113Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp: no loader entry matched"}
+{"at":"2026-09-04T13:49:15.113Z","level":"info","event":"toggle","detail":"specworkflow: no loader entry matched"}
+{"at":"2026-09-04T13:49:15.113Z","level":"info","event":"toggle","detail":"dsh-bookmarks: no loader entry matched"}
+{"at":"2026-09-04T13:49:15.113Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: no loader entry matched"}
+{"at":"2026-09-04T13:51:35.453Z","level":"error","event":"install","detail":"dsh-file-upload exit=1 err=ERR_PNPM_EPERM: [importPackage E:\\work\\dsh-desktop-me\\data\\profiles\\web\\node_modules\\@img\\sharp-win32-x64] EPERM: operation not permitted, rename 'E:\\work\\dsh-desktop-me\\data\\profiles\\web\\node_modules\\@img\\sharp-win32-x64_tmp_22540_23' -> 'E:\\work\\dsh-desktop-me\\data\\profiles\\web\\node_modules\\@img\\s"}
+{"at":"2026-09-04T13:52:44.888Z","level":"info","event":"hot-mount","detail":"dsh-pomodoro: live"}
+{"at":"2026-09-04T13:52:45.196Z","level":"info","event":"install","detail":"dsh-pomodoro exit=0 hot=true"}
+{"at":"2026-09-04T13:53:44.187Z","level":"info","event":"hot-mount","detail":"dsh-auto-collapse: live"}
+{"at":"2026-09-04T13:53:44.529Z","level":"info","event":"install","detail":"dsh-auto-collapse exit=0 hot=true"}
+{"at":"2026-09-04T13:54:01.151Z","level":"info","event":"install","detail":"dsh-pathlink exit=0 hot=false"}
+{"at":"2026-09-04T13:57:07.467Z","level":"info","event":"hot-mount","detail":"dsh-prompt-optimizer: live"}
+{"at":"2026-09-04T13:57:07.819Z","level":"info","event":"install","detail":"dsh-prompt-optimizer exit=0 hot=true"}
+{"at":"2026-09-04T13:59:13.416Z","level":"info","event":"hot-mount","detail":"dsh-input-history: live"}
+{"at":"2026-09-04T13:59:13.717Z","level":"info","event":"install","detail":"dsh-input-history exit=0 hot=true"}
+{"at":"2026-09-04T14:00:35.073Z","level":"info","event":"hot-mount","detail":"@frog755/dsh-prompt-vault: live"}
+{"at":"2026-09-04T14:00:35.413Z","level":"info","event":"install","detail":"@frog755/dsh-prompt-vault exit=0 hot=true"}
+{"at":"2026-09-04T14:01:03.627Z","level":"info","event":"toggle","detail":"dsh-dream-skin: no loader entry matched"}
+{"at":"2026-09-04T14:01:04.227Z","level":"info","event":"hot-mount","detail":"dsh-dream-skin: live"}
+{"at":"2026-09-04T14:01:04.553Z","level":"info","event":"install","detail":"dsh-dream-skin exit=0 hot=true"}
+{"at":"2026-09-04T14:08:41.107Z","level":"info","event":"hot-mount","detail":"dsh-wsl-workspace: live"}
+{"at":"2026-09-04T14:08:41.424Z","level":"info","event":"install","detail":"dsh-wsl-workspace exit=0 hot=true"}
+{"at":"2026-09-04T14:09:47.716Z","level":"info","event":"hot-mount","detail":"dsh-plugin-dev-kb: live"}
+{"at":"2026-09-04T14:09:48.033Z","level":"info","event":"install","detail":"dsh-plugin-dev-kb exit=0 hot=true"}
+{"at":"2026-09-04T14:11:00.261Z","level":"info","event":"hot-mount","detail":"dsh-openwiki: live"}
+{"at":"2026-09-04T14:11:00.569Z","level":"info","event":"install","detail":"dsh-openwiki exit=0 hot=true"}
+{"at":"2026-09-04T14:11:45.448Z","level":"info","event":"install","detail":"dsh-workbuddy-ppt exit=0 hot=false"}
+{"at":"2026-09-04T14:13:50.731Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui: no loader entry matched"}
+{"at":"2026-09-04T14:13:50.757Z","level":"info","event":"toggle","detail":"@liustack/modlens: no loader entry matched"}
+{"at":"2026-09-04T14:13:50.757Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-04T14:13:50.758Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities: no loader entry matched"}
+{"at":"2026-09-04T14:13:50.758Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp: no loader entry matched"}
+{"at":"2026-09-04T14:13:50.758Z","level":"info","event":"toggle","detail":"specworkflow: no loader entry matched"}
+{"at":"2026-09-04T14:13:50.759Z","level":"info","event":"toggle","detail":"dsh-bookmarks: no loader entry matched"}
+{"at":"2026-09-04T14:13:50.759Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: no loader entry matched"}
+{"at":"2026-09-04T14:14:19.813Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui: no loader entry matched"}
+{"at":"2026-09-04T14:14:19.839Z","level":"info","event":"toggle","detail":"@liustack/modlens: no loader entry matched"}
+{"at":"2026-09-04T14:14:19.839Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-04T14:14:19.840Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities: no loader entry matched"}
+{"at":"2026-09-04T14:14:19.840Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp: no loader entry matched"}
+{"at":"2026-09-04T14:14:19.840Z","level":"info","event":"toggle","detail":"specworkflow: no loader entry matched"}
+{"at":"2026-09-04T14:14:19.840Z","level":"info","event":"toggle","detail":"dsh-bookmarks: no loader entry matched"}
+{"at":"2026-09-04T14:14:19.841Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: no loader entry matched"}

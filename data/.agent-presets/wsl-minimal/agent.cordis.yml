@@ -1,0 +1,38 @@
+- id: persona
+  name: '@deepseek-ai/dsh-persona'
+  config:
+    text: You are a helpful software engineer assistant.
+    complete: true
+    includeRuntimeContext: false
+
+# The PTY registry is an agent-owned service, so it lives in an entry-local
+# realm. The backend still consumes the host sandbox policy and subprocess
+# implementation, while the tool registers into this agent's scoped catalog.
+# Exactly one shell stack mounts per host: the bash stack gates off win32 and
+# its pwsh twin gates off POSIX, mirroring the one-shot shell rows.
+
+# ── WSL execution world (dsh-wsl-workspace variant) ─────────────────────
+# The shell and fs services are provided entry-locally (the isolate
+# realm); host services (tools registry, shell-env, jobs) fall through.
+# tool-fs-search is intentionally absent: the packaged ripgrep runs on
+# the Windows host and cannot open Linux paths; WSL sessions search with
+# shell tools instead.
+- id: wsl-world
+  name: cordis:group
+  group: true
+  isolate:
+    shell: true
+    fs: true
+  config:
+    - id: shell-wsl
+      name: 'E:/work/dsh-desktop-me/data/profiles/web/node_modules/dsh-wsl-workspace/lib/shell.js'
+    - id: fs-wsl
+      name: 'E:/work/dsh-desktop-me/data/profiles/web/node_modules/dsh-wsl-workspace/lib/fs.js'
+    - id: tool-bash
+      name: '@deepseek-ai/dsh-tool-bash'
+    - id: tool-fs
+      name: '@deepseek-ai/dsh-tool-fs'
+    - id: str-replace-editor
+      name: '@deepseek-ai/dsh-tool-str-replace-editor'
+      config:
+        maxOutputChars: 16000
