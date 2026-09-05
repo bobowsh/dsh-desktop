@@ -7,8 +7,8 @@ import { projectRoot } from './patch-path'
 
 const artifacts = {
   core: {
-    file: 'dsh-kimi-ppt-0.1.1-rc.2-desktop-kimi-20260904.tgz',
-    sha256: '300bd0f4f423a6d046cb61b193e4b5d4e535ca3d5921d21bbc0dc4f4aa002464'
+    file: 'dsh-kimi-ppt-0.1.1-rc.2-desktop-kimi-overflow-20260905.tgz',
+    sha256: 'dc33194b7ab015aa37504271d646cb28719cdd11d86aa5f14551ec10f8613894'
   },
   adapter: {
     file: 'deepseek-ai-dsh-experimental-kimi-ppt-standard-adapter-0.1.1-rc.2-desktop-kimi-20260904.tgz',
@@ -91,6 +91,22 @@ describe('Kimi PPT built-in plugin', () => {
     expect(skill).toContain('每个文本区的 `textCapacity` 是该区域的最大建议字符数')
   })
 
+  it('blocks overflowing text before rendering and preserves the authored font size', async () => {
+    const entries = tarEntries(await artifact('core'))
+    const chunkName = [...entries.keys()].find(name => /^package\/lib\/pptd-[A-Za-z0-9_-]+\.js$/u.test(name))
+    const renderer = chunkName === undefined ? '' : entries.get(chunkName)?.toString('utf8') ?? ''
+    const renderTextStart = renderer.indexOf('function renderText(')
+    const renderTextEnd = renderer.indexOf('function solidFill(', renderTextStart)
+    const renderText = renderer.slice(renderTextStart, renderTextEnd)
+
+    expect(renderer).toContain('code: "text-overflow"')
+    expect(renderer).toContain('severity: "error"')
+    expect(renderer).toContain('请缩短文案、增大文本框或拆分页面')
+    expect(renderTextStart).toBeGreaterThan(-1)
+    expect(renderTextEnd).toBeGreaterThan(renderTextStart)
+    expect(renderText).not.toContain('fit: "shrink"')
+  })
+
   it('ships three core templates in each category plus the 58-page Vitality Blue pack', async () => {
     const entries = tarEntries(await artifact('core'))
     const designs = [...entries.keys()]
@@ -150,6 +166,27 @@ describe('Kimi PPT built-in plugin', () => {
     expect(owner).toBeGreaterThan(-1)
     expect(input).toBeGreaterThan(owner)
     expect(catalog).toBeGreaterThan(input)
+  })
+
+  it('integrates hero mode actions with the adjacent agent-preset control style', async () => {
+    const patch = await readFile(path.join(
+      projectRoot,
+      'patches',
+      '@deepseek-ai+dsh-client-ui-conversation+0.1.2-rc.1.patch'
+    ), 'utf8')
+
+    expect(patch).toContain(
+      '[data-slot=conversation\\\\.hero\\\\.agentPreset]>span{width:max-content!important;min-width:0!important',
+    )
+    expect(patch).toContain('._8JRpoa_heroModeCluster{width:max-content')
+    expect(patch).not.toContain('._8JRpoa_heroModeCluster{margin-left:auto')
+    expect(patch).toContain('._8JRpoa_heroModeCluster button{')
+    expect(patch).toContain('height:28px')
+    expect(patch).toContain('border:0!important')
+    expect(patch).toContain('color:var(--dsw-alias-label-primary)!important')
+    expect(patch).toContain('button[data-selected=true]')
+    expect(patch).toContain('var(--dsw-alias-state-business-primary) 10%')
+    expect(patch).toContain('button:focus-visible')
   })
 
   it('renders the selected template before editable prompt text', async () => {

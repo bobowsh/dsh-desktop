@@ -17,9 +17,9 @@
   <img alt="Windows" src="https://img.shields.io/badge/Windows-x64-171513.svg" />
 </p>
 
-![DSH Desktop 的 Preset、模型提供方与手机控制能力](docs/images/dsh-desktop-hero-v020.png)
+![DSH Desktop 的 Preset、模型提供方、手机控制与可编辑 PPT 生成功能](docs/images/dsh-desktop-hero-v021.png)
 
-<p align="center"><strong>使用 DeepSeek 官方模型或主流第三方模型，管理可移植的 Agent Preset，并在手机上继续 Harness 会话。</strong></p>
+<p align="center"><strong>使用 DeepSeek 官方模型或主流第三方模型，管理可移植的 Agent Preset，在手机上继续 Harness 会话，并将材料生成可继续编辑的 PPTX。</strong></p>
 
 DSH Desktop 把本地 DeepSeek Harness 封装为可安装的桌面应用。它会自动启动 Harness，把 Profile、插件、工作区、模型配置和会话保存在应用安装目录之外，并在本地 Runtime 就绪后直接进入完整 Harness 界面。
 
@@ -48,6 +48,7 @@ DeepSeek Harness 已经提供 Agent Runtime 与 Web UI。DSH Desktop 在此基�
 - 通过系统原生目录选择器添加和管理项目工作区
 - 支持 DeepSeek 官方模型与主流第三方模型提供方
 - 将完整的自定义 Agent Preset 导入或导出为便携的 [`.dshpreset` 压缩包](docs/preset-packages.md)，安装前检查命名冲突并提示信任风险
+- 通过内置 PPT 模式将材料生成并交付为可继续编辑的 PPTX
 - 应用升级时保留 Profile、插件、工作区、会话和模型配置
 - 识别 Harness 启动或前端插件故障，把诊断写入 `harness.log` 并提供引导恢复入口
 - 提供不破坏用户数据的安全模式，临时屏蔽第三方插件

@@ -38,6 +38,12 @@ Preview 或其他可选 Bundle 意外打入桌面应用。
 `@deepseek-ai/dsh*` 补丁文件名由 `0.1.2-alpha.4` 改为 `0.1.2-rc.1`。上游本次未变更这些
 补丁覆盖的源码文件，版本标识迁移后仍必须由 `patch-package` 的 clean install 结果验证。
 
+## Windows Harness 运行资源
+
+`build/harness-node-entry.mjs` 在 Windows 启动路径中加载 `windows-hidden-console.mjs`。两者作为
+同一组 `extraResources` 进入安装包，`release.test.ts` 同时校验入口导入和资源清单，保证打包后的
+Harness 可以创建隐藏控制台并继续启动。
+
 ## 验证
 
 - 上游标签：`pnpm install --frozen-lockfile`、`pnpm run build:official`、两类 `release/pack.ts` 成功。

@@ -18,9 +18,9 @@
   <img alt="Windows" src="https://img.shields.io/badge/Windows-x64-171513.svg" />
 </p>
 
-![DSH Desktop overview with portable presets, model providers, and phone control](docs/images/dsh-desktop-hero-v020.png)
+![DSH Desktop overview with portable presets, model providers, phone control, and editable PPT generation](docs/images/dsh-desktop-hero-v021.png)
 
-<p align="center"><strong>Use official DeepSeek models or mainstream third-party model providers, manage portable Agent presets, and continue your Harness sessions from your phone.</strong></p>
+<p align="center"><strong>Use official DeepSeek models or mainstream third-party providers, manage portable Agent presets, continue Harness sessions from your phone, and turn source material into editable PPTX decks.</strong></p>
 
 DSH Desktop packages the local DeepSeek Harness experience as an installed desktop application. It starts Harness automatically, keeps profiles, plugins, workspaces, model settings, and sessions outside the application directory, and opens the full Harness interface as soon as the local runtime is ready.
 
@@ -49,6 +49,7 @@ DeepSeek Harness already provides the Agent runtime and Web UI. DSH Desktop adds
 - Uses the native system directory picker to add and manage project workspaces
 - Supports official DeepSeek models and mainstream third-party model providers
 - Imports and exports complete custom Agent presets as portable [`.dshpreset` packages](docs/preset-packages.md), with conflict checks and a trust warning before installation
+- Turns source material into editable PPTX decks through the built-in PPT mode
 - Preserves profiles, plugins, workspaces, sessions, and model settings across app upgrades
 - Detects startup and frontend plugin failures, keeps diagnostics in `harness.log`, and offers guided recovery actions
 - Provides a non-destructive Safe Mode that temporarily blocks third-party plugins

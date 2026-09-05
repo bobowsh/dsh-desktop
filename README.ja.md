@@ -17,9 +17,9 @@
   <img alt="Windows" src="https://img.shields.io/badge/Windows-x64-171513.svg" />
 </p>
 
-![ポータブル Preset、モデルプロバイダー、スマートフォン連携を備えた DSH Desktop](docs/images/dsh-desktop-hero-v020.png)
+![ポータブル Preset、モデルプロバイダー、スマートフォン連携、編集可能な PPTX 生成を備えた DSH Desktop](docs/images/dsh-desktop-hero-v021.png)
 
-<p align="center"><strong>DeepSeek 公式モデルや主要なサードパーティーモデルを利用し、ポータブルな Agent Preset を管理し、スマートフォンから Harness セッションを続けられます。</strong></p>
+<p align="center"><strong>DeepSeek 公式モデルや主要なサードパーティーモデルを利用し、ポータブルな Agent Preset を管理し、スマートフォンから Harness セッションを続け、資料から編集可能な PPTX を生成できます。</strong></p>
 
 DSH Desktop は、ローカルの DeepSeek Harness をインストール可能なデスクトップアプリとして提供します。Harness を自動起動し、Profile、プラグイン、ワークスペース、モデル設定、セッションをアプリ本体とは別の場所に保存し、ローカル Runtime の準備が整うと完全な Harness 画面を開きます。
 
@@ -48,6 +48,7 @@ DeepSeek Harness は Agent Runtime と Web UI を提供します。DSH Desktop �
 - OS 標準のディレクトリ選択画面でプロジェクトワークスペースを追加・管理
 - DeepSeek 公式モデルと主要なサードパーティーモデルプロバイダーに対応
 - カスタム Agent Preset 一式をポータブルな [`.dshpreset` パッケージ](docs/preset-packages.md)としてインポート・エクスポート
+- 内蔵の PPT モードで資料から編集可能な PPTX を生成・出力
 - アプリ更新後も Profile、プラグイン、ワークスペース、セッション、モデル設定を保持
 - Harness 起動時やフロントエンドのプラグイン障害を検出し、診断ログとガイド付き復旧を提供
 - サードパーティープラグインだけを一時停止する非破壊的なセーフモード
