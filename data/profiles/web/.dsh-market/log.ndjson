@@ -834,3 +834,11 @@
 {"at":"2026-09-04T16:45:11.659Z","level":"info","event":"toggle","detail":"specworkflow: no loader entry matched"}
 {"at":"2026-09-04T16:45:11.659Z","level":"info","event":"toggle","detail":"dsh-bookmarks: no loader entry matched"}
 {"at":"2026-09-04T16:45:11.659Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: no loader entry matched"}
+{"at":"2026-09-05T14:27:23.652Z","level":"info","event":"toggle","detail":"dsh-agent-team-gui: no loader entry matched"}
+{"at":"2026-09-05T14:27:23.653Z","level":"info","event":"toggle","detail":"@liustack/modlens: no loader entry matched"}
+{"at":"2026-09-05T14:27:23.653Z","level":"info","event":"toggle","detail":"dsh-md-notes: no loader entry matched"}
+{"at":"2026-09-05T14:27:23.653Z","level":"info","event":"toggle","detail":"dsh-plugin-capabilities: no loader entry matched"}
+{"at":"2026-09-05T14:27:23.653Z","level":"info","event":"toggle","detail":"@opendsh/dsh-plugin-setting-mcp: no loader entry matched"}
+{"at":"2026-09-05T14:27:23.653Z","level":"info","event":"toggle","detail":"specworkflow: no loader entry matched"}
+{"at":"2026-09-05T14:27:23.653Z","level":"info","event":"toggle","detail":"dsh-bookmarks: no loader entry matched"}
+{"at":"2026-09-05T14:27:23.654Z","level":"info","event":"toggle","detail":"dsh-builtin-browser: no loader entry matched"}

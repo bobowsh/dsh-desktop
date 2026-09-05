@@ -84,3 +84,6 @@ data/.credentials.yaml
 # Python bytecode from release-note scripts / tests
 __pycache__/
 *.pyc
+
+# 运行时生成的 pnpm/node shim（含本机绝对路径，随测试/运行重写）
+data/.desktop-bin/

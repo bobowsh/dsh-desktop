@@ -1,0 +1,2614 @@
+﻿node.exe : npm warn Unknown env config "side-effects-cache". This will stop working in the next major version of npm. S
+ee `npm help npmrc` for supported config options.
+所在位置 行:1 字符: 1
++ & "d:\nodejs/node.exe" "d:\nodejs/node_modules/npm/bin/npx-cli.js" vi ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (npm warn Unknow...config options.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+ RUN  v4.1.11 E:/work/dsh-desktop-me
+
+ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED Failed to prepare git-hosted package
+onlyBuiltDependencies:
+  - "@linxin666/dsh-remote-web-ui@git+ssh://git@github.com/zhu1090093659/dsh-web.git#c36e0d9992d31a81972e8eebe5208eab7d
+2e7ed3&path:/packages/dsh-remote-web-ui"ERR_PNPM_NO_MATCHING_VERSIONERR_PNPM_NO_MATCHING_VERSIONUpdate failed: dshmarke
+t
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)dsh-desktop pn
+pm runner: pnpm reported a blocked rename; giving it 20s to exit before stopping it
+dsh-desktop pnpm runner: C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse could no
+t be replaced; retrying in 750ms (2 of 3)
+dsh-desktop pnpm runner: the retry succeeded
+Update failed: dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)dsh-desktop pn
+pm runner: pnpm reported a blocked rename; giving it 20s to exit before stopping it
+dsh-desktop pnpm runner: C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse could no
+t be replaced; retrying in 750ms (2 of 3)
+Update failed: dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)dsh-desktop pn
+pm runner: pnpm reported a blocked rename; giving it 20s to exit before stopping it
+dsh-desktop pnpm runner: freed 1 blocked destination (C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\n
+ode_modules\argparse); installing over them (3 of 3)
+dsh-desktop pnpm runner: the install succeeded
+dsh-desktop: pnpm shim written via d:\Users\bobowsh\AppData\Local\Temp\dsh-market-store-pin-ByJogn\.desktop-bin\pnpm-runner.mjs
+dsh-desktop: pnpm shim written via d:\Users\bobowsh\AppData\Local\Temp\dsh-market-shim-Cn8Zmj\.desktop-bin\pnpm-runner.mjs
+ ✓ test/preset-transfer-patch.test.ts (12 tests) 137ms
+ ✓ test/launch-agent-audit-run.test.ts (15 tests) 414ms
+ ✓ test/profile-compatibility.test.ts (6 tests) 323ms
+ ✓ test/generation-registry.test.ts (10 tests) 762ms
+     ✓ serialises operations across the cross-process lock  523ms
+ ✓ test/profile-progress-signature.test.ts (7 tests) 720ms
+     ✓ does not follow symlinks out of the profile  562ms
+ ✓ test/generation-launch.test.ts (5 tests) 858ms
+     ✓ does not retain or restore generations from a stale rollback pointer  602ms
+ ❯ test/market-installer.test.js (15 tests | 1 failed) 645ms
+     ✓ pins the only install target accepted by the host 3ms
+     ✓ ships a resolvable pnpm binary instead of relying on the user PATH 3ms
+     ✓ removes only Desktop’s exact legacy pnpm settings and preserves sensitive config bytes 1ms
+     ✓ leaves user-selected or partial pnpm tuning untouched 0ms
+     ✓ keeps the store consistent through pinning and packaged shim regeneration 24ms
+     ✓ generates packaged node and pnpm shims in desktop-bin 21ms
+     ✓ cleans up staging and sidelined directories left by interrupted installations 9ms
+     ✓ cleans the leftovers inside a package’s own node_modules 13ms
+     ✓ clears a tree whose path is not ASCII 11ms
+     ✓ exposes the active Desktop profile without inferring it from argv 2ms
+     ✓ runs plugin mutations through one packaged pnpm operation boundary  524ms
+     ✓ rejects a package operation that was already aborted 2ms
+     ✓ reports both the requested dependency and installed package version 7ms
+     ✓ allows loopback status reads but requires same-origin mutation requests 1ms
+     × registers a placeholder before install and a stable management tab afterward 21ms
+ ✓ test/lan-mobile-tunnel.test.ts (20 tests) 758ms
+ ✓ test/plugin-recovery.test.ts (26 tests) 1011ms
+     ✓ lists a generation-linked bundle left behind by an interrupted uninstall  537ms
+ ✓ test/generation-installer.test.ts (14 tests) 1226ms
+     ✓ rejects a linked package tree without following or deleting its external target  636ms
+ ✓ test/kimi-ppt-integration.test.ts (8 tests) 1199ms
+     ✓ ships one Kimi composer surface and excludes the Tencent route  463ms
+     ✓ ships every JavaScript chunk imported by the Host entry  378ms
+ ✓ test/profile-repair.test.ts (12 tests) 947ms
+     ✓ spares pnpm’s own entries, scoped packages, and symlinks  762ms
+ ✓ test/finalize-windows-release.test.ts (1 test) 229ms
+ ✓ test/profile-consistency.test.ts (7 tests) 168ms
+Update failed: dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)Update failed:
+ dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+ ✓ test/update.test.ts (6 tests) 399ms
+     ✓ merges both architectures and keeps only ZIP update payloads  389ms
+ ❯ test/feishu-release-notes.test.ts (7 tests | 5 failed) 2054ms
+     × builds a prompt with valid metadata and evidence blocks 12ms
+     × generates deterministic fallback release notes that pass validation 7ms
+     ✓ rejects invalid markdown with links or incorrect headings 9ms
+     × generates deterministic fallback prerelease notes that pass validation 8ms
+     × builds a prerelease prompt with previous tag and prerelease notices 959ms
+     × differentiates previous tag resolution between prerelease and official release 1056ms
+     ✓ integrates Feishu release notification into GitHub Actions workflow 1ms
+ ✓ test/plugin-removal.test.ts (5 tests) 1207ms
+     ✓ keeps a failed cleanup disabled and preserves its package for a later retry  376ms
+ ✓ test/runtime.test.ts (53 tests) 2574ms
+     ✓ resolves a non-empty environment from the user login shell  2544ms
+ ✓ test/lan-mobile-bridge.test.ts (20 tests) 1387ms
+     ✓ opens the mux downlink only while a phone is attached  392ms
+ ✓ test/plugin-component-cleanup.test.ts (15 tests) 1843ms
+     ✓ does not boot out or move a LaunchAgent through an owned-components junction  838ms
+     ✓ refuses a LaunchAgents junction before inspecting or moving active components  450ms
+ ✓ test/component-ledger.test.ts (7 tests) 63ms
+ ✓ test/branding-patch.test.ts (5 tests) 18ms
+ ✓ test/model-picker-patch.test.ts (6 tests) 18ms
+ ✓ test/lan-mobile-pages.test.ts (9 tests) 22ms
+ ❯ test/release.test.ts (25 tests | 1 failed) 99ms
+     ✓ keeps the package and lockfile versions aligned 12ms
+     ✓ declares required DSH peer packages as production dependencies 8ms
+     × vendors upstream-new closure packages as file: production deps with no registry resolution 24ms
+     ✓ does not promote optional Harness providers and test support into the desktop runtime 10ms
+     ✓ uses stable platform-specific artifact names 2ms
+     ✓ keeps update metadata on the latest channel for pre-release versions 1ms
+     ✓ turns a selected Windows drive root into an application directory 2ms
+     ✓ shows a packaged startup surface and pins the Electron directory picker surface 3ms
+     ✓ routes manual restarts through the active plugin recovery flow 2ms
+     ✓ replays frontend plugin failures that arrive during an active recovery 2ms
+     ✓ publishes update metadata for installed desktop builds 3ms
+     ✓ keeps builder jobs from attempting implicit tag publishing 1ms
+     ✓ packages an isolated development channel from the current workspace 3ms
+     ✓ builds and publishes the Windows platform 2ms
+     ✓ signs and notarizes both macOS architectures on tag releases 2ms
+     ✓ signs Windows installers on the local UKey runner before publishing 1ms
+     ✓ routes the published download through the official website 3ms
+     ✓ replaces the windows-only prerelease input with a general one 1ms
+     ✓ gates signing and both publish jobs so prerelease and release never overlap 1ms
+     ✓ mirrors a prerelease to an isolated ModelScope directory 1ms
+     ✓ parametrises the Windows smoke test executable 1ms
+     ✓ archives each release and rebuilds the version index 2ms
+     ✓ drops --generate-notes for the real release and uses a notes file 3ms
+     ✓ still lets the prerelease job use --generate-notes 3ms
+     ✓ ships a RELEASE_NOTES.md style reference 1ms
+ ✓ test/encoding.test.ts (5 tests) 122ms
+ ✓ test/safe-mode.test.ts (14 tests) 57ms
+ ✓ test/profile-plugin-command.test.ts (7 tests) 3196ms
+     ✓ runs the DSH remove command with the bundled pnpm shim on PATH  2049ms
+     ✓ observes a fast command exit before sampling a large profile tree  1117ms
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)Update failed:
+ dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)Update failed:
+ dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)Update failed:
+ dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)dsh-desktop pn
+pm runner: pnpm reported a blocked rename; giving it 20s to exit before stopping it
+dsh-desktop pnpm runner: C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse could no
+t be replaced; retrying in 750ms (2 of 3)
+Update failed: dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)dsh-desktop pn
+pm runner: pnpm reported a blocked rename; giving it 20s to exit before stopping it
+dsh-desktop pnpm runner: C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse could no
+t be moved aside (EPERM)
+dsh-desktop pnpm runner: nothing could be freed; leaving pnpm's own diagnosis in place
+ ✓ test/pnpm-runner.test.js (21 tests) 3183ms
+     ✓ stops a pnpm that has gone silent instead of waiting out the host timeout  1003ms
+     ✓ keeps a quiet run that is still writing packages  1007ms
+     ✓ gives up on a run whose kill never lands  1027ms
+ ✓ test/session-delete-patch.test.ts (9 tests) 209ms
+ ✓ test/plugin-recovery-detection.test.ts (6 tests) 329ms
+ ✓ test/model-reasoning-efforts-patch.test.ts (10 tests) 34ms
+ ✓ test/model-settings-catalog-ux-patch.test.ts (7 tests) 22ms
+ ✓ test/verify-release-assets.test.mjs (6 tests) 213ms
+ ✓ test/gpu-fallback.test.ts (25 tests) 11ms
+ ✓ test/harness-node-entry.test.ts (20 tests) 195ms
+ ✓ test/desktop-storage.test.ts (7 tests) 200ms
+ ✓ test/generation-boundary.test.js (8 tests) 3922ms
+     ✓ exposes a new generation for market validation and defers bundle activation until cold start  549ms
+     ✓ routes a market removal through desired.json instead of the shared profile CLI  849ms
+     ✓ replaces a stale validation-only link when a rejected install is retried  1431ms
+     ✓ keeps the active generation link unchanged until an update reaches cold start  479ms
+     ✓ replaces an earlier generation of the same plugin  414ms
+ ✓ test/remove-tree.test.ts (6 tests) 289ms
+ ✓ test/update-skip.test.ts (6 tests) 46ms
+ ✓ test/version-catalog.test.ts (9 tests) 8ms
+ ✓ test/windows-titlebar.test.ts (7 tests) 22ms
+ ✓ test/version-info.test.ts (3 tests) 44ms
+ ✓ test/plugin-market-check.test.ts (4 tests) 31ms
+ ❯ test/github-release-notes.test.ts (4 tests | 3 failed) 523ms
+     × emits the evidence blocks, the style reference, and the Chinese contract 86ms
+     × accepts a well-formed Chinese note 91ms
+     ✓ rejects a wrong title prefix, a stray H2, a link, and an empty file 264ms
+     × produces a note that passes validate and starts with the contract title 79ms
+ ✓ test/readme-parity.test.ts (8 tests) 49ms
+ ✓ test/open-in-finder.test.ts (3 tests) 15ms
+ ✓ test/model-selection-search-patch.test.ts (4 tests) 13ms
+ ✓ test/launch-root.test.ts (2 tests) 19ms
+ ✓ test/migration-failure-paths.test.ts (16 tests) 4578ms
+     ✓ preserves the snapshot and reports failure when the Windows rename of node_modules back from .pre-generations throws  1332ms
+     ✓ enters safe recovery in the same startup when rebuild failure and Windows rollback EPERM combine  1108ms
+     ✓ keeps a confirmed journal when Windows rm cannot delete a snapshot, then retries cleanup without rolling back  525ms
+     ✓ keeps the awaiting-boot snapshot when health changes before the journal commit  443ms
+     ✓ resumes a rollback crash after snapshot activation even when no migrated live path was quarantined  400ms
+     ✓ confirms a successful migration after a clean launch discards the snapshot only on user-confirmed cleanup  428ms
+ ✓ test/profile-store.test.ts (6 tests) 146ms
+ ✓ test/profile-install-marker.test.ts (8 tests) 209ms
+ ✓ test/directory-picker.test.ts (5 tests) 16ms
+ ✓ test/desktop-plugin-closure.test.ts (2 tests) 24ms
+ ✓ test/patch-layer.test.ts (5 tests) 22ms
+ ✓ test/plugin-error-view.test.ts (6 tests) 17ms
+ ✓ test/update-ui.test.ts (8 tests) 13ms
+ ✓ test/provider-error-patch.test.ts (2 tests) 12ms
+ ✓ test/desktop-client-ui.test.ts (1 test) 12ms
+ ✓ test/query-rail-patch.test.ts (2 tests) 10ms
+ ✓ test/context-menu.test.ts (6 tests) 9ms
+ ✓ test/launch-agent-audit.test.ts (14 tests) 7ms
+ ✓ test/plugin-recovery-view.test.ts (13 tests) 13ms
+ ✓ test/generation-projection.test.ts (11 tests) 5157ms
+     ✓ links enabled generations into the profile node_modules and lists them as bundles  397ms
+     ✓ drops the link and the bundle entry when a plugin stops being desired  1365ms
+     ✓ restores a profile-owned pnpm override after the generation is disabled  922ms
+     ✓ keeps projected generations outside pnpm while the manifest exposes a version  1343ms
+ ✓ test/generation-migration.test.ts (8 tests) 5184ms
+     ✓ moves community plugins to generations and trims the manifest  1031ms
+     ✓ restores the pre-upgrade profile when the shared-tree rebuild fails  606ms
+     ✓ copies non-registry sources exactly and retains their original provenance  1033ms
+     ✓ defers an identical failed migration, preserves desired, and retries after the profile changes  862ms
+     ✓ defers an unreadable installed plugin without touching the active profile or retrying unchanged input  311ms
+     ✓ rolls a migrated profile back to the snapshot on a failed launch, then discards it on a good one  1000ms
+     ✓ returns deferred-failure (not no-op) when staging a generation fails, so the caller does not run profile repair on the broken tree  318ms
+ ✓ test/launchctl-service-state.test.ts (5 tests) 5ms
+ ✓ test/windows-hidden-console.test.ts (4 tests) 6ms
+ ✓ test/workspace-unread-patch.test.ts (3 tests) 11ms
+ ✓ test/window-raise.test.ts (5 tests) 5ms
+ ✓ test/session-create-remote-event-patch.test.ts (1 test) 7ms
+ ✓ test/cordis-plugin-loader-patch.test.ts (1 test) 5ms
+ ✓ test/close-to-tray.test.ts (4 tests) 3ms
+ ✓ test/second-instance-intent.test.ts (6 tests) 4ms
+ ✓ test/build-version-index.test.ts (3 tests) 179ms
+ ✓ test/application-locale.test.ts (3 tests) 6ms
+ ✓ test/shell-environment-encoding.test.ts (6 tests) 6ms
+ ✓ test/client-modules-resolution-patch.test.ts (1 test) 5ms
+ ✓ test/local-path-links.test.ts (1 test) 4ms
+ ✓ test/update-state.test.ts (4 tests) 4ms
+ ✓ test/launchd-guard.test.ts (5 tests) 3ms
+ ✓ test/plugin-recovery-html.test.ts (3 tests) 3ms
+ ✓ test/main-window-recovery.test.ts (5 tests) 3ms
+ ✓ test/hmr-fallback.test.js (4 tests) 460ms
+     ✓ refreshes on a change to the watched config, and not on its neighbours  450ms
+ ↓ test/launch-agent-plist-roundtrip.test.ts (2 tests | 2 skipped)
+ ✓ test/onboarding-patch.test.ts (12 tests) 6ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/feishu-release-notes.test.ts > Feishu release notes pipeline > builds a prompt with valid metadata and evid
+ence blocks
+Error: spawnSync python3 ENOENT
+ ❯ test/feishu-release-notes.test.ts:58:22
+     56|     'builds a prompt with valid metadata and evidence blocks',
+     57|     () => {
+     58|       const output = execFileSync('python3', [scriptPath, 'build-promp…
+       |                      ^
+     59|         encoding: 'utf8',
+     60|         env: pythonEnv
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  test/feishu-release-notes.test.ts > Feishu release notes pipeline > generates deterministic fallback release not
+es that pass validation
+Error: spawnSync python3 ENOENT
+ ❯ test/feishu-release-notes.test.ts:78:7
+     76|     const tempFile = join(process.cwd(), '.temp-feishu-test-notes.md')
+     77|     try {
+     78|       execFileSync('python3', [scriptPath, 'generate-fallback', '--tag…
+       |       ^
+     79|         encoding: 'utf8',
+     80|         env: pythonEnv
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  test/feishu-release-notes.test.ts > Feishu release notes pipeline > generates deterministic fallback prerelease 
+notes that pass validation
+Error: spawnSync python3 ENOENT
+ ❯ test/feishu-release-notes.test.ts:143:7
+    141|     const tempFile = join(process.cwd(), '.temp-feishu-prerelease-test…
+    142|     try {
+    143|       execFileSync(
+       |       ^
+    144|         'python3',
+    145|         [scriptPath, 'generate-fallback', '--tag', '0.7.2', '--prerele…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  test/feishu-release-notes.test.ts > Feishu release notes pipeline > builds a prerelease prompt with previous tag
+ and prerelease notices
+Error: spawnSync python3 ENOENT
+ ❯ test/feishu-release-notes.test.ts:183:22
+    181|         { message: 'prerelease cut', date: '2026-03-01T00:00:00', tag:…
+    182|       ])
+    183|       const output = execFileSync(
+       |                      ^
+    184|         'python3',
+    185|         [scriptPath, 'build-prompt', '--tag', '0.7.2', '--prerelease'],
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  test/feishu-release-notes.test.ts > Feishu release notes pipeline > differentiates previous tag resolution betwe
+en prerelease and official release
+Error: spawnSync python3 ENOENT
+ ❯ buildPrompt test/feishu-release-notes.test.ts:213:7
+    211|     ])
+    212|     const buildPrompt = (args: string[]): string =>
+    213|       execFileSync('python3', [scriptPath, 'build-prompt', ...args], {
+       |       ^
+    214|         encoding: 'utf8',
+    215|         env: pythonEnv,
+ ❯ test/feishu-release-notes.test.ts:220:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  test/github-release-notes.test.ts > github_release_notes build-prompt > emits the evidence blocks, the style ref
+erence, and the Chinese contract
+ FAIL  test/github-release-notes.test.ts > github_release_notes generate-fallback > produces a note that passes validat
+e and starts with the contract title
+Error: spawn python3 ENOENT
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  test/github-release-notes.test.ts > github_release_notes validate > accepts a well-formed Chinese note
+AssertionError: promise rejected "Error: spawn python3 ENOENT { …(8) }" instead of resolving
+ ❯ test/github-release-notes.test.ts:60:71
+     58|     const file = path.join(dir, 'n.md')
+     59|     await writeFile(file, VALID, 'utf8')
+     60|     await expect(run(['validate', '--tag', 'v9.9.9', '--input', file])…
+       |                                                                       ^
+     61|   })
+     62|
+
+Caused by: Error: spawn python3 ENOENT
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { errno: -4058, code: 'ENOENT', syscall: 'spawn python3', path: 'python3', spawnargs: [ 'E:\work\dsh-
+desktop-me\.github\scripts\github_release_notes.py', 'validate', '--tag', 'v9.9.9', '--input', 'd:\Users\bobowsh\AppDat
+a\Local\Temp\dsh-ghnotes-KczjAy\n.md' ], cmd: 'python3 E:\work\dsh-desktop-me\.github\scripts\github_release_notes.py v
+alidate --tag v9.9.9 --input d:\Users\bobowsh\AppData\Local\Temp\dsh-ghnotes-KczjAy\n.md', stdout: '', stderr: '' }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  test/market-installer.test.js > desktop plugin market installer > registers a placeholder before install and a s
+table management tab afterward
+AssertionError: expected '# Keep the stock directory-picker (au…' to contain 'name: dsh-desktop-market-installer'
+
+- Expected
++ Received
+
+- name: dsh-desktop-market-installer
++ # Keep the stock directory-picker (auto) row active: the native backend
++ # serves ctx.directoryPicker, so host-side consumers (host.pickDirectory,
++ # plugins reading the seam) work unmodified. The client surface keeps its
++ # Electron-dialog bridge via the client-ui patch in patches/.
++
++ # Disable the stock single-slot occupant before mounting Desktop's equivalent;
++ # two occupants cannot share either brand seat. The Desktop plugin preserves
++ # the stock conversation mark. The phone remains in the settings row because
++ # the public footer-action slot is a separate row. Window chrome geometry
++ # remains a native-shell concern.
++ - id: ui-brand-official
++   disabled: true
++
++ - insert:
++     - id: dsh-desktop-client-ui
++       name: dsh-desktop-client-ui
++
++     # DSH Desktop owns the fixed-target dsh-market installer and its lightweight
++     # settings entry. After dshmarket is installed and Harness restarts, the
++     # community plugin replaces the placeholder with its complete market UI.
++     # Disabled 2026-08-17 at user's request; dependency removed from packaging
++     # 2026-08-18 (the desktop-shell market entry / pnpm shim no longer ships).
++     # Community dshmarket plugin is unaffected (it lives in the profile's own
++     # dependencies).
++
++     # Kimi PPT owns one direct PPTD workflow and one standard Composer client.
++     # The package contains no Tencent editor runtime or SlideP route.
++     - id: experimental-kimi-ppt-standard-adapter
++       name: '@deepseek-ai/dsh-experimental-kimi-ppt-standard-adapter'
++       # 2026-09-05 临时禁用：这两个 file: tgz 尚未装进 node_modules → profile 目录
++       # 解析不到包 → ERR_MODULE_NOT_FOUND → 整个 plugin tree 加载失败、harness 起不来
++       # （web / desktop-safe-mode 两个 profile 同时挂）。依赖装好后删掉这一行恢复。
++       disabled: true
++       config:
++         root: !!js dshHomePath('kimi-ppt')
++
++ # dsh-market normally offers to restart its own Node process after mutations.
++ # The desktop shell has the real lifecycle authority, so keep that behavior off
++ # whenever the optional plugin is present in the composed profile.
++ #
++ # The `inject: [desktopProfiles]` that used to be here was removed: the desktop
++ # shell's own market-installer plugin (which provides that service) was disabled
++ # 2026-08-17, so the hard inject created a deadlock — the community dsh-market
++ # plugin waited forever for a service nobody provides. The plugin's own code
++ # handles the missing service gracefully (falls back to CLI mode using
++ # config.profile / argvProfile), so the inject is unnecessary.
++ - id: dsh-market
++   config:
++     profile: web
++     allowRestart: false
++
++ # Harness creates the full Cordis HMR service after boot when no `hmr` service
++ # exists, and that service throws without Node's internal module loader —
++ # which a packaged Electron app cannot provide, so every signed macOS launch
++ # failed profile boot at that step. This row supplies the config-watching
++ # subset `watchUserPatches` actually needs; where the internals are reachable
++ # it stands aside and the real service loads unchanged.
++ - insert:
++     - id: dsh-desktop-hmr-fallback
++       name: dsh-desktop-hmr-fallback
++
++ # Preset package export and import. These two routes lived in a patch on
++ # dsh-host-apiproxy until 0.1.2-alpha.1 deleted that package; upstream ships no
++ # preset transfer of its own, so the capability moved into a desktop plugin
++ # that registers on the Connection fetch-route seam instead.
++ - insert:
++     - id: dsh-desktop-preset-transfer
++       name: dsh-desktop-preset-transfer
++
+
+ ❯ test/market-installer.test.js:377:26
+    375|     // dsh-desktop-market-installer was disabled 2026-08-17; the commu…
+    376|     // dshmarket plugin provides the market UI from the profile's own …
+    377|     expect(desktopPatch).toContain('name: dsh-desktop-market-installer…
+       |                          ^
+    378|     expect(desktopPatch).toContain('inject: [desktopProfiles]')
+    379|     expect(desktopPatch).toContain('allowRestart: false')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  test/release.test.ts > GitHub release contract > vendors upstream-new closure packages as file: production deps 
+with no registry resolution
+AssertionError: expected '{\n  "name": "dsh-desktop",\n  "versi…' not to match /"resolved":\s*"https?:\/\/[^"]*deeps…/\
+
+- Expected:
+/"resolved":\s*"https?:\/\/[^"]*deepseek-ai[/-]dsh/
+
++ Received:
+"{
+  \"name\": \"dsh-desktop\",
+  \"version\": \"0.3.2\",
+  \"lockfileVersion\": 3,
+  \"requires\": true,
+  \"packages\": {
+    \"\": {
+      \"name\": \"dsh-desktop\",
+      \"version\": \"0.3.2\",
+      \"hasInstallScript\": true,
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/cordis\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cordis-4.0.2.tgz\",
+        \"@deepseek-ai/cordis-plugin-group\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cordis-plugin-g
+roup-1.0.2.tgz\",
+        \"@deepseek-ai/cordis-plugin-hmr\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cordis-plugin-hmr
+-1.0.17.tgz\",
+        \"@deepseek-ai/cordis-plugin-include\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cordis-plugin
+-include-1.0.7.tgz\",
+        \"@deepseek-ai/cordis-plugin-loader\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cordis-plugin-
+loader-1.0.3.tgz\",
+        \"@deepseek-ai/cordis-plugin-timer\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cordis-plugin-t
+imer-1.1.4.tgz\",
+        \"@deepseek-ai/cosmokit\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cosmokit-1.8.3.tgz\",
+        \"@deepseek-ai/dsh\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-acp\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-acp-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-acp-app\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-acp-app-0.1.2-rc.1.tgz
+\",
+        \"@deepseek-ai/dsh-agent\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-agent-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-agent-default-model\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-agent-defa
+ult-model-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-agent-instructions\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-agent-instr
+uctions-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-agent-loop\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-agent-loop-0.1.2-rc
+.1.tgz\",
+        \"@deepseek-ai/dsh-agent-presets\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-agent-presets-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-agent-tool-presentation\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-agent-
+tool-presentation-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-anonymous-user-id\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-anonymous-us
+er-id-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-api-gateway\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-api-gateway-0.1.2-
+rc.1.tgz\",
+        \"@deepseek-ai/dsh-api-remotes\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-api-remotes-0.1.2-
+rc.1.tgz\",
+        \"@deepseek-ai/dsh-api-session-controller\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-api-ses
+sion-controller-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-api-settings-controller\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-api-se
+ttings-controller-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-api-workspace-controller\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-api-w
+orkspace-controller-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-app-boot\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-app-boot-0.1.2-rc.1.t
+gz\",
+        \"@deepseek-ai/dsh-atomic-write\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-atomic-write-0.1.
+2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-attachment\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-attachment-0.1.2-rc
+.1.tgz\",
+        \"@deepseek-ai/dsh-attachment-local\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-attachment-lo
+cal-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-authorization\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-authorization-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-base\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-base-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-bash-local\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-bash-local-0.1.2-rc
+.1.tgz\",
+        \"@deepseek-ai/dsh-bash-sandbox\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-bash-sandbox-0.1.
+2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-brand\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-brand-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-connection\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-conne
+ction-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-hmr\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-hmr-0.1.2-rc
+.1.tgz\",
+        \"@deepseek-ai/dsh-client-locale\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-locale-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-modules\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-modules-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-store\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-store-0.1.
+2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-agent-preset\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-
+ui-agent-preset-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-approval\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-a
+pproval-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-attachment\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui
+-attachment-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-brand-official\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-clien
+t-ui-brand-official-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-chat\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-chat-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-commands\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-c
+ommands-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-conversation\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-
+ui-conversation-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-cordis\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-cor
+dis-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-deliverables\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-
+ui-deliverables-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-directory-picker-browse\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-
+dsh-client-ui-directory-picker-browse-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-directory-picker-native\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-
+dsh-client-ui-directory-picker-native-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-goal\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-goal-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-input-trigger\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client
+-ui-input-trigger-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-jobs\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-jobs-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-layout\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-lay
+out-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-message-feedback\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-cli
+ent-ui-message-feedback-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-model-selection\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-clie
+nt-ui-model-selection-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-permission-presets\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-c
+lient-ui-permission-presets-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-plan\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-plan-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-primitives\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui
+-primitives-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-reference\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-
+reference-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-renderer\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-r
+enderer-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-schedule\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-s
+chedule-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-session\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-se
+ssion-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-settings\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-s
+ettings-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-settings-general\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-cli
+ent-ui-settings-general-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-settings-models\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-clie
+nt-ui-settings-models-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-settings-plugin-inventory\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-a
+i-dsh-client-ui-settings-plugin-inventory-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-settings-plugins\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-cli
+ent-ui-settings-plugins-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-sidebar\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-si
+debar-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-skill\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-skil
+l-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-slots\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-slot
+s-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-subagent\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-s
+ubagent-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-theme\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-them
+e-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-tool\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-tool-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-trajectory\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui
+-trajectory-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-user-questions\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-clien
+t-ui-user-questions-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-workflow-run\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-
+ui-workflow-run-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-client-ui-workspace\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-client-ui-
+workspace-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-cmdline\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-cmdline-0.1.2-rc.1.tgz
+\",
+        \"@deepseek-ai/dsh-code-runtime\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-code-runtime-0.1.
+2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-code-runtime-worker-thread\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-cod
+e-runtime-worker-thread-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-command-compact\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-command-compac
+t-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-command-feedback\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-command-feedb
+ack-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-command-goal\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-command-goal-0.1.
+2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-commands\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-commands-0.1.2-rc.1.t
+gz\",
+        \"@deepseek-ai/dsh-compaction\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-compaction-0.1.2-rc
+.1.tgz\",
+        \"@deepseek-ai/dsh-compaction-basic\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-compaction-ba
+sic-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-compaction-tool-result-pruner\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-
+compaction-tool-result-pruner-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-cordis-client-runner\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-cordis-cl
+ient-runner-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-cordis-host-runner\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-cordis-host
+-runner-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-credentials\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-credentials-0.1.2-
+rc.1.tgz\",
+        \"@deepseek-ai/dsh-credentials-local\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-credentials-
+local-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-deepseek-llm-api-extensions\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-de
+epseek-llm-api-extensions-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-deque\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-deque-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-experimental-kimi-ppt-standard-adapter\": \"file:packages/kimi-ppt/deepseek-ai-dsh-experimen
+tal-kimi-ppt-standard-adapter-0.1.1-rc.2-desktop-kimi-20260904.tgz\",
+        \"@deepseek-ai/dsh-file-reference\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-file-reference-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-file-reference-local\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-file-refe
+rence-local-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-fs\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-fs-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-fs-local\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-fs-local-0.1.2-rc.1.t
+gz\",
+        \"@deepseek-ai/dsh-fs-observation-policy\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-fs-obser
+vation-policy-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-fs-sandbox\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-fs-sandbox-0.1.2-rc
+.1.tgz\",
+        \"@deepseek-ai/dsh-goal\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-goal-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-goal-round-driver\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-goal-round-d
+river-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-headless\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-headless-0.1.2-rc.1.t
+gz\",
+        \"@deepseek-ai/dsh-home-paths\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-home-paths-0.1.2-rc
+.1.tgz\",
+        \"@deepseek-ai/dsh-hook-protocol\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-hook-protocol-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-hooks-claude-code\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-hooks-claude
+-code-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-hooks-codex\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-hooks-codex-0.1.2-
+rc.1.tgz\",
+        \"@deepseek-ai/dsh-host-directory-picker\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-host-dir
+ectory-picker-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-host-directory-picker-auto\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-hos
+t-directory-picker-auto-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-host-directory-picker-browse\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-h
+ost-directory-picker-browse-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-host-directory-picker-native\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-h
+ost-directory-picker-native-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-host-frontend-static\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-host-fron
+tend-static-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-host-plugin-inventory\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-host-plu
+gin-inventory-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-host-webserver\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-host-webserver-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-invariants\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-invariants-0.1.2-rc
+.1.tgz\",
+        \"@deepseek-ai/dsh-jobs\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-jobs-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-jobs-local\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-jobs-local-0.1.2-rc
+.1.tgz\",
+        \"@deepseek-ai/dsh-launch-environment\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-launch-envi
+ronment-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-llm\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-llm-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-llm-deepseek\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-llm-deepseek-0.1.
+2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-llm-pi-ai\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-llm-pi-ai-0.1.2-rc.1
+.tgz\",
+        \"@deepseek-ai/dsh-llm-retry\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-llm-retry-0.1.2-rc.1
+.tgz\",
+        \"@deepseek-ai/dsh-mcp-client\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-mcp-client-0.1.2-rc
+.1.tgz\",
+        \"@deepseek-ai/dsh-message-feedback\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-message-feedb
+ack-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-native-command\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-native-command-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-output-retention\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-output-retent
+ion-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-permission-presets\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-permission-
+presets-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-persona\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-persona-0.1.2-rc.1.tgz
+\",
+        \"@deepseek-ai/dsh-plan-mode\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-plan-mode-0.1.2-rc.1
+.tgz\",
+        \"@deepseek-ai/dsh-plugin-package-inventory-deepseek\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-
+dsh-plugin-package-inventory-deepseek-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-pwsh-local\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-pwsh-local-0.1.2-rc
+.1.tgz\",
+        \"@deepseek-ai/dsh-pwsh-sandbox\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-pwsh-sandbox-0.1.
+2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-repeat-tool-reminder\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-repeat-to
+ol-reminder-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-sandbox\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-sandbox-0.1.2-rc.1.tgz
+\",
+        \"@deepseek-ai/dsh-sandbox-local\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-sandbox-local-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-sandbox-policy\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-sandbox-policy-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-sandbox-windows-acl\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-sandbox-wi
+ndows-acl-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-schedule\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-schedule-0.1.2-rc.1.t
+gz\",
+        \"@deepseek-ai/dsh-scope\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-scope-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-sdk-app\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-sdk-app-0.1.2-rc.1.tgz
+\",
+        \"@deepseek-ai/dsh-sdk-jsonrpc-server\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-sdk-jsonrpc
+-server-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-sdk-minimal\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-sdk-minimal-0.1.2-
+rc.1.tgz\",
+        \"@deepseek-ai/dsh-sdk-protocol\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-sdk-protocol-0.1.
+2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-session-0.1.2-rc.1.tgz
+\",
+        \"@deepseek-ai/dsh-session-checkpoint-policy\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-sess
+ion-checkpoint-policy-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-log-deepseek\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-session-l
+og-deepseek-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-log-export\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-session-log
+-export-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-persistence\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-session-pe
+rsistence-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-persistence-jsonl\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-sess
+ion-persistence-jsonl-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-projection\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-session-pro
+jection-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-projection-cache\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-sessi
+on-projection-cache-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-query\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-session-query-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-query-sqlite\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-session-q
+uery-sqlite-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-reference\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-session-refe
+rence-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-stats\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-session-stats-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-telemetry\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-session-tele
+metry-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-telemetry-otel\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-session
+-telemetry-otel-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-title\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-session-title-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-title-first-prompt-llm\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh
+-session-title-first-prompt-llm-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-title-llm\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-session-titl
+e-llm-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-session-turn-outline\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-session-t
+urn-outline-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-settings\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-settings-0.1.2-rc.1.t
+gz\",
+        \"@deepseek-ai/dsh-settings-file\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-settings-file-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-shell\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-shell-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-shell-env\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-shell-env-0.1.2-rc.1
+.tgz\",
+        \"@deepseek-ai/dsh-skill\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-skill-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-skill-badge\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-skill-badge-0.1.2-
+rc.1.tgz\",
+        \"@deepseek-ai/dsh-skill-filesystem\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-skill-filesys
+tem-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-spill\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-spill-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-spill-local\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-spill-local-0.1.2-
+rc.1.tgz\",
+        \"@deepseek-ai/dsh-spill-policy\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-spill-policy-0.1.
+2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-storage\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-storage-0.1.2-rc.1.tgz
+\",
+        \"@deepseek-ai/dsh-storage-domain\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-storage-domain-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-storage-json\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-storage-json-0.1.
+2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-subagent\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-subagent-0.1.2-rc.1.t
+gz\",
+        \"@deepseek-ai/dsh-subagent-fork-in-process\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-subag
+ent-fork-in-process-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-subagent-in-process-driver\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-sub
+agent-in-process-driver-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-subagent-spawn-in-process\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-suba
+gent-spawn-in-process-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-subprocess\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-subprocess-0.1.2-rc
+.1.tgz\",
+        \"@deepseek-ai/dsh-subprocess-local\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-subprocess-lo
+cal-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-system-prompt\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-system-prompt-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-terminal\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-terminal-0.1.2-rc.1.t
+gz\",
+        \"@deepseek-ai/dsh-terminal-bash\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-terminal-bash-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-time-context\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-time-context-0.1.
+2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-timeout\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-timeout-0.1.2-rc.1.tgz
+\",
+        \"@deepseek-ai/dsh-tmux-context\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tmux-context-0.1.
+2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-token-meter\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-token-meter-0.1.2-
+rc.1.tgz\",
+        \"@deepseek-ai/dsh-tool-ask-user\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-ask-user-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-tool-bash\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-bash-0.1.2-rc.1
+.tgz\",
+        \"@deepseek-ai/dsh-tool-bash-persistent\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-bash
+-persistent-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-tool-call-timeout-policy\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-
+call-timeout-policy-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-tool-cordis\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-cordis-0.1.2-
+rc.1.tgz\",
+        \"@deepseek-ai/dsh-tool-fs\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-fs-0.1.2-rc.1.tgz
+\",
+        \"@deepseek-ai/dsh-tool-fs-search\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-fs-search-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-tool-goal\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-goal-0.1.2-rc.1
+.tgz\",
+        \"@deepseek-ai/dsh-tool-jobs\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-jobs-0.1.2-rc.1
+.tgz\",
+        \"@deepseek-ai/dsh-tool-pwsh\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-pwsh-0.1.2-rc.1
+.tgz\",
+        \"@deepseek-ai/dsh-tool-pwsh-persistent\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-pwsh
+-persistent-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-tool-ralph\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-ralph-0.1.2-rc
+.1.tgz\",
+        \"@deepseek-ai/dsh-tool-skill\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-skill-0.1.2-rc
+.1.tgz\",
+        \"@deepseek-ai/dsh-tool-str-replace-editor\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-s
+tr-replace-editor-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-tool-subagent\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-subagent-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-tool-subagent-control\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-sub
+agent-control-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-tool-todo\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-todo-0.1.2-rc.1
+.tgz\",
+        \"@deepseek-ai/dsh-tool-web\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-web-0.1.2-rc.1.t
+gz\",
+        \"@deepseek-ai/dsh-tool-workflow\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tool-workflow-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-tools\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-tools-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-typert-generator\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-typert-genera
+tor-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-typert-loader\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-typert-loader-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-typert-protocol\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-typert-protoco
+l-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-typert-registry\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-typert-registr
+y-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-user-approval\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-user-approval-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-user-questions\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-user-questions-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-util-crypto\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-util-crypto-0.1.2-
+rc.1.tgz\",
+        \"@deepseek-ai/dsh-util-time\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-util-time-0.1.2-rc.1
+.tgz\",
+        \"@deepseek-ai/dsh-util-values\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-util-values-0.1.2-
+rc.1.tgz\",
+        \"@deepseek-ai/dsh-util-workspace-path\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-util-works
+pace-path-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-web\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-web-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-web-app\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-web-app-0.1.2-rc.1.tgz
+\",
+        \"@deepseek-ai/dsh-web-fetch-http\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-web-fetch-http-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-web-frontend\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-web-frontend-0.1.
+2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-web-search-deepseek\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-web-search
+-deepseek-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-webhook\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-webhook-0.1.2-rc.1.tgz
+\",
+        \"@deepseek-ai/dsh-webhook-github\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-webhook-github-
+0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-win32-process\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-win32-process-0.
+1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-workflow\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-workflow-0.1.2-rc.1.t
+gz\",
+        \"@deepseek-ai/dsh-workflow-worker-thread\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-workflo
+w-worker-thread-0.1.2-rc.1.tgz\",
+        \"@deepseek-ai/dsh-workspace\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-workspace-0.1.2-rc.1
+.tgz\",
+        \"@deepseek-ai/schemastery\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-schemastery-3.18.2.tgz\
+",
+        \"chardet\": \"^2.2.0\",
+        \"dsh-desktop-client-ui\": \"file:packages/dsh-desktop-client-ui\",
+        \"dsh-desktop-hmr-fallback\": \"file:packages/dsh-desktop-hmr-fallback\",
+        \"dsh-desktop-market-installer\": \"file:packages/dsh-desktop-market-installer\",
+        \"dsh-desktop-preset-transfer\": \"file:packages/dsh-desktop-preset-transfer\",
+        \"dsh-kimi-ppt\": \"file:packages/kimi-ppt/dsh-kimi-ppt-0.1.1-rc.2-desktop-kimi-20260904.tgz\",
+        \"dsh-llm-opencode\": \"git+https://ghproxy.net/https://github.com/bobowsh/dsh-llm-opencode.git\",
+        \"dshmarket\": \"file:packages/dshmarket\",
+        \"electron-updater\": \"^6.8.9\",
+        \"fflate\": \"^0.8.3\",
+        \"iconv-lite\": \"^0.7.3\",
+        \"node\": \"24.9.0\",
+        \"pnpm\": \"11.21.0\",
+        \"qrcode\": \"^1.5.4\",
+        \"react\": \"18.3.1\",
+        \"react-dom\": \"18.3.1\",
+        \"ws\": \"^8.21.3\"
+      },
+      \"devDependencies\": {
+        \"@types/node\": \"24.10.1\",
+        \"@types/qrcode\": \"^1.5.6\",
+        \"@types/ws\": \"^8.18.1\",
+        \"electron\": \"43.4.0\",
+        \"electron-builder\": \"26.15.3\",
+        \"electron-vite\": \"5.0.0\",
+        \"patch-package\": \"^8.0.1\",
+        \"typescript\": \"5.9.3\",
+        \"vitest\": \"^4.1.10\",
+        \"yaml\": \"^2.8.3\"
+      }
+    },
+    \"node_modules/@agentclientprotocol/sdk\": {
+      \"version\": \"1.4.0\",
+      \"resolved\": \"https://registry.npmmirror.com/@agentclientprotocol/sdk/-/sdk-1.4.0.tgz\",
+      \"integrity\": \"sha512-/eufudw+aFY1LKLolT6yFE6UMmYRl7fMJ/DEONSIyR6wI3slHWITBsANRGqXEY8FRzqUxwh7QEaGiZHcJPVThg==\
+",
+      \"license\": \"Apache-2.0\",
+      \"peerDependencies\": {
+        \"zod\": \"^3.25.0 || ^4.0.0\"
+      }
+    },
+    \"node_modules/@aiden0z/pptx-renderer\": {
+      \"version\": \"1.2.4\",
+      \"resolved\": \"https://registry.npmjs.org/@aiden0z/pptx-renderer/-/pptx-renderer-1.2.4.tgz\",
+      \"integrity\": \"sha512-/4X/BApiknc/JM4nAWQRp5zrnA2GKSMv5r1u3XLsMvySw9DTQjyXIKRtltRsmIYfoN32tHGFnrSlGok7nFS60w==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"echarts\": \"^6.0.0\",
+        \"jszip\": \"^3.10.1\"
+      },
+      \"peerDependencies\": {
+        \"pdfjs-dist\": \">=5 <7\"
+      },
+      \"peerDependenciesMeta\": {
+        \"pdfjs-dist\": {
+          \"optional\": true
+        }
+      }
+    },
+    \"node_modules/@anthropic-ai/sdk\": {
+      \"version\": \"0.91.1\",
+      \"resolved\": \"https://registry.npmmirror.com/@anthropic-ai/sdk/-/sdk-0.91.1.tgz\",
+      \"integrity\": \"sha512-LAmu761tSN9r66ixvmciswUj/ZC+1Q4iAfpedTfSVLeswRwnY3n2Nb6Tsk+cLPP28aLOPWeMgIuTuCcMC6W/iw==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"json-schema-to-ts\": \"^3.1.1\"
+      },
+      \"bin\": {
+        \"anthropic-ai-sdk\": \"bin/cli\"
+      },
+      \"peerDependencies\": {
+        \"zod\": \"^3.25.0 || ^4.0.0\"
+      },
+      \"peerDependenciesMeta\": {
+        \"zod\": {
+          \"optional\": true
+        }
+      }
+    },
+    \"node_modules/@asamuzakjp/css-color\": {
+      \"version\": \"5.1.11\",
+      \"resolved\": \"https://registry.npmjs.org/@asamuzakjp/css-color/-/css-color-5.1.11.tgz\",
+      \"integrity\": \"sha512-KVw6qIiCTUQhByfTd78h2yD1/00waTmm9uy/R7Ck/ctUyAPj+AEDLkQIdJW0T8+qGgj3j5bpNKK7Q3G+LedJWg==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@asamuzakjp/generational-cache\": \"^1.0.1\",
+        \"@csstools/css-calc\": \"^3.2.0\",
+        \"@csstools/css-color-parser\": \"^4.1.0\",
+        \"@csstools/css-parser-algorithms\": \"^4.0.0\",
+        \"@csstools/css-tokenizer\": \"^4.0.0\"
+      },
+      \"engines\": {
+        \"node\": \"^20.19.0 || ^22.12.0 || >=24.0.0\"
+      }
+    },
+    \"node_modules/@asamuzakjp/dom-selector\": {
+      \"version\": \"7.1.1\",
+      \"resolved\": \"https://registry.npmjs.org/@asamuzakjp/dom-selector/-/dom-selector-7.1.1.tgz\",
+      \"integrity\": \"sha512-67RZDnYRc8H/8MLDgQCDE//zoqVFwajkepHZgmXrbwybzXOEwOWGPYGmALYl9J2DOLfFPPs6kKCqmbzV895hTQ==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@asamuzakjp/generational-cache\": \"^1.0.1\",
+        \"@asamuzakjp/nwsapi\": \"^2.3.9\",
+        \"bidi-js\": \"^1.0.3\",
+        \"css-tree\": \"^3.2.1\",
+        \"is-potential-custom-element-name\": \"^1.0.1\"
+      },
+      \"engines\": {
+        \"node\": \"^20.19.0 || ^22.12.0 || >=24.0.0\"
+      }
+    },
+    \"node_modules/@asamuzakjp/generational-cache\": {
+      \"version\": \"1.0.1\",
+      \"resolved\": \"https://registry.npmjs.org/@asamuzakjp/generational-cache/-/generational-cache-1.0.1.tgz\",
+      \"integrity\": \"sha512-wajfB8KqzMCN2KGNFdLkReeHncd0AslUSrvHVvvYWuU8ghncRJoA50kT3zP9MVL0+9g4/67H+cdvBskj9THPzg==\
+",
+      \"license\": \"MIT\",
+      \"engines\": {
+        \"node\": \"^20.19.0 || ^22.12.0 || >=24.0.0\"
+      }
+    },
+    \"node_modules/@asamuzakjp/nwsapi\": {
+      \"version\": \"2.3.9\",
+      \"resolved\": \"https://registry.npmjs.org/@asamuzakjp/nwsapi/-/nwsapi-2.3.9.tgz\",
+      \"integrity\": \"sha512-n8GuYSrI9bF7FFZ/SjhwevlHc8xaVlb/7HmHelnc/PZXBD2ZR49NnN9sMMuDdEGPeeRQ5d0hqlSlEpgCX3Wl0Q==\
+",
+      \"license\": \"MIT\"
+    },
+    \"node_modules/@aws-crypto/sha256-browser\": {
+      \"version\": \"5.2.0\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-crypto/sha256-browser/-/sha256-browser-5.2.0.tgz\",
+      \"integrity\": \"sha512-AXfN/lGotSQwu6HNcEsIASo7kWXZ5HYWvfOmSNKDsEqC4OashTp8alTmaz+F7TC2L083SFv5RdB+qU3Vs1kZqw==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-crypto/sha256-js\": \"^5.2.0\",
+        \"@aws-crypto/supports-web-crypto\": \"^5.2.0\",
+        \"@aws-crypto/util\": \"^5.2.0\",
+        \"@aws-sdk/types\": \"^3.222.0\",
+        \"@aws-sdk/util-locate-window\": \"^3.0.0\",
+        \"@smithy/util-utf8\": \"^2.0.0\",
+        \"tslib\": \"^2.6.2\"
+      }
+    },
+    \"node_modules/@aws-crypto/sha256-js\": {
+      \"version\": \"5.2.0\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-crypto/sha256-js/-/sha256-js-5.2.0.tgz\",
+      \"integrity\": \"sha512-FFQQyu7edu4ufvIZ+OadFpHHOt+eSTBaYaki44c+akjg7qZg9oOQeLlk77F6tSYqjDAFClrHJk9tMf0HdVyOvA==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-crypto/util\": \"^5.2.0\",
+        \"@aws-sdk/types\": \"^3.222.0\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=16.0.0\"
+      }
+    },
+    \"node_modules/@aws-crypto/supports-web-crypto\": {
+      \"version\": \"5.2.0\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-crypto/supports-web-crypto/-/supports-web-crypto-5.2.0.tgz\",
+      \"integrity\": \"sha512-iAvUotm021kM33eCdNfwIN//F77/IADDSs58i+MDaOqFrVjZo9bAal0NK7HurRuWLLpF1iLX7gbWrjHjeo+YFg==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"tslib\": \"^2.6.2\"
+      }
+    },
+    \"node_modules/@aws-crypto/util\": {
+      \"version\": \"5.2.0\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-crypto/util/-/util-5.2.0.tgz\",
+      \"integrity\": \"sha512-4RkU9EsI6ZpBve5fseQlGNUWKMa1RLPQ1dnjnQoe07ldfIzcsGb5hC5W0Dm7u423KWzawlrpbjXBrXCEv9zazQ==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/types\": \"^3.222.0\",
+        \"@smithy/util-utf8\": \"^2.0.0\",
+        \"tslib\": \"^2.6.2\"
+      }
+    },
+    \"node_modules/@aws-sdk/client-bedrock-runtime\": {
+      \"version\": \"3.1048.0\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/client-bedrock-runtime/-/client-bedrock-runtime-3.1048.0.
+tgz\",
+      \"integrity\": \"sha512-u+NT61JZEkRFtpL0CAw1N1dwxnaLgwVXQl/zjJxTGgLyS/jTIdg2SdoEoCTHxgDyCnqa1HEi9QOoE9/pYRNpOQ==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-crypto/sha256-browser\": \"5.2.0\",
+        \"@aws-crypto/sha256-js\": \"5.2.0\",
+        \"@aws-sdk/core\": \"^3.974.11\",
+        \"@aws-sdk/credential-provider-node\": \"^3.972.42\",
+        \"@aws-sdk/eventstream-handler-node\": \"^3.972.16\",
+        \"@aws-sdk/middleware-eventstream\": \"^3.972.12\",
+        \"@aws-sdk/middleware-websocket\": \"^3.972.19\",
+        \"@aws-sdk/token-providers\": \"3.1048.0\",
+        \"@aws-sdk/types\": \"^3.973.8\",
+        \"@smithy/core\": \"^3.24.2\",
+        \"@smithy/fetch-http-handler\": \"^5.4.2\",
+        \"@smithy/node-http-handler\": \"^4.7.2\",
+        \"@smithy/types\": \"^4.14.1\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/core\": {
+      \"version\": \"3.977.9\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/core/-/core-3.977.9.tgz\",
+      \"integrity\": \"sha512-reqPFEQrZxDZpeGj4PFMepBeR5LGYHRqq/L0motTzgFkCRBA4rFdaVXDSLYyGHhxVz7sT2PDnPN9CluGSfgyJA==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@aws-sdk/xml-builder\": \"^3.972.40\",
+        \"@aws/lambda-invoke-store\": \"^0.3.0\",
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/signature-v4\": \"^5.6.12\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"bowser\": \"^2.11.0\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/credential-provider-env\": {
+      \"version\": \"3.972.70\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/credential-provider-env/-/credential-provider-env-3.972.7
+0.tgz\",
+      \"integrity\": \"sha512-H404B7dJl2mCrBqahDEYsanB0xhdDp6tXnXcTUnXmmpy2Q3J0Ho0bUajZ2jr/RdwzCyS59Gi8xXIFwPLGBl6Uw==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/core\": \"^3.977.9\",
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/credential-provider-http\": {
+      \"version\": \"3.972.72\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/credential-provider-http/-/credential-provider-http-3.972
+.72.tgz\",
+      \"integrity\": \"sha512-X98zYOrVOeuosCX+6ktf29FC2N2GHPLia7qv6mzPzTc+RPAuHWCDS++Z6JK7eGYqb/v6uaW7bAXaOvDBfol+0w==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/core\": \"^3.977.9\",
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/fetch-http-handler\": \"^5.7.2\",
+        \"@smithy/node-http-handler\": \"^4.11.3\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/credential-provider-http/node_modules/@smithy/node-http-handler\": {
+      \"version\": \"4.12.0\",
+      \"resolved\": \"https://registry.npmmirror.com/@smithy/node-http-handler/-/node-http-handler-4.12.0.tgz\",
+      \"integrity\": \"sha512-0mq1pHadfyXCYCqm2cNpbjNIT+fbaUpNxewZb/YNr2L0IrEVMOb8gM/Fl4K6XvHCW3uSNDFwPl/+iKm0bx9jYg==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=18.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/credential-provider-ini\": {
+      \"version\": \"3.973.15\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/credential-provider-ini/-/credential-provider-ini-3.973.1
+5.tgz\",
+      \"integrity\": \"sha512-Rykg6s5ceBuynMOGWgoowO4N+27JfnqXAnVaSunZl0hOO1XodSrxGNz6sCEbnmS0lAfQZDKyb3fbr46gSuv6Sg==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/core\": \"^3.977.9\",
+        \"@aws-sdk/credential-provider-env\": \"^3.972.70\",
+        \"@aws-sdk/credential-provider-http\": \"^3.972.72\",
+        \"@aws-sdk/credential-provider-login\": \"^3.972.77\",
+        \"@aws-sdk/credential-provider-process\": \"^3.972.70\",
+        \"@aws-sdk/credential-provider-sso\": \"^3.973.14\",
+        \"@aws-sdk/credential-provider-web-identity\": \"^3.972.76\",
+        \"@aws-sdk/nested-clients\": \"^3.997.44\",
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/credential-provider-imds\": \"^4.4.16\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/credential-provider-login\": {
+      \"version\": \"3.972.77\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/credential-provider-login/-/credential-provider-login-3.9
+72.77.tgz\",
+      \"integrity\": \"sha512-Jb59xfEISoN5mmbnA+HYqdtrSX3CgCtJoof+V5D8/TgUI56W63GEEd5Y58WijU3Ou6+WEgaLD1feVzaRXV5IDQ==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/core\": \"^3.977.9\",
+        \"@aws-sdk/nested-clients\": \"^3.997.44\",
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/credential-provider-node\": {
+      \"version\": \"3.972.82\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/credential-provider-node/-/credential-provider-node-3.972
+.82.tgz\",
+      \"integrity\": \"sha512-znDkEOGXB8W3kG1LJUKP3foBZY/9qLM0eil/DxWXSp37XsdsRLQHE/d/OaCGGVgKpA6znR38h/+INk8do1FjiA==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/credential-provider-env\": \"^3.972.70\",
+        \"@aws-sdk/credential-provider-http\": \"^3.972.72\",
+        \"@aws-sdk/credential-provider-ini\": \"^3.973.15\",
+        \"@aws-sdk/credential-provider-process\": \"^3.972.70\",
+        \"@aws-sdk/credential-provider-sso\": \"^3.973.14\",
+        \"@aws-sdk/credential-provider-web-identity\": \"^3.972.76\",
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/credential-provider-imds\": \"^4.4.16\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/credential-provider-process\": {
+      \"version\": \"3.972.70\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/credential-provider-process/-/credential-provider-process
+-3.972.70.tgz\",
+      \"integrity\": \"sha512-2ry03fGRJr4sV3jI+ocjj5JqALnFD6ymM5KiNCDZMvq8bX2GSbE0vji4aM43TVCl2nXqqLRZaUxdq/KeWRAY4Q==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/core\": \"^3.977.9\",
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/credential-provider-sso\": {
+      \"version\": \"3.973.14\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/credential-provider-sso/-/credential-provider-sso-3.973.1
+4.tgz\",
+      \"integrity\": \"sha512-jkhg/8ocAAoc0RFyLMhCw+/zZh7gystQgd4F4hznNa8P4Cc501PQmxd+jGLiMHodPJ+7Zv/3znM62gZojyasmA==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/core\": \"^3.977.9\",
+        \"@aws-sdk/nested-clients\": \"^3.997.44\",
+        \"@aws-sdk/token-providers\": \"3.1116.0\",
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/credential-provider-sso/node_modules/@aws-sdk/token-providers\": {
+      \"version\": \"3.1116.0\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/token-providers/-/token-providers-3.1116.0.tgz\",
+      \"integrity\": \"sha512-ygIivKqh8aHzNkucOCXHyIBgBpLPfrSI0mCqXF+vLBsPTUKqj0VSqAY0GFPe7lQl4HntjOcQ+KSyS7oUV2C54Q==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/core\": \"^3.977.9\",
+        \"@aws-sdk/nested-clients\": \"^3.997.44\",
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/credential-provider-web-identity\": {
+      \"version\": \"3.972.76\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/credential-provider-web-identity/-/credential-provider-we
+b-identity-3.972.76.tgz\",
+      \"integrity\": \"sha512-d3AGyVu759PGr35mEB2s22xxlNEA5rpdxtSPJthfPFJvoQ8dt357iVPECqWfUxXp1toJAvKmbtcIYVGigaGsCA==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/core\": \"^3.977.9\",
+        \"@aws-sdk/nested-clients\": \"^3.997.44\",
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/eventstream-handler-node\": {
+      \"version\": \"3.972.34\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/eventstream-handler-node/-/eventstream-handler-node-3.972
+.34.tgz\",
+      \"integrity\": \"sha512-cTeVzpu1xEAkryTZBYhGwnQ6gOGyp8ZYZvmn0Sg/nI/ABmy/CRHHxPDJDUi9PxwxUtGGaatvfRUB3FCgT/rSWw==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/middleware-eventstream\": {
+      \"version\": \"3.972.29\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/middleware-eventstream/-/middleware-eventstream-3.972.29.
+tgz\",
+      \"integrity\": \"sha512-dlRzHCgyB8W6hLuDC5pcT5q+ziPt00n4QGgGBE17ucLVU4zMa6lsbuUdQ2Pm75Z5VA8GF+R/+SgrRcaTdIzSIQ==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/middleware-websocket\": {
+      \"version\": \"3.972.52\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/middleware-websocket/-/middleware-websocket-3.972.52.tgz\
+",
+      \"integrity\": \"sha512-vsPPM+nMbKJlUCFU+eoGZbdxdxDIAX9LbpjSXaR5Ufpmqgp8TdYQnoExhLu4T3umW/JIIPny1ydbhWidZZYokQ==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/core\": \"^3.977.9\",
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/fetch-http-handler\": \"^5.7.2\",
+        \"@smithy/signature-v4\": \"^5.6.12\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">= 14.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/nested-clients\": {
+      \"version\": \"3.997.44\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/nested-clients/-/nested-clients-3.997.44.tgz\",
+      \"integrity\": \"sha512-NhEgryjlBF9w38ZXqGymQV28IhkYa1mKhlbYnqIis57AYwWGVYfUPgg/qC2rLRqOUfblxx++irvju10kVTa8Vw==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/core\": \"^3.977.9\",
+        \"@aws-sdk/signature-v4-multi-region\": \"^3.996.46\",
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/fetch-http-handler\": \"^5.7.2\",
+        \"@smithy/node-http-handler\": \"^4.11.3\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/nested-clients/node_modules/@smithy/node-http-handler\": {
+      \"version\": \"4.12.0\",
+      \"resolved\": \"https://registry.npmmirror.com/@smithy/node-http-handler/-/node-http-handler-4.12.0.tgz\",
+      \"integrity\": \"sha512-0mq1pHadfyXCYCqm2cNpbjNIT+fbaUpNxewZb/YNr2L0IrEVMOb8gM/Fl4K6XvHCW3uSNDFwPl/+iKm0bx9jYg==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@smithy/core\": \"^3.33.3\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=18.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/signature-v4-multi-region\": {
+      \"version\": \"3.996.46\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/signature-v4-multi-region/-/signature-v4-multi-region-3.9
+96.46.tgz\",
+      \"integrity\": \"sha512-L+2xZTye/2T96f3lwCws0Zw6GG2JHZW9e8FpVgGBeeExSKyeoZ6CWRpBml/7DNiK/O26jrgPM9F+Ay8VkgzUWQ==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/types\": \"^3.974.5\",
+        \"@smithy/signature-v4\": \"^5.6.12\",
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/token-providers\": {
+      \"version\": \"3.1048.0\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/token-providers/-/token-providers-3.1048.0.tgz\",
+      \"integrity\": \"sha512-k0y/GcuesuSfWyUM0WamrGyeZmltRYaPbHO82UDA6mZ/doB+FOHKutikPAtSXMn/hDz970cF+iRuuiYO9VEbAA==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@aws-sdk/core\": \"^3.974.11\",
+        \"@aws-sdk/nested-clients\": \"^3.997.9\",
+        \"@aws-sdk/types\": \"^3.973.8\",
+        \"@smithy/core\": \"^3.24.2\",
+        \"@smithy/types\": \"^4.14.1\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/types\": {
+      \"version\": \"3.974.5\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/types/-/types-3.974.5.tgz\",
+      \"integrity\": \"sha512-LkwLL2BLbC6wNNm4JaH9mbEqBMdOZCct6VAYqhdN4U1xrWM+fUJQEfbHwQgDypapOWTRtlk25akb5afM0P8CIQ==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/util-locate-window\": {
+      \"version\": \"3.965.10\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/util-locate-window/-/util-locate-window-3.965.10.tgz\",
+      \"integrity\": \"sha512-ycwH6Zd2GhuSqdXX9ihbCjeGTB6xOJs+O3+Jb8/zDG9978XU80qs75dfkPJRMNKe5MvBZPuNeFpd4JZKPoUF4g==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws-sdk/xml-builder\": {
+      \"version\": \"3.972.40\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws-sdk/xml-builder/-/xml-builder-3.972.40.tgz\",
+      \"integrity\": \"sha512-wlFmCIGUlwF4zx/kncw+bmxTQh1HeSJq4mYV/V5cZUSJadDP3kXvGW8Rn21cimj/7y9ju+47oYWXi97vF7czaA==\
+",
+      \"license\": \"Apache-2.0\",
+      \"dependencies\": {
+        \"@smithy/types\": \"^4.17.2\",
+        \"tslib\": \"^2.6.2\"
+      },
+      \"engines\": {
+        \"node\": \">=20.0.0\"
+      }
+    },
+    \"node_modules/@aws/lambda-invoke-store\": {
+      \"version\": \"0.3.0\",
+      \"resolved\": \"https://registry.npmmirror.com/@aws/lambda-invoke-store/-/lambda-invoke-store-0.3.0.tgz\",
+      \"integrity\": \"sha512-sl4Bm6yiMNYrZKkqqDFWN0UfnWhlS8ivKxrYl+6t0gCLrqr8y3B2IqZZbFRkfaVVp7C/baApyh71P+LeE1A2sQ==\
+",
+      \"license\": \"Apache-2.0\",
+      \"engines\": {
+        \"node\": \">=18.0.0\"
+      }
+    },
+    \"node_modules/@babel/code-frame\": {
+      \"version\": \"7.29.7\",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@babel/helper-validator-identifier\": \"^7.29.7\",
+        \"js-tokens\": \"^4.0.0\",
+        \"picocolors\": \"^1.1.1\"
+      },
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@babel/compat-data\": {
+      \"version\": \"7.29.7\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@babel/core\": {
+      \"version\": \"7.29.7\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@babel/code-frame\": \"^7.29.7\",
+        \"@babel/generator\": \"^7.29.7\",
+        \"@babel/helper-compilation-targets\": \"^7.29.7\",
+        \"@babel/helper-module-transforms\": \"^7.29.7\",
+        \"@babel/helpers\": \"^7.29.7\",
+        \"@babel/parser\": \"^7.29.7\",
+        \"@babel/template\": \"^7.29.7\",
+        \"@babel/traverse\": \"^7.29.7\",
+        \"@babel/types\": \"^7.29.7\",
+        \"@jridgewell/remapping\": \"^2.3.5\",
+        \"convert-source-map\": \"^2.0.0\",
+        \"debug\": \"^4.1.0\",
+        \"gensync\": \"^1.0.0-beta.2\",
+        \"json5\": \"^2.2.3\",
+        \"semver\": \"^6.3.1\"
+      },
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      },
+      \"funding\": {
+        \"type\": \"opencollective\",
+        \"url\": \"https://opencollective.com/babel\"
+      }
+    },
+    \"node_modules/@babel/core/node_modules/debug\": {
+      \"version\": \"4.4.3\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"ms\": \"^2.1.3\"
+      },
+      \"engines\": {
+        \"node\": \">=6.0\"
+      },
+      \"peerDependenciesMeta\": {
+        \"supports-color\": {
+          \"optional\": true
+        }
+      }
+    },
+    \"node_modules/@babel/core/node_modules/ms\": {
+      \"version\": \"2.1.3\",
+      \"dev\": true,
+      \"license\": \"MIT\"
+    },
+    \"node_modules/@babel/core/node_modules/semver\": {
+      \"version\": \"6.3.1\",
+      \"dev\": true,
+      \"license\": \"ISC\",
+      \"bin\": {
+        \"semver\": \"bin/semver.js\"
+      }
+    },
+    \"node_modules/@babel/generator\": {
+      \"version\": \"7.29.8\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@babel/parser\": \"^7.29.8\",
+        \"@babel/types\": \"^7.29.8\",
+        \"@jridgewell/gen-mapping\": \"^0.3.12\",
+        \"@jridgewell/trace-mapping\": \"^0.3.28\",
+        \"jsesc\": \"^3.0.2\"
+      },
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@babel/helper-compilation-targets\": {
+      \"version\": \"7.29.7\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@babel/compat-data\": \"^7.29.7\",
+        \"@babel/helper-validator-option\": \"^7.29.7\",
+        \"browserslist\": \"^4.24.0\",
+        \"lru-cache\": \"^5.1.1\",
+        \"semver\": \"^6.3.1\"
+      },
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@babel/helper-compilation-targets/node_modules/semver\": {
+      \"version\": \"6.3.1\",
+      \"dev\": true,
+      \"license\": \"ISC\",
+      \"bin\": {
+        \"semver\": \"bin/semver.js\"
+      }
+    },
+    \"node_modules/@babel/helper-globals\": {
+      \"version\": \"7.29.7\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@babel/helper-module-imports\": {
+      \"version\": \"7.29.7\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@babel/traverse\": \"^7.29.7\",
+        \"@babel/types\": \"^7.29.7\"
+      },
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@babel/helper-module-transforms\": {
+      \"version\": \"7.29.7\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@babel/helper-module-imports\": \"^7.29.7\",
+        \"@babel/helper-validator-identifier\": \"^7.29.7\",
+        \"@babel/traverse\": \"^7.29.7\"
+      },
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      },
+      \"peerDependencies\": {
+        \"@babel/core\": \"^7.0.0\"
+      }
+    },
+    \"node_modules/@babel/helper-plugin-utils\": {
+      \"version\": \"7.29.7\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@babel/helper-string-parser\": {
+      \"version\": \"7.29.7\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@babel/helper-validator-identifier\": {
+      \"version\": \"7.29.7\",
+      \"license\": \"MIT\",
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@babel/helper-validator-option\": {
+      \"version\": \"7.29.7\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@babel/helpers\": {
+      \"version\": \"7.29.7\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@babel/template\": \"^7.29.7\",
+        \"@babel/types\": \"^7.29.7\"
+      },
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@babel/parser\": {
+      \"version\": \"7.29.8\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@babel/types\": \"^7.29.8\"
+      },
+      \"bin\": {
+        \"parser\": \"bin/babel-parser.js\"
+      },
+      \"engines\": {
+        \"node\": \">=6.0.0\"
+      }
+    },
+    \"node_modules/@babel/plugin-transform-arrow-functions\": {
+      \"version\": \"7.29.7\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@babel/helper-plugin-utils\": \"^7.29.7\"
+      },
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      },
+      \"peerDependencies\": {
+        \"@babel/core\": \"^7.0.0-0\"
+      }
+    },
+    \"node_modules/@babel/runtime\": {
+      \"version\": \"7.29.7\",
+      \"resolved\": \"https://registry.npmmirror.com/@babel/runtime/-/runtime-7.29.7.tgz\",
+      \"integrity\": \"sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==\
+",
+      \"license\": \"MIT\",
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@babel/template\": {
+      \"version\": \"7.29.7\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@babel/code-frame\": \"^7.29.7\",
+        \"@babel/parser\": \"^7.29.7\",
+        \"@babel/types\": \"^7.29.7\"
+      },
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@babel/traverse\": {
+      \"version\": \"7.29.8\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@babel/code-frame\": \"^7.29.7\",
+        \"@babel/generator\": \"^7.29.8\",
+        \"@babel/helper-globals\": \"^7.29.7\",
+        \"@babel/parser\": \"^7.29.8\",
+        \"@babel/template\": \"^7.29.7\",
+        \"@babel/types\": \"^7.29.8\",
+        \"debug\": \"^4.3.1\"
+      },
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@babel/traverse/node_modules/debug\": {
+      \"version\": \"4.4.3\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"ms\": \"^2.1.3\"
+      },
+      \"engines\": {
+        \"node\": \">=6.0\"
+      },
+      \"peerDependenciesMeta\": {
+        \"supports-color\": {
+          \"optional\": true
+        }
+      }
+    },
+    \"node_modules/@babel/traverse/node_modules/ms\": {
+      \"version\": \"2.1.3\",
+      \"dev\": true,
+      \"license\": \"MIT\"
+    },
+    \"node_modules/@babel/types\": {
+      \"version\": \"7.29.8\",
+      \"dev\": true,
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@babel/helper-string-parser\": \"^7.29.7\",
+        \"@babel/helper-validator-identifier\": \"^7.29.7\"
+      },
+      \"engines\": {
+        \"node\": \">=6.9.0\"
+      }
+    },
+    \"node_modules/@bramus/specificity\": {
+      \"version\": \"2.4.2\",
+      \"resolved\": \"https://registry.npmjs.org/@bramus/specificity/-/specificity-2.4.2.tgz\",
+      \"integrity\": \"sha512-ctxtJ/eA+t+6q2++vj5j7FYX3nRu311q1wfYH3xjlLOsczhlhxAg2FWNUXhpGvAw3BWo1xBcvOV6/YLc2r5FJw==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"css-tree\": \"^3.0.0\"
+      },
+      \"bin\": {
+        \"specificity\": \"bin/cli.js\"
+      }
+    },
+    \"node_modules/@csstools/color-helpers\": {
+      \"version\": \"6.1.1\",
+      \"resolved\": \"https://registry.npmjs.org/@csstools/color-helpers/-/color-helpers-6.1.1.tgz\",
+      \"integrity\": \"sha512-gLNsunvwf3mCi5u5o46/Z/JcJMnhbHSaZ69rkgPzNM3J4s8hWwpPUQB6/tt0EDFyCiWzxANlx+2LJwpYj4zS1w==\
+",
+      \"funding\": [
+        {
+          \"type\": \"github\",
+          \"url\": \"https://github.com/sponsors/csstools\"
+        },
+        {
+          \"type\": \"opencollective\",
+          \"url\": \"https://opencollective.com/csstools\"
+        }
+      ],
+      \"license\": \"MIT-0\",
+      \"engines\": {
+        \"node\": \">=20.19.0\"
+      }
+    },
+    \"node_modules/@csstools/css-calc\": {
+      \"version\": \"3.3.0\",
+      \"resolved\": \"https://registry.npmjs.org/@csstools/css-calc/-/css-calc-3.3.0.tgz\",
+      \"integrity\": \"sha512-c5ihYsPkdG6JCkU2zTMm4+k6r7RXuGxtWYhu5DHMIiF1FHzrfmHL5so11AoFpUv/tu61xfcmT4AmKoFfMPoqdQ==\
+",
+      \"funding\": [
+        {
+          \"type\": \"github\",
+          \"url\": \"https://github.com/sponsors/csstools\"
+        },
+        {
+          \"type\": \"opencollective\",
+          \"url\": \"https://opencollective.com/csstools\"
+        }
+      ],
+      \"license\": \"MIT\",
+      \"engines\": {
+        \"node\": \">=20.19.0\"
+      },
+      \"peerDependencies\": {
+        \"@csstools/css-parser-algorithms\": \"^4.0.0\",
+        \"@csstools/css-tokenizer\": \"^4.0.0\"
+      }
+    },
+    \"node_modules/@csstools/css-color-parser\": {
+      \"version\": \"4.2.2\",
+      \"resolved\": \"https://registry.npmjs.org/@csstools/css-color-parser/-/css-color-parser-4.2.2.tgz\",
+      \"integrity\": \"sha512-3QKjR/vxyjcSXBLgb6lP0S3MGdvwbmqSsvLPbYdVORqPDc8FX1HAJ0Spk38bxaRXgvENTA47tlhhbb5Z2e8hEg==\
+",
+      \"funding\": [
+        {
+          \"type\": \"github\",
+          \"url\": \"https://github.com/sponsors/csstools\"
+        },
+        {
+          \"type\": \"opencollective\",
+          \"url\": \"https://opencollective.com/csstools\"
+        }
+      ],
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@csstools/color-helpers\": \"^6.1.1\",
+        \"@csstools/css-calc\": \"^3.3.0\"
+      },
+      \"engines\": {
+        \"node\": \">=20.19.0\"
+      },
+      \"peerDependencies\": {
+        \"@csstools/css-parser-algorithms\": \"^4.0.0\",
+        \"@csstools/css-tokenizer\": \"^4.0.0\"
+      }
+    },
+    \"node_modules/@csstools/css-parser-algorithms\": {
+      \"version\": \"4.0.0\",
+      \"resolved\": \"https://registry.npmjs.org/@csstools/css-parser-algorithms/-/css-parser-algorithms-4.0.0.tgz\",
+      \"integrity\": \"sha512-+B87qS7fIG3L5h3qwJ/IFbjoVoOe/bpOdh9hAjXbvx0o8ImEmUsGXN0inFOnk2ChCFgqkkGFQ+TpM5rbhkKe4w==\
+",
+      \"funding\": [
+        {
+          \"type\": \"github\",
+          \"url\": \"https://github.com/sponsors/csstools\"
+        },
+        {
+          \"type\": \"opencollective\",
+          \"url\": \"https://opencollective.com/csstools\"
+        }
+      ],
+      \"license\": \"MIT\",
+      \"engines\": {
+        \"node\": \">=20.19.0\"
+      },
+      \"peerDependencies\": {
+        \"@csstools/css-tokenizer\": \"^4.0.0\"
+      }
+    },
+    \"node_modules/@csstools/css-syntax-patches-for-csstree\": {
+      \"version\": \"1.1.12\",
+      \"resolved\": \"https://registry.npmjs.org/@csstools/css-syntax-patches-for-csstree/-/css-syntax-patches-for-csst
+ree-1.1.12.tgz\",
+      \"integrity\": \"sha512-3vLQK+dXxhBMR2Wx99PTCifE+vHtW2ndZWyla8yK813ev6oGhyn8Lja8jCyGAWTJ+LEYZK7EVtJxrDj8ztevJw==\
+",
+      \"funding\": [
+        {
+          \"type\": \"github\",
+          \"url\": \"https://github.com/sponsors/csstools\"
+        },
+        {
+          \"type\": \"opencollective\",
+          \"url\": \"https://opencollective.com/csstools\"
+        }
+      ],
+      \"license\": \"MIT-0\",
+      \"peerDependencies\": {
+        \"css-tree\": \"^3.2.1\"
+      },
+      \"peerDependenciesMeta\": {
+        \"css-tree\": {
+          \"optional\": true
+        }
+      }
+    },
+    \"node_modules/@csstools/css-tokenizer\": {
+      \"version\": \"4.0.0\",
+      \"resolved\": \"https://registry.npmjs.org/@csstools/css-tokenizer/-/css-tokenizer-4.0.0.tgz\",
+      \"integrity\": \"sha512-QxULHAm7cNu72w97JUNCBFODFaXpbDg+dP8b/oWFAZ2MTRppA3U00Y2L1HqaS4J6yBqxwa/Y3nMBaxVKbB/NsA==\
+",
+      \"funding\": [
+        {
+          \"type\": \"github\",
+          \"url\": \"https://github.com/sponsors/csstools\"
+        },
+        {
+          \"type\": \"opencollective\",
+          \"url\": \"https://opencollective.com/csstools\"
+        }
+      ],
+      \"license\": \"MIT\",
+      \"engines\": {
+        \"node\": \">=20.19.0\"
+      }
+    },
+    \"node_modules/@deepseek-ai/cordis\": {
+      \"version\": \"4.0.2\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cordis-4.0.2.tgz\",
+      \"integrity\": \"sha512-L6xuMRR0JKOThYpKa5FGR3oKVzJC/K/LqZsTc6NFIbp7njxkoR1Gwagsv2GAedW/JIpPAOOFmh/zTWykUlQMlQ==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/cosmokit\": \"^1.8.3\",
+        \"@standard-schema/spec\": \"^1.1.0\"
+      },
+      \"bin\": {
+        \"cordis\": \"bin.js\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis-plugin-include\": \"^1.0.7\",
+        \"@deepseek-ai/cordis-plugin-loader\": \"^1.0.3\"
+      },
+      \"peerDependenciesMeta\": {
+        \"@deepseek-ai/cordis-plugin-include\": {
+          \"optional\": true
+        },
+        \"@deepseek-ai/cordis-plugin-loader\": {
+          \"optional\": true
+        }
+      }
+    },
+    \"node_modules/@deepseek-ai/cordis-plugin-group\": {
+      \"version\": \"1.0.2\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cordis-plugin-group-1.0.2.tgz\",
+      \"integrity\": \"sha512-rFVxvEJlfKPIXj2DDNENtybIg0uDpDQJ01J6f/mrMsTj5ieWafK3/gKbRP71TMeinrd6WoC9hGwzEI1UMgoTjw==\
+",
+      \"license\": \"MIT\",
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/cordis-plugin-loader\": \"^1.0.3\"
+      }
+    },
+    \"node_modules/@deepseek-ai/cordis-plugin-hmr\": {
+      \"version\": \"1.0.17\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cordis-plugin-hmr-1.0.17.tgz\",
+      \"integrity\": \"sha512-iP+LM7V/ZAaKIJcY8IMwmu/jq9lsphaGdgO5mD6M/ekL7RSy80ggdnTYTlVJRUPvp4zngHZkBt6DZv+WCyER/w==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@babel/code-frame\": \"^7.29.0\",
+        \"@deepseek-ai/cosmokit\": \"^1.8.3\",
+        \"@deepseek-ai/schemastery\": \"^3.18.2\",
+        \"chokidar\": \"^4.0.3\",
+        \"picomatch\": \"^4.0.3\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/cordis-plugin-timer\": \"^1.1.4\"
+      }
+    },
+    \"node_modules/@deepseek-ai/cordis-plugin-include\": {
+      \"version\": \"1.0.7\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cordis-plugin-include-1.0.7.tgz\",
+      \"integrity\": \"sha512-sUvJVZ8n/cxgPrPj6UNDujUpfxja7+9kfrRTtltQ8clOB5tl2eMIWIIT7HwocRdHIXdOl8sEc8FWZIQw20yoUA==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/cosmokit\": \"^1.8.3\",
+        \"js-yaml\": \"^4.1.0\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/cordis-plugin-loader\": \"^1.0.3\"
+      }
+    },
+    \"node_modules/@deepseek-ai/cordis-plugin-loader\": {
+      \"version\": \"1.0.3\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cordis-plugin-loader-1.0.3.tgz\",
+      \"integrity\": \"sha512-6q4KOh7lczfQ8tAQiTKOrVQ1oaGw//wUz1a1dnCPOPoEHfkEqEUE5kl9+7UGtUX+e8xmIVM7p+hXMyNNsV+H0g==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/cosmokit\": \"^1.8.3\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"node-addon-require-builtin\": \"^0.1.4\"
+      },
+      \"peerDependenciesMeta\": {
+        \"node-addon-require-builtin\": {
+          \"optional\": true
+        }
+      }
+    },
+    \"node_modules/@deepseek-ai/cordis-plugin-timer\": {
+      \"version\": \"1.1.4\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cordis-plugin-timer-1.1.4.tgz\",
+      \"integrity\": \"sha512-GfoSA2XY2MdIqtTrPHYhl6Rq1bxGO6Vyo8etCRE3dhbquKhreeXtRwzdw3sgWelze56R4cn+OXjzbqqN4YHtIQ==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/cosmokit\": \"^1.8.3\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\"
+      }
+    },
+    \"node_modules/@deepseek-ai/cosmokit\": {
+      \"version\": \"1.8.3\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cosmokit-1.8.3.tgz\",
+      \"integrity\": \"sha512-UBl+x4P3v+llf98V3Ws+i3NTPFi1wb0YNRxfO67Qf/8HAE5RtWvrSbEJLJ4n0PxJjkizc0PAmRf2jDzd7UOahw==\
+",
+      \"license\": \"MIT\"
+    },
+    \"node_modules/@deepseek-ai/dsh\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-/cEQV07LUB3z/xZa0RwYRAeDTgHgB6e1LPYX/4AsFoNQDh7o1G4Kn53B0P00NM7xRqdqo2zLgCEbekjqOWZAUA==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/cordis-plugin-hmr\": \"^1.0.17\",
+        \"@deepseek-ai/cordis-plugin-include\": \"^1.0.7\",
+        \"@deepseek-ai/cordis-plugin-loader\": \"^1.0.3\",
+        \"@deepseek-ai/cordis-plugin-timer\": \"^1.1.4\",
+        \"@deepseek-ai/dsh-acp-app\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-agent-instructions\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-agent-tool-presentation\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-app-boot\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-base\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-client-ui-agent-preset\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-client-ui-cordis\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-cmdline\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-command-compact\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-command-goal\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-compaction-basic\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-compaction-tool-result-pruner\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-cordis-client-runner\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-fs-local\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-goal\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-goal-round-driver\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-headless\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-home-paths\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-hooks-claude-code\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-hooks-codex\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-jobs-local\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-launch-environment\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-mcp-client\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-persona\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-plan-mode\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-pwsh-local\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-pwsh-sandbox\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-schedule\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-sdk-app\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-sdk-minimal\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-projection\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-reference\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-skill\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-skill-filesystem\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-terminal\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-terminal-bash\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-time-context\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tmux-context\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-token-meter\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-ask-user\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-bash\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-bash-persistent\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-cordis\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-fs\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-fs-search\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-goal\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-jobs\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-pwsh\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-pwsh-persistent\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-ralph\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-skill\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-str-replace-editor\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-subagent\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-subagent-control\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-todo\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-web\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-workflow\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-web-app\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-webhook\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-webhook-github\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-workflow-worker-thread\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/schemastery\": \"^3.18.2\",
+        \"commander\": \"^15.0.0\",
+        \"js-yaml\": \"^4.2.0\",
+        \"node-addon-require-builtin\": \"^0.1.4\"
+      },
+      \"bin\": {
+        \"dsh\": \"lib/bin.js\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-acp\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-acp-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-y8/vpjKFCoPhQ8vTKt6i7BIFcD4j3yR56kyazDDi1UY6JfAAgEK3ynM7q/jbFuWem1wWXpgmTiym0aKfj9SKEw==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@agentclientprotocol/sdk\": \"1.4.0\",
+        \"@deepseek-ai/dsh-brand\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/schemastery\": \"^3.18.2\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/dsh-agent\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-attachment\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-llm\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-mcp-client\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-persistence\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-token-meter\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-user-approval\": \"^0.1.2-rc.1\"
+      },
+      \"peerDependenciesMeta\": {
+        \"@deepseek-ai/dsh-token-meter\": {
+          \"optional\": true
+        }
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-acp-app\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-acp-app-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-9g0sptA000rfatWh7H60ps8zwEYmH6Mk/MeUaHksqE53KWKVl7Lu5scKv0g/z2Vi3H93iH7X0xYTRvOqO2G9Aw==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/dsh-acp\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-cmdline\": \"^0.1.2-rc.1\",
+        \"commander\": \"^15.0.0\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-agent\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-agent-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-FTXc2xS9q84BB3270mdEsQt/uE1OoD0dY9okxliJk6R2mkXqQNhshZl9npUWd1BUaYwaf+2r08OOMMIrfFWCvA==\
+",
+      \"license\": \"MIT\",
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/dsh-invariants\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-llm\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-scope\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-projection\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-system-prompt\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-typert-protocol\": \"^0.1.2-rc.1\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-agent-default-model\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-agent-default-model-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-gu8JIOW6TEpczFGGQFUzyg0jNpvu8rSURp1Xhf1wwUgYoPQTAsSAD10J048d2YdbyRyu8Vty04e1VCjf4m3Asw==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/schemastery\": \"^3.18.2\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/dsh-agent\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-llm\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-settings\": \"^0.1.2-rc.1\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-agent-instructions\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-agent-instructions-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-CWM0o1OQLZG9mmFmNVC66gFQXlx6mAiIE078yZohGOOKX1s4ryD2T9fSvn5kjlBRTWxqQkbiIhQTrxyzCSrL9g==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/dsh-util-values\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/schemastery\": \"^3.18.2\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/dsh-agent\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-fs\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-home-paths\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-llm\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-projection\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tools\": \"^0.1.2-rc.1\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-agent-loop\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-agent-loop-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-kH0X6WkKsWRKxfGmtqeBF+VXqufYMUNy3eYb+27Lz09g2I5rlqdRUlQuQwQlS2yxmtF9Yq2BxJK3NGL4wIdrfg==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/dsh-brand\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-util-values\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/schemastery\": \"^3.18.2\",
+        \"zod\": \"^4.4.3\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/dsh-agent\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-invariants\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-llm\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-scope\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-persistence\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-projection\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-settings\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-system-prompt\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tools\": \"^0.1.2-rc.1\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-agent-presets\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-agent-presets-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-R4XkuzWtYYRKur7rH6XkMXJwwWAcqp5MGv3EMUbVzmqnMgBI82wQT/O4KLi3ip6Zp+BWDXn6RCC5ULqq3PCymQ==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/schemastery\": \"^3.18.2\",
+        \"js-yaml\": \"^4.1.0\",
+        \"zod\": \"^4.4.3\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/cordis-plugin-include\": \"^1.0.7\",
+        \"@deepseek-ai/cordis-plugin-loader\": \"^1.0.3\",
+        \"@deepseek-ai/dsh-agent\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-atomic-write\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-home-paths\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-invariants\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-scope\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-projection\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-settings\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-system-prompt\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tools\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-typert-protocol\": \"^0.1.2-rc.1\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-agent-tool-presentation\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-agent-tool-presentation-0.1.2-rc.1.tgz\"
+,
+      \"integrity\": \"sha512-5oo+75L8W5OEDlUa86yX8ze0TcIP9v9qI0d6uilMZElahCpIPXsUVRWDcJ8TGlTZm2sppgEHaFH4Ink97Q18MA==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/schemastery\": \"^3.18.2\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/dsh-tools\": \"^0.1.2-rc.1\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-anonymous-user-id\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-anonymous-user-id-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-FdtRKIidJUaxyRiyLEmlhPf6yNwpbZWEDLN6m5y2dsCh1m4tqPA6JR4bWJzRno2+kRQqqfYfRlURTcPhlrGEZQ==\
+",
+      \"license\": \"MIT\",
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/dsh-brand\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-home-paths\": \"^0.1.2-rc.1\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-api-gateway\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-api-gateway-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-JV5Kotv/W1UCNgxkzqComthCpw6vODdGlUHCOUQRVhB8bsLNNaDGC+Ege6vgcunbDwF8bSrIu4lha0xznuI1ug==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/dsh-deque\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-timeout\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-typert-protocol\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/schemastery\": \"^3.18.2\",
+        \"ws\": \"^8.21.0\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-api-remotes\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-api-remotes-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-CkM2WNdh6/PMhFFWEQpV++ixg/rll/4MhKskSyodpjSxEijpNeZ5jKDh+UTSlHrNKM05El2ihUsto9MCpQf1iw==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/dsh-deque\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-util-values\": \"^0.1.2-rc.1\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/dsh-scope\": \"^0.1.2-rc.1\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-api-session-controller\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-api-session-controller-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-XsX1QsLyVEHKaAjMsHmK90Gomd3GuE40TJxZ1JllXgg47d0jnUX+hvif7rdLPtsHr+jLFUdQuTJd4LH4f+nrvA==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/dsh-brand\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-deque\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/schemastery\": \"^3.18.2\",
+        \"zod\": \"^4.4.3\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/dsh-agent\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-agent-default-model\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-agent-presets\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-api-gateway\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-attachment\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-client-connection\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-file-reference\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-jobs\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-llm\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-native-command\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-scope\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-persistence\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-projection\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-projection-cache\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-query\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-title\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-skill\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-subagent\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-typert-protocol\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-typert-registry\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-util-time\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-util-workspace-path\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-workspace\": \"^0.1.2-rc.1\"
+      },
+      \"peerDependenciesMeta\": {
+        \"@deepseek-ai/dsh-jobs\": {
+          \"optional\": true
+        },
+        \"@deepseek-ai/dsh-session-persistence\": {
+          \"optional\": true
+        },
+        \"@deepseek-ai/dsh-session-projection-cache\": {
+          \"optional\": true
+        }
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-api-settings-controller\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-api-settings-controller-0.1.2-rc.1.tgz\"
+,
+      \"integrity\": \"sha512-mkJplHvIm1O/WmkmmvkpIu625ExlvDCzVTIgiY+SwO5fkq9aFX7q7zPKtSTJ2jPwejhE1GBhB8HBa19S8UTbZw==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/schemastery\": \"^3.18.2\",
+        \"zod\": \"^4.4.3\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/dsh-agent-presets\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-credentials\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-native-command\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-settings\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-typert-protocol\": \"^0.1.2-rc.1\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-api-workspace-controller\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-api-workspace-controller-0.1.2-rc.1.tgz\
+",
+      \"integrity\": \"sha512-F/mcpAIzRvB0pTlGVUIY2EIgWJ7crtckz1f4lVyR4agdBIQ3CpLVBgXsUathyQP5WDWc3u2h2q0qzwvIwqJOtA==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/dsh-deque\": \"^0.1.2-rc.1\",
+        \"zod\": \"^4.4.3\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/dsh-api-gateway\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-client-connection\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-host-directory-picker\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-storage-domain\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-typert-protocol\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-workspace\": \"^0.1.2-rc.1\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-app-boot\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-app-boot-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-CZHHo7C4n9cUOQ08/WqU6ROvNH/Io6Oq1HRKst+DUNo2dSXHi/E15gzwBruRqHu7HV+e9eAV0AhfNEYiWpH4HA==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/dsh-atomic-write\": \"^0.1.2-rc.1\",
+        \"js-yaml\": \"^4.2.0\",
+        \"resolve.exports\": \"^2.0.3\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/cordis-plugin-group\": \"^1.0.2\",
+        \"@deepseek-ai/cordis-plugin-hmr\": \"^1.0.17\",
+        \"@deepseek-ai/cordis-plugin-include\": \"^1.0.7\",
+        \"@deepseek-ai/cordis-plugin-loader\": \"^1.0.3\",
+        \"@deepseek-ai/dsh-home-paths\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-launch-environment\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-system-prompt\": \"^0.1.2-rc.1\"
+      },
+      \"peerDependenciesMeta\": {
+        \"@deepseek-ai/cordis-plugin-hmr\": {
+          \"optional\": true
+        }
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-atomic-write\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-atomic-write-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-KmzzAnrQsl9AceinAW4jCoLinQ1lVszUmVrh6rSmwXZxtfGf0qQ4hbRXP2Ah1h7e456koVuJ337aUDvUfy2mDA==\
+",
+      \"license\": \"MIT\",
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-attachment\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-attachment-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-B/eLWJuA+AqpeucDjzb0TF36RwIcQVf2gA7mKIXtto+8tmwSfOMAKCQkVNn5RZf7yGyO7laAxoJVbm0hfSyxpA==\
+",
+      \"license\": \"MIT\",
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/dsh-brand\": \"^0.1.2-rc.1\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-attachment-local\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-attachment-local-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-8nSYEq/t+oVQLxsYq7HeHJYt4INhqPURq7Ihdyz0sTOVzrcn4//SdsF2867xrpmRlVP+Ci39SQEiTacwHUqDiA==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/schemastery\": \"^3.18.2\",
+        \"sharp\": \"^0.35.3\"
+      },
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/dsh-attachment\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-home-paths\": \"^0.1.2-rc.1\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-authorization\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-authorization-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-cTHRYfXVLf7SHiAk0AtEoj/GkirWSZgblvdPEcw0y44MaplhO3ESpLvdkvPm8zLG52s7IPCGpeMz1Y0UvmA5Ng==\
+",
+      \"license\": \"MIT\",
+      \"peerDependencies\": {
+        \"@deepseek-ai/cordis\": \"^4.0.2\",
+        \"@deepseek-ai/dsh-credentials\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-invariants\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-llm\": \"^0.1.2-rc.1\"
+      }
+    },
+    \"node_modules/@deepseek-ai/dsh-base\": {
+      \"version\": \"0.1.2-rc.1\",
+      \"resolved\": \"file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-base-0.1.2-rc.1.tgz\",
+      \"integrity\": \"sha512-rmS+ge4lXfoyFL9SOog4r/nUhX0lUSta/s93uQliv6NuQyvoVK7l8c+L9S7XikgLgSwqla9Qy50M3Luq9tgDGg==\
+",
+      \"license\": \"MIT\",
+      \"dependencies\": {
+        \"@deepseek-ai/cordis-plugin-hmr\": \"^1.0.17\",
+        \"@deepseek-ai/cordis-plugin-timer\": \"^1.1.4\",
+        \"@deepseek-ai/dsh-agent\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-agent-default-model\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-agent-instructions\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-agent-loop\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-api-gateway\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-attachment-local\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-bash-sandbox\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-command-compact\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-command-feedback\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-command-goal\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-commands\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-compaction-basic\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-compaction-tool-result-pruner\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-credentials-local\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-deepseek-llm-api-extensions\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-fs-local\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-fs-observation-policy\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-fs-sandbox\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-goal\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-goal-round-driver\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-jobs-local\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-llm\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-llm-deepseek\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-llm-pi-ai\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-llm-retry\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-permission-presets\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-plan-mode\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-plugin-package-inventory-deepseek\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-pwsh-sandbox\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-repeat-tool-reminder\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-sandbox-local\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-sandbox-policy\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-checkpoint-policy\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-log-deepseek\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-persistence-jsonl\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-projection\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-projection-cache\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-query-sqlite\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-telemetry-otel\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-title\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-session-title-first-prompt-llm\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-settings-file\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-shell-env\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-skill\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-skill-badge\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-skill-filesystem\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-spill-local\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-spill-policy\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-storage\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-storage-domain\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-storage-json\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-subagent\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-subagent-fork-in-process\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-subagent-spawn-in-process\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-subprocess-local\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-system-prompt\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-token-meter\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-bash\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-call-timeout-policy\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-fs\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-fs-search\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-goal\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-jobs\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-pwsh\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-ralph\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-skill\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-str-replace-editor\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-subagent\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-subagent-control\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-todo\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-web\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tool-workflow\": \"^0.1.2-rc.1\",
+        \"@deepseek-ai/dsh-tools\":...
+
+ ❯ test/release.test.ts:81:32
+     79|
+     80|     // No @deepseek-ai/dsh-* package may resolve from a remote registr…
+     81|     expect(packageLockRaw).not.toMatch(
+       |                                ^
+
+ Test Files  4 failed | 80 passed | 1 skipped (85)
+      Tests  10 failed | 696 passed | 2 skipped (708)
+   Start at  01:16:23
+   Duration  7.02s (transform 10.34s, setup 0ms, import 26.44s, tests 47.99s, environment 11ms)
+
+     82|       /"resolved":\s*"https?:\/\/[^"]*deepseek-ai[/-]dsh/
+     83|     )
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+

@@ -1,0 +1,409 @@
+﻿node.exe : npm warn Unknown env config "side-effects-cache". This will stop working in the next major version of npm. S
+ee `npm help npmrc` for supported config options.
+所在位置 行:1 字符: 1
++ & "d:\nodejs/node.exe" "d:\nodejs/node_modules/npm/bin/npx-cli.js" vi ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (npm warn Unknow...config options.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+ RUN  v4.1.11 E:/work/dsh-desktop-me
+
+ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED Failed to prepare git-hosted package
+onlyBuiltDependencies:
+  - "@linxin666/dsh-remote-web-ui@git+ssh://git@github.com/zhu1090093659/dsh-web.git#c36e0d9992d31a81972e8eebe5208eab7d
+2e7ed3&path:/packages/dsh-remote-web-ui"ERR_PNPM_NO_MATCHING_VERSIONERR_PNPM_NO_MATCHING_VERSIONUpdate failed: dshmarke
+t
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)dsh-desktop pn
+pm runner: pnpm reported a blocked rename; giving it 20s to exit before stopping it
+dsh-desktop pnpm runner: C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse could no
+t be replaced; retrying in 750ms (2 of 3)
+dsh-desktop pnpm runner: the retry succeeded
+Update failed: dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)dsh-desktop pn
+pm runner: pnpm reported a blocked rename; giving it 20s to exit before stopping it
+dsh-desktop pnpm runner: C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse could no
+t be replaced; retrying in 750ms (2 of 3)
+Update failed: dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)dsh-desktop pn
+pm runner: pnpm reported a blocked rename; giving it 20s to exit before stopping it
+dsh-desktop pnpm runner: freed 1 blocked destination (C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\n
+ode_modules\argparse); installing over them (3 of 3)
+dsh-desktop pnpm runner: the install succeeded
+ ✓ test/release.test.ts (25 tests) 63ms
+ ❯ test/github-release-notes.test.ts (4 tests | 3 failed) 145ms
+     × emits the evidence blocks, the style reference, and the Chinese contract 46ms
+     × accepts a well-formed Chinese note 42ms
+     ✓ rejects a wrong title prefix, a stray H2, a link, and an empty file 44ms
+     × produces a note that passes validate and starts with the contract title 12ms
+dsh-desktop: pnpm shim written via d:\Users\bobowsh\AppData\Local\Temp\dsh-market-store-pin-FW0tDT\.desktop-bin\pnpm-runner.mjs
+dsh-desktop: pnpm shim written via d:\Users\bobowsh\AppData\Local\Temp\dsh-market-shim-U4XZDs\.desktop-bin\pnpm-runner.mjs
+ ✓ test/hmr-fallback.test.js (4 tests) 461ms
+     ✓ refreshes on a change to the watched config, and not on its neighbours  449ms
+ ✓ test/launch-agent-audit-run.test.ts (15 tests) 258ms
+ ✓ test/profile-progress-signature.test.ts (7 tests) 642ms
+     ✓ does not follow symlinks out of the profile  475ms
+ ❯ test/market-installer.test.js (15 tests | 1 failed) 628ms
+     ✓ pins the only install target accepted by the host 3ms
+     ✓ ships a resolvable pnpm binary instead of relying on the user PATH 6ms
+     ✓ removes only Desktop’s exact legacy pnpm settings and preserves sensitive config bytes 1ms
+     ✓ leaves user-selected or partial pnpm tuning untouched 0ms
+     ✓ keeps the store consistent through pinning and packaged shim regeneration 41ms
+     ✓ generates packaged node and pnpm shims in desktop-bin 24ms
+     ✓ cleans up staging and sidelined directories left by interrupted installations 17ms
+     ✓ cleans the leftovers inside a package’s own node_modules 19ms
+     ✓ clears a tree whose path is not ASCII 14ms
+     ✓ exposes the active Desktop profile without inferring it from argv 2ms
+     ✓ runs plugin mutations through one packaged pnpm operation boundary  477ms
+     ✓ rejects a package operation that was already aborted 2ms
+     ✓ reports both the requested dependency and installed package version 5ms
+     ✓ allows loopback status reads but requires same-origin mutation requests 1ms
+     × registers a placeholder before install and a stable management tab afterward 14ms
+ ✓ test/update.test.ts (6 tests) 240ms
+ ✓ test/generation-registry.test.ts (10 tests) 780ms
+     ✓ serialises operations across the cross-process lock  540ms
+ ✓ test/generation-installer.test.ts (14 tests) 1005ms
+     ✓ rejects a linked package tree without following or deleting its external target  522ms
+ ✓ test/plugin-recovery-detection.test.ts (6 tests) 146ms
+ ✓ test/lan-mobile-tunnel.test.ts (20 tests) 740ms
+ ✓ test/kimi-ppt-integration.test.ts (8 tests) 1095ms
+     ✓ ships one Kimi composer surface and excludes the Tencent route  407ms
+     ✓ ships every JavaScript chunk imported by the Host entry  354ms
+ ✓ test/finalize-windows-release.test.ts (1 test) 183ms
+Update failed: dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)Update failed:
+ dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+ ✓ test/plugin-removal.test.ts (5 tests) 981ms
+ ✓ test/plugin-recovery.test.ts (26 tests) 1078ms
+     ✓ lists a generation-linked bundle left behind by an interrupted uninstall  673ms
+ ✓ test/generation-launch.test.ts (5 tests) 1423ms
+     ✓ sweeps an unreferenced generation and projects the desired one on launch  473ms
+     ✓ does not retain or restore generations from a stale rollback pointer  879ms
+ ✓ test/remove-tree.test.ts (6 tests) 675ms
+     ✓ detaches a symlink without following it  624ms
+ ✓ test/profile-repair.test.ts (12 tests) 984ms
+     ✓ spares pnpm’s own entries, scoped packages, and symlinks  815ms
+ ✓ test/runtime.test.ts (53 tests) 2123ms
+     ✓ resolves a non-empty environment from the user login shell  2102ms
+ ✓ test/profile-compatibility.test.ts (6 tests) 344ms
+ ✓ test/plugin-component-cleanup.test.ts (15 tests) 1873ms
+     ✓ does not boot out or move a LaunchAgent through an owned-components junction  816ms
+     ✓ refuses a LaunchAgents junction before inspecting or moving active components  580ms
+ ✓ test/lan-mobile-bridge.test.ts (20 tests) 1229ms
+     ✓ opens the mux downlink only while a phone is attached  380ms
+ ✓ test/verify-release-assets.test.mjs (6 tests) 189ms
+ ✓ test/harness-node-entry.test.ts (20 tests) 178ms
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)Update failed:
+ dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)Update failed:
+ dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)Update failed:
+ dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)dsh-desktop pn
+pm runner: pnpm reported a blocked rename; giving it 20s to exit before stopping it
+dsh-desktop pnpm runner: C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse could no
+t be replaced; retrying in 750ms (2 of 3)
+Update failed: dshmarket
+error: EPERM: operation not permitted, rename 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_mod
+ules\argparse_tmp_19856_4' -> 'C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse'
+    at Worker.<anonymous> (D:\AA\DSH Desktop Dev\resources\app\node_modules\pnpm\dist\pnpm.cjs:104217:22)dsh-desktop pn
+pm runner: pnpm reported a blocked rename; giving it 20s to exit before stopping it
+dsh-desktop pnpm runner: C:\Users\u\AppData\Roaming\dsh-desktop-dev\harness\profiles\web\node_modules\argparse could no
+t be moved aside (EPERM)
+dsh-desktop pnpm runner: nothing could be freed; leaving pnpm's own diagnosis in place
+ ✓ test/desktop-storage.test.ts (7 tests) 186ms
+ ✓ test/build-version-index.test.ts (3 tests) 198ms
+ ✓ test/session-delete-patch.test.ts (9 tests) 192ms
+ ✓ test/pnpm-runner.test.js (21 tests) 3179ms
+     ✓ stops a pnpm that has gone silent instead of waiting out the host timeout  1016ms
+     ✓ keeps a quiet run that is still writing packages  1003ms
+     ✓ gives up on a run whose kill never lands  1012ms
+ ✓ test/profile-plugin-command.test.ts (7 tests) 3104ms
+     ✓ runs the DSH remove command with the bundled pnpm shim on PATH  1584ms
+     ✓ observes a fast command exit before sampling a large profile tree  1507ms
+ ✓ test/profile-install-marker.test.ts (8 tests) 194ms
+ ✓ test/readme-parity.test.ts (8 tests) 27ms
+ ✓ test/model-reasoning-efforts-patch.test.ts (10 tests) 29ms
+ ✓ test/version-info.test.ts (3 tests) 36ms
+ ✓ test/encoding.test.ts (5 tests) 89ms
+ ✓ test/component-ledger.test.ts (7 tests) 112ms
+ ✓ test/update-skip.test.ts (6 tests) 44ms
+ ✓ test/safe-mode.test.ts (14 tests) 45ms
+ ✓ test/generation-boundary.test.js (8 tests) 4154ms
+     ✓ replaces a stale validation-only link when a rejected install is retried  1343ms
+     ✓ keeps the active generation link unchanged until an update reaches cold start  1176ms
+     ✓ replaces an earlier generation of the same plugin  991ms
+ ✓ test/model-settings-catalog-ux-patch.test.ts (7 tests) 17ms
+ ✓ test/profile-store.test.ts (6 tests) 136ms
+ ✓ test/plugin-market-check.test.ts (4 tests) 30ms
+ ✓ test/lan-mobile-pages.test.ts (9 tests) 19ms
+ ✓ test/windows-titlebar.test.ts (7 tests) 23ms
+ ✓ test/preset-transfer-patch.test.ts (12 tests) 163ms
+ ✓ test/branding-patch.test.ts (5 tests) 18ms
+ ✓ test/launch-root.test.ts (2 tests) 19ms
+ ✓ test/patch-layer.test.ts (5 tests) 22ms
+ ✓ test/model-picker-patch.test.ts (6 tests) 15ms
+ ✓ test/profile-consistency.test.ts (7 tests) 234ms
+ ✓ test/open-in-finder.test.ts (3 tests) 15ms
+ ✓ test/directory-picker.test.ts (5 tests) 14ms
+ ✓ test/desktop-plugin-closure.test.ts (2 tests) 26ms
+ ❯ test/feishu-release-notes.test.ts (7 tests | 5 failed) 5326ms
+     × builds a prompt with valid metadata and evidence blocks 44ms
+     × generates deterministic fallback release notes that pass validation 32ms
+     ✓ rejects invalid markdown with links or incorrect headings 11ms
+     × generates deterministic fallback prerelease notes that pass validation 14ms
+     × builds a prerelease prompt with previous tag and prerelease notices 3037ms
+     × differentiates previous tag resolution between prerelease and official release 2184ms
+     ✓ integrates Feishu release notification into GitHub Actions workflow 1ms
+ ✓ test/model-selection-search-patch.test.ts (4 tests) 8ms
+ ✓ test/generation-projection.test.ts (11 tests) 5577ms
+     ✓ links enabled generations into the profile node_modules and lists them as bundles  359ms
+     ✓ drops the link and the bundle entry when a plugin stops being desired  1230ms
+     ✓ restores a profile-owned pnpm override after the generation is disabled  993ms
+     ✓ keeps projected generations outside pnpm while the manifest exposes a version  1422ms
+     ✓ preserves the existing projection when a desired generation loses its package root  615ms
+ ✓ test/plugin-error-view.test.ts (6 tests) 19ms
+ ✓ test/plugin-recovery-view.test.ts (13 tests) 22ms
+ ✓ test/update-ui.test.ts (8 tests) 9ms
+ ✓ test/desktop-client-ui.test.ts (1 test) 9ms
+ ✓ test/session-create-remote-event-patch.test.ts (1 test) 5ms
+ ✓ test/query-rail-patch.test.ts (2 tests) 7ms
+ ✓ test/provider-error-patch.test.ts (2 tests) 7ms
+ ✓ test/workspace-unread-patch.test.ts (3 tests) 8ms
+ ✓ test/shell-environment-encoding.test.ts (6 tests) 7ms
+ ✓ test/migration-failure-paths.test.ts (16 tests) 6072ms
+     ✓ preserves the snapshot and reports failure when the Windows rename of node_modules back from .pre-generations throws  1453ms
+     ✓ enters safe recovery in the same startup when rebuild failure and Windows rollback EPERM combine  964ms
+     ✓ keeps a confirmed journal when Windows rm cannot delete a snapshot, then retries cleanup without rolling back  1114ms
+     ✓ keeps the awaiting-boot snapshot when health changes before the journal commit  321ms
+     ✓ resumes a rollback crash after snapshot activation even when no migrated live path was quarantined  426ms
+     ✓ confirms a successful migration after a clean launch discards the snapshot only on user-confirmed cleanup  1359ms
+ ✓ test/launch-agent-audit.test.ts (14 tests) 5ms
+ ✓ test/client-modules-resolution-patch.test.ts (1 test) 6ms
+ ✓ test/application-locale.test.ts (3 tests) 5ms
+ ✓ test/launchctl-service-state.test.ts (5 tests) 8ms
+ ✓ test/cordis-plugin-loader-patch.test.ts (1 test) 14ms
+ ✓ test/version-catalog.test.ts (9 tests) 11ms
+ ✓ test/context-menu.test.ts (6 tests) 10ms
+ ✓ test/gpu-fallback.test.ts (25 tests) 11ms
+ ✓ test/windows-hidden-console.test.ts (4 tests) 9ms
+ ✓ test/window-raise.test.ts (5 tests) 6ms
+ ✓ test/onboarding-patch.test.ts (12 tests) 9ms
+ ✓ test/generation-migration.test.ts (8 tests) 6408ms
+     ✓ moves community plugins to generations and trims the manifest  580ms
+     ✓ restores the pre-upgrade profile when the shared-tree rebuild fails  979ms
+     ✓ copies non-registry sources exactly and retains their original provenance  960ms
+     ✓ defers an identical failed migration, preserves desired, and retries after the profile changes  1530ms
+     ✓ rolls a migrated profile back to the snapshot on a failed launch, then discards it on a good one  1891ms
+ ✓ test/second-instance-intent.test.ts (6 tests) 3ms
+ ✓ test/update-state.test.ts (4 tests) 4ms
+ ✓ test/local-path-links.test.ts (1 test) 5ms
+ ✓ test/plugin-recovery-html.test.ts (3 tests) 3ms
+ ✓ test/close-to-tray.test.ts (4 tests) 3ms
+ ✓ test/launchd-guard.test.ts (5 tests) 3ms
+ ✓ test/main-window-recovery.test.ts (5 tests) 3ms
+ ↓ test/launch-agent-plist-roundtrip.test.ts (2 tests | 2 skipped)
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/feishu-release-notes.test.ts > Feishu release notes pipeline > builds a prompt with valid metadata and evid
+ence blocks
+Error: spawnSync python3 ENOENT
+ ❯ test/feishu-release-notes.test.ts:58:22
+     56|     'builds a prompt with valid metadata and evidence blocks',
+     57|     () => {
+     58|       const output = execFileSync('python3', [scriptPath, 'build-promp…
+       |                      ^
+     59|         encoding: 'utf8',
+     60|         env: pythonEnv
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  test/feishu-release-notes.test.ts > Feishu release notes pipeline > generates deterministic fallback release not
+es that pass validation
+Error: spawnSync python3 ENOENT
+ ❯ test/feishu-release-notes.test.ts:78:7
+     76|     const tempFile = join(process.cwd(), '.temp-feishu-test-notes.md')
+     77|     try {
+     78|       execFileSync('python3', [scriptPath, 'generate-fallback', '--tag…
+       |       ^
+     79|         encoding: 'utf8',
+     80|         env: pythonEnv
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  test/feishu-release-notes.test.ts > Feishu release notes pipeline > generates deterministic fallback prerelease 
+notes that pass validation
+Error: spawnSync python3 ENOENT
+ ❯ test/feishu-release-notes.test.ts:143:7
+    141|     const tempFile = join(process.cwd(), '.temp-feishu-prerelease-test…
+    142|     try {
+    143|       execFileSync(
+       |       ^
+    144|         'python3',
+    145|         [scriptPath, 'generate-fallback', '--tag', '0.7.2', '--prerele…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  test/feishu-release-notes.test.ts > Feishu release notes pipeline > builds a prerelease prompt with previous tag
+ and prerelease notices
+Error: spawnSync python3 ENOENT
+ ❯ test/feishu-release-notes.test.ts:183:22
+    181|         { message: 'prerelease cut', date: '2026-03-01T00:00:00', tag:…
+    182|       ])
+    183|       const output = execFileSync(
+       |                      ^
+    184|         'python3',
+    185|         [scriptPath, 'build-prompt', '--tag', '0.7.2', '--prerelease'],
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  test/feishu-release-notes.test.ts > Feishu release notes pipeline > differentiates previous tag resolution betwe
+en prerelease and official release
+Error: spawnSync python3 ENOENT
+ ❯ buildPrompt test/feishu-release-notes.test.ts:213:7
+    211|     ])
+    212|     const buildPrompt = (args: string[]): string =>
+    213|       execFileSync('python3', [scriptPath, 'build-prompt', ...args], {
+       |       ^
+    214|         encoding: 'utf8',
+    215|         env: pythonEnv,
+ ❯ test/feishu-release-notes.test.ts:220:12
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  test/github-release-notes.test.ts > github_release_notes build-prompt > emits the evidence blocks, the style ref
+erence, and the Chinese contract
+ FAIL  test/github-release-notes.test.ts > github_release_notes generate-fallback > produces a note that passes validat
+e and starts with the contract title
+Error: spawn python3 ENOENT
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  test/github-release-notes.test.ts > github_release_notes validate > accepts a well-formed Chinese note
+AssertionError: promise rejected "Error: spawn python3 ENOENT { …(8) }" instead of resolving
+ ❯ test/github-release-notes.test.ts:60:71
+     58|     const file = path.join(dir, 'n.md')
+     59|     await writeFile(file, VALID, 'utf8')
+     60|     await expect(run(['validate', '--tag', 'v9.9.9', '--input', file])…
+       |                                                                       ^
+     61|   })
+     62|
+
+Caused by: Error: spawn python3 ENOENT
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { errno: -4058, code: 'ENOENT', syscall: 'spawn python3', path: 'python3', spawnargs: [ 'E:\work\dsh-
+desktop-me\.github\scripts\github_release_notes.py', 'validate', '--tag', 'v9.9.9', '--input', 'd:\Users\bobowsh\AppDat
+a\Local\Temp\dsh-ghnotes-BUlzwk\n.md' ], cmd: 'python3 E:\work\dsh-desktop-me\.github\scripts\github_release_notes.py v
+alidate --tag v9.9.9 --input d:\Users\bobowsh\AppData\Local\Temp\dsh-ghnotes-BUlzwk\n.md', stdout: '', stderr: '' }
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+ FAIL  test/market-installer.test.js > desktop plugin market installer > registers a placeholder before install and a s
+table management tab afterward
+AssertionError: expected '# Keep the stock directory-picker (au…' to contain 'name: dsh-desktop-market-installer'
+
+- Expected
++ Received
+
+- name: dsh-desktop-market-installer
++ # Keep the stock directory-picker (auto) row active: the native backend
++ # serves ctx.directoryPicker, so host-side consumers (host.pickDirectory,
++ # plugins reading the seam) work unmodified. The client surface keeps its
++ # Electron-dialog bridge via the client-ui patch in patches/.
++
++ # Disable the stock single-slot occupant before mounting Desktop's equivalent;
++ # two occupants cannot share either brand seat. The Desktop plugin preserves
++ # the stock conversation mark. The phone remains in the settings row because
++ # the public footer-action slot is a separate row. Window chrome geometry
++ # remains a native-shell concern.
++ - id: ui-brand-official
++   disabled: true
++
++ - insert:
++     - id: dsh-desktop-client-ui
++       name: dsh-desktop-client-ui
++
++     # DSH Desktop owns the fixed-target dsh-market installer and its lightweight
++     # settings entry. After dshmarket is installed and Harness restarts, the
++     # community plugin replaces the placeholder with its complete market UI.
++     # Disabled 2026-08-17 at user's request; dependency removed from packaging
++     # 2026-08-18 (the desktop-shell market entry / pnpm shim no longer ships).
++     # Community dshmarket plugin is unaffected (it lives in the profile's own
++     # dependencies).
++
++     # Kimi PPT owns one direct PPTD workflow and one standard Composer client.
++     # The package contains no Tencent editor runtime or SlideP route.
++     - id: experimental-kimi-ppt-standard-adapter
++       name: '@deepseek-ai/dsh-experimental-kimi-ppt-standard-adapter'
++       # 2026-09-05 临时禁用：这两个 file: tgz 尚未装进 node_modules → profile 目录
++       # 解析不到包 → ERR_MODULE_NOT_FOUND → 整个 plugin tree 加载失败、harness 起不来
++       # （web / desktop-safe-mode 两个 profile 同时挂）。依赖装好后删掉这一行恢复。
++       disabled: true
++       config:
++         root: !!js dshHomePath('kimi-ppt')
++
++ # dsh-market normally offers to restart its own Node process after mutations.
++ # The desktop shell has the real lifecycle authority, so keep that behavior off
++ # whenever the optional plugin is present in the composed profile.
++ #
++ # The `inject: [desktopProfiles]` that used to be here was removed: the desktop
++ # shell's own market-installer plugin (which provides that service) was disabled
++ # 2026-08-17, so the hard inject created a deadlock — the community dsh-market
++ # plugin waited forever for a service nobody provides. The plugin's own code
++ # handles the missing service gracefully (falls back to CLI mode using
++ # config.profile / argvProfile), so the inject is unnecessary.
++ - id: dsh-market
++   config:
++     profile: web
++     allowRestart: false
++
++ # Harness creates the full Cordis HMR service after boot when no `hmr` service
++ # exists, and that service throws without Node's internal module loader —
++ # which a packaged Electron app cannot provide, so every signed macOS launch
++ # failed profile boot at that step. This row supplies the config-watching
++ # subset `watchUserPatches` actually needs; where the internals are reachable
++ # it stands aside and the real service loads unchanged.
++ - insert:
++     - id: dsh-desktop-hmr-fallback
++       name: dsh-desktop-hmr-fallback
++
++ # Preset package export and import. These two routes lived in a patch on
++ # dsh-host-apiproxy until 0.1.2-alpha.1 deleted that package; upstream ships no
++ # preset transfer of its own, so the capability moved into a desktop plugin
++ # that registers on the Connection fetch-route seam instead.
++ - insert:
++     - id: dsh-desktop-preset-transfer
++       name: dsh-desktop-preset-transfer
++
+
+ ❯ test/market-installer.test.js:377:26
+    375|     // dsh-desktop-market-installer was disabled 2026-08-17; the commu…
+    376|     // dshmarket plugin provides the market UI from the profile's own …
+    377|     expect(desktopPatch).toContain('name: dsh-desktop-market-installer…
+       |                          ^
+    378|     expect(desktopPatch).toContain('inject: [desktopProfiles]')
+    379|     expect(desktopPatch).toContain('allowRestart: false')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯
+
+
+ Test Files  3 failed | 81 passed | 1 skipped (85)
+      Tests  9 failed | 697 passed | 2 skipped (708)
+   Start at  01:25:13
+   Duration  7.78s (transform 17.83s, setup 0ms, import 35.25s, tests 53.40s, environment 9ms)
+
