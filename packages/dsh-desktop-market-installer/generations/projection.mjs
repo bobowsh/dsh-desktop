@@ -215,6 +215,98 @@ async function ensureDirLink(linkPath, target) {
 }
 
 /**
+ * Repair a generation's `node_modules` so the copied package root can resolve
+ * its own (real) dependencies.
+ *
+ * The projected `node_modules/<plugin>` is a *real directory* (see
+ * validateEnabledGenerationTarget — a symlinked root is rejected), produced by
+ * the isolated pnpm runner as a flat copy of the virtual-store package plus a
+ * `.pnpm` store. On Windows that copy can drop the top-level dependency links
+ * pnpm normally materialises (`node_modules/schemastery`, `…/node_modules/<pkg>`
+ * scoped links). The copied root is not under the Profile's `node_modules`, so
+ * a `import 'schemastery'` then fails with "Cannot find package" and the whole
+ * plugin tree fails to load — even though the package exists in this
+ * generation's own `.pnpm` store.
+ *
+ * Re-materialise the missing links from the virtual store: for every package in
+ * `.pnpm/<pkg>/node_modules`, each symlink it exposes (its direct deps) becomes
+ * a junction at the generation root `node_modules`. Idempotent: existing root
+ * entries are left untouched; Node realpaths junctions into the virtual store
+ * so each package's transitive deps still resolve via pnpm's nested layout.
+ *
+ * Returns the number of links created.
+ */
+async function repairGenerationDependencyLinks(generationDir) {
+  const rootModules = join(generationDir, 'node_modules')
+  const store = join(rootModules, '.pnpm')
+  let storeEntries
+  try {
+    storeEntries = await readdir(store, { withFileTypes: true })
+  } catch {
+    return 0
+  }
+
+  let created = 0
+
+  const mirror = async (depName, linkTarget) => {
+    const rootLink = join(rootModules, ...depName.split('/'))
+    try {
+      await lstat(rootLink)
+      return // root entry already present (real dir, junction, or symlink)
+    } catch {
+      // proceed to create it
+    }
+    await ensureDirLink(rootLink, linkTarget)
+    created += 1
+  }
+
+  for (const entry of storeEntries) {
+    if (!entry.isDirectory() || entry.name === 'node_modules') continue
+    const packageModules = join(store, entry.name, 'node_modules')
+    let members
+    try {
+      members = await readdir(packageModules, { withFileTypes: true })
+    } catch {
+      continue
+    }
+    for (const member of members) {
+      if (member.isSymbolicLink()) {
+        // top-level dependency: <node_modules>/schemastery -> store target
+        const linkPath = join(packageModules, member.name)
+        const target = await resolveSymlinkTarget(linkPath)
+        if (target) await mirror(member.name, target)
+      } else if (member.name.startsWith('@') && member.isDirectory()) {
+        // scoped dependency bucket: <node_modules>/@scope/<pkg> -> store target
+        const scopeDir = join(packageModules, member.name)
+        let scoped
+        try {
+          scoped = await readdir(scopeDir, { withFileTypes: true })
+        } catch {
+          continue
+        }
+        for (const pkg of scoped) {
+          if (!pkg.isSymbolicLink()) continue
+          const linkPath = join(scopeDir, pkg.name)
+          const target = await resolveSymlinkTarget(linkPath)
+          if (target) await mirror(`${member.name}/${pkg.name}`, target)
+        }
+      }
+    }
+  }
+
+  return created
+}
+
+/** Resolve a symlink to an absolute path via realpath (follows pnpm rel links). */
+async function resolveSymlinkTarget(linkPath) {
+  try {
+    return await realpath(linkPath)
+  } catch {
+    return null
+  }
+}
+
+/**
  * Point `profiles/<profile>/node_modules/<plugin>` at each enabled generation
  * and drop links for plugins no longer enabled. Real pnpm-managed entries and
  * in-box bundles are left untouched.
@@ -227,9 +319,13 @@ export async function projectGenerations(dshHome, profile = 'web') {
 
   const linked = []
   const projected = new Map()
+  let repairedLinks = 0
   for (const [pluginName, generation] of enabled) {
     const target = targets.get(pluginName)
     if (target === undefined) throw new Error(`Enabled generation target was not prevalidated: ${pluginName}`)
+    // Self-heal the copied package root's missing direct-dependency links
+    // (Windows pnpm flat-copy can omit them) before Harness composes the bundle.
+    repairedLinks += await repairGenerationDependencyLinks(generation.directory)
     await ensureDirLink(join(modulesDir, pluginName), target)
     linked.push(pluginName)
     projected.set(pluginName, generation)
@@ -238,7 +334,7 @@ export async function projectGenerations(dshHome, profile = 'web') {
   const unlinked = await pruneStaleGenerationLinks(modulesDir, projected)
   const bundles = await syncProfileManifest(dir, projected, linkSpecs, manifestState)
 
-  return { linked, unlinked, bundles }
+  return { linked, unlinked, bundles, repairedLinks }
 }
 
 /**

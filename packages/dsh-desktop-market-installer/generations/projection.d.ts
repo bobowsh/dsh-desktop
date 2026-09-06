@@ -2,6 +2,8 @@ export interface ProjectionResult {
   linked: string[]
   unlinked: string[]
   bundles: string[]
+  /** Count of missing direct-dependency links re-materialised into copied generations. */
+  repairedLinks: number
 }
 
 export interface PublishedGenerationManifest {

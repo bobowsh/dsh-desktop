@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs'
 import { execFile } from 'node:child_process'
-import { lstat, mkdir, mkdtemp, readFile, readlink, rm, writeFile } from 'node:fs/promises'
+import { lstat, mkdir, mkdtemp, readFile, readlink, rm, symlink, writeFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
@@ -133,6 +133,52 @@ describe('generation projection onto the app-boot contract', () => {
       visibleVersion: '0.17.1'
     })
     expect(manifest.dependencies.dshmarket).toBe('^1.35.0')
+  })
+
+  it('repairs missing top-level dependency links in a copied generation (Windows pnpm flat-copy)', async () => {
+    const home = await freshHome()
+    await ensureRegistryDirectories(home)
+    await initProfile(home)
+
+    // Build a generation whose virtual store HAS the dep (.pnpm/schemastery@x
+    // and a package symlink to it) but whose copied root node_modules lacks the
+    // flat top-level link — the Windows flat-copy defect that made plugin code
+    // fail with "Cannot find package 'schemastery'".
+    const id = 'mnemon+0.5.2+cccc'
+    const dir = join(registryLayout(home).generations, id)
+    const rootNm = join(dir, 'node_modules')
+    const pluginDir = join(rootNm, 'dsh-mnemon')
+    await mkdir(pluginDir, { recursive: true })
+    await writeFile(
+      join(pluginDir, 'package.json'),
+      JSON.stringify({ name: 'dsh-mnemon', version: '0.5.2', dsh: { bundle: { patch: 'cordis.patch.yml' } } })
+    )
+    await writeFile(join(pluginDir, 'cordis.patch.yml'), '[]\n')
+
+    // virtual store: real dep package
+    const depPkg = join(rootNm, '.pnpm', 'schemastery@3.18.0', 'node_modules', 'schemastery')
+    await mkdir(depPkg, { recursive: true })
+    await writeFile(join(depPkg, 'package.json'), JSON.stringify({ name: 'schemastery', version: '3.18.0' }))
+    // package virtual dir exposing the dep via symlink
+    const pkgVirtualNm = join(rootNm, '.pnpm', 'dsh-mnemon@0.5.2', 'node_modules')
+    await mkdir(pkgVirtualNm, { recursive: true })
+    await symlink(depPkg, join(pkgVirtualNm, 'schemastery'), process.platform === 'win32' ? 'junction' : 'dir')
+
+    await writeGenerationMeta(dir, { pluginName: 'dsh-mnemon', version: '0.5.2' })
+    await writeDesired(home, [id])
+
+    // Before projection the root-level link is absent.
+    expect(existsSync(join(rootNm, 'schemastery', 'package.json'))).toBe(false)
+
+    const result = await projectGenerations(home)
+
+    // Self-heal recreated the root-level dependency link.
+    expect(result.repairedLinks).toBeGreaterThanOrEqual(1)
+    expect(existsSync(join(rootNm, 'schemastery', 'package.json'))).toBe(true)
+
+    // Idempotent: a second projection leaves it (and count drops to 0).
+    const again = await projectGenerations(home)
+    expect(again.repairedLinks).toBe(0)
   })
 
   it('drops the link and the bundle entry when a plugin stops being desired', async () => {

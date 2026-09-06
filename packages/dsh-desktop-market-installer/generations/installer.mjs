@@ -193,6 +193,47 @@ async function hoistHostSingletons(generationDir) {
   return removed
 }
 
+/**
+ * pnpm's hoisted layout leaves every top-level `node_modules` entry — the
+ * plugin itself and its direct dependencies — as a symlink pointing into the
+ * `.pnpm` store. The generation self-contained check (walkGenerationPackages)
+ * forbids symlinks, so before promotion we copy each top-level entry into a
+ * plain real directory. `.pnpm` is then unreferenced and removed by the caller.
+ */
+async function dereferenceTopLevelSymlinks(nodeModulesDir) {
+  let entries
+  try {
+    entries = await readdir(nodeModulesDir, { withFileTypes: true })
+  } catch {
+    return
+  }
+  for (const entry of entries) {
+    if (entry.name.startsWith('.') || entry.name === '.bin') continue
+    const entryPath = join(nodeModulesDir, entry.name)
+    if (entry.isDirectory()) {
+      // Scoped scope directory (e.g. @deepseek-ai): dereference each inner package.
+      const scopeEntries = await readdir(entryPath, { withFileTypes: true }).catch(() => [])
+      for (const inner of scopeEntries) {
+        if (inner.name.startsWith('.')) continue
+        const innerPath = join(entryPath, inner.name)
+        const info = await lstat(innerPath).catch(() => undefined)
+        if (info?.isSymbolicLink()) {
+          const real = await realpath(innerPath)
+          await unlink(innerPath)
+          await cp(real, innerPath, { recursive: true })
+        }
+      }
+    } else {
+      const info = await lstat(entryPath).catch(() => undefined)
+      if (info?.isSymbolicLink()) {
+        const real = await realpath(entryPath)
+        await unlink(entryPath)
+        await cp(real, entryPath, { recursive: true })
+      }
+    }
+  }
+}
+
 /** The one diagnostic line worth surfacing from a failed pnpm run. */
 function diagnosticLine(output) {
   const lines = output
@@ -277,6 +318,15 @@ export async function installGeneration(options) {
     }
     const manifest = JSON.parse(await readFile(installedManifestPath, 'utf8'))
     const version = typeof manifest.version === 'string' ? manifest.version : '0.0.0'
+
+    // pnpm's hoisted layout links top-level node_modules entries into .pnpm as
+    // symlinks; the generation self-contained check forbids those. Dereference
+    // every top-level entry into a real directory so remote npm plugins
+    // (dshmarket, etc.) build as generations instead of failing
+    // `package <name> is not a real directory`. The .pnpm store is kept intact
+    // as the backing store for any nested dependency that pnpm did not hoist to
+    // the top level — dropping it would orphan those resolutions.
+    await dereferenceTopLevelSymlinks(join(stagingDir, 'node_modules'))
 
     const hoisted = await hoistHostSingletons(stagingDir)
     if (hoisted.length > 0) {
