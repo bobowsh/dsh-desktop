@@ -100,11 +100,17 @@ cmd /c "git show origin/main:test/preset-transfer-patch.test.ts > test\preset-tr
 
 ### 4.6 package-lock.json
 
-直接取上游版，但版本号要手动对齐到 `package.json` 的 version：
+⚠️ **上游 lockfile 只能在上游依赖/overrides 与本地一致时直接取用**。本 fork 的 `package.json` 保留本地差异（dsh-* self-pin overrides、js-yaml、dsh-llm-opencode git 依赖、fflate/iconv-lite、pnpm 11 等），直接取上游 lock 会导致 npm 报 `Conflicting override sets` 并把**全树** retire-replace（333+ 包删除重装；electron 也要重装 → 撞上运行中 dev 实例的文件锁 EBUSY，npm 中断后留下半残 node_modules）。
+
+**正确做法：取上游 lock 后必须按本地 package.json 重新生成一致的 lockfile**（`--package-lock-only` 只重算 lock，不碰 node_modules，对运行中的 app 零风险）：
+
 ```pwsh
 cmd /c "git show origin/main:package-lock.json > package-lock.json"
 node -e "const f=require('fs'); const p=JSON.parse(f.readFileSync('package-lock.json','utf8')); p.version='<version>'; if(p.packages['']) p.packages[''].version='<version>'; f.writeFileSync('package-lock.json', JSON.stringify(p,null,2)+'\n')"
+npm install --package-lock-only --ignore-scripts --prefer-offline   # 重算依赖树，使 lock 与本地 package.json/overrides 一致
 ```
+
+校验：`node -e "…"` 确认 lock version 对齐、本地依赖（dsh-llm-opencode/dsh-ppt 等）在 `packages['node_modules/...']` 中有解析记录。npm 11 的 lockfile 不持久化 overrides（上游自己的 lock 也没有 overrides 键），overrides 在每次 install 时从 package.json 重新推导——lock 里没有 overrides 键属正常。
 
 ## 步骤 5：重新安装依赖 + 重打 patches
 
