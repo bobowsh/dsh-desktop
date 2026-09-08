@@ -7,6 +7,9 @@ import { defineConfig } from 'vitest/config'
 // ts/js/mjs (local encoding.test.ts and *.mjs backfill tests rely on this).
 export default defineConfig({
   test: {
-    include: ['test/**/*.{test,spec}.{ts,js,mjs}']
+    include: ['test/**/*.{test,spec}.{ts,js,mjs}'],
+    // Native Intel runners contend for CPU and disk while integration suites
+    // unpack archives and launch subprocesses. Keep every test, but serialize files.
+    fileParallelism: !(process.env.CI && process.platform === 'darwin' && process.arch === 'x64')
   }
 })

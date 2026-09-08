@@ -40,7 +40,8 @@
     "package:mac": "npm run build && electron-builder --mac --publish never --config electron-builder.mac.cjs",
     "package:mac:arm64": "node scripts/verify-target.mjs darwin arm64 && npm run build && node scripts/bundle-user-data.mjs && electron-builder --mac --arm64 --publish never --config electron-builder.mac.cjs",
     "package:mac:x64": "node scripts/verify-target.mjs darwin x64 && npm run build && node scripts/bundle-user-data.mjs && electron-builder --mac --x64 --publish never --config electron-builder.mac.cjs",
-    "package:win": "node scripts/verify-target.mjs win32 x64 && npm run build && node scripts/bundle-user-data.mjs && electron-builder --win --x64 --publish never"
+    "package:win": "node scripts/verify-target.mjs win32 x64 && npm run build && node scripts/bundle-user-data.mjs && electron-builder --win --x64 --publish never",
+    "ppt:build": "node scripts/generate-zara-ppt-templates.mjs && node scripts/localize-ppt-templates.mjs && node scripts/enrich-ppt-templates.mjs && node scripts/build-ppt-runtime.mjs"
   },
   "dependencies": {
     "@deepseek-ai/cordis": "file:packages/harness-0.1.2-rc.1/npm-vendor/deepseek-ai-cordis-4.0.2.tgz",
@@ -134,7 +135,6 @@
     "@deepseek-ai/dsh-credentials-local": "file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-credentials-local-0.1.2-rc.1.tgz",
     "@deepseek-ai/dsh-deepseek-llm-api-extensions": "file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-deepseek-llm-api-extensions-0.1.2-rc.1.tgz",
     "@deepseek-ai/dsh-deque": "file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-deque-0.1.2-rc.1.tgz",
-    "@deepseek-ai/dsh-experimental-kimi-ppt-standard-adapter": "file:packages/kimi-ppt/deepseek-ai-dsh-experimental-kimi-ppt-standard-adapter-0.1.1-rc.2-desktop-kimi-20260904.tgz",
     "@deepseek-ai/dsh-file-reference": "file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-file-reference-0.1.2-rc.1.tgz",
     "@deepseek-ai/dsh-file-reference-local": "file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-file-reference-local-0.1.2-rc.1.tgz",
     "@deepseek-ai/dsh-fs": "file:packages/harness-0.1.2-rc.1/npm-dsh/deepseek-ai-dsh-fs-0.1.2-rc.1.tgz",
@@ -275,7 +275,6 @@
     "dsh-desktop-hmr-fallback": "file:packages/dsh-desktop-hmr-fallback",
     "dsh-desktop-market-installer": "file:packages/dsh-desktop-market-installer",
     "dsh-desktop-preset-transfer": "file:packages/dsh-desktop-preset-transfer",
-    "dsh-kimi-ppt": "file:packages/kimi-ppt/dsh-kimi-ppt-0.1.1-rc.2-desktop-kimi-overflow-20260905.tgz",
     "dsh-llm-opencode": "git+https://github.com/bobowsh/dsh-llm-opencode.git#c8316a735b0a206240fc85fa84a57643e89855af",
     "dshmarket": "file:packages/dshmarket",
     "electron-updater": "^6.8.9",
@@ -287,7 +286,9 @@
     "qrcode": "^1.5.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "ws": "^8.21.3"
+    "ws": "^8.21.3",
+    "dsh-ppt": "file:packages/ppt-bundles/dsh-ppt-0.1.1-rc.2-desktop-20260906.tgz",
+    "dsh-ppt-composer": "file:packages/ppt-bundles/dsh-ppt-composer-0.1.1-rc.2-desktop-20260906.tgz"
   },
   "devDependencies": {
     "@types/node": "24.10.1",
@@ -361,6 +362,10 @@
         "to": "dsh-desktop.patch.yml"
       },
       {
+        "from": "build/dsh-desktop-safe.patch.yml",
+        "to": "dsh-desktop-safe.patch.yml"
+      },
+      {
         "from": "build/splash.html",
         "to": "splash.html"
       },
@@ -383,6 +388,10 @@
       {
         "from": "build/safe-mode.html",
         "to": "safe-mode.html"
+      },
+      {
+        "from": "build/community-wechat-qr.png",
+        "to": "community-wechat-qr.png"
       },
       {
         "from": "build/windows-menu.html",

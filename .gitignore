@@ -85,5 +85,8 @@ data/.credentials.yaml
 __pycache__/
 *.pyc
 
-# ÔËĞĞÊ±Éú³ÉµÄ pnpm/node shim£¨º¬±¾»ú¾ø¶ÔÂ·¾¶£¬Ëæ²âÊÔ/ÔËĞĞÖØĞ´£©
+# è¿è¡Œæ—¶ç”Ÿæˆçš„ pnpm/node shimï¼ˆå«æœ¬æœºç»å¯¹è·¯å¾„ï¼Œéšæµ‹è¯•/è¿è¡Œé‡å†™ï¼‰
 data/.desktop-bin/
+
+# Native recovery UI smoke-test output
+/artifacts/recovery-ui/

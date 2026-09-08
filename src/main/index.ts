@@ -58,6 +58,7 @@ import {
   serializeGpuFallbackState
 } from './gpu-fallback'
 import { secureWindow } from './security'
+import { SafeModeOverlay } from './safe-mode-overlay'
 import { ensureLaunchRoot } from './state/launch-root'
 import {
   listInstalledProfilePlugins,
@@ -220,7 +221,7 @@ let pendingFrontendPluginRecovery = false
 let pendingFrontendPluginRecoveryMessage: string | undefined
 let safeModeVisible = false
 let safeModeManagerVisible = false
-let safeModeManagerWindow: BrowserWindow | undefined
+let safeModeManager: SafeModeOverlay | undefined
 let safeModeActionResolver: ((action: SafeModeAction) => void) | undefined
 let migrationRecoveryLocked = false
 let maintenanceRecoveryLocked = false
@@ -974,6 +975,7 @@ function createWindow(): BrowserWindow {
     icon: desktopIconPath(),
     frame: process.platform !== 'darwin',
     autoHideMenuBar: process.platform !== 'darwin',
+    ...(process.platform === 'darwin' ? { titleBarStyle: 'hidden' as const } : {}),
     ...(isWindows
       ? {
         titleBarStyle: 'hidden' as const,
@@ -992,7 +994,18 @@ function createWindow(): BrowserWindow {
   })
   if (process.platform === 'darwin') {
     window.setWindowButtonVisibility(true)
-    window.setWindowButtonPosition({ x: 12, y: 9 })
+    // Match the sidebar inset at the current zoom, with a 2px optical correction
+    // for the round native buttons relative to the logo's visible left edge.
+    const alignWindowButtons = (): void => {
+      if (window.isDestroyed()) return
+      window.setWindowButtonPosition({
+        x: Math.round(16 * window.webContents.getZoomFactor()) - 2,
+        y: 9
+      })
+    }
+    alignWindowButtons()
+    window.webContents.on('did-finish-load', alignWindowButtons)
+    window.webContents.on('zoom-changed', () => setImmediate(alignWindowButtons))
   } else if (isWindows) {
     window.setMenuBarVisibility(false)
   }
@@ -1505,10 +1518,10 @@ function assertTrustedMainWindowEvent(event: IpcMainInvokeEvent): void {
 
 function assertTrustedSafeModeManagerEvent(event: IpcMainInvokeEvent): void {
   if (
-    !safeModeManagerWindow ||
-    safeModeManagerWindow.isDestroyed() ||
-    event.sender !== safeModeManagerWindow.webContents ||
-    event.senderFrame !== safeModeManagerWindow.webContents.mainFrame
+    !safeModeManager ||
+    safeModeManager.isDestroyed() ||
+    event.sender !== safeModeManager.webContents ||
+    event.senderFrame !== safeModeManager.webContents.mainFrame
   ) {
     throw new Error('This action is only available from the Safe Mode manager.')
   }
@@ -1912,42 +1925,14 @@ async function waitForSafeModeAction(options: {
   noticeTone?: 'success' | 'error'
 }): Promise<SafeModeAction> {
   const parent = mainWindow && !mainWindow.isDestroyed() ? mainWindow : createWindow()
-  const window = safeModeManagerWindow && !safeModeManagerWindow.isDestroyed()
-    ? safeModeManagerWindow
+  const window = safeModeManager && !safeModeManager.isDestroyed()
+    ? safeModeManager
     : (() => {
-      const bounds = parent.getBounds()
-      const manager = new BrowserWindow({
-        parent,
-        modal: true,
-        x: bounds.x,
-        y: bounds.y,
-        width: bounds.width,
-        height: bounds.height,
-        minWidth: 640,
-        minHeight: 520,
-        show: false,
-        frame: false,
-        transparent: true,
-        backgroundColor: '#00000000',
-        resizable: false,
-        movable: false,
-        minimizable: false,
-        maximizable: false,
-        fullscreenable: false,
-        webPreferences: {
-          contextIsolation: true,
-          nodeIntegration: false,
-          preload: join(import.meta.dirname, '../preload/index.cjs'),
-          sandbox: true,
-          webSecurity: true
-        }
-      })
-      secureWindow(manager)
-      manager.on('closed', () => {
-        if (safeModeManagerWindow === manager) safeModeManagerWindow = undefined
+      const manager = new SafeModeOverlay(parent, join(import.meta.dirname, '../preload/index.cjs'), () => {
+        if (safeModeManager === manager) safeModeManager = undefined
         resolveSafeModeAction({ type: 'agent' })
       })
-      safeModeManagerWindow = manager
+      safeModeManager = manager
       return manager
     })()
   const model = buildSafeModeViewModel({
@@ -1968,7 +1953,7 @@ async function waitForSafeModeAction(options: {
   })
   window.webContents.stop()
   try {
-    await window.loadFile(desktopResourcePath('safe-mode.html'), {
+    await window.webContents.loadFile(desktopResourcePath('safe-mode.html'), {
       query: {
         state: JSON.stringify(model),
         icon: app.isPackaged ? 'icon.png' : 'app-icon.png',
@@ -1982,7 +1967,8 @@ async function waitForSafeModeAction(options: {
   if (window.isDestroyed()) {
     return { type: 'quit' }
   }
-  raiseWindowWithoutStealingFocus(window, process.platform, () => app.isActive())
+  window.show()
+  raiseWindowWithoutStealingFocus(parent, process.platform, () => app.isActive())
   return actionPromise
 }
 
@@ -2284,7 +2270,7 @@ async function showSafeModeManager(initial?: {
           cancelId: 0,
           noLink: true
         }
-        const owner = safeModeManagerWindow
+        const owner = safeModeManager?.parent
         const confirmation = owner && !owner.isDestroyed()
           ? await dialog.showMessageBox(owner, confirmationOptions)
           : await dialog.showMessageBox(confirmationOptions)
@@ -2327,7 +2313,7 @@ async function showSafeModeManager(initial?: {
           cancelId: 0,
           noLink: true
         }
-        const owner = safeModeManagerWindow
+        const owner = safeModeManager?.parent
         const confirmation = owner && !owner.isDestroyed()
           ? await dialog.showMessageBox(owner, confirmationOptions)
           : await dialog.showMessageBox(confirmationOptions)
@@ -2475,8 +2461,8 @@ async function showSafeModeManager(initial?: {
   } finally {
     safeModeActionResolver = undefined
     safeModeManagerVisible = false
-    const window = safeModeManagerWindow
-    safeModeManagerWindow = undefined
+    const window = safeModeManager
+    safeModeManager = undefined
     if (window && !window.isDestroyed()) window.close()
   }
 }
@@ -2684,6 +2670,7 @@ async function bootstrap(): Promise<void> {
     // - Dev run: `app.getAppPath()/data` (project root), so the data dir does
     //   not land next to node_modules/electron's electron.exe.
     // (Was `~/.dsh` / userData/harness before; re-pointed here on the user's request.)
+    dshSafePatchPath: desktopResourcePath('dsh-desktop-safe.patch.yml'),
     dshHome: portableDshHome(),
     logPath: join(app.getPath('logs'), 'harness.log'),
     launchProcess: (executablePath, args, options) =>

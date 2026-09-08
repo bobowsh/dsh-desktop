@@ -6,12 +6,14 @@ import { createServer } from 'node:net'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import type { RuntimePhase, RuntimeSnapshot } from '../../shared/contracts'
+import { SAFE_MODE_PROFILE } from '../state/safe-mode-profile'
 
 export interface HarnessRuntimeOptions {
   dshEntryPath: string
   nodeExecutablePath: string
   nodeEntryPath: string
   dshPatchPath: string
+  dshSafePatchPath: string
   dshHome: string
   logPath: string
   /**
@@ -386,8 +388,13 @@ export class HarnessRuntime {
       this.setState('failed', `Harness diagnostic entry was not found: ${this.options.nodeEntryPath}`)
       return
     }
-    if (!existsSync(this.options.dshPatchPath)) {
-      this.setState('failed', `DSH Desktop patch was not found: ${this.options.dshPatchPath}`)
+    // Profile isolation alone is insufficient: --patch is applied afterwards.
+    // Never reintroduce optional product plugins into the recovery profile.
+    const patchPath = profile === SAFE_MODE_PROFILE
+      ? this.options.dshSafePatchPath
+      : this.options.dshPatchPath
+    if (!existsSync(patchPath)) {
+      this.setState('failed', `DSH Desktop patch was not found: ${patchPath}`)
       return
     }
 
@@ -403,7 +410,7 @@ export class HarnessRuntime {
       this.options.nodeEntryPath,
       this.options.dshEntryPath,
       port,
-      this.options.dshPatchPath,
+      patchPath,
       profile
     )
     const startupTimeoutMs =
@@ -412,6 +419,7 @@ export class HarnessRuntime {
     this.writeLog(`\n[desktop] starting ${new Date().toISOString()}`)
     this.writeLog(`[desktop] launch directory ${launchDirectory}`)
     this.writeLog(`[desktop] profile ${profile}`)
+    this.writeLog(`[desktop] patch ${patchPath}`)
     this.writeLog(`[desktop] endpoint ${url}`)
     this.setState('starting', 'Starting DeepSeek Harness…')
 
