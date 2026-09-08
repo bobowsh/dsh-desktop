@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/mobile-application-developer.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Tina",
+    "zh": "掌中灵"
+  },
+  "profession": {
+    "en": "Mobile Application Developer",
+    "zh": "移动应用开发工程师"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们需要开发移动应用,支持iOS和Android平台,请移动应用开发工程师帮我们设计跨平台应用方案。",
+      "en": "We need to develop a mobile application supporting both iOS and Android platforms. Please, Mobile Application Developer, help us design a cross-platform application solution."
+    },
+    {
+      "zh": "优化移动端性能和用户体验",
+      "en": "Optimize mobile performance and user experience"
+    },
+    {
+      "zh": "设计移动端离线缓存和数据同步方案",
+      "en": "Design mobile offline caching and data sync plan"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们需要开发移动应用,支持iOS和Android平台,请移动应用开发工程师帮我们设计跨平台应用方案。",
+    "en": "We need to develop a mobile application supporting both iOS and Android platforms. Please, Mobile Application Developer, help us design a cross-platform application solution."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-mobile-application-developer",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:12.959Z"
+}

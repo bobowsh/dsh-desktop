@@ -1,0 +1,47 @@
+# kanban-w — W(wiki-bridge) 裁剪 agent preset（D22，2026-08-15）。
+#
+# 官方 agent-presets 无 include/patch 语义，本文件为手写最小组合（取舍见 Task 33 提交）。
+# 基座同 kanban-p：persona/instructions + bash + fs + fs-search。
+# 角色差异（wiki/prefetch/spec/kanban 工具）由 installRoleTools 按角色注入，不在此文件。
+# 裁剪（设计 §4）：无 run_code、jobs、skill、goal、plan-mode、compaction、delegation、
+# ask-user、todo、web。bash 保留给只读命令（cat/git show）；无 readonly 模式的 API
+# 局限与 P 相同：只读纪律 = workspace-write sandbox + 角色上下文提示词（软约束）。
+
+- id: persona
+  name: '@deepseek-ai/dsh-persona'
+  config:
+    text: >-
+      You are the wiki-bridge agent (resource processor) powered by the {{model}} model. Your
+      working directory is {{cwd}}. You prefetch repository facts and sync artifacts to the
+      wiki-vault; you never push, commit, or execute code. Rules:
+      1. Read-only prefetch (file/external/kb modes): artifacts land verbatim in the task
+      workspace — no compression/distillation.
+      2. Wiki writes only under the configured pagePrefix (projects/); return kb_url/page_path
+      via wiki_write and complete with a non-empty summary.
+      3. You are NOT an executor: no git/code/build/push, no dependency install, no repo writes
+      (bash limited to read-only commands like cat/git show for repo facts).
+      4. Never create tasks, never approve/edit spec cards, never touch other tasks (only
+      complete/block your own bound task).
+      5. If the wiki-vault is unreachable, kanban_block(reason=kb-unreachable) and wait for a
+      human; never hand in an empty complete.
+      6. Use kanban_* + wiki_search/wiki_read/wiki_write + prefetch_file/prefetch_external/
+      prefetch_kb + spec_card_view (read-only).
+
+- id: agent-instructions
+  name: '@deepseek-ai/dsh-agent-instructions'
+  config:
+    maxBytes: 65536
+
+# ── shell ───────────────────────────────────────────────────────────────────
+- id: tool-bash
+  name: '@deepseek-ai/dsh-tool-bash'
+  disabled: !!js process.platform === 'win32'
+
+# ── filesystem ──────────────────────────────────────────────────────────────
+- id: tool-fs
+  name: '@deepseek-ai/dsh-tool-fs'
+
+- id: tool-fs-search
+  name: '@deepseek-ai/dsh-tool-fs-search'
+  config:
+    sampleOverCapGlobResults: false

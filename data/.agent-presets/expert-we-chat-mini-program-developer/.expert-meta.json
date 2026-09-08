@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/we-chat-mini-program-developer.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Cody",
+    "zh": "小程达"
+  },
+  "profession": {
+    "en": "WeChat Mini Program Developer",
+    "zh": "微信小程序开发者"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们需要开发微信小程序,希望快速上线并获得用户,请微信小程序开发工程师帮我们设计小程序架构。",
+      "en": "We need to develop a WeChat Mini Program and hope to launch quickly and acquire users. Please, WeChat Mini Program Developer, help us design the Mini Program architecture."
+    },
+    {
+      "zh": "优化小程序性能和审核通过率",
+      "en": "Optimize Mini Program performance and review pass rate"
+    },
+    {
+      "zh": "集成微信支付和分享能力",
+      "en": "Integrate WeChat Pay and sharing capabilities"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们需要开发微信小程序,希望快速上线并获得用户,请微信小程序开发工程师帮我们设计小程序架构。",
+    "en": "We need to develop a WeChat Mini Program and hope to launch quickly and acquire users. Please, WeChat Mini Program Developer, help us design the Mini Program architecture."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-we-chat-mini-program-developer",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:13.505Z"
+}

@@ -1,0 +1,57 @@
+{
+ "name": "expert-webapp-testing-expert",
+ "agentName": "webapp-testing-expert",
+ "expertType": "agent",
+ "displayName": {
+  "en": "Cypress",
+  "zh": "端测测"
+ },
+ "profession": {
+  "en": "Webapp Testing Expert",
+  "zh": "Web应用测试专家"
+ },
+ "displayDescription": {
+  "en": "Web application testing assistant, guides users through launching, configuring, and testing web applications",
+  "zh": "Web 应用测试助手，引导用户完成 Web 应用的启动、配置和测试流程"
+ },
+ "description": {
+  "en": "Web application testing assistant, guides users through launching, configuring, and testing web applications",
+  "zh": "Web 应用测试助手，引导用户完成 Web 应用的启动、配置和测试流程"
+ },
+ "tags": [
+  {
+   "zh": "Web测试",
+   "en": "Web Testing"
+  },
+  {
+   "zh": "端到端测试",
+   "en": "E2E Testing"
+  },
+  {
+   "zh": "功能验证",
+   "en": "Functional Verification"
+  }
+ ],
+ "quickPrompts": [
+  {
+   "zh": "帮我测试下这个Web应用",
+   "en": "Help me test this web application"
+  },
+  {
+   "zh": "搭建自动化测试和持续集成流程",
+   "en": "Build automated testing and CI pipeline"
+  },
+  {
+   "zh": "制定Web应用性能和安全测试策略",
+   "en": "Develop web application performance and security testing strategy"
+  }
+ ],
+ "defaultInitPrompt": {
+  "zh": "帮我测试下这个Web应用",
+  "en": "Help me test this web application"
+ },
+ "categoryId": "10-ProjectQuality",
+ "dsh": {
+  "baseline": "standard"
+ }
+}

@@ -1,0 +1,87 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/rum-team-lead.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Tencent Cloud RUM Full-Lifecycle Team",
+    "zh": "腾讯云 RUM 全链路专家团"
+  },
+  "profession": {
+    "en": "Tencent Cloud RUM Full-Lifecycle Team",
+    "zh": "腾讯云 RUM 全链路专家团"
+  },
+  "expertType": "team",
+  "members": [
+    {
+      "name": "rum-team-lead",
+      "agentName": "rum-team-lead",
+      "displayName": {
+        "en": "Lyra",
+        "zh": "莱拉"
+      },
+      "description": "可观测性统筹官"
+    },
+    {
+      "name": "rum-integration-specialist",
+      "agentName": "rum-integration-specialist",
+      "displayName": {
+        "en": "Aiden",
+        "zh": "艾登"
+      },
+      "description": "RUM 接入官"
+    },
+    {
+      "name": "rum-performance-analyst",
+      "agentName": "rum-performance-analyst",
+      "displayName": {
+        "en": "Nova",
+        "zh": "诺瓦"
+      },
+      "description": "RUM 性能分析师"
+    }
+  ],
+  "memberTools": [
+    {
+      "toolName": "delegate_rum-team-lead",
+      "label": "莱拉",
+      "agentName": "rum-team-lead"
+    },
+    {
+      "toolName": "delegate_rum-integration-specialist",
+      "label": "艾登",
+      "agentName": "rum-integration-specialist"
+    },
+    {
+      "toolName": "delegate_rum-performance-analyst",
+      "label": "诺瓦",
+      "agentName": "rum-performance-analyst"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "zh": "帮我在这个 Vue 3 项目里接入腾讯云 RUM",
+      "en": "Integrate Tencent Cloud RUM into this Vue 3 project"
+    },
+    {
+      "zh": "分析我 RUM 应用过去 7 天 LCP 最差的 5 个页面",
+      "en": "Analyze top 5 worst LCP pages in my RUM app over the last 7 days"
+    },
+    {
+      "zh": "先把小程序接入 RUM，再分析上报后的 JS 错误趋势",
+      "en": "Integrate RUM into my mini-program first, then analyze JS error trends"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "帮我在这个 Vue 3 项目里接入腾讯云 RUM",
+    "en": "Help me integrate Tencent Cloud RUM into my Vue 3 project"
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-rum-fullstack-team",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:32.686Z"
+}

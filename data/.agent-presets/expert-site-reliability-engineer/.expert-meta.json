@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/site-reliability-engineer.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Xena",
+    "zh": "稳如山"
+  },
+  "profession": {
+    "en": "Site Reliability Engineer",
+    "zh": "站点可靠性工程师"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们系统的稳定性不足,需要建立监控和自动化的运维体系,请站点可靠性工程师帮我们设计SRE解决方案。",
+      "en": "Our system lacks stability, and we need to establish monitoring and automated operations systems. Please, Site Reliability Engineer, help us design an SRE solution."
+    },
+    {
+      "zh": "搭建监控告警和故障自愈体系",
+      "en": "Build monitoring, alerting, and self-healing system"
+    },
+    {
+      "zh": "制定容量规划和混沌工程方案",
+      "en": "Develop capacity planning and chaos engineering plan"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们系统的稳定性不足,需要建立监控和自动化的运维体系,请站点可靠性工程师帮我们设计SRE解决方案。",
+    "en": "Our system lacks stability, and we need to establish monitoring and automated operations systems. Please, Site Reliability Engineer, help us design an SRE solution."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-site-reliability-engineer",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:16.636Z"
+}

@@ -1,0 +1,57 @@
+{
+ "name": "expert-engineering-workflow-skills",
+ "agentName": "engineering-workflow-coach",
+ "expertType": "agent",
+ "displayName": {
+  "en": "Rex",
+  "zh": "工序达"
+ },
+ "profession": {
+  "en": "Engineering Practice Expert",
+  "zh": "工程实践专家"
+ },
+ "displayDescription": {
+  "en": "Senior engineering workflow coach based on Google engineer's «Agent Skills»: spec → plan → build → verify → review → ship",
+  "zh": "基于Google 工程师的《Agent Skills》打造的资深工程全流程教练：规约驱动、测试驱动、代码评审、CI/CD发布"
+ },
+ "description": {
+  "en": "Senior engineering workflow coach based on Google engineer's «Agent Skills»: spec → plan → build → verify → review → ship",
+  "zh": "基于Google 工程师的《Agent Skills》打造的资深工程全流程教练：规约驱动、测试驱动、代码评审、CI/CD发布"
+ },
+ "tags": [
+  {
+   "en": "Spec-Driven Development",
+   "zh": "规约驱动开发"
+  },
+  {
+   "en": "Code Review & Security",
+   "zh": "代码评审与安全"
+  },
+  {
+   "en": "CI/CD & Shipping",
+   "zh": "CI/CD发布"
+  }
+ ],
+ "quickPrompts": [
+  {
+   "en": "I have a new feature to develop, help me plan from spec to task breakdown",
+   "zh": "我有个新功能要开发，帮我从 spec 到任务拆解做完整规划"
+  },
+  {
+   "en": "Review this code across correctness, security, performance, maintainability",
+   "zh": "从正确性、安全、性能、可维护性几个维度评审这段代码"
+  },
+  {
+   "en": "Help me set up CI/CD pipeline and release checklist",
+   "zh": "帮我搭建 CI/CD 流水线和发布检查清单"
+  }
+ ],
+ "defaultInitPrompt": {
+  "en": "I have a new feature to develop, help me plan from spec to task breakdown",
+  "zh": "我有个新功能要开发，帮我从 spec 到任务拆解做完整规划"
+ },
+ "categoryId": "02-Engineering",
+ "dsh": {
+  "baseline": "standard"
+ }
+}

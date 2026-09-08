@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/godot-game-script-engineer.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Earl",
+    "zh": "节点通"
+  },
+  "profession": {
+    "en": "Godot Game Script Engineer",
+    "zh": "Godot游戏脚本工程师"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们使用Godot引擎开发游戏,需要专业的GDScript和引擎使用支持,请Godot游戏脚本工程师帮我们实现游戏功能。",
+      "en": "We use the Godot engine for game development and need professional GDScript and engine usage support. Please, Godot Game Script Engineer, help us implement game features."
+    },
+    {
+      "zh": "设计基于节点的组合架构和信号系统",
+      "en": "Design node-based composition architecture and signal systems"
+    },
+    {
+      "zh": "集成C#模块和类型安全设计",
+      "en": "Integrate C# modules and type-safe design"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们使用Godot引擎开发游戏,需要专业的GDScript和引擎使用支持,请Godot游戏脚本工程师帮我们实现游戏功能。",
+    "en": "We use the Godot engine for game development and need professional GDScript and engine usage support. Please, Godot Game Script Engineer, help us implement game features."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-godot-game-script-engineer",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:50.870Z"
+}

@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/game-designer.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Dale",
+    "zh": "玩法师"
+  },
+  "profession": {
+    "en": "Game Designer",
+    "zh": "游戏设计师"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们需要设计好玩的游戏机制和系统,请游戏设计师帮我们设计游戏玩法和平衡性。",
+      "en": "We need to design fun game mechanics and systems. Please, Game Designer, help us design game gameplay and balance."
+    },
+    {
+      "zh": "制定游戏数值体系和平衡方案",
+      "en": "Develop game numerical systems and balance plan"
+    },
+    {
+      "zh": "撰写游戏设计文档GDD",
+      "en": "Write a Game Design Document (GDD)"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们需要设计好玩的游戏机制和系统,请游戏设计师帮我们设计游戏玩法和平衡性。",
+    "en": "We need to design fun game mechanics and systems. Please, Game Designer, help us design game gameplay and balance."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-game-designer",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:49.304Z"
+}

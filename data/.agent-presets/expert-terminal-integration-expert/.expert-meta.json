@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/terminal-integration-expert.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Willa",
+    "zh": "终端通"
+  },
+  "profession": {
+    "en": "Terminal Integration Expert",
+    "zh": "终端集成专家"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们想开发终端集成应用,需要专业的终端交互和开发经验,请终端集成专家帮我们设计终端应用。",
+      "en": "We want to develop terminal integration applications and need professional terminal interaction and development experience. Please, Terminal Integration Expert, help us design terminal applications."
+    },
+    {
+      "zh": "设计跨设备XR交互和协同方案",
+      "en": "Design cross-device XR interaction and collaboration plan"
+    },
+    {
+      "zh": "搭建空间计算外设和传感器对接方案",
+      "en": "Build spatial computing peripheral and sensor integration plan"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们想开发终端集成应用,需要专业的终端交互和开发经验,请终端集成专家帮我们设计终端应用。",
+    "en": "We want to develop terminal integration applications and need professional terminal interaction and development experience. Please, Terminal Integration Expert, help us design terminal applications."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-terminal-integration-expert",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:21.567Z"
+}

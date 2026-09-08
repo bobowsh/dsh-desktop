@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/ai-engineer.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Amy",
+    "zh": "深网网"
+  },
+  "profession": {
+    "en": "AI Engineer",
+    "zh": "AI工程师"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们想在公司产品中集成AI功能,但缺乏专业的AI工程经验,请AI工程师帮我们设计和实施机器学习模型解决方案。",
+      "en": "We want to integrate AI features into our company products but lack professional AI engineering experience. Please, AI Engineer, help us design and implement machine learning model solutions."
+    },
+    {
+      "zh": "设计智能系统集成方案",
+      "en": "Design intelligent system integration plan"
+    },
+    {
+      "zh": "优化AI模型推理性能和生产稳定性",
+      "en": "Optimize AI model inference performance and production stability"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们想在公司产品中集成AI功能,但缺乏专业的AI工程经验,请AI工程师帮我们设计和实施机器学习模型解决方案。",
+    "en": "We want to integrate AI features into our company products but lack professional AI engineering experience. Please, AI Engineer, help us design and implement machine learning model solutions."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-ai-engineer",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:03:01.875Z"
+}

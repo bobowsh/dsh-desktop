@@ -9,6 +9,9 @@
         "tiddlywiki/vanilla",
         "tiddlywiki/snowwhite"
     ],
+    "languages": [
+        "zh-CN"
+    ],
     "build": {
         "index": [
             "--render",

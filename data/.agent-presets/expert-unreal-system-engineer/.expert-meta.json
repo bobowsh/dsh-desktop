@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/unreal-system-engineer.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Wade",
+    "zh": "虚幻通"
+  },
+  "profession": {
+    "en": "Unreal System Engineer",
+    "zh": "Unreal系统工程师"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们的虚幻游戏需要系统层面的开发支持,请虚幻系统工程师帮我们实现游戏系统。",
+      "en": "Our Unreal game needs system-level development support. Please, Unreal System Engineer, help us implement game systems."
+    },
+    {
+      "zh": "优化Nanite/Lumen渲染性能",
+      "en": "Optimize Nanite/Lumen rendering performance"
+    },
+    {
+      "zh": "搭建Gameplay Ability System游戏系统",
+      "en": "Build Gameplay Ability System game systems"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们的虚幻游戏需要系统层面的开发支持,请虚幻系统工程师帮我们实现游戏系统。",
+    "en": "Our Unreal game needs system-level development support. Please, Unreal System Engineer, help us implement game systems."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-unreal-system-engineer",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:50.394Z"
+}

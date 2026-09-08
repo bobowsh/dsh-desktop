@@ -1,0 +1,167 @@
+{
+  "protocol": 2,
+  "removals": {
+    "2026-09-05T14-44-26-792Z-e23fc240-879d-4e82-b45c-81f960a1bc44": {
+      "removalId": "2026-09-05T14-44-26-792Z-e23fc240-879d-4e82-b45c-81f960a1bc44",
+      "pluginName": "dsh-dream-skin",
+      "status": "removed",
+      "disabledAt": "2026-09-05T14:44:26.792Z",
+      "updatedAt": "2026-09-05T14:44:30.055Z",
+      "backupDirectory": "E:\\work\\dsh-desktop-me\\data\\recovery\\plugin-removals\\2026-09-05T14-44-26-792Z-e23fc240-879d-4e82-b45c-81f960a1bc44\\dsh-dream-skin",
+      "failures": [],
+      "generationBackups": [],
+      "componentBackups": []
+    },
+    "2026-09-06T10-36-47-633Z-55eb8800-4c51-4f28-a45e-3d3b34f5586e": {
+      "removalId": "2026-09-06T10-36-47-633Z-55eb8800-4c51-4f28-a45e-3d3b34f5586e",
+      "pluginName": "@changfenhuang/dsh-genui",
+      "status": "removed",
+      "disabledAt": "2026-09-06T10:36:47.633Z",
+      "updatedAt": "2026-09-06T10:37:04.242Z",
+      "backupDirectory": "E:\\work\\dsh-desktop-me\\data\\recovery\\plugin-removals\\2026-09-06T10-36-47-633Z-55eb8800-4c51-4f28-a45e-3d3b34f5586e\\changfenhuang__dsh-genui",
+      "failures": [],
+      "generationBackups": [
+        {
+          "id": "changfenhuang+dsh-genui+0.9.7+e35c8e03add6",
+          "version": "0.9.7",
+          "wasDesired": true
+        }
+      ],
+      "componentBackups": []
+    },
+    "2026-09-06T13-35-25-287Z-3a235cff-4b36-4e77-95fb-2b20c5c352fb": {
+      "removalId": "2026-09-06T13-35-25-287Z-3a235cff-4b36-4e77-95fb-2b20c5c352fb",
+      "pluginName": "@all3cn/dsh-better-sidebar-n23",
+      "status": "removed",
+      "disabledAt": "2026-09-06T13:35:25.287Z",
+      "updatedAt": "2026-09-06T13:35:27.032Z",
+      "backupDirectory": "E:\\work\\dsh-desktop-me\\data\\recovery\\plugin-removals\\2026-09-06T13-35-25-287Z-3a235cff-4b36-4e77-95fb-2b20c5c352fb\\all3cn__dsh-better-sidebar-n23",
+      "failures": [],
+      "generationBackups": [],
+      "componentBackups": []
+    },
+    "2026-09-06T13-35-27-039Z-929bb82b-0e9b-4273-8053-67d5bbdaaba8": {
+      "removalId": "2026-09-06T13-35-27-039Z-929bb82b-0e9b-4273-8053-67d5bbdaaba8",
+      "pluginName": "dsh-config-manager",
+      "status": "removed",
+      "disabledAt": "2026-09-06T13:35:27.039Z",
+      "updatedAt": "2026-09-06T13:35:30.183Z",
+      "backupDirectory": "E:\\work\\dsh-desktop-me\\data\\recovery\\plugin-removals\\2026-09-06T13-35-27-039Z-929bb82b-0e9b-4273-8053-67d5bbdaaba8\\dsh-config-manager",
+      "failures": [],
+      "generationBackups": [],
+      "componentBackups": []
+    },
+    "2026-09-06T13-50-32-084Z-e44ccdba-9805-4335-9458-c3ac175b6ac7": {
+      "removalId": "2026-09-06T13-50-32-084Z-e44ccdba-9805-4335-9458-c3ac175b6ac7",
+      "pluginName": "@all3cn/dsh-better-sidebar-n23",
+      "status": "removed",
+      "disabledAt": "2026-09-06T13:50:32.084Z",
+      "updatedAt": "2026-09-06T13:50:33.750Z",
+      "backupDirectory": "E:\\work\\dsh-desktop-me\\data\\recovery\\plugin-removals\\2026-09-06T13-50-32-084Z-e44ccdba-9805-4335-9458-c3ac175b6ac7\\all3cn__dsh-better-sidebar-n23",
+      "failures": [],
+      "generationBackups": [],
+      "componentBackups": []
+    },
+    "2026-09-06T14-31-21-620Z-712e2fc3-f2c8-425a-a245-36c20919531b": {
+      "removalId": "2026-09-06T14-31-21-620Z-712e2fc3-f2c8-425a-a245-36c20919531b",
+      "pluginName": "dsh-workspace-search",
+      "status": "removed",
+      "disabledAt": "2026-09-06T14:31:21.620Z",
+      "updatedAt": "2026-09-06T14:31:23.020Z",
+      "backupDirectory": "E:\\work\\dsh-desktop-me\\data\\recovery\\plugin-removals\\2026-09-06T14-31-21-620Z-712e2fc3-f2c8-425a-a245-36c20919531b\\dsh-workspace-search",
+      "failures": [],
+      "generationBackups": [],
+      "componentBackups": []
+    },
+    "2026-09-06T14-32-28-859Z-e5e13d94-af23-46c1-aa17-df66fd1c3fed": {
+      "removalId": "2026-09-06T14-32-28-859Z-e5e13d94-af23-46c1-aa17-df66fd1c3fed",
+      "pluginName": "@wowyuarm/dsh-agent-team",
+      "status": "removed",
+      "disabledAt": "2026-09-06T14:32:28.859Z",
+      "updatedAt": "2026-09-06T14:32:54.997Z",
+      "backupDirectory": "E:\\work\\dsh-desktop-me\\data\\recovery\\plugin-removals\\2026-09-06T14-32-28-859Z-e5e13d94-af23-46c1-aa17-df66fd1c3fed\\wowyuarm__dsh-agent-team",
+      "failures": [],
+      "generationBackups": [
+        {
+          "id": "wowyuarm+dsh-agent-team+0.1.8+b4f9ec1290fe",
+          "version": "0.1.8",
+          "wasDesired": true
+        }
+      ],
+      "componentBackups": []
+    },
+    "2026-09-06T14-32-55-011Z-9cc28f55-6bee-4bbb-a487-b2ecf90e67c9": {
+      "removalId": "2026-09-06T14-32-55-011Z-9cc28f55-6bee-4bbb-a487-b2ecf90e67c9",
+      "pluginName": "@alpacachen/dsh-automation",
+      "status": "removed",
+      "disabledAt": "2026-09-06T14:32:55.011Z",
+      "updatedAt": "2026-09-06T14:33:04.501Z",
+      "backupDirectory": "E:\\work\\dsh-desktop-me\\data\\recovery\\plugin-removals\\2026-09-06T14-32-55-011Z-9cc28f55-6bee-4bbb-a487-b2ecf90e67c9\\alpacachen__dsh-automation",
+      "failures": [],
+      "generationBackups": [
+        {
+          "id": "alpacachen+dsh-automation+0.3.13+f717593df470",
+          "version": "0.3.13",
+          "wasDesired": true
+        }
+      ],
+      "componentBackups": []
+    },
+    "2026-09-06T14-33-04-512Z-813e9840-536f-4945-87a7-47c7e7809bbf": {
+      "removalId": "2026-09-06T14-33-04-512Z-813e9840-536f-4945-87a7-47c7e7809bbf",
+      "pluginName": "dsh-office-plugin",
+      "status": "removed",
+      "disabledAt": "2026-09-06T14:33:04.512Z",
+      "updatedAt": "2026-09-06T14:33:15.195Z",
+      "backupDirectory": "E:\\work\\dsh-desktop-me\\data\\recovery\\plugin-removals\\2026-09-06T14-33-04-512Z-813e9840-536f-4945-87a7-47c7e7809bbf\\dsh-office-plugin",
+      "failures": [],
+      "generationBackups": [
+        {
+          "id": "dsh-office-plugin+0.2.0+b7a8a39fd9aa",
+          "version": "0.2.0",
+          "wasDesired": true
+        }
+      ],
+      "componentBackups": []
+    },
+    "2026-09-06T14-35-57-225Z-a04137e7-60bf-42ea-9002-54e9a2314e81": {
+      "removalId": "2026-09-06T14-35-57-225Z-a04137e7-60bf-42ea-9002-54e9a2314e81",
+      "pluginName": "dsh-plugin-sidebar-views",
+      "status": "removed",
+      "disabledAt": "2026-09-06T14:35:57.225Z",
+      "updatedAt": "2026-09-06T14:35:58.754Z",
+      "backupDirectory": "E:\\work\\dsh-desktop-me\\data\\recovery\\plugin-removals\\2026-09-06T14-35-57-225Z-a04137e7-60bf-42ea-9002-54e9a2314e81\\dsh-plugin-sidebar-views",
+      "failures": [],
+      "generationBackups": [],
+      "componentBackups": []
+    },
+    "2026-09-08T14-49-07-412Z-130acd5d-4d86-4210-9722-8e41a0ce225a": {
+      "removalId": "2026-09-08T14-49-07-412Z-130acd5d-4d86-4210-9722-8e41a0ce225a",
+      "pluginName": "dsh-computer-control",
+      "status": "removed",
+      "disabledAt": "2026-09-08T14:49:07.412Z",
+      "updatedAt": "2026-09-08T14:49:11.210Z",
+      "backupDirectory": "E:\\work\\dsh-desktop-me\\data\\recovery\\plugin-removals\\2026-09-08T14-49-07-412Z-130acd5d-4d86-4210-9722-8e41a0ce225a\\dsh-computer-control",
+      "failures": [],
+      "generationBackups": [],
+      "componentBackups": []
+    },
+    "2026-09-08T14-49-11-222Z-9c1fde4c-8c45-4e92-88d3-fdc9d9afca39": {
+      "removalId": "2026-09-08T14-49-11-222Z-9c1fde4c-8c45-4e92-88d3-fdc9d9afca39",
+      "pluginName": "@yugasun/dsh-web-search",
+      "status": "removed",
+      "disabledAt": "2026-09-08T14:49:11.222Z",
+      "updatedAt": "2026-09-08T14:49:13.104Z",
+      "backupDirectory": "E:\\work\\dsh-desktop-me\\data\\recovery\\plugin-removals\\2026-09-08T14-49-11-222Z-9c1fde4c-8c45-4e92-88d3-fdc9d9afca39\\yugasun__dsh-web-search",
+      "failures": [],
+      "generationBackups": [
+        {
+          "id": "yugasun+dsh-web-search+0.2.5+bc66f4ccd2df",
+          "version": "0.2.5",
+          "wasDesired": true
+        }
+      ],
+      "componentBackups": []
+    }
+  }
+}

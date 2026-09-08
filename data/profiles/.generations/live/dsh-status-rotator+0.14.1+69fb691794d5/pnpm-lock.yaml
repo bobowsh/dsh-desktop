@@ -1,0 +1,22 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      dsh-status-rotator:
+        specifier: 0.14.1
+        version: 0.14.1
+
+packages:
+
+  dsh-status-rotator@0.14.1:
+    resolution: {integrity: sha512-fmW4dAZ+gODSnDSs1os0gmMZXHfzRB2TZecckMQWhbhPiiKQmkCq7bgBaWHsn2pWGUQuS3Wzma4yALimd6Fzkw==}
+
+snapshots:
+
+  dsh-status-rotator@0.14.1: {}

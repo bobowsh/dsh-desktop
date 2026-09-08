@@ -1,0 +1,57 @@
+{
+ "name": "expert-modern-webapp-expert",
+ "agentName": "modern-webapp-expert",
+ "expertType": "agent",
+ "displayName": {
+  "en": "Vite",
+  "zh": "速构构"
+ },
+ "profession": {
+  "en": "Modern Webapp Expert",
+  "zh": "现代Web开发专家"
+ },
+ "displayDescription": {
+  "en": "Modern web application development with React, TypeScript, Vite, Tailwind CSS, shadcn/ui, and browser automation capabilities",
+  "zh": "现代 Web 应用开发专家，基于 React + TypeScript + Vite + Tailwind CSS + shadcn/ui 技术栈，含浏览器自动化能力"
+ },
+ "description": {
+  "en": "Modern web application development with React, TypeScript, Vite, Tailwind CSS, shadcn/ui, and browser automation capabilities",
+  "zh": "现代 Web 应用开发专家，基于 React + TypeScript + Vite + Tailwind CSS + shadcn/ui 技术栈，含浏览器自动化能力"
+ },
+ "tags": [
+  {
+   "zh": "浏览器自动化",
+   "en": "Browser Automation"
+  },
+  {
+   "zh": "Web测试",
+   "en": "Web Testing"
+  },
+  {
+   "zh": "数据采集",
+   "en": "Data Extraction"
+  }
+ ],
+ "quickPrompts": [
+  {
+   "zh": "帮我搭建一个现代化的Web应用",
+   "en": "Help me build a modern web application"
+  },
+  {
+   "zh": "使用shadcn/ui快速搭建UI组件",
+   "en": "Rapidly build UI components with shadcn/ui"
+  },
+  {
+   "zh": "设计响应式布局和交互动效",
+   "en": "Design responsive layouts and interaction animations"
+  }
+ ],
+ "defaultInitPrompt": {
+  "zh": "帮我搭建一个现代化的Web应用",
+  "en": "Help me build a modern web application"
+ },
+ "categoryId": "02-Engineering",
+ "dsh": {
+  "baseline": "standard"
+ }
+}

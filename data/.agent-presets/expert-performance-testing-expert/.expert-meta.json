@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/performance-testing-expert.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Jasper",
+    "zh": "压测测"
+  },
+  "profession": {
+    "en": "Performance Testing Expert",
+    "zh": "性能测试专家"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们的产品性能在高峰期表现不佳,需要进行性能测试和优化,请性能测试专家帮我们进行性能压测和调优。",
+      "en": "Our product performance is poor during peak periods and needs performance testing and optimization. Please, Performance Testing Expert, help us conduct performance load testing and tuning."
+    },
+    {
+      "zh": "分析性能瓶颈并输出优化建议",
+      "en": "Analyze performance bottlenecks and deliver optimization recommendations"
+    },
+    {
+      "zh": "搭建性能基线和持续监控体系",
+      "en": "Build performance baselines and continuous monitoring system"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们的产品性能在高峰期表现不佳,需要进行性能测试和优化,请性能测试专家帮我们进行性能压测和调优。",
+    "en": "Our product performance is poor during peak periods and needs performance testing and optimization. Please, Performance Testing Expert, help us conduct performance load testing and tuning."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-performance-testing-expert",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:03:01.329Z"
+}

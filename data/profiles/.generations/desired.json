@@ -1,0 +1,20 @@
+[
+  "dsh-better-sidebar+0.18.0+452fd92ed2d9",
+  "dsh-editor+0.2.3+e3fed69ca3d5",
+  "dsh-file-upload+0.4.3+445d32e6497b",
+  "dsh-mnemon+0.5.2+4d2a35c87c5d",
+  "dsh-plugin-dev-kb+1.1.0+72d50c623f53",
+  "dsh-rules-manager+1.5.4+8a93902c543c",
+  "dsh-status-rotator+0.14.1+69fb691794d5",
+  "dsh-vscode-mode+0.1.49+e6e97828925b",
+  "dsh-vscode-workbench+0.1.8+060fed5178a7",
+  "dsh-web-fetch-playwright+0.2.7+4dee93ed6c99",
+  "dsh-web-search-free+1.3.0+33bb3fd9313d",
+  "dshmarket+1.44.0+af88ab682bc0",
+  "gitee-ai-employee+1.2.8+a92a77817658",
+  "joekytc+dsh-swarm+0.1.2+b43355753591",
+  "linxin666+dsh-client-ui-git-graph+0.3.16+a2b610c532ac",
+  "michengai+dsh-agency-agents+0.1.32+71429200e314",
+  "michengai+dsh-skills-manager+0.1.40+2cadf56b36e2",
+  "weibaohui+dsh-continue+0.3.0+cf99218a6bcb"
+]

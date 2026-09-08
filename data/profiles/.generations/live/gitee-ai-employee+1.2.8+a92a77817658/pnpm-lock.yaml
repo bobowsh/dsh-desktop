@@ -1,0 +1,23 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      gitee-ai-employee:
+        specifier: 1.2.8
+        version: 1.2.8
+
+packages:
+
+  gitee-ai-employee@1.2.8:
+    resolution: {integrity: sha512-ZlytAP/F8DEGu+YV9UmO3ZUIkYjruG/6OW51yhSQoynFUl6DRyjtZQFw1PWVXiDgYet0Jgs9kA5bGykrGdddQw==}
+    engines: {node: '>=22'}
+
+snapshots:
+
+  gitee-ai-employee@1.2.8: {}

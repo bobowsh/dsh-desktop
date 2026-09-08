@@ -1,0 +1,129 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/gstack-lead.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Software Workshop",
+    "zh": "软件工坊"
+  },
+  "profession": {
+    "en": "Software Workshop",
+    "zh": "软件工坊"
+  },
+  "expertType": "team",
+  "members": [
+    {
+      "name": "gstack-lead",
+      "agentName": "gstack-lead",
+      "displayName": {
+        "en": "Captain",
+        "zh": "船长"
+      },
+      "description": "软件工坊CEO"
+    },
+    {
+      "name": "gstack-product-reviewer",
+      "agentName": "gstack-product-reviewer",
+      "displayName": {
+        "en": "Product Reviewer",
+        "zh": "产品官"
+      },
+      "description": "多维产品评审"
+    },
+    {
+      "name": "gstack-security-officer",
+      "agentName": "gstack-security-officer",
+      "displayName": {
+        "en": "Security Officer",
+        "zh": "安全卫士"
+      },
+      "description": "OWASP+STRIDE安全审计"
+    },
+    {
+      "name": "gstack-qa-lead",
+      "agentName": "gstack-qa-lead",
+      "displayName": {
+        "en": "QA & Ship Lead",
+        "zh": "质量门神"
+      },
+      "description": "QA测试与发布"
+    },
+    {
+      "name": "gstack-designer",
+      "agentName": "gstack-designer",
+      "displayName": {
+        "en": "Design Consultant",
+        "zh": "设计师"
+      },
+      "description": "设计系统与视觉审查"
+    },
+    {
+      "name": "gstack-investigator",
+      "agentName": "gstack-investigator",
+      "displayName": {
+        "en": "Investigator",
+        "zh": "排障手"
+      },
+      "description": "调试与根因分析"
+    }
+  ],
+  "memberTools": [
+    {
+      "toolName": "delegate_gstack-lead",
+      "label": "船长",
+      "agentName": "gstack-lead"
+    },
+    {
+      "toolName": "delegate_gstack-product-reviewer",
+      "label": "产品官",
+      "agentName": "gstack-product-reviewer"
+    },
+    {
+      "toolName": "delegate_gstack-security-officer",
+      "label": "安全卫士",
+      "agentName": "gstack-security-officer"
+    },
+    {
+      "toolName": "delegate_gstack-qa-lead",
+      "label": "质量门神",
+      "agentName": "gstack-qa-lead"
+    },
+    {
+      "toolName": "delegate_gstack-designer",
+      "label": "设计师",
+      "agentName": "gstack-designer"
+    },
+    {
+      "toolName": "delegate_gstack-investigator",
+      "label": "排障手",
+      "agentName": "gstack-investigator"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "zh": "上线前全检：代码审查+安全审计+QA测试",
+      "en": "Pre-launch: code review + security audit + QA testing"
+    },
+    {
+      "zh": "评审产品方案，再出设计系统落地",
+      "en": "Review the product plan, then build the design system"
+    },
+    {
+      "zh": "排查线上问题，定位根因并修复验证",
+      "en": "Investigate production issue, find root cause and verify fix"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "做一次上线前全检：代码审查、安全审计、QA测试",
+    "en": "Run a full pre-launch check: code review, security audit, and QA testing"
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-software-workshop",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:30.491Z"
+}

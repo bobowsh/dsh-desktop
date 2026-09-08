@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/embedded-firmware-engineer.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Owen",
+    "zh": "固件通"
+  },
+  "profession": {
+    "en": "Embedded Firmware Engineer",
+    "zh": "嵌入式固件工程师"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们需要开发嵌入式设备的固件,对实时性和稳定性要求很高,请嵌入式固件工程师帮我们设计固件架构。",
+      "en": "We need to develop firmware for embedded devices with high requirements for real-time performance and stability. Please, Embedded Firmware Engineer, help us design the firmware architecture."
+    },
+    {
+      "zh": "优化固件性能和功耗方案",
+      "en": "Optimize firmware performance and power consumption plan"
+    },
+    {
+      "zh": "设计固件OTA升级和安全启动方案",
+      "en": "Design firmware OTA update and secure boot plan"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们需要开发嵌入式设备的固件,对实时性和稳定性要求很高,请嵌入式固件工程师帮我们设计固件架构。",
+    "en": "We need to develop firmware for embedded devices with high requirements for real-time performance and stability. Please, Embedded Firmware Engineer, help us design the firmware architecture."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-embedded-firmware-engineer",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:19.513Z"
+}

@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/senior-developer.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Will",
+    "zh": "吴八哥"
+  },
+  "profession": {
+    "en": "Senior Developer",
+    "zh": "高级开发工程师"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "帮我开发一个功能，我会描述需求，请你先给出实现计划再动手写代码。",
+      "en": "Help me develop a feature. I'll describe the requirements, please give me an implementation plan before writing code."
+    },
+    {
+      "zh": "帮我搭建一个全栈项目（前端+后端+数据库），包含用户认证功能",
+      "en": "Help me scaffold a full-stack project (frontend + backend + database) with user authentication"
+    },
+    {
+      "zh": "Review我的代码，找出潜在的性能问题和安全隐患",
+      "en": "Review my code, identify potential performance issues and security vulnerabilities"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "帮我开发一个功能，我会描述需求，请你先给出实现计划再动手写代码。",
+    "en": "Help me develop a feature. I'll describe the requirements, please give me an implementation plan before writing code."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-senior-developer",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:11.164Z"
+}

@@ -1,3 +1,0 @@
-name: 'WSL · Standard mode（标准模式）'
-order: 1
-description: 'WSL execution world for Standard mode（标准模式）: bash and file tools run inside the WSL distribution.'

@@ -1,3 +1,0 @@
-name: 'WSL · Spec 驱动开发'
-order: 10
-description: 'WSL execution world for spec-pipeline: bash and file tools run inside the WSL distribution.'

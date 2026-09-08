@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/threat-detection-engineer.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Blake",
+    "zh": "猎威威"
+  },
+  "profession": {
+    "en": "Threat Detection Engineer",
+    "zh": "威胁检测工程师"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们需要建立安全威胁检测体系,及时发现和应对安全攻击,请威胁检测工程师帮我们设计威胁监控方案。",
+      "en": "We need to establish a security threat detection system to timely discover and respond to security attacks. Please, Threat Detection Engineer, help us design a threat monitoring solution."
+    },
+    {
+      "zh": "设计威胁情报集成和响应自动化",
+      "en": "Design threat intelligence integration and response automation"
+    },
+    {
+      "zh": "制定入侵检测规则和安全策略",
+      "en": "Develop intrusion detection rules and security policies"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们需要建立安全威胁检测体系,及时发现和应对安全攻击,请威胁检测工程师帮我们设计威胁监控方案。",
+    "en": "We need to establish a security threat detection system to timely discover and respond to security attacks. Please, Threat Detection Engineer, help us design a threat monitoring solution."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-threat-detection-engineer",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:18.791Z"
+}

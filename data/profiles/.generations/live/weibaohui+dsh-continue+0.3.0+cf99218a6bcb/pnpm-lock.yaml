@@ -1,0 +1,23 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      '@weibaohui/dsh-continue':
+        specifier: 0.3.0
+        version: 0.3.0
+
+packages:
+
+  '@weibaohui/dsh-continue@0.3.0':
+    resolution: {integrity: sha512-pTsg1Sh+TbIDYuqM0OxCiigIVE9mufunLK4GI45N2VHnTg7FduS52qdpGtsQjnyUyBJqPuD58cT/aUbNCMnQZw==}
+    engines: {node: '>=22.5'}
+
+snapshots:
+
+  '@weibaohui/dsh-continue@0.3.0': {}

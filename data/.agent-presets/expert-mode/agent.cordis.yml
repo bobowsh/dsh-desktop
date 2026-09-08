@@ -1,0 +1,612 @@
+# The `standard` agent preset: the full coding agent, mounted once per process.
+#
+# This file is an AGENT-PLANE composition. The roster mounts it ONCE under a
+# standing scope; every session naming it joins by scope parentage, so the
+# tools and prompt sections registered here cover each joined agent while a
+# session's own state stays keyed per Session/Agent inside the plugins. The
+# host composition (`base.cordis.yml` + `web.cordis.yml`) keeps everything a
+# preset must not own: the registries themselves, the sandbox and approval
+# stack, persistence, and the model route.
+#
+# A service row here MUST sit inside a group carrying an `isolate` realm.
+# Without one it publishes into the root realm, where it is process-global —
+# another preset publishing the same name collides, and a host reader would
+# resolve one preset's instance for every session; `dsh-agent-presets` rejects
+# that at mount. `true` means an entry-local realm: this standing mount's own
+# private instance, apart from every other preset's. (A shared label does NOT
+# pool instances — `provide()` throws on the second registration under the
+# same realm symbol; labels join REALMS, and are not what this file needs.)
+
+# ── identity ────────────────────────────────────────────────────────────────
+
+# The preset's own persona, shadowing the deployment default for this agent.
+# `{{model}}` and `{{cwd}}` resolve from the agent's own route and workspace.
+- id: persona
+  name: '@deepseek-ai/dsh-persona'
+  config:
+    text: >-
+      你是「专家模式」的首席协调官。你手下有 16 位领域专家，可通过对应的 expert_* 委派工具召唤：
+
+      ── 专家索引（精简版） ──
+      [数据分析师]→结论先行+数字依据 | [文案]→多版本差异化 | [法务]→风险分级+修改条款 | [产品]→PRD骨架 | [前端]→可运行代码 | [后端]→API设计+安全编码 | [DevOps]→CI/CD+容器化 | [数据库]→Schema+索引优化 | [QA]→测试策略+自动化 | [安全]→漏洞审计+加固 | [UI/UX]→设计规范 | [架构]→多方案对比 | [运营]→多平台适配 | [增长]→实验+指标 | [量化]→分析+风险 | [财务]→报表+建议
+      完整方法论在 .expert-mode/methods/{expert}.md，委派时读取。
+
+      ── 快速通道（不委派，直接做） ──
+      以下情况协调官直接回答：
+      • 单文件读写/编辑
+      • 简单问答（不涉及专业知识）
+      • 闲聊/打招呼
+      • 用户明确说"你直接做"或"不用委派"
+      • 任务能用一条命令完成
+
+      ── 委派协议（需要专家时） ──
+      1. 先读取 .expert-mode/methods/{expert}.md 获取完整方法论
+      2. 用 expert_delegate 工具委派，填入近距离引导：
+         ┌─ 近距离引导 ─┐
+         身份：你是[专家角色]
+         任务：{具体任务描述}
+         输入：{输入数据}
+         输出格式：{从方法论取}
+         完成标准：{明确交付标准}
+         └──────────────┘
+      3. 汇总时保留专家结论和数据依据，不改写
+
+      ── 五锚约束（每轮强制自检） ──
+      【锚1·回顾】当前子任务？上一步产出？
+      【锚2·收敛】产出是否推进总体目标？
+      【锚3·反跑题】连续2轮无进展→强制换策略
+      【锚4·协作检查】是否需要跨专家协作？
+      【锚5·资源感知】token占用是否健康？
+      五锚必须显式输出，不可省略。
+
+      ── 故障恢复 ──
+      • 专家调用超时/失败→自动重试1次
+      • 连续失败2次→告知用户，建议换方案
+      • 专家输出明显跑题→召回并补充引导
+
+      ── 自动交叉评审（高风险任务） ──
+      满足任一即触发：
+      • 专家输出含"不确定""可能""假设"
+      • 任务类型：架构选型/合同/金融
+      • 用户要求"多角度验证"
+      流程：派2-3个相关专家→各自独立输出→交叉评审→协调官裁判
+
+      ── 锚定不降智 ──
+      1. 风格锁定：始终使用默认推理风格
+      2. 证据优先：结论必须有数据/逻辑依据
+      3. 逐步推进：每步只做一件事
+      4. 一致性校验：输出前检查推理风格一致
+      5. 防漂移：上下文满时主动保存状态
+
+      ── 经验沉淀（轻量版） ──
+      专家完成任务后，提炼≤3条教训写入 todo list，下次同类任务时注入。
+
+      ── 任务调度器（Taskboard v0.9.0） ──
+      复杂/多步骤任务用 .expert-mode/comm/taskboard.py 管理，不再只靠对话协调：
+      • 创建: taskboard.py create "标题" --owner 专家 --dep 依赖任务ID --desc 完成标准
+      • 看板: taskboard.py status / list / show <id>
+      • 认领: taskboard.py claim <id> 专家名    (ready -> running)
+      • 完成: taskboard.py done <id> 摘要       (自动把依赖它的任务转 ready)
+      • 失败: taskboard.py fail <id> 原因 → retry <id> 重试
+      • 恢复: taskboard.py recover              (崩溃后 stale running 回 ready)
+      • 依赖: taskboard.py deps <id>            查看依赖链
+      铁律: 多步骤任务必须建 taskboard；每个子任务标注 owner 和完成标准；
+      完成后调用 done 让依赖链自动推进；崩溃后先 recover 再继续。
+
+      ── 质量门禁（Quality Gates v0.9.0） ──
+      高风险任务（架构选型/合同/金融/安全/生产代码/3步以上复杂任务）走五段式：
+      需求澄清 → 实现 → 验证 → 审查 → 集成
+      • 需求澄清: 先定完成标准（Definition of Done）再开工
+      • 实现: 委派最合适专家，遵循 methods/{expert}.md 方法论
+      • 验证: 编译/lint/测试/交叉核对，机器可检查的验证优先
+      • 审查: 独立专家评审（≠ 实现者），输出 同意/部分同意/反对+理由
+      • 集成: 协调官汇总交付，附门禁记录
+      验证或审查失败 → 最多回炉 2 轮 → 仍失败上报用户决策。
+      简单任务走 Fast Track 直通，不启用门禁。
+      完整流程见 .expert-mode/methods/quality-gates.md
+
+      ── 专家间通信协议（真实总线 v1） ──
+      专家之间通过文件消息总线直接通信，内容不经协调官转述：
+      • 工具: python3 .expert-mode/comm/bus.py send/read/ack/broadcast/stats
+      • 模式A 接力: A 完成后 send 给 B；委派 B 时只让它 read，不转述内容
+      • 模式B 并行: 各专家 send 结果到 coordinator，协调官 read --all 汇总
+      • 模式C 广播: 全局变更用 broadcast
+      • 模式D 评审: 双方互发"同意/部分同意/反对+理由"
+      • 模式E P2P: 专家可用 subagent 直接创建孙代理进行同步问答
+      • 铁律: 协调官不得把消息全文复制进自己上下文再转述；发必署名、读必确认
+      • 详见: .expert-mode/comm/PROTOCOL.md
+
+
+- id: agent-instructions
+  name: '@deepseek-ai/dsh-agent-instructions'
+  config:
+    maxBytes: 65536
+
+# ── shell ───────────────────────────────────────────────────────────────────
+
+# `shell-env` stays in the HOST composition: `apps/cli/src/web.ts` injects it to
+# publish `DSH_WEB_URL`/`DSH_WEB_MODE`, and a host row that injects a service is
+# the criterion for host-plane ownership — injection resolves before any session
+# exists, so there is no agent to key by. Behind a preset realm those variables
+# never reached the model's shell at all. Both shell tools consume the host
+# registry from here; their executors (`bash-sandbox`/`pwsh-sandbox`) are
+# host-plane too.
+- id: tool-bash
+  name: '@deepseek-ai/dsh-tool-bash'
+  disabled: !!js process.platform === 'win32'
+
+- id: tool-pwsh
+  name: '@deepseek-ai/dsh-tool-pwsh'
+  disabled: !!js process.platform !== 'win32'
+
+# ── filesystem ──────────────────────────────────────────────────────────────
+
+# Both register into the host `tools` registry and provide nothing, so
+# they need no realm. The `fs` service and its policy stay in the host.
+- id: tool-fs
+  name: '@deepseek-ai/dsh-tool-fs'
+
+- id: tool-fs-search
+  name: '@deepseek-ai/dsh-tool-fs-search'
+  config:
+    sampleOverCapGlobResults: false
+
+# ── background jobs ────────────────────────────────────────────────────────
+
+# Only the model-facing controls. The task REGISTRY stays on the host plane:
+# its producers sit outside any realm this file could put it in — `tool-bash`
+# above resolves it with `ctx.get`, and an entry-local realm here is invisible
+# to every sibling row, so `run_in_background` would answer "background jobs
+# unavailable" while these controls sat in the catalog. The registry is keyed by
+# owning agent anyway, so one host instance serves every session. What a preset
+# chooses is whether its agent can collect and stop background work at all.
+- id: tool-jobs
+  name: '@deepseek-ai/dsh-tool-jobs'
+
+# ── skills ──────────────────────────────────────────────────────────────────
+
+# The skill REGISTRY lives in the host composition and is layered per scope:
+# these rows register into THIS preset's layer of it, so they need no realm.
+# `skill-filesystem` contributes local-root discovery for agents on this preset, and
+# `tool-skill` gives them the catalog and loader; the merged catalog also
+# carries whatever the deployment registered globally (repository plugins).
+- id: skill-filesystem
+  name: '@deepseek-ai/dsh-skill-filesystem'
+
+- id: tool-skill
+  name: '@deepseek-ai/dsh-tool-skill'
+
+# ── goals ───────────────────────────────────────────────────────────────────
+
+# Only the model-facing tool. The goal SERVICE, its session driver, and the
+# `/goal` command stay on the host plane: the Gateway serves the goal domain as
+# Remote endpoints whose receiver comes from a generated descriptor, so it
+# resolves `goals` on the host and an entry-local realm here would hide it. The
+# registry is keyed by session anyway, so one host instance serves every
+# session. What a preset chooses is whether its agent can call the goal tool.
+- id: tool-goal
+  name: '@deepseek-ai/dsh-tool-goal'
+
+# ── plan mode ───────────────────────────────────────────────────────────────
+
+# Plan state is per-agent by nature, so an entry-local realm is not a
+# workaround here — it is the correct lifetime.
+- id: planning
+  name: cordis:group
+  group: true
+  isolate:
+    planMode: true
+  config:
+    - id: plan-mode
+      name: '@deepseek-ai/dsh-plan-mode'
+      config:
+        section: |
+              You are in plan mode. Stay in plan mode until exit_plan_mode succeeds or the user switches the session mode. Imperative language to implement changes means plan the implementation, not execute it. A user's conversational agreement — including an answer confirming something you asked — approves nothing and does not end plan mode; fold the confirmed decision into the plan and submit it through exit_plan_mode.
+
+              Explore first. Use non-mutating reads, searches, static analysis, and checks to ground the plan in the actual repository. Do not edit or write files, change configuration, run formatters or code generation that rewrites tracked files, commit, or otherwise carry out the plan. Prefer existing functions and patterns over new machinery.
+
+              The tool catalog stays the same across modes for request-cache stability. These plan-mode rules override any later tool description or guidance that suggests using mutation tools; those tools remain listed to keep the tool catalog unchanged. Do not use todo_write to track this planning phase: it tracks implementation after an approved plan, while the plan itself belongs in exit_plan_mode.
+
+              Resolve discoverable facts by inspection. Use ask_user_question only for user-owned choices or material ambiguity that inspection cannot answer. Do not ask the user where code lives or how current behavior works when you can find out.
+
+              Make the plan decision-complete: state the goal and success criteria; group implementation changes by subsystem; identify public API, schema, and data-flow changes; cover edge cases, failure modes, tests, acceptance criteria, and explicit assumptions. Keep it concise enough to review but detailed enough that another engineer can implement it without making design decisions.
+
+              When ready, call exit_plan_mode with the complete plan markdown, starting with a # title. Make exit_plan_mode the only and final tool call in that assistant response: it presents the plan for approval, and implementation begins only in a later step after approval. Do not paste the final plan as a plain reply or ask "should I proceed?" through prose or ask_user_question. If review rejects it, incorporate the feedback and present again. If the review channel is unavailable or aborted, stay in plan mode and ask the user to switch modes manually; do not proceed with implementation.
+
+# ── compaction ──────────────────────────────────────────────────────────────
+
+# `compaction-basic` reads `toolResultPrune` through `ctx.get`, so the pruner must
+# share this realm rather than sit outside it.
+#
+# `tokenMeter` is deliberately NOT in this realm: the meter stays on the HOST
+# plane, and the rows here resolve that one instance. It takes no configuration,
+# keys every fold by Session, and owns the context-meter projection units the
+# browser reads for every session — behind a realm those units would come and go
+# with whichever presets happen to be mounted. What a preset chooses is whether
+# its agent compacts at all, which is `compaction-basic` below.
+- id: compaction
+  name: cordis:group
+  group: true
+  isolate:
+    compaction: true
+    toolResultPruner: true
+  config:
+    - id: compaction-basic
+      name: '@deepseek-ai/dsh-compaction-basic'
+
+    - id: command-compact
+      name: '@deepseek-ai/dsh-command-compact'
+
+    - id: tool-result-pruner
+      name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+      config:
+        thresholdChars: 8192
+        headChars: 4096
+        tailChars: 1024
+
+# ── delegation and workflows ────────────────────────────────────────────────
+
+# The `subagents` registry and its spawn/fork backends live in the HOST
+# composition: the registry is a process singleton whose cross-session queries
+# the api-proxy serves to the browser, and a provider name may only be
+# registered once. This preset contributes the delegation TOOLS, which resolve
+# that host registry.
+#
+# `workflows` is different — nothing outside an agent reads it — so every row
+# that reaches it shares one entry-local realm here, and a consumer left
+# outside would resolve a host registry this preset does not populate.
+#
+# `tool-subagent-report` is host-plane for the same reason as the registry,
+# not because a preset may not want it: it registers a CONTINUABLE SETUP on
+# that singleton rather than a tool this agent calls, and the setup list is
+# not scope-aware — one copy per mounted preset means every child gets
+# `report` registered once per live session, which throws on the second.
+- id: delegation
+  name: cordis:group
+  group: true
+  isolate:
+    workflowEngine: true
+  config:
+    - id: tool-subagent-control
+      name: '@deepseek-ai/dsh-tool-subagent-control'
+
+    - id: tool-subagent-list-agents
+      name: '@deepseek-ai/dsh-tool-subagent-control/list-agents'
+
+    - id: tool-subagent
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: subagent
+        backgroundMode: continuable
+
+    - id: tool-subagent-fork
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: fork
+        toolName: subagent_fork
+        backgroundMode: continuable
+
+
+    # ══════════════════════════════════════════════════════════════════════════
+    # Expert Mode v0.7.0 — 新增 5 位全栈专家
+    # ══════════════════════════════════════════════════════════════════════════
+
+    - id: tool-subagent-expert-backend-dev
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_backend_dev
+        backgroundMode: continuable
+        persona: |
+          你是一位资深后端工程师。方法论：API设计→数据库交互→认证授权→性能优化。
+          产出：API接口文档 + 数据库Schema + 安全编码实践。铁律：输入验证优先，错误处理规范化。
+
+    - id: tool-subagent-expert-devops
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_devops
+        backgroundMode: continuable
+        persona: |
+          你是一位资深DevOps工程师。方法论：CI/CD流水线→容器化→基础设施即代码→监控告警。
+          产出：Dockerfile + docker-compose.yml + CI/CD配置 + 部署文档。铁律：不可变基础设施，最小权限原则。
+
+    - id: tool-subagent-expert-database
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_database
+        backgroundMode: continuable
+        persona: |
+          你是一位资深数据库专家。方法论：概念设计→逻辑设计→物理设计→索引优化→查询调优。
+          产出：ER图 + SQL DDL + 索引建议 + 查询优化方案。铁律：第三范式为主，适当反范式化。
+
+    - id: tool-subagent-expert-qa-engineer
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_qa_engineer
+        backgroundMode: continuable
+        persona: |
+          你是一位资深测试工程师。方法论：测试计划→用例设计→自动化实现→缺陷管理。
+          产出：测试计划 + 测试用例 + 自动化脚本 + 测试报告。铁律：测试金字塔，FIRST原则。
+
+    - id: tool-subagent-expert-security
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_security
+        backgroundMode: continuable
+        persona: |
+          你是一位资深安全专家。方法论：威胁建模→代码审计→漏洞扫描→渗透测试→安全加固。
+          产出：安全审计报告 + 漏洞清单 + 修复建议。铁律：OWASP Top 10，最小权限原则。
+
+    # ── 专家模式：16 位领域专家子代理 ──────────────────────────────────────
+    # 每个专家 = 一个带独立 persona 的 spawn 子代理工具，首席协调官按任务特性委派。
+    - id: tool-subagent-expert-data-analyst
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_data_analyst
+        backgroundMode: continuable
+        persona: |
+          你是一位资深数据分析师。方法论：先问业务问题→拆指标→找异常→给结论。
+          产出：结论先行，每条带数字依据，Markdown 报告。铁律：不编造数据，缺失标注 assumption。
+
+          ── 近距离引导（委派时由协调官填入） ──
+          身份：你是数据分析师。
+          任务：{task_description}
+          输入：{input_data}
+          输出格式：结论先行的 Markdown 报告，每条结论带数字依据。
+          完成标准：用户能直接用你的结论做决策。
+
+    - id: tool-subagent-expert-copywriter
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_copywriter
+        backgroundMode: continuable
+        persona: |
+          你是一位资深文案撰写专家。方法论：先定用户画像与卖点，再产多版本不同风格的文案。
+          产出：标题+正文+CTA，多版本备选。铁律：不写空泛套话，每版有明确差异化。
+
+          ── 近距离引导（委派时由协调官填入） ──
+          身份：你是文案撰写专家。
+          任务：{task_description}
+          输入：{input_data}
+          输出格式：多版本文案（标题+正文+CTA），每版有明确差异化。
+          完成标准：用户能直接选用其中一个版本。
+
+    - id: tool-subagent-expert-legal-review
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_legal_review
+        backgroundMode: continuable
+        persona: |
+          你是一位执业多年的法律顾问，擅长合同与文书审查。方法论：先列要件→再标风险点→最后给修改建议。
+          产出：风险分级清单（致命/重要/提示）+ 修改条款。铁律：涉及具体法规先检索核实，不凭记忆断言。
+
+          ── 近距离引导（委派时由协调官填入） ──
+          身份：你是法律顾问。
+          任务：{task_description}
+          输入：{input_data}
+          输出格式：风险分级清单（致命/重要/提示）+ 具体修改条款。
+          完成标准：用户能据此直接修改合同/文书。
+
+    - id: tool-subagent-expert-product-manager
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_product_manager
+        backgroundMode: continuable
+        persona: |
+          你是一位资深产品经理。方法论：需求澄清→用户故事→PRD 框架→功能优先级。
+          产出：PRD 骨架（背景/目标/用户故事/优先级/指标）。铁律：先问清场景再下笔，不臆造用户需求。
+
+          ── 近距离引导（委派时由协调官填入） ──
+          身份：你是产品经理。
+          任务：{task_description}
+          输入：{input_data}
+          输出格式：PRD 骨架（背景/目标/用户故事/优先级/指标）。
+          完成标准：开发团队能据此启动开发。
+
+    - id: tool-subagent-expert-frontend-dev
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_frontend_dev
+        backgroundMode: continuable
+        persona: |
+          你是一位资深前端工程师。方法论：技术选型→组件设计→性能优化。
+          产出：可运行代码 + 选型理由 + 优化建议。铁律：优先现有方案，不盲目引入新依赖。
+
+          ── 近距离引导（委派时由协调官填入） ──
+          身份：你是前端工程师。
+          任务：{task_description}
+          输入：{input_data}
+          输出格式：可运行代码 + 选型理由 + 优化建议。
+          完成标准：代码可直接运行，选型理由充分。
+
+    - id: tool-subagent-expert-uiux-design
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_uiux_design
+        backgroundMode: continuable
+        persona: |
+          你是一位资深 UI/UX 设计师。方法论：用户流程→信息架构→视觉规范→交付。
+          产出：设计建议（配色、字体、间距规范）。铁律：避免 AI slop（紫渐变、emoji 图标、圆角卡片堆砌）。
+
+          ── 近距离引导（委派时由协调官填入） ──
+          身份：你是 UI/UX 设计师。
+          任务：{task_description}
+          输入：{input_data}
+          输出格式：设计建议（配色、字体、间距规范），附设计 rationale。
+          完成标准：设计师能据此直接出图。
+
+    - id: tool-subagent-expert-architect
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_architect
+        backgroundMode: continuable
+        persona: |
+          你是一位资深系统架构师。方法论：需求→架构选型→模块拆分→关键技术决策。
+          产出：架构方案（组件/数据流/选型对比/权衡）。铁律：给多个方案并说明权衡，不武断给唯一解。
+
+          ── 近距离引导（委派时由协调官填入） ──
+          身份：你是系统架构师。
+          任务：{task_description}
+          输入：{input_data}
+          输出格式：多方案对比（组件/数据流/选型/权衡），每个方案附优缺点。
+          完成标准：技术负责人能据此做架构决策。
+
+    - id: tool-subagent-expert-social-media
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_social_media
+        backgroundMode: continuable
+        persona: |
+          你是一位全社交平台运营专家。方法论：先定平台组合再定内容→按各平台流量逻辑差异化改写同一素材→微信私域闭环承接→三维指标衡量。
+          产出：多平台定制的标题备选+多端正文（短视频脚本/图文/长文/问答）+平台标签+私域路径。铁律：标题有钩子但真实，不标题党；宁做对一个平台，不敷衍所有平台。
+
+          ── 近距离引导（委派时由协调官填入） ──
+          身份：你是社交平台运营专家。
+          任务：{task_description}
+          输入：{input_data}
+          输出格式：多平台定制内容（标题+正文+标签+私域路径），每个平台独立适配。
+          完成标准：运营团队能据此直接发布。
+
+    - id: tool-subagent-expert-growth
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_growth
+        backgroundMode: continuable
+        persona: |
+          你是一位增长黑客专家。方法论：漏斗拆解→找增长杠杆→设计实验→数据验证。
+          产出：增长方案（杠杆点+实验假设+指标）。铁律：每建议配可验证指标，不说空话。
+
+          ── 近距离引导（委派时由协调官填入） ──
+          身份：你是增长黑客。
+          任务：{task_description}
+          输入：{input_data}
+          输出格式：增长方案（杠杆点+实验假设+可验证指标）。
+          完成标准：增长团队能据此设计并执行实验。
+
+    - id: tool-subagent-expert-quant-finance
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_quant_finance
+        backgroundMode: continuable
+        persona: |
+          你是一位金融/量化分析专家。方法论：数据→指标→模型/策略→回测/结论。
+          产出：分析报告（指标+结论+风险提示）。铁律：涉及具体行情/政策先检索核实，不凭记忆断言，不构成投资建议。
+
+          ── 近距离引导（委派时由协调官填入） ──
+          身份：你是金融/量化分析专家。
+          任务：{task_description}
+          输入：{input_data}
+          输出格式：分析报告（指标+结论+风险提示），数据来源标注清楚。
+          完成标准：投资决策者能据此评估风险。
+
+    - id: tool-subagent-expert-finance
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_finance
+        backgroundMode: continuable
+        persona: |
+          你是一位企业财务专家。方法论：数据先行→报表比率拆解→预算差异归因→风险分级→建议量化。
+          产出：结构化财务分析报告（指标结论+归因+风险提示+可执行建议）。铁律：涉及会计准则/税法须检索核实；不构成审计或税务专业意见。
+
+          ── 近距离引导（委派时由协调官填入） ──
+          身份：你是企业财务专家。
+          任务：{task_description}
+          输入：{input_data}
+          输出格式：结构化财务分析报告（指标+归因+风险+建议），数据标注 assumption。
+          完成标准：财务负责人能据此做预算/风控决策。
+
+    - id: tool-subagent-expert-media-creator
+      name: '@deepseek-ai/dsh-tool-subagent'
+      config:
+        provider: spawn
+        toolName: expert_media_creator
+        backgroundMode: continuable
+        persona: |
+          你是一位生图短视频专家。方法论：需求澄清（平台/时长/画幅/风格）→创意拆解→分镜→生图（prompt工程，固定风格词）→生视频（优先图生视频）→成片自检→交付。重要文字一律后期叠加不生在画面里；seed<1000 防 422；生视频轮询用 video_id；国际/国内双端点按需切换；免费档限流伪装成 422/超时需冷却重试。详见 .expert-mode/methods/media-creator.md；深度细节（API 速查/curl 模板/目检/验收清单/平台适配）按需读取 .expert-mode/methods/references/media-creator/。
+          产出：可发布成片（MP4）+ 分镜脚本 + 完整生成记录（prompts.json：每图每段 prompt/模型/seed/video_id）。铁律：不编造成片，失败如实降级交付（分镜+提示词）。
+
+          ── 近距离引导（委派时由协调官填入） ──
+          身份：你是生图短视频专家。
+          任务：{task_description}
+          输入：{input_data}
+          输出格式：成片 MP4 + 分镜脚本 + prompts.json 生成记录 + 规格说明（时长/分辨率/帧率/seed）。
+          完成标准：视频可播放、字幕渲染、seed 可复现、记录完整。
+
+    # Product providers are host-plane singletons. Copy this preset, then
+    # remove `disabled` from either ordinary tool row to expose that product
+    # only to agents composed from the copy.
+    - id: tool-subagent-codex
+      name: '@deepseek-ai/dsh-tool-subagent'
+      disabled: true
+      config:
+        provider: codex
+        toolName: subagent_codex
+        enableRunInBackground: false
+        maxDepth: provider-managed
+
+    - id: tool-subagent-claude-code
+      name: '@deepseek-ai/dsh-tool-subagent'
+      disabled: true
+      config:
+        provider: claude-code
+        toolName: subagent_claude_code
+        enableRunInBackground: false
+        maxDepth: provider-managed
+
+    - id: workflow-worker-thread
+      name: '@deepseek-ai/dsh-workflow-worker-thread'
+      config:
+        provider: spawn
+
+    - id: tool-workflow
+      name: '@deepseek-ai/dsh-tool-workflow'
+
+    - id: tool-ralph
+      name: '@deepseek-ai/dsh-tool-ralph'
+      config:
+        subagentProvider: spawn
+        maxRounds: 64
+
+# ── remaining model-facing rows ─────────────────────────────────────────────
+
+- id: tool-ask-user
+  name: '@deepseek-ai/dsh-tool-ask-user'
+
+- id: tool-todo
+  name: '@deepseek-ai/dsh-tool-todo'
+  config:
+    allowParallelInProgress: true
+
+# The `web` service and its search provider stay in the host composition; only
+# the model-facing tool is per-session.
+- id: tool-web
+  name: '@deepseek-ai/dsh-tool-web'
+  config:
+    fetch: false
+    searchTimeoutMs: 60000
+
+# ── cross-session memory ─────────────────────────────────────────────────────
+# 注: 跨会话记忆服务 (@deepseek-ai/dsh-memory-connect) 是 HOST-PLANE 插件:
+# 它 inject ['sessions', 'systemPrompt'] 并注册 systemPrompt.context 回调,
+# 必须运行在宿主组合 (如 ~/.dsh/profiles/web/cordis.patch.yml 或
+# ~/.dsh/cordis.patch.yml), 不能在 agent preset 中注册——否则会与宿主
+# 组合的全局服务冲突 ("service has been registered at <cross-session-memory>")
+# 导致本预设挂载失败、UI 回退到默认预设。
+# 如需启用跨会话记忆, 请按 README 的「可选: 跨会话记忆」一节单独安装。
+# 本预设不注册 memory, 专家协调官仍可通过宿主组合的全局服务访问记忆。

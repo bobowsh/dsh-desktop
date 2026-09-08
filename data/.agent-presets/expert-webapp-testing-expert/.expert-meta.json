@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/webapp-testing-expert.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Cypress",
+    "zh": "端测测"
+  },
+  "profession": {
+    "en": "Webapp Testing Expert",
+    "zh": "Web应用测试专家"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "帮我测试下这个Web应用",
+      "en": "Help me test this web application"
+    },
+    {
+      "zh": "搭建自动化测试和持续集成流程",
+      "en": "Build automated testing and CI pipeline"
+    },
+    {
+      "zh": "制定Web应用性能和安全测试策略",
+      "en": "Develop web application performance and security testing strategy"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "帮我测试下这个Web应用",
+    "en": "Help me test this web application"
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-webapp-testing-expert",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:03:00.136Z"
+}

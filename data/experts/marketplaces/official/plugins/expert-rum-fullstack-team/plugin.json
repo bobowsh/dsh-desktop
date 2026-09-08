@@ -1,0 +1,90 @@
+{
+ "name": "expert-rum-fullstack-team",
+ "agentName": "rum-team-lead",
+ "expertType": "team",
+ "displayName": {
+  "en": "Tencent Cloud RUM Full-Lifecycle Team",
+  "zh": "腾讯云 RUM 全链路专家团"
+ },
+ "profession": {
+  "en": "Tencent Cloud RUM Full-Lifecycle Team",
+  "zh": "腾讯云 RUM 全链路专家团"
+ },
+ "displayDescription": {
+  "en": "End-to-end Tencent Cloud RUM service: 10-platform aegis SDK integration + WebVitals/error/API/resource analytics with RUM-APM correlation",
+  "zh": "腾讯云 RUM 全链路服务：10 大平台 aegis SDK 接入 + WebVitals/异常/接口/资源分析，支持 RUM-APM 联动"
+ },
+ "description": {
+  "en": "End-to-end Tencent Cloud RUM service: 10-platform aegis SDK integration + WebVitals/error/API/resource analytics with RUM-APM correlation",
+  "zh": "腾讯云 RUM 全链路服务：10 大平台 aegis SDK 接入 + WebVitals/异常/接口/资源分析，支持 RUM-APM 联动"
+ },
+ "tags": [
+  {
+   "zh": "前端监控",
+   "en": "Frontend Monitoring"
+  },
+  {
+   "zh": "RUM 接入",
+   "en": "RUM Integration"
+  },
+  {
+   "zh": "性能分析",
+   "en": "Performance Analysis"
+  }
+ ],
+ "quickPrompts": [
+  {
+   "zh": "帮我在这个 Vue 3 项目里接入腾讯云 RUM",
+   "en": "Integrate Tencent Cloud RUM into this Vue 3 project"
+  },
+  {
+   "zh": "分析我 RUM 应用过去 7 天 LCP 最差的 5 个页面",
+   "en": "Analyze top 5 worst LCP pages in my RUM app over the last 7 days"
+  },
+  {
+   "zh": "先把小程序接入 RUM，再分析上报后的 JS 错误趋势",
+   "en": "Integrate RUM into my mini-program first, then analyze JS error trends"
+  }
+ ],
+ "defaultInitPrompt": {
+  "zh": "帮我在这个 Vue 3 项目里接入腾讯云 RUM",
+  "en": "Help me integrate Tencent Cloud RUM into my Vue 3 project"
+ },
+ "categoryId": "02-Engineering",
+ "author": {
+  "zh": "腾讯云技术运营",
+  "en": "Tencent Cloud Tech Ops"
+ },
+ "members": [
+  {
+   "name": "rum-team-lead",
+   "agentName": "rum-team-lead",
+   "displayName": {
+    "en": "Lyra",
+    "zh": "莱拉"
+   },
+   "description": "可观测性统筹官"
+  },
+  {
+   "name": "rum-integration-specialist",
+   "agentName": "rum-integration-specialist",
+   "displayName": {
+    "en": "Aiden",
+    "zh": "艾登"
+   },
+   "description": "RUM 接入官"
+  },
+  {
+   "name": "rum-performance-analyst",
+   "agentName": "rum-performance-analyst",
+   "displayName": {
+    "en": "Nova",
+    "zh": "诺瓦"
+   },
+   "description": "RUM 性能分析师"
+  }
+ ],
+ "dsh": {
+  "baseline": "standard"
+ }
+}

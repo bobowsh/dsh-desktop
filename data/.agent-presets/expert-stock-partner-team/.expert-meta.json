@@ -1,0 +1,164 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/stock-partner-lead.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Tencent WeStock Equity Research Team",
+    "zh": "腾讯自选股股票投研专家团"
+  },
+  "profession": {
+    "en": "Tencent WeStock Equity Research Team",
+    "zh": "腾讯自选股股票投研专家团"
+  },
+  "expertType": "team",
+  "members": [
+    {
+      "id": "stock-partner-lead",
+      "displayName": {
+        "en": "Yuan",
+        "zh": "圆汇众"
+      },
+      "profession": {
+        "en": "Research Editor",
+        "zh": "投研主编"
+      },
+      "role": "lead"
+    },
+    {
+      "id": "industry-strategist",
+      "displayName": {
+        "en": "Xing",
+        "zh": "星望远"
+      },
+      "profession": {
+        "en": "Industry Strategist",
+        "zh": "产业策略师"
+      },
+      "role": "member"
+    },
+    {
+      "id": "signal-chief",
+      "displayName": {
+        "en": "Zhou",
+        "zh": "洲四方"
+      },
+      "profession": {
+        "en": "Signal Chief",
+        "zh": "信号派首席"
+      },
+      "role": "member"
+    },
+    {
+      "id": "valuation-analyst",
+      "displayName": {
+        "en": "Wen",
+        "zh": "文衡价"
+      },
+      "profession": {
+        "en": "Valuation Analyst",
+        "zh": "估值分析师"
+      },
+      "role": "member"
+    },
+    {
+      "id": "contrarian-investor",
+      "displayName": {
+        "en": "Kun",
+        "zh": "坤候底"
+      },
+      "profession": {
+        "en": "Contrarian Investor",
+        "zh": "逆向投资人"
+      },
+      "role": "member"
+    },
+    {
+      "id": "fundamental-researcher",
+      "displayName": {
+        "en": "Zhao",
+        "zh": "钊审财"
+      },
+      "profession": {
+        "en": "Fundamental Researcher",
+        "zh": "财报研究员"
+      },
+      "role": "member"
+    },
+    {
+      "id": "shortterm-surfer",
+      "displayName": {
+        "en": "Lei",
+        "zh": "磊追浪"
+      },
+      "profession": {
+        "en": "Shortterm Surfer",
+        "zh": "短线冲浪手"
+      },
+      "role": "member"
+    }
+  ],
+  "memberTools": [
+    {
+      "toolName": "delegate_stock-partner-lead",
+      "label": "圆汇众",
+      "agentName": "stock-partner-lead"
+    },
+    {
+      "toolName": "delegate_industry-strategist",
+      "label": "星望远",
+      "agentName": "industry-strategist"
+    },
+    {
+      "toolName": "delegate_signal-chief",
+      "label": "洲四方",
+      "agentName": "signal-chief"
+    },
+    {
+      "toolName": "delegate_valuation-analyst",
+      "label": "文衡价",
+      "agentName": "valuation-analyst"
+    },
+    {
+      "toolName": "delegate_contrarian-investor",
+      "label": "坤候底",
+      "agentName": "contrarian-investor"
+    },
+    {
+      "toolName": "delegate_fundamental-researcher",
+      "label": "钊审财",
+      "agentName": "fundamental-researcher"
+    },
+    {
+      "toolName": "delegate_shortterm-surfer",
+      "label": "磊追浪",
+      "agentName": "shortterm-surfer"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "zh": "算力 VS 人形机器人，2026 下半年哪条主线更值得关注？",
+      "en": "Compute power vs. humanoid robots — which main theme is more worth watching in H2 2026?"
+    },
+    {
+      "zh": "兆易创新、寒武纪这波都翻倍了，当前估值和资金面怎么看？",
+      "en": "GigaDevice and Cambricon have both doubled — how do current valuations and capital flows look?"
+    },
+    {
+      "zh": "创业板创 10 年新高，从估值、资金与情绪看当前处于哪一阶段？",
+      "en": "ChiNext hits a 10-year high — where are we now by valuation, capital flows, and sentiment?"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "算力 VS 人形机器人，2026 下半年哪条主线更值得关注？",
+    "en": "Compute power vs. humanoid robots — which main theme is more worth watching in H2 2026?"
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-stock-partner-team",
+  "warnings": [],
+  "appliedAt": "2026-09-06T07:14:20.883Z"
+}

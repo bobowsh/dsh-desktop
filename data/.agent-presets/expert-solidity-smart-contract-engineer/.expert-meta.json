@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/solidity-smart-contract-engineer.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Zane",
+    "zh": "链合约"
+  },
+  "profession": {
+    "en": "Solidity Smart Contract Engineer",
+    "zh": "Solidity智能合约工程师"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们想开发区块链应用的智能合约,需要专业的Solidity开发支持,请Solidity智能合约工程师帮我们编写安全的合约代码。",
+      "en": "We want to develop smart contracts for blockchain applications and need professional Solidity development support. Please, Solidity Smart Contract Engineer, help us write secure contract code."
+    },
+    {
+      "zh": "进行智能合约安全审计和漏洞检测",
+      "en": "Conduct smart contract security audit and vulnerability detection"
+    },
+    {
+      "zh": "优化Gas消耗和合约执行效率",
+      "en": "Optimize gas consumption and contract execution efficiency"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们想开发区块链应用的智能合约,需要专业的Solidity开发支持,请Solidity智能合约工程师帮我们编写安全的合约代码。",
+    "en": "We want to develop smart contracts for blockchain applications and need professional Solidity development support. Please, Solidity Smart Contract Engineer, help us write secure contract code."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-solidity-smart-contract-engineer",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:20.889Z"
+}

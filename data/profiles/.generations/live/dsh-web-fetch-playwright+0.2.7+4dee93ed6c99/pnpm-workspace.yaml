@@ -1,0 +1,2 @@
+minimumReleaseAgeExclude:
+  - dsh-web-fetch-playwright@0.2.7

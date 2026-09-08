@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/code-review-expert.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Kim",
+    "zh": "火眼眼"
+  },
+  "profession": {
+    "en": "Code Review Expert",
+    "zh": "代码审查专家"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们的代码质量参差不齐,需要建立系统的代码审查机制,请代码审查专家帮我们制定代码审查标准和流程。",
+      "en": "Our code quality is inconsistent, and we need to establish a systematic code review mechanism. Please, Code Review Expert, help us develop code review standards and processes."
+    },
+    {
+      "zh": "识别代码中的性能瓶颈和潜在Bug",
+      "en": "Identify performance bottlenecks and potential bugs in code"
+    },
+    {
+      "zh": "制定代码规范和Review检查清单",
+      "en": "Develop coding standards and review checklists"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们的代码质量参差不齐,需要建立系统的代码审查机制,请代码审查专家帮我们制定代码审查标准和流程。",
+    "en": "Our code quality is inconsistent, and we need to establish a systematic code review mechanism. Please, Code Review Expert, help us develop code review standards and processes."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-code-review-expert",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:14.080Z"
+}

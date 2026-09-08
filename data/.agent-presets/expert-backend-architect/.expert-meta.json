@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/backend-architect.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Joy",
+    "zh": "磐石石"
+  },
+  "profession": {
+    "en": "Backend Architect",
+    "zh": "后端架构师"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们的后端系统架构需要重构,需要更好的扩展性和稳定性,请后端架构师帮我们设计可靠的后端架构方案。",
+      "en": "Our backend system architecture needs refactoring for better scalability and stability. Please, Backend Architect, help us design a reliable backend architecture solution."
+    },
+    {
+      "zh": "优化数据库架构和查询性能",
+      "en": "Optimize database architecture and query performance"
+    },
+    {
+      "zh": "制定微服务拆分和服务治理方案",
+      "en": "Develop microservice decomposition and governance plan"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们的后端系统架构需要重构,需要更好的扩展性和稳定性,请后端架构师帮我们设计可靠的后端架构方案。",
+    "en": "Our backend system architecture needs refactoring for better scalability and stability. Please, Backend Architect, help us design a reliable backend architecture solution."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-backend-architect",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:11.678Z"
+}

@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/incident-response-commander.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Sara",
+    "zh": "救火队"
+  },
+  "profession": {
+    "en": "Incident Response Commander",
+    "zh": "事故响应指挥官"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们经常遇到生产事故,需要建立标准化的应急响应机制,请事故响应指挥官帮我们制定事故处理流程。",
+      "en": "We frequently encounter production incidents and need to establish a standardized emergency response mechanism. Please, Incident Response Commander, help us develop an incident handling process."
+    },
+    {
+      "zh": "搭建故障通报和复盘体系",
+      "en": "Build incident communication and post-mortem system"
+    },
+    {
+      "zh": "设计故障预案和演练方案",
+      "en": "Design incident contingency plans and drill exercises"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们经常遇到生产事故,需要建立标准化的应急响应机制,请事故响应指挥官帮我们制定事故处理流程。",
+    "en": "We frequently encounter production incidents and need to establish a standardized emergency response mechanism. Please, Incident Response Commander, help us develop an incident handling process."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-incident-response-commander",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:17.128Z"
+}

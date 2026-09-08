@@ -1,0 +1,10 @@
+{
+  "name": "dsh-code-server-app",
+  "private": true,
+  "version": "0.0.0",
+  "allowScripts": {
+    "code-server": false,
+    "argon2": true,
+    "unrs-resolver": true
+  }
+}

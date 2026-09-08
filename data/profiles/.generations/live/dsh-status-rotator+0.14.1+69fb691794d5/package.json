@@ -1,0 +1,8 @@
+{
+  "name": "dsh-generation",
+  "private": true,
+  "version": "0.0.0",
+  "dependencies": {
+    "dsh-status-rotator": "0.14.1"
+  }
+}

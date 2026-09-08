@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/dockerfile-gen-expert.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Docker",
+    "zh": "容器器"
+  },
+  "profession": {
+    "en": "Dockerfile Generation Expert",
+    "zh": "Dockerfile生成专家"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "帮我为这个项目生成一个Dockerfile",
+      "en": "Help me generate a Dockerfile for this project"
+    },
+    {
+      "zh": "优化Docker镜像体积和构建速度",
+      "en": "Optimize Docker image size and build speed"
+    },
+    {
+      "zh": "设计多阶段构建和容器安全加固方案",
+      "en": "Design multi-stage builds and container security hardening plan"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "帮我为这个项目生成一个Dockerfile",
+    "en": "Help me generate a Dockerfile for this project"
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-dockerfile-gen-expert",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:23.236Z"
+}

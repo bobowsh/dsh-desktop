@@ -1,0 +1,129 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/engineering-director.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Engineering Assurance Team",
+    "zh": "工程保障团队"
+  },
+  "profession": {
+    "en": "Engineering Assurance Team",
+    "zh": "工程保障团队"
+  },
+  "expertType": "team",
+  "members": [
+    {
+      "name": "engineering-director",
+      "agentName": "engineering-director",
+      "displayName": {
+        "en": "Zhen",
+        "zh": "甄宇航"
+      },
+      "description": "工程督导"
+    },
+    {
+      "name": "code-reviewer",
+      "agentName": "code-reviewer",
+      "displayName": {
+        "en": "Cody",
+        "zh": "科迪"
+      },
+      "description": "代码审查师"
+    },
+    {
+      "name": "architect",
+      "agentName": "architect",
+      "displayName": {
+        "en": "Archi",
+        "zh": "阿奇"
+      },
+      "description": "系统架构师"
+    },
+    {
+      "name": "sre-engineer",
+      "agentName": "sre-engineer",
+      "displayName": {
+        "en": "Rex",
+        "zh": "雷克斯"
+      },
+      "description": "SRE 工程师"
+    },
+    {
+      "name": "testing-expert",
+      "agentName": "testing-expert",
+      "displayName": {
+        "en": "Tessa",
+        "zh": "泰莎"
+      },
+      "description": "测试专家"
+    },
+    {
+      "name": "tech-writer",
+      "agentName": "tech-writer",
+      "displayName": {
+        "en": "Docu",
+        "zh": "多库"
+      },
+      "description": "技术文档师"
+    }
+  ],
+  "memberTools": [
+    {
+      "toolName": "delegate_engineering-director",
+      "label": "甄宇航",
+      "agentName": "engineering-director"
+    },
+    {
+      "toolName": "delegate_code-reviewer",
+      "label": "科迪",
+      "agentName": "code-reviewer"
+    },
+    {
+      "toolName": "delegate_architect",
+      "label": "阿奇",
+      "agentName": "architect"
+    },
+    {
+      "toolName": "delegate_sre-engineer",
+      "label": "雷克斯",
+      "agentName": "sre-engineer"
+    },
+    {
+      "toolName": "delegate_testing-expert",
+      "label": "泰莎",
+      "agentName": "testing-expert"
+    },
+    {
+      "toolName": "delegate_tech-writer",
+      "label": "多库",
+      "agentName": "tech-writer"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "zh": "帮我对系统进行全面工程审查 / 运行完整的事故响应流程",
+      "en": "Help me do a comprehensive engineering review of our system / Run a full incident response workflow"
+    },
+    {
+      "zh": "制定工程质量和安全审查方案",
+      "en": "Develop engineering quality and security review plan"
+    },
+    {
+      "zh": "搭建代码审查和测试保障流程",
+      "en": "Build code review and testing assurance process"
+    }
+  ],
+  "defaultInitPrompt": {
+    "en": "Help me do a comprehensive engineering review of our system / Run a full incident response workflow",
+    "zh": "帮我对系统进行全面工程审查 / 运行完整的事故响应流程"
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-engineering-assurance-team",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:27.172Z"
+}

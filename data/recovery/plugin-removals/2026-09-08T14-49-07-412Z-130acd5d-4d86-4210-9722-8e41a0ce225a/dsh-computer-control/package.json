@@ -1,0 +1,262 @@
+{
+  "name": "dsh-profile-web",
+  "private": true,
+  "dependencies": {
+    "@frog755/dsh-prompt-vault": "^1.0.1",
+    "@jieai/dsh-plugin-vet": "^0.3.5",
+    "@tt-a1i/archify-dsh": "^0.1.0",
+    "dsh-auto-approve": "^0.6.0",
+    "dsh-auto-collapse": "^0.1.6",
+    "dsh-cdp-browser": "github:zaiwenJ/dsh-cdp-browser",
+    "dsh-channel-view": "0.0.1-spike.2",
+    "dsh-chat-import": "^0.9.0",
+    "dsh-client-auto-continue": "^0.11.4",
+    "dsh-code-server-app": "file:E:/work/aitest/dsh-plugin/dsh-code-server-app-src/dsh-code-server-app-0.1.27.tgz",
+    "dsh-computer-control": "github:JohnXu22786/computer-control#aeedb67348db55e8402e987463e4766629adac80",
+    "dsh-engineering-workflow": "github:82c86b8z86-stack/dsh-engineering-workflow#3e251eb78002625bcc238a42d9926d87c3a38bfe",
+    "dsh-expert-market": "link:E:/work/dsh-plugin-work/dsh-expert-market",
+    "dsh-expert-mode": "github:Asher-2000/dsh-expert-mode#4ad87791034b74fbdc4ad1a9a4613c155c673dba",
+    "dsh-find-plugin": "^0.3.7",
+    "dsh-input-history": "^0.2.0",
+    "dsh-openwiki": "^2.0.4",
+    "dsh-pathlink": "^0.1.3",
+    "dsh-pomodoro": "^0.5.2",
+    "dsh-prompt-optimizer": "^2.0.3",
+    "dsh-session-repair": "^0.6.2",
+    "dsh-team": "github:huxint/dsh-team",
+    "dsh-workbuddy-connect": "0.3.1",
+    "dsh-better-sidebar": "0.18.0",
+    "dsh-editor": "0.2.3",
+    "dsh-file-upload": "0.4.3",
+    "dsh-mnemon": "0.5.2",
+    "dsh-plugin-dev-kb": "1.1.0",
+    "dsh-rules-manager": "1.5.4",
+    "dsh-status-rotator": "0.14.1",
+    "dsh-vscode-mode": "0.1.49",
+    "dsh-vscode-workbench": "0.1.8",
+    "dsh-web-fetch-playwright": "0.2.7",
+    "dsh-web-search-free": "1.3.0",
+    "dshmarket": "1.44.0",
+    "gitee-ai-employee": "1.2.8",
+    "@joekytc/dsh-swarm": "0.1.2",
+    "@linxin666/dsh-client-ui-git-graph": "0.3.16",
+    "@michengai/dsh-agency-agents": "0.1.32",
+    "@michengai/dsh-skills-manager": "0.1.40",
+    "@weibaohui/dsh-continue": "0.3.0",
+    "@yugasun/dsh-web-search": "0.2.5"
+  },
+  "dsh": {
+    "profile": {
+      "bundles": [
+        "@deepseek-ai/dsh-base",
+        "@deepseek-ai/dsh-web-app",
+        "@frog755/dsh-prompt-vault",
+        "@jieai/dsh-plugin-vet",
+        "@tt-a1i/archify-dsh",
+        "dsh-auto-approve",
+        "dsh-auto-collapse",
+        "dsh-cdp-browser",
+        "dsh-channel-view",
+        "dsh-chat-import",
+        "dsh-client-auto-continue",
+        "dsh-code-server-app",
+        "dsh-computer-control",
+        "dsh-engineering-workflow",
+        "dsh-expert-market",
+        "dsh-expert-mode",
+        "dsh-find-plugin",
+        "dsh-input-history",
+        "dsh-openwiki",
+        "dsh-pathlink",
+        "dsh-pomodoro",
+        "dsh-prompt-optimizer",
+        "dsh-session-repair",
+        "dsh-team",
+        "dsh-workbuddy-connect",
+        "@joekytc/dsh-swarm",
+        "@linxin666/dsh-client-ui-git-graph",
+        "@michengai/dsh-agency-agents",
+        "@michengai/dsh-skills-manager",
+        "@weibaohui/dsh-continue",
+        "@yugasun/dsh-web-search",
+        "dsh-better-sidebar",
+        "dsh-editor",
+        "dsh-file-upload",
+        "dsh-mnemon",
+        "dsh-plugin-dev-kb",
+        "dsh-rules-manager",
+        "dsh-status-rotator",
+        "dsh-vscode-mode",
+        "dsh-vscode-workbench",
+        "dsh-web-fetch-playwright",
+        "dsh-web-search-free",
+        "dshmarket",
+        "gitee-ai-employee"
+      ],
+      "patchReload": "live"
+    },
+    "desktop": {
+      "generationProjection": {
+        "version": 1,
+        "plugins": {
+          "dsh-better-sidebar": {
+            "generationId": "dsh-better-sidebar+0.18.0+452fd92ed2d9",
+            "visibleVersion": "0.18.0",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "dsh-editor": {
+            "generationId": "dsh-editor+0.2.3+e3fed69ca3d5",
+            "visibleVersion": "0.2.3",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "dsh-file-upload": {
+            "generationId": "dsh-file-upload+0.4.3+445d32e6497b",
+            "visibleVersion": "0.4.3",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "dsh-mnemon": {
+            "generationId": "dsh-mnemon+0.5.2+4d2a35c87c5d",
+            "visibleVersion": "0.5.2",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "dsh-plugin-dev-kb": {
+            "generationId": "dsh-plugin-dev-kb+1.1.0+72d50c623f53",
+            "visibleVersion": "1.1.0",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "dsh-rules-manager": {
+            "generationId": "dsh-rules-manager+1.5.4+8a93902c543c",
+            "visibleVersion": "1.5.4",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "dsh-status-rotator": {
+            "generationId": "dsh-status-rotator+0.14.1+69fb691794d5",
+            "visibleVersion": "0.14.1",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "dsh-vscode-mode": {
+            "generationId": "dsh-vscode-mode+0.1.49+e6e97828925b",
+            "visibleVersion": "0.1.49",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "dsh-vscode-workbench": {
+            "generationId": "dsh-vscode-workbench+0.1.8+060fed5178a7",
+            "visibleVersion": "0.1.8",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "dsh-web-fetch-playwright": {
+            "generationId": "dsh-web-fetch-playwright+0.2.7+4dee93ed6c99",
+            "visibleVersion": "0.2.7",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "dsh-web-search-free": {
+            "generationId": "dsh-web-search-free+1.3.0+33bb3fd9313d",
+            "visibleVersion": "1.3.0",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "dshmarket": {
+            "generationId": "dshmarket+1.44.0+af88ab682bc0",
+            "visibleVersion": "1.44.0",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "gitee-ai-employee": {
+            "generationId": "gitee-ai-employee+1.2.8+a92a77817658",
+            "visibleVersion": "1.2.8",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "@joekytc/dsh-swarm": {
+            "generationId": "joekytc+dsh-swarm+0.1.2+b43355753591",
+            "visibleVersion": "0.1.2",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "@linxin666/dsh-client-ui-git-graph": {
+            "generationId": "linxin666+dsh-client-ui-git-graph+0.3.16+a2b610c532ac",
+            "visibleVersion": "0.3.16",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "@michengai/dsh-agency-agents": {
+            "generationId": "michengai+dsh-agency-agents+0.1.32+71429200e314",
+            "visibleVersion": "0.1.32",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "@michengai/dsh-skills-manager": {
+            "generationId": "michengai+dsh-skills-manager+0.1.40+2cadf56b36e2",
+            "visibleVersion": "0.1.40",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "@weibaohui/dsh-continue": {
+            "generationId": "weibaohui+dsh-continue+0.3.0+cf99218a6bcb",
+            "visibleVersion": "0.3.0",
+            "previousOverride": {
+              "present": false
+            }
+          },
+          "@yugasun/dsh-web-search": {
+            "generationId": "yugasun+dsh-web-search+0.2.5+bc66f4ccd2df",
+            "visibleVersion": "0.2.5",
+            "previousOverride": {
+              "present": false
+            }
+          }
+        }
+      }
+    }
+  },
+  "pnpm": {
+    "overrides": {
+      "dsh-better-sidebar": "link:../.generations/live/dsh-better-sidebar+0.18.0+452fd92ed2d9/node_modules/dsh-better-sidebar",
+      "dsh-editor": "link:../.generations/live/dsh-editor+0.2.3+e3fed69ca3d5/node_modules/dsh-editor",
+      "dsh-file-upload": "link:../.generations/live/dsh-file-upload+0.4.3+445d32e6497b/node_modules/dsh-file-upload",
+      "dsh-mnemon": "link:../.generations/live/dsh-mnemon+0.5.2+4d2a35c87c5d/node_modules/dsh-mnemon",
+      "dsh-plugin-dev-kb": "link:../.generations/live/dsh-plugin-dev-kb+1.1.0+72d50c623f53/node_modules/dsh-plugin-dev-kb",
+      "dsh-rules-manager": "link:../.generations/live/dsh-rules-manager+1.5.4+8a93902c543c/node_modules/dsh-rules-manager",
+      "dsh-status-rotator": "link:../.generations/live/dsh-status-rotator+0.14.1+69fb691794d5/node_modules/dsh-status-rotator",
+      "dsh-vscode-mode": "link:../.generations/live/dsh-vscode-mode+0.1.49+e6e97828925b/node_modules/dsh-vscode-mode",
+      "dsh-vscode-workbench": "link:../.generations/live/dsh-vscode-workbench+0.1.8+060fed5178a7/node_modules/dsh-vscode-workbench",
+      "dsh-web-fetch-playwright": "link:../.generations/live/dsh-web-fetch-playwright+0.2.7+4dee93ed6c99/node_modules/dsh-web-fetch-playwright",
+      "dsh-web-search-free": "link:../.generations/live/dsh-web-search-free+1.3.0+33bb3fd9313d/node_modules/dsh-web-search-free",
+      "dshmarket": "link:../.generations/live/dshmarket+1.44.0+af88ab682bc0/node_modules/dshmarket",
+      "gitee-ai-employee": "link:../.generations/live/gitee-ai-employee+1.2.8+a92a77817658/node_modules/gitee-ai-employee",
+      "@joekytc/dsh-swarm": "link:../.generations/live/joekytc+dsh-swarm+0.1.2+b43355753591/node_modules/@joekytc/dsh-swarm",
+      "@linxin666/dsh-client-ui-git-graph": "link:../.generations/live/linxin666+dsh-client-ui-git-graph+0.3.16+a2b610c532ac/node_modules/@linxin666/dsh-client-ui-git-graph",
+      "@michengai/dsh-agency-agents": "link:../.generations/live/michengai+dsh-agency-agents+0.1.32+71429200e314/node_modules/@michengai/dsh-agency-agents",
+      "@michengai/dsh-skills-manager": "link:../.generations/live/michengai+dsh-skills-manager+0.1.40+2cadf56b36e2/node_modules/@michengai/dsh-skills-manager",
+      "@weibaohui/dsh-continue": "link:../.generations/live/weibaohui+dsh-continue+0.3.0+cf99218a6bcb/node_modules/@weibaohui/dsh-continue",
+      "@yugasun/dsh-web-search": "link:../.generations/live/yugasun+dsh-web-search+0.2.5+bc66f4ccd2df/node_modules/@yugasun/dsh-web-search"
+    }
+  }
+}

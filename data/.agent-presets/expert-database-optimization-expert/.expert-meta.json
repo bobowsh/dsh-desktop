@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/database-optimization-expert.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Mia",
+    "zh": "索引灵"
+  },
+  "profession": {
+    "en": "Database Optimization Expert",
+    "zh": "数据库优化专家"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们的数据库性能成为系统瓶颈,查询速度慢且响应时间长,请数据库优化专家帮我们优化数据库性能。",
+      "en": "Our database performance has become a system bottleneck with slow queries and long response times. Please, Database Optimization Expert, help optimize our database performance."
+    },
+    {
+      "zh": "设计分库分表和数据归档方案",
+      "en": "Design sharding and data archiving plan"
+    },
+    {
+      "zh": "搭建数据库监控和调优体系",
+      "en": "Build database monitoring and tuning system"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们的数据库性能成为系统瓶颈,查询速度慢且响应时间长,请数据库优化专家帮我们优化数据库性能。",
+    "en": "Our database performance has become a system bottleneck with slow queries and long response times. Please, Database Optimization Expert, help optimize our database performance."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-database-optimization-expert",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:03:02.486Z"
+}

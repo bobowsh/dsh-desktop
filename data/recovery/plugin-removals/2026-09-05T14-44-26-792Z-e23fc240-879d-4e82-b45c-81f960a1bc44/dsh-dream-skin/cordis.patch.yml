@@ -1,0 +1,61 @@
+# Your patch layer for this dsh profile, applied after every bundle layer:
+# a top-level YAML array of loader patch entries (id-targeted config
+# overrides, disables, and insert lists; `!!js` expressions allowed).
+# [dsh-automation 已禁用：用户反馈“自动化按钮过多，请勿在此添加”]
+- insert:
+  - id: imc
+    name: dsh-plugin-imc
+    # 需要改默认值时用同 id 行整段覆盖（端口/管理员/论坛地址等）：
+    # config:
+    #   admin: false
+    #   forumBaseUrl: 'https://bbs.example.com'   # 技术论坛（Discuz!）地址
+  - id: mcp-codewiki
+    name: '@deepseek-ai/dsh-mcp-client'
+    config:
+      serverName: codewiki
+      transport: stdio
+      command: D:\Users\bobowsh\AppData\Roaming\Python\Python312\Scripts\codewiki.exe
+      args: ['mcp']
+
+# dsh-automation 已禁用：用户反馈“自动化按钮过多，请勿在此添加”
+- id: dsh-automation
+  disabled: true
+
+# 激活时 pending 等待不存在的 `apiProxy` 服务（依赖的 dsh-host-apiproxy 在当前
+# harness 0.1.2-alpha.1 已合并进 dsh-client-connection），导致 entry 不激活、boot 中止。
+# dsh-computer-use 同为当时已知不兼容社区 bundle，一并禁用（2026-08-30 19:42 处置）。
+- id: agent-team
+  disabled: true
+- id: dsh-computer-use
+  disabled: true
+
+# dsh-nuphus-mcp 把 browser_snapshot 等一组 browser_* 工具注册成全局 dsh tool，
+# 与内置 dsh-builtin-browser/tool-browser 同名 → plugin tree 加载失败、harness 起不来
+# （2026-08-30 处置）。其桌面自动化价值可用 dsh-computer-use 等替代，故整体禁用；
+# 若以后要恢复，须让上游把 browser_* 改名/加前缀，避免与内置冲突。
+- id: dsh-nuphus-mcp
+  disabled: true
+
+# 以下 3 个社区 bundle 与当前 harness 核心 (0.1.2-alpha.1) 不兼容，import 阶段即抛错，
+# 会连累整个 plugin tree 加载失败 (AggregateError)。先禁用让 harness 能启动；
+# 如需恢复，须升级/修正这些插件（见诊断说明）。
+- id: dsh-better-sidebar
+  disabled: true
+- id: agent-team-gui
+  disabled: true
+- id: modlens
+  disabled: true
+- id: dsh-plugin-capabilities
+  disabled: true
+- id: setting-mcp
+  disabled: true
+- id: specworkflow
+  disabled: true
+- id: bookmarks
+  disabled: true
+- id: browser
+  disabled: true
+- id: browser-electron
+  disabled: true
+- id: tool-browser
+  disabled: true

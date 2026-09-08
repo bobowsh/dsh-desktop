@@ -1,8 +1,67 @@
 import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from 'node:fs'
-import { mkdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises'
 import { dirname, join } from 'node:path'
 
 export const STORAGE_FILENAME = 'desktop-storage.json'
+
+/**
+ * Windows transient-rename error codes. An atomic tmp->dest rename can briefly
+ * fail with EPERM/EBUSY/EACCES when an external reader (Windows Defender, the
+ * Search indexer, a sync client, a file watcher) still holds a handle to the
+ * destination or the just-written tmp file. These self-resolve after a few ms,
+ * so a short backoff retry makes the atomic write robust instead of failing one
+ * flush and leaving the tmp behind (the recurring "[desktop-storage] EPERM
+ * rename async-flush" noise on Windows).
+ */
+const RENAME_RETRY_CODES = new Set(['EPERM', 'EBUSY', 'EACCES'])
+const RENAME_RETRY_ATTEMPTS = 6
+
+function renameRetryDelay(attempt: number): number {
+  // 25ms, 100ms, 225ms, 400ms, 625ms, ... (quadratic backoff)
+  return 25 * (attempt + 1) * (attempt + 1)
+}
+
+async function renameWithRetry(src: string, dest: string): Promise<void> {
+  let lastError: unknown
+  for (let i = 0; i < RENAME_RETRY_ATTEMPTS; i++) {
+    try {
+      await rename(src, dest)
+      return
+    } catch (error) {
+      lastError = error
+      const code = (error as NodeJS.ErrnoException)?.code
+      if (!RENAME_RETRY_CODES.has(code ?? '')) throw error
+      await new Promise(resolve => setTimeout(resolve, renameRetryDelay(i)))
+    }
+  }
+  throw lastError
+}
+
+function renameSyncWithRetry(src: string, dest: string): void {
+  let lastError: unknown
+  // SharedArrayBuffer + Atomics.wait gives a dependency-free synchronous sleep
+  // in the Electron main process (used on the before-quit path).
+  const waitBuf = typeof SharedArrayBuffer !== 'undefined' ? new Int32Array(new SharedArrayBuffer(4)) : null
+  for (let i = 0; i < RENAME_RETRY_ATTEMPTS; i++) {
+    try {
+      renameSync(src, dest)
+      return
+    } catch (error) {
+      lastError = error
+      const code = (error as NodeJS.ErrnoException)?.code
+      if (!RENAME_RETRY_CODES.has(code ?? '')) throw error
+      if (waitBuf) Atomics.wait(waitBuf, 0, 0, renameRetryDelay(i))
+    }
+  }
+  throw lastError
+}
+
+/** Remove a tmp file, tolerating a missing or still-locked file. */
+async function cleanupTmp(path: string): Promise<void> {
+  try {
+    await unlink(path)
+  } catch { /* tmp already gone or still locked; harmless */ }
+}
 
 export type DesktopStorageAction =
   | { type: 'set'; key: string; val: string }
@@ -111,9 +170,10 @@ export class DesktopStorageManager {
     try {
       await mkdir(dirname(this.filePath), { recursive: true })
       await writeFile(tmpPath, serialized, 'utf8')
-      await rename(tmpPath, this.filePath)
+      await renameWithRetry(tmpPath, this.filePath)
     } catch (error) {
       this.isDirty = true
+      await cleanupTmp(tmpPath)
       this.handleError(error, 'async-flush')
     }
   }
@@ -135,7 +195,7 @@ export class DesktopStorageManager {
     try {
       mkdirSync(dirname(this.filePath), { recursive: true })
       writeFileSync(tmpPath, serialized, 'utf8')
-      renameSync(tmpPath, this.filePath)
+      renameSyncWithRetry(tmpPath, this.filePath)
     } catch (error) {
       this.isDirty = true
       try {

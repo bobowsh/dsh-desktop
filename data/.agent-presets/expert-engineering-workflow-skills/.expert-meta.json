@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/engineering-workflow-coach.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Rex",
+    "zh": "工序达"
+  },
+  "profession": {
+    "en": "Engineering Practice Expert",
+    "zh": "工程实践专家"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "en": "I have a new feature to develop, help me plan from spec to task breakdown",
+      "zh": "我有个新功能要开发，帮我从 spec 到任务拆解做完整规划"
+    },
+    {
+      "en": "Review this code across correctness, security, performance, maintainability",
+      "zh": "从正确性、安全、性能、可维护性几个维度评审这段代码"
+    },
+    {
+      "en": "Help me set up CI/CD pipeline and release checklist",
+      "zh": "帮我搭建 CI/CD 流水线和发布检查清单"
+    }
+  ],
+  "defaultInitPrompt": {
+    "en": "I have a new feature to develop, help me plan from spec to task breakdown",
+    "zh": "我有个新功能要开发，帮我从 spec 到任务拆解做完整规划"
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-engineering-workflow-skills",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:33.206Z"
+}

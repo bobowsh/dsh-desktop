@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/lsp-index-engineer.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Priya",
+    "zh": "索引引"
+  },
+  "profession": {
+    "en": "LSP Index Engineer",
+    "zh": "LSP索引工程师"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们需要构建语言服务提供商的索引系统,请LSP索引工程师帮我们设计索引架构。",
+      "en": "We need to build a Language Service Provider indexing system. Please, LSP Index Engineer, help us design the indexing architecture."
+    },
+    {
+      "zh": "设计代码索引和符号解析方案",
+      "en": "Design code indexing and symbol resolution plan"
+    },
+    {
+      "zh": "优化LSP性能和跨语言支持",
+      "en": "Optimize LSP performance and cross-language support"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们需要构建语言服务提供商的索引系统,请LSP索引工程师帮我们设计索引架构。",
+    "en": "We need to build a Language Service Provider indexing system. Please, LSP Index Engineer, help us design the indexing architecture."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-lsp-index-engineer",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:20.130Z"
+}

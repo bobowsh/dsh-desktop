@@ -1,0 +1,8 @@
+{
+  "name": "dsh-generation",
+  "private": true,
+  "version": "0.0.0",
+  "dependencies": {
+    "@wowyuarm/dsh-agent-team": "0.1.8"
+  }
+}

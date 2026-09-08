@@ -1,0 +1,8 @@
+{
+  "name": "dsh-generation",
+  "private": true,
+  "version": "0.0.0",
+  "dependencies": {
+    "@weibaohui/dsh-continue": "0.3.0"
+  }
+}

@@ -1,0 +1,117 @@
+{
+ "name": "expert-engineering-assurance-team",
+ "agentName": "engineering-director",
+ "expertType": "team",
+ "displayName": {
+  "en": "Engineering Assurance Team",
+  "zh": "工程保障团队"
+ },
+ "profession": {
+  "en": "Engineering Assurance Team",
+  "zh": "工程保障团队"
+ },
+ "displayDescription": {
+  "en": "A team of 5 engineering specialists led by an Engineering Director: Code Reviewer (security/performance/correctness), Architect (system design/ADR), SRE Engineer (incident response/deploy), Testing Expert (test strategy/coverage), and Tech Writer (documentation/runbooks). Handles complex engineering workflows from code review to incident response.",
+  "zh": "由工程总监领导的 5 人工程专家团队：代码审查师（安全/性能/正确性）、架构师（系统设计/ADR）、SRE 工程师（事故响应/部署）、测试专家（测试策略/覆盖率）和技术文档师（文档/Runbook）。处理从代码审查到事故响应的复杂工程工作流。"
+ },
+ "description": {
+  "en": "A team of 5 engineering specialists led by an Engineering Director: Code Reviewer (security/performance/correctness), Architect (system design/ADR), SRE Engineer (incident response/deploy), Testing Expert (test strategy/coverage), and Tech Writer (documentation/runbooks). Handles complex engineering workflows from code review to incident response.",
+  "zh": "由工程总监领导的 5 人工程专家团队：代码审查师（安全/性能/正确性）、架构师（系统设计/ADR）、SRE 工程师（事故响应/部署）、测试专家（测试策略/覆盖率）和技术文档师（文档/Runbook）。处理从代码审查到事故响应的复杂工程工作流。"
+ },
+ "tags": [
+  {
+   "zh": "工程保障",
+   "en": "Engineering Assurance"
+  },
+  {
+   "zh": "代码审查",
+   "en": "Code Review"
+  },
+  {
+   "zh": "架构评审",
+   "en": "Architecture Review"
+  }
+ ],
+ "quickPrompts": [
+  {
+   "zh": "帮我对系统进行全面工程审查 / 运行完整的事故响应流程",
+   "en": "Help me do a comprehensive engineering review of our system / Run a full incident response workflow"
+  },
+  {
+   "zh": "制定工程质量和安全审查方案",
+   "en": "Develop engineering quality and security review plan"
+  },
+  {
+   "zh": "搭建代码审查和测试保障流程",
+   "en": "Build code review and testing assurance process"
+  }
+ ],
+ "defaultInitPrompt": {
+  "en": "Help me do a comprehensive engineering review of our system / Run a full incident response workflow",
+  "zh": "帮我对系统进行全面工程审查 / 运行完整的事故响应流程"
+ },
+ "categoryId": "02-Engineering",
+ "author": {
+  "zh": "WorkBuddy团队",
+  "en": "WorkBuddy Team"
+ },
+ "members": [
+  {
+   "name": "engineering-director",
+   "agentName": "engineering-director",
+   "displayName": {
+    "en": "Zhen",
+    "zh": "甄宇航"
+   },
+   "description": "工程督导"
+  },
+  {
+   "name": "code-reviewer",
+   "agentName": "code-reviewer",
+   "displayName": {
+    "en": "Cody",
+    "zh": "科迪"
+   },
+   "description": "代码审查师"
+  },
+  {
+   "name": "architect",
+   "agentName": "architect",
+   "displayName": {
+    "en": "Archi",
+    "zh": "阿奇"
+   },
+   "description": "系统架构师"
+  },
+  {
+   "name": "sre-engineer",
+   "agentName": "sre-engineer",
+   "displayName": {
+    "en": "Rex",
+    "zh": "雷克斯"
+   },
+   "description": "SRE 工程师"
+  },
+  {
+   "name": "testing-expert",
+   "agentName": "testing-expert",
+   "displayName": {
+    "en": "Tessa",
+    "zh": "泰莎"
+   },
+   "description": "测试专家"
+  },
+  {
+   "name": "tech-writer",
+   "agentName": "tech-writer",
+   "displayName": {
+    "en": "Docu",
+    "zh": "多库"
+   },
+   "description": "技术文档师"
+  }
+ ],
+ "dsh": {
+  "baseline": "standard"
+ }
+}

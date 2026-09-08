@@ -1,0 +1,2 @@
+minimumReleaseAgeExclude:
+  - dsh-status-rotator@0.14.1

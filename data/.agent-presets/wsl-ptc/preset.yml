@@ -1,3 +1,0 @@
-name: 'WSL · PTC 模式'
-order: 2
-description: 'WSL execution world for ptc: bash and file tools run inside the WSL distribution.'

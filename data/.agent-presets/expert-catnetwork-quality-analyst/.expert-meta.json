@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/cat-network-quality-analyst.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Aaron",
+    "zh": "亚伦"
+  },
+  "profession": {
+    "en": "Network Quality Analyst",
+    "zh": "网络质量分析专家"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "帮分析一下云拨测任务task-xxxxxxxx最近24小时的错误情况",
+      "en": "Please analyze the error status of the cloud probe task task-xxxxxxxx over the last 24 hours."
+    },
+    {
+      "zh": "帮分析一下task-xxxxxxxx从2026年8月1日到2026年8月7日的性能情况",
+      "en": "Please analyze the performance status of the cloud probe task task-xxxxxxxx from August 1, 2026 to August 7, 2026."
+    },
+    {
+      "zh": "帮对任务task-xxxxxxxx北京移动进行抓包分析",
+      "en": "Please analyze the packet capture status of the cloud probe task task-xxxxxxxx for Beijing Mobile."
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "帮分析一下云拨测任务task-xxxxxxxx最近24小时的错误情况",
+    "en": "Please analyze the error status of the cloud probe task task-xxxxxxxx over the last 24 hours."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-catnetwork-quality-analyst",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:22.142Z"
+}

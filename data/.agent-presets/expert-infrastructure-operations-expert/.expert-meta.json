@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/infrastructure-operations-expert.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Tia",
+    "zh": "运维通"
+  },
+  "profession": {
+    "en": "Infrastructure Operations Expert",
+    "zh": "基础设施运维专家"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们的基础设施运维面临挑战,需要提升稳定性和效率,请基础设施运营专家帮我们优化IT运维。",
+      "en": "Our infrastructure operations face challenges and need improved stability and efficiency. Please, Infrastructure Operations Expert, help us optimize IT operations."
+    },
+    {
+      "zh": "制定基础设施容量规划和成本优化",
+      "en": "Develop infrastructure capacity planning and cost optimization"
+    },
+    {
+      "zh": "搭建基础设施安全和合规审计体系",
+      "en": "Build infrastructure security and compliance audit system"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们的基础设施运维面临挑战,需要提升稳定性和效率,请基础设施运营专家帮我们优化IT运维。",
+    "en": "Our infrastructure operations face challenges and need improved stability and efficiency. Please, Infrastructure Operations Expert, help us optimize IT operations."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-infrastructure-operations-expert",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:17.641Z"
+}

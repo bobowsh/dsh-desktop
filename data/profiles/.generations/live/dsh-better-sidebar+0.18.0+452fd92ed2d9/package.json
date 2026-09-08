@@ -1,0 +1,8 @@
+{
+  "name": "dsh-generation",
+  "private": true,
+  "version": "0.0.0",
+  "dependencies": {
+    "dsh-better-sidebar": "0.18.0"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/frontend-developer.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Paul",
+    "zh": "像素匠"
+  },
+  "profession": {
+    "en": "Frontend Developer",
+    "zh": "前端开发工程师"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们的前端界面需要开发,要求响应式设计和良好的用户交互体验,请前端开发工程师帮我们实现前端功能。",
+      "en": "Our frontend interface needs development with requirements for responsive design and good user interaction experience. Please, Frontend Developer, help us implement frontend features."
+    },
+    {
+      "zh": "优化前端性能和首屏加载速度",
+      "en": "Optimize frontend performance and first-screen load speed"
+    },
+    {
+      "zh": "实现复杂UI组件和交互效果",
+      "en": "Implement complex UI components and interaction effects"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们的前端界面需要开发,要求响应式设计和良好的用户交互体验,请前端开发工程师帮我们实现前端功能。",
+    "en": "Our frontend interface needs development with requirements for responsive design and good user interaction experience. Please, Frontend Developer, help us implement frontend features."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-frontend-developer",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:01:23.564Z"
+}

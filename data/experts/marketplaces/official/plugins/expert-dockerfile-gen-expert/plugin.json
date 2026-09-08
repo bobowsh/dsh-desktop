@@ -1,0 +1,57 @@
+{
+ "name": "expert-dockerfile-gen-expert",
+ "agentName": "dockerfile-gen-expert",
+ "expertType": "agent",
+ "displayName": {
+  "en": "Docker",
+  "zh": "容器器"
+ },
+ "profession": {
+  "en": "Dockerfile Generation Expert",
+  "zh": "Dockerfile生成专家"
+ },
+ "displayDescription": {
+  "en": "Automated Dockerfile generation with best practices for containerization",
+  "zh": "Dockerfile 自动生成专家，遵循容器化最佳实践"
+ },
+ "description": {
+  "en": "Automated Dockerfile generation with best practices for containerization",
+  "zh": "Dockerfile 自动生成专家，遵循容器化最佳实践"
+ },
+ "tags": [
+  {
+   "zh": "容器构建",
+   "en": "Container Build"
+  },
+  {
+   "zh": "镜像优化",
+   "en": "Image Optimization"
+  },
+  {
+   "zh": "部署配置",
+   "en": "Deploy Config"
+  }
+ ],
+ "quickPrompts": [
+  {
+   "zh": "帮我为这个项目生成一个Dockerfile",
+   "en": "Help me generate a Dockerfile for this project"
+  },
+  {
+   "zh": "优化Docker镜像体积和构建速度",
+   "en": "Optimize Docker image size and build speed"
+  },
+  {
+   "zh": "设计多阶段构建和容器安全加固方案",
+   "en": "Design multi-stage builds and container security hardening plan"
+  }
+ ],
+ "defaultInitPrompt": {
+  "zh": "帮我为这个项目生成一个Dockerfile",
+  "en": "Help me generate a Dockerfile for this project"
+ },
+ "categoryId": "02-Engineering",
+ "dsh": {
+  "baseline": "standard"
+ }
+}

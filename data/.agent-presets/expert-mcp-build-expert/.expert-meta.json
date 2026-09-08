@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/mcp-build-expert.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Rex",
+    "zh": "协议通"
+  },
+  "profession": {
+    "en": "MCP Build Expert",
+    "zh": "MCP构建专家"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们想构建MCP(Model Context Protocol)应用,需要专业的MCP开发经验,请MCP构建专家帮我们设计MCP应用。",
+      "en": "We want to build MCP (Model Context Protocol) applications and need professional MCP development experience. Please, MCP Build Expert, help us design MCP applications."
+    },
+    {
+      "zh": "设计MCP服务架构和安全方案",
+      "en": "Design MCP service architecture and security plan"
+    },
+    {
+      "zh": "搭建MCP工具测试和部署流程",
+      "en": "Build MCP tool testing and deployment pipeline"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们想构建MCP(Model Context Protocol)应用,需要专业的MCP开发经验,请MCP构建专家帮我们设计MCP应用。",
+    "en": "We want to build MCP (Model Context Protocol) applications and need professional MCP development experience. Please, MCP Build Expert, help us design MCP applications."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-mcp-build-expert",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:18.127Z"
+}

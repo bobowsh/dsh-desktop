@@ -1,63 +1,71 @@
 # dsh-desktop-me 项目约定
 
-## 自制 DSH 插件 defineTool 的 schema DSL 规范（2026-08-29，踩坑总结）
-宿主 `@deepseek-ai/dsh-tools` 的 `defineTool` **不接受原生 JSON Schema**，写错会在 harness 启动加载插件树时直接崩（exit 1）：
-- `parameters` = 「属性名 → 值 schema」映射：`{ pipelineId: { type: 'string', required: true, description } }`。必填用属性级 `required: true`，不要写顶层 `required: [...]`，更不要包一层 `{type:'object', properties:...}`（会报 `parameters.type must be a value schema object`）。
-- `output.schema` 用 `{ type: 'json' }` 最稳。若要严格 object：必须显式 `additionalProperties: true/false`，且不支持联合类型（`type:['string','null']` 非法，要 `oneOf`）。
-- `output.render` **必填**：返回内容块数组 `[{ type: 'text', text }]`；execute 返回值会按 output.schema 校验，render 每次成功调用后必然被调。
-- 注册 API 是 `ctx.tools.register(definition)` **单参数**：直接传 `defineTool({ name, output, execute, ... })` 的返回值，definition 自带 `name`+`output`。写成 `ctx.tools.register('name', defineTool({...}))` 双参会报 `tool "undefined" must declare output`（字符串被当成 definition，name/output 全丢）。
-- 服务名是复数 `tools`，inject 必须含 `'tools'`（单数 `tool` 找不到服务）。
-- 参考实现：`@dsh-external/workflow`、`@dsh-external/dsh-inspect` 的 lib。
+## 自制 DSH 插件 defineTool schema DSL
+宿主 `@deepseek-ai/dsh-tools` 的 `defineTool` **不接受原生 JSON Schema**；写错会让 harness 启动时直接 exit 1：
+- `parameters` = 「属性名 → 值 schema」映射，必填用属性级 `required: true`。不写顶层 `required: [...]`，不包 `{type:'object',properties:...}`（报 `parameters.type must be a value schema object`）。
+- `output.schema` 用 `{ type: 'json' }` 最稳；严格 object 须显式 `additionalProperties`，不支持联合类型，用 `oneOf`。
+- `output.render` **必填**，返回 `[{ type: 'text', text }]`；execute 返回值按 `output.schema` 校验，render 每次成功调用后执行。
+- 注册用 `ctx.tools.register(definition)` **单参数**（definition 自带 name+output）；双参会报 `tool "undefined" must declare output`。
+- inject 服务名复数 `tools`。
 
-## Harness home 目录（DSH_HOME 注入目标历经多次变更）
-- 历史：最早桌面壳把 harness 数据根改写成 `<userData>/harness`；2026-08-16 一度移除 `DSH_HOME` 注入，让 harness 用默认 `~/.dsh`；**2026-08-17 用户要求重新注入 `DSH_HOME`，指向"当前运行程序目录下的 `data` 目录"**（便携化：数据跟 exe 走）。
-- 当前实现（2026-08-17 生效）：
-  - `src/main/index.ts`：`dshHome = join(app.isPackaged ? dirname(process.execPath) : app.getAppPath(), 'data')`。
-    - 打包态：程序目录 = `dirname(process.execPath)`（即安装目录下的 .exe）。
-    - dev 态：`app.getAppPath()` = 项目根目录，故 `data` 落在项目根，避免落入 `node_modules/electron/dist/` 旁。
-  - `src/main/runtime/harness-runtime.ts` 的 `buildHarnessSpawnOptions` 在 env 里重新注入 `DSH_HOME: dshHome`（之前 08-16 那次把注入删了，`dshHome` 形参成了死参数；现在恢复注入）。
-  - harness 子进程 `mkdir(dshHome, recursive)` 保证目录存在。
-  - 安装器（2026-08-18 新增）：`build/installer.nsh` 的 `customInstall` 在安装完成时把**用户环境变量** `DSH_HOME` 写为 `$INSTDIR\data`（`HKCU\Environment` + `WM_SETTINGCHANGE` 广播，新进程立即可读，无需重启）；`customUnInstall` 仅在当前值仍等于 `$INSTDIR\data` 时删除（用户改指别处则保留）。目的：桌面壳外启动的进程（CLI/编辑器/脚本）也能解析到同一 harness home。语法已用 makensis 3.0.4.1 最小脚本验证通过。
-- ⚠️ **副作用（重要）**：DSH_HOME 一旦指向程序目录/data，harness 就不再读 `~/.dsh`：
-  - 现有 `~/.dsh`（30+ 插件、`settings.yaml`、`.credentials.yaml` 里的 API Key）**全部失效**，harness 启动后读写的是全新的空 `data` 目录 → 相当于"全新空 harness"。
-  - 安装器现在把 `data/`（settings.yaml + profiles/web + bin，白名单）释放到 `$INSTDIR\data`，与 DSH_HOME 一致（见下"插件注册"路径 A）；旧的 bundled-user-data → `~/.dsh` 链路已废弃。
-  - dev 跑时 `process.execPath` 是 electron.exe，`data` 会落在 `node_modules/electron/dist/` 旁边（非项目目录）——已通过 `app.isPackaged ? dirname(execPath) : app.getAppPath()` 分支解决，dev 下落在项目根目录。
-- `launch-root`（harness 启动 cwd）仍在 `userData` 下，与 DSH_HOME 是两回事，未动。
+## Harness home / 目录布局
+- `DSH_HOME` = 程序运行目录下的 `data`：打包态 `dirname(process.execPath)`，dev 态 `app.getAppPath()`。注入位置 `src/main/runtime/harness-runtime.ts:buildHarnessSpawnOptions`。
+- `launch-root`（harness cwd）在 `userData` 下，与 `DSH_HOME` 不同。
+- 副作用：`DSH_HOME` 指向 `data` 后 harness 不再读 `~/.dsh`。
 
-## 插件如何注册进打包产物（两条路径）
-工程里"把插件打包进安装器"有两条互不相同的机制，新增插件前先判断走哪条：
+## 插件注册进打包产物的两条路径
+### A. profile 插件（data/profiles/web 为真源）
+- 构建只原地做：`normalizeModulesMetadata` + `trimNativePrebuilds` + `trimPdfjsBuild`；`bin/` 每次从 `~/.mnemon/bin` 刷新；`settings.yaml` 用模板覆盖。
+- ⚠️ **market UI 装插件 = 隐式 pnpm install**，会把 profile 顶层 `@deepseek-ai/*` 重置回 npm 旧版 → 启动崩。**装完必须立刻重跑 `NODE_OPTIONS="" node scripts/sync-harness-pkgs.mjs`**。
+- 本地未发布插件用 `file:`（自包含）；`link:` 依赖见下条。
+- 包名别撞 npm：`dsh-taskboard` 已被占用，本地四象限板改名 `dsh-quadrant-board`。
 
-### 路径 A：profile 插件（社区包，如 dshmarket / dsh-better-sidebar / dsh-rule-manager 等 30+ 个）
-- **真源（single source of truth）= `data/profiles/web`（dev DSH_HOME 即打包源，2026-08-18 用户变更）**。`bundle-user-data.mjs` **不再从 `~/.dsh/profiles/web` cpSync 覆盖** data/profiles/web（旧约定"改 live profile 别改快照"已废弃）；构建只对 data/profiles/web **原地**做：`normalizeModulesMetadata`（剥 `node_modules/.modules.yaml` 的 `storeDir`/`virtualStoreDir` 机器绝对路径，`virtualStoreDirMaxLength` 数字字段无害保留；`pnpm-workspace.yaml` 若缺 `storeDir: ~/AppData/Local/pnpm/store` 则追加）+ `trimNativePrebuilds`（pdb/非 x64 prebuilds）+ `trimPdfjsBuild`。打包产物 = data/profiles/web 的当前内容（白名单 `extraResources filter: ["settings.yaml","profiles/web/**","bin/**"]`，`from: data` → `$INSTDIR\data`）。
-- 装/更新插件：直接在 `data/profiles/web` 里做（market UI，或项目根 pnpm `node_modules/pnpm/bin/pnpm.cjs` v11.21.0 + `NODE_OPTIONS=""`，避 Git Bash 盘符坑 `e:\e\work\...`）；改完重新构建即进包。`pnpm-workspace.yaml` 是 `nodeLinker: hoisted`，node_modules 自包含（HardLink 拷出物化为独立文件，非 symlink）。
-- ⚠️ **data/profiles/web 是 dev 真源，坏了没有 live 可恢复**（以前可从 ~/.dsh 重拷）：对它的 pnpm 操作被中断可能移走部分包（如 @anionex scope 消失导致 harness 启动失败），务必跑完整个命令。
-- ⚠️ `.modules.yaml` 的机器路径：构建时被剥（打包产物干净）；dev 运行时桌面壳 `harness-runtime.ts` 的 `syncModulesMetadata` 启动时重写当前机器 storeDir。dev 里 `pnpm add` 前若 .modules.yaml 无 storeDir 会报 `ERR_PNPM_UNEXPECTED_STORE`（重启 dev 或手动补回）。
-- `bin/` 仍每次从 `~/.mnemon/bin` 刷新（构建输入）；`settings.yaml` 仍用 `data/settings.template.yaml` 覆盖（防泄漏：dev UI 改的 provider/key 不会进包）。
-- 插件靠自身 package.json 的 cordis 字段自注册；profile 级 `cordis.yml` / `cordis.patch.yml` 可覆盖配置。
-- ⚠️ **market UI 装插件 = 隐式 pnpm install（2026-08-30 实锤）**：会把 profile 顶层 `@deepseek-ai/*` 重置回 npm 旧版（latest 仍是 0.0.1-rc.1），遮蔽 harness 核心 → 启动即崩（`loader entries failed to apply`，几十个 entry 报缺 `ToolCallId`/`SettingsProvider` 等）。**装完必须立刻重跑 `NODE_OPTIONS="" node scripts/sync-harness-pkgs.mjs`**。临时救急可整批移出 profile 顶层 @deepseek-ai（dev 态解析回落宿主 node_modules），但打包态不保证回落，正式修法永远是 sync。排查 AggregateError 子错误用 `--import` preload patch AggregateError 收集 `e.errors`；grep API 名（ToolCallId/CallId）必须加 `\b` 词边界防子串误判。
+### B. 桌面壳自有注入插件
+- 根 `package.json` 的 `file:` 依赖 → electron-builder 打包；运行时靠 `build/dsh-desktop.patch.yml` 的 `insert` 块，由 `src/main/index.ts` 传给 harness。
+- ⚠️ **cordis 不允许跨 patch 层重复 entry id**，即使都 `disabled: true` 也报错。
 
-- **本地 file: 依赖插件（路径 A 变体，2026-09-02）**：本地开发、未发 npm 的插件放项目根 `vendor/<pkg>/`（git 跟踪），profile 里用 `"<pkg>": "file:../../../vendor/<pkg>"` 引用。pnpm 把它 **hardlink 物化**进 node_modules（`lstatSync().isSymbolicLink()===false`、inode 相同）→ 自包含，bundle-user-data.mjs 的 symlink 物化对它 no-op。原地改 vendor 即时反映；增删文件或编辑器 rename 保存后需重跑 `pnpm install`。
-- ⚠️ 本地包名别和 npm 同名包撞车：`dsh-taskboard` 已被 cloader 占用（agent task board，只到 0.6.3，无 1.x）；本地四象限任务板已改名 `dsh-quadrant-board`（`vendor/dsh-quadrant-board`）。改名要改 5 处：package.json `name` / index.js `export const name` / client.js `id`(load+register) / cordis.patch.yml `name` / README·日志文案；cordis name 三处必须一致；`/taskboard` 路由前缀与数据目录名不改。
+## link: 依赖的模块解析坑（2026-09-06）
+profile 用 `"pkg": "link:E:/.../pkg"` 时 node_modules 里是符号链接；Node ESM 按 realpath 解析，会脱离 profile 的 node_modules → 第三方 import 报 `Cannot find package 'xxx'`。
+- 最小侵入修复：在插件目录建 `node_modules/<dep>` **junction** 指向 profile 同名包（`fs.symlinkSync(target, path, 'junction')`，Windows 免管理员）。
+- 排查只报第一个失败的包，改完要全量扫描 `lib/` 非 `node:`、非相对 import。
 
-### 路径 B：桌面壳自有注入插件（如 dsh-desktop-market-installer）
-- 它是根 `package.json` 的 `file:` 依赖 → 进 app `node_modules` → 由 electron-builder `files: node_modules/**/*` 打包。
-- 运行时注册靠 `build/dsh-desktop.patch.yml` 的 `insert` 块（每个 entry 有 `id`/`name`，可加 `disabled: true` 关闭）——`src/main/index.ts:492` 把该 yml 作为 `dshPatchPath` 传给 harness，每次启动强制注入，与用户 profile 无关。
-- yml 本身经 `extraResources` 从 `build/dsh-desktop.patch.yml` → `resources/dsh-desktop.patch.yml`。
+## 构建链路
+- 流程：`npm run build`（electron-vite）→ `node scripts/bundle-user-data.mjs` → `npx electron-builder --win --x64`。
+- ⚠️ 必须在普通终端跑，WorkBuddy 的 safe-delete 垫片会让构建死锁 / harness boot 崩。
 
-### 构建链路（build-installer.ps1）
-`npm run build`（electron-vite）→ `node scripts/bundle-user-data.mjs`（data 原地整理：profiles/web 剥机器路径+瘦身、bin 从 ~/.mnemon 刷新）→ `npx electron-builder --win --x64`。⚠️ 必须在普通终端跑，不要在 WorkBuddy 里跑（safe-delete 垫片会让 electron-builder 死锁）。
+## pnpm 使用要点
+- 仓库内 pnpm：`node_modules/pnpm/bin/pnpm.cjs`（v11.21.0）；Git Bash 直接调会盘符错乱，改用 PowerShell 原生路径或 `NODE_OPTIONS=""` + 托管 node 绝对路径。
+- profile 重建：`data/profiles/web/` 下 `pnpm install --no-frozen-lockfile`；`pnpm-workspace.yaml` 是 `nodeLinker: hoisted`。
+- `.modules.yaml` 的 `storeDir` 只是安装期元数据，运行时不读。
+- ⚠️ 对 `data/profiles/web` 的 pnpm 操作被中断可能移走部分包，务必跑完。
 
-### 验证 pnpm bin 的小坑
-仓库内 pnpm bin 在项目根 `node_modules/pnpm/bin/pnpm.cjs`（v11.21.0）。⚠️ 旧记忆里 `packages/dsh-desktop-market-installer/node_modules/pnpm/...` 路径已不存在（2026-09-02 实测 NOT FOUND）。在 Git Bash 直接用会盘符错乱（`e:\e\work\...`），务必用 PowerShell 原生路径或 `NODE_OPTIONS=""` + 绝对 Windows 路径调托管 node。
-- ⚠️ store 路径记录不一致**不是致命问题**：`node_modules/.modules.yaml` 的 `storeDir` 只是 pnpm 安装期元数据，**DSH 运行时不读它**，绝不影响 app 启动/运行。若 active pnpm 解析出的 store 与记录不一致（如用 pnpm 10 跑 v11 profile、或 `.npmrc` 改了 store-dir），pnpm 在下次 `install` 会**自愈**（按 active store 重新硬链、重写 `.modules.yaml`），不报硬错；唯一风险场景是"记录的 store 已删 + 离线 + 需拉新包"才会失败。本 profile 实测：`.modules.yaml` storeDir=v11、`~/.npmrc` 无 store-dir 覆盖、实际 store 含 v11（另残留无用的 v10），三处一致 → 无问题。
+## web profile 的 node_modules 不纳入 git（2026-08-22 起）
+体积过大已不跟踪，由 `pnpm install` 重建。真源是 `package.json` / `pnpm-lock.yaml` / `pnpm-workspace.yaml` / `cordis.yml` / `cordis.patch.yml`。
 
-## web profile 的 node_modules 不再纳入 git（2026-08-22 变更）
-- 原先 `.gitignore` 用 `!data/profiles/web/node_modules/` 把这一层整体纳入 git（离线部署自带依赖），因体积过大（1.8 万+ 文件）已于 **2026-08-22 改为不跟踪**，改由 `pnpm install` 从 lockfile 重建。
-- 现状：`.gitignore` 顶层全局 `node_modules/` 已忽略该目录；`package.json` / `pnpm-lock.yaml` / `pnpm-workspace.yaml` / `cordis.yml` / `cordis.patch.yml` 仍是**构建真源**（single source of truth，被跟踪）。
-- ✅ 重建依赖：`data/profiles/web/` 下跑 `pnpm install --no-frozen-lockfile`（`NODE_OPTIONS=""` + 托管 node + 绝对 Windows 路径调仓库内 pnpm v11.21.0）。
-- ⚠️ 历史遗留：当天 `65c40d0` 曾把 node_modules 加进 git，紧接着 `e334558` 又把整层删掉——一次性清理，非常态；之后该目录不再进版本库，也**不要再用 `!` 规则重新纳入**。
+## 插件 generation 原子更新机制（.generations）
+- 结构：`data/profiles/.generations/{live,staging,trash}` + `desired.json`（事实源，generation id 数组）。
+- 启动流程 `prepareGenerationsForLaunch` 跑 `sweepRegistry` + `projectGenerations`；`resolveEnabledGenerations` 若 desired 指向不存在的 live 目录会直接抛错，进入安全模式。
+- 校验 `verifyGenerationPeers` 要求 `live/<id>/node_modules/<pkg>` 是真实目录且有可读 `package.json`。
+- 2026-09-06 已修：pnpm hoisted 会把顶层远程 npm 包物化为指向 `.pnpm` store 的 symlink，导致 self-contained 校验失败。修复在 `packages/dsh-desktop-market-installer/generations/installer.mjs` 增加 `dereferenceTopLevelSymlinks`。
+- **排障公式**：`DSH_HOME=data NODE_OPTIONS="" node node_modules/@deepseek-ai/dsh/lib/bin.js web --dump-config`（EXIT=0=健康）；检查 `desired.json` 与 `live/` 是否一致。
 
-## git 引用写入怪象（本机 WorkBuddy 便携 git）
-- 症状：本机 `PortableGit 1.2.0` 对 `refs/remotes/origin/*` 下**新建引用写入被吞**——`git update-ref <ref> <sha>` 与 `git fetch ...:<refs/remotes/origin/X>` 都报 `rc=0` 但引用不落盘（loose 文件不建、packed-refs 不加、连 reflog 都不追加）。普通 `mkdir`/`printf` 文件系统写正常。
-- ✅ 绕过：手动写 loose 引用再折叠 —— `mkdir -p .git/refs/remotes/origin && printf '%s\n' <SHA> > .git/refs/remotes/origin/<branch>` → `git pack-refs --all`（折叠进 packed-refs，与 origin/main 同存储方式）→ 引用持久化、git 可读。
-- 🔎 诊断提示：`git pull/fetch` 报 `.../info/refs not valid: is this a git repository?` 几乎都是 **GitHub 443 连接超时**（网络抖动，间歇可达），不是仓库或配置问题；先用 `curl -I https://github.com/<repo>/info/refs?service=git-upload-pack` 探连通性。若 `origin/<branch>` 引用缺失导致 pull/merge 报错，按上法手动重建该引用。
+### 2026-09-08 修复：dsh-computer-use generation 损坏导致安全模式
+- 现象：启动报 `pending plugin removal projection failed: generation projection failed: Enabled generation package manifest is missing or unreadable for dsh-computer-use: ENOENT: .../node_modules/dsh-computer-use/package.json`。
+- 根因：`desired.json` 指向的 `live/dsh-computer-use+0.2.0+...` 里 `node_modules/dsh-computer-use` 是空目录，`package.json` 缺失；无 `.7z` 恢复包。
+- 修复（最低侵入）：
+  1. 备份 `desired.json`。
+  2. 从 `desired.json` 移除该 generation id（保留其余 19 个）。
+  3. 把坏掉的 `live/dsh-computer-use+...` 移到 `trash/`。
+  4. `web/node_modules/dsh-computer-use` 是真实目录且可用（版本 0.2.3），回退到普通 profile 包运行。
+  5. 重启桌面壳退出安全模式。
+- 后续：如需重新用 generation 管理该插件，从 market 重新安装/升级。
+
+## js-yaml 版本 / ESM interop 坑（2026-09-06）
+- 现象：harness loader 报 `yaml.Type is not a constructor` 或 `js-yaml does not provide export named 'default'`。
+- 根因：profile 顶层 `js-yaml` 是 5.4.1，但 `@deepseek-ai` harness 0.1.2-rc.1 编译产物混用 4.x API（`yaml.Type`/`Schema`/`JSON_SCHEMA.extend`）。
+- in-place 修复：根 `node_modules/js-yaml` 和 `data/profiles/web/node_modules/@deepseek-ai/node_modules/js-yaml` 都换成 4.3.2 + `esm-shim.mjs` 重导出。
+- 持久化待办：应在 profile `package.json` 加 overrides 锁兼容版本 + pnpm patch，或推动上游统一 ESM 导入。
+
+## git 引用写入怪象
+- 本机 PortableGit 1.2.0 在 `refs/remotes/origin/*` 新建引用时可能写入被吞（rc=0 但不落盘）。
+- 绕过：手写 `.git/refs/remotes/origin/<branch>` 再 `git pack-refs --all`。

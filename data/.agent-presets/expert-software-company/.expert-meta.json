@@ -1,0 +1,115 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/software-team-lead.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Software Company",
+    "zh": "软件开发团队"
+  },
+  "profession": {
+    "en": "Software Company",
+    "zh": "软件开发团队"
+  },
+  "expertType": "team",
+  "members": [
+    {
+      "name": "software-team-lead",
+      "agentName": "software-team-lead",
+      "displayName": {
+        "en": "Qi",
+        "zh": "齐活林"
+      },
+      "description": "交付总监"
+    },
+    {
+      "name": "software-product-manager",
+      "agentName": "software-product-manager",
+      "displayName": {
+        "en": "Xu",
+        "zh": "许清楚"
+      },
+      "description": "产品经理"
+    },
+    {
+      "name": "software-architect",
+      "agentName": "software-architect",
+      "displayName": {
+        "en": "Gao",
+        "zh": "高见远"
+      },
+      "description": "架构师"
+    },
+    {
+      "name": "software-engineer",
+      "agentName": "software-engineer",
+      "displayName": {
+        "en": "Kou",
+        "zh": "寇豆码"
+      },
+      "description": "工程师"
+    },
+    {
+      "name": "software-qa-engineer",
+      "agentName": "software-qa-engineer",
+      "displayName": {
+        "en": "Yan",
+        "zh": "严过关"
+      },
+      "description": "QA工程师"
+    }
+  ],
+  "memberTools": [
+    {
+      "toolName": "delegate_software-team-lead",
+      "label": "齐活林",
+      "agentName": "software-team-lead"
+    },
+    {
+      "toolName": "delegate_software-product-manager",
+      "label": "许清楚",
+      "agentName": "software-product-manager"
+    },
+    {
+      "toolName": "delegate_software-architect",
+      "label": "高见远",
+      "agentName": "software-architect"
+    },
+    {
+      "toolName": "delegate_software-engineer",
+      "label": "寇豆码",
+      "agentName": "software-engineer"
+    },
+    {
+      "toolName": "delegate_software-qa-engineer",
+      "label": "严过关",
+      "agentName": "software-qa-engineer"
+    }
+  ],
+  "quickPrompts": [
+    {
+      "zh": "帮我开发一个贪吃蛇游戏",
+      "en": "Help me develop a Snake game"
+    },
+    {
+      "zh": "规划软件开发项目架构和任务分工",
+      "en": "Plan software project architecture and task assignment"
+    },
+    {
+      "zh": "搭建开发团队协作规范和交付流程",
+      "en": "Build development team collaboration standards and delivery process"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "帮我开发一个贪吃蛇游戏",
+    "en": "Help me develop a Snake game"
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-software-company",
+  "warnings": [],
+  "appliedAt": "2026-09-06T11:27:36.403Z"
+}

@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/modern-webapp-expert.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Vite",
+    "zh": "速构构"
+  },
+  "profession": {
+    "en": "Modern Webapp Expert",
+    "zh": "现代Web开发专家"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "帮我搭建一个现代化的Web应用",
+      "en": "Help me build a modern web application"
+    },
+    {
+      "zh": "使用shadcn/ui快速搭建UI组件",
+      "en": "Rapidly build UI components with shadcn/ui"
+    },
+    {
+      "zh": "设计响应式布局和交互动效",
+      "en": "Design responsive layouts and interaction animations"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "帮我搭建一个现代化的Web应用",
+    "en": "Help me build a modern web application"
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-modern-webapp-expert",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:22.704Z"
+}

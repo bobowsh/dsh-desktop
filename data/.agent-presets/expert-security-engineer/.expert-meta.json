@@ -1,0 +1,43 @@
+{
+  "baselineId": "standard",
+  "baselineHash": "f18dd942686aa71f43ffc4fd328a712f79af113fb67a35b54cb6de4fc3b84bda",
+  "disable": [],
+  "enable": [],
+  "personaFile": "agents/security-engineer.md",
+  "personaHash": "834a90a2d2824023afab41d4cb5a6dc842e35896bde50c2f70ac448e6a7b34d5",
+  "personaMode": "replaced",
+  "displayName": {
+    "en": "Vic",
+    "zh": "盾甲甲"
+  },
+  "profession": {
+    "en": "Security Engineer",
+    "zh": "安全工程师"
+  },
+  "expertType": "agent",
+  "members": [],
+  "memberTools": [],
+  "quickPrompts": [
+    {
+      "zh": "我们系统存在安全隐患,需要进行全面的安全评估和加固,请安全工程师帮我们进行安全审计和漏洞修复。",
+      "en": "Our system has security vulnerabilities and requires comprehensive security assessment and hardening. Please, Security Engineer, help us conduct a security audit and vulnerability fixes."
+    },
+    {
+      "zh": "制定安全防护和漏洞修复方案",
+      "en": "Develop security protection and vulnerability remediation plan"
+    },
+    {
+      "zh": "搭建安全监控和入侵检测体系",
+      "en": "Build security monitoring and intrusion detection system"
+    }
+  ],
+  "defaultInitPrompt": {
+    "zh": "我们系统存在安全隐患,需要进行全面的安全评估和加固,请安全工程师帮我们进行安全审计和漏洞修复。",
+    "en": "Our system has security vulnerabilities and requires comprehensive security assessment and hardening. Please, Security Engineer, help us conduct a security audit and vulnerability fixes."
+  },
+  "featured": false,
+  "marketplace": "official",
+  "packageName": "expert-security-engineer",
+  "warnings": [],
+  "appliedAt": "2026-09-06T15:02:14.561Z"
+}
