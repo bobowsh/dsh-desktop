@@ -24,6 +24,7 @@
     "dsh-session-repair": "^0.6.2",
     "dsh-team": "github:huxint/dsh-team",
     "dsh-workbuddy-connect": "0.3.1",
+    "workbuddy-hero": "file:../../../packages/workbuddy-hero",
     "dsh-better-sidebar": "0.18.0",
     "dsh-editor": "0.2.3",
     "dsh-file-upload": "0.4.3",
@@ -34,7 +35,7 @@
     "dsh-vscode-mode": "0.1.49",
     "dsh-vscode-workbench": "0.1.8",
     "dsh-web-fetch-playwright": "0.2.7",
-    "dsh-web-search-free": "1.3.0",
+    "dsh-web-search-free": "1.4.0",
     "dshmarket": "1.44.0",
     "gitee-ai-employee": "1.2.8",
     "@joekytc/dsh-swarm": "0.1.2",
@@ -166,8 +167,8 @@
             }
           },
           "dsh-web-search-free": {
-            "generationId": "dsh-web-search-free+1.3.0+33bb3fd9313d",
-            "visibleVersion": "1.3.0",
+            "generationId": "dsh-web-search-free+1.4.0+6d44f8253f96",
+            "visibleVersion": "1.4.0",
             "previousOverride": {
               "present": false
             }
@@ -237,7 +238,7 @@
       "dsh-vscode-mode": "link:../.generations/live/dsh-vscode-mode+0.1.49+e6e97828925b/node_modules/dsh-vscode-mode",
       "dsh-vscode-workbench": "link:../.generations/live/dsh-vscode-workbench+0.1.8+060fed5178a7/node_modules/dsh-vscode-workbench",
       "dsh-web-fetch-playwright": "link:../.generations/live/dsh-web-fetch-playwright+0.2.7+4dee93ed6c99/node_modules/dsh-web-fetch-playwright",
-      "dsh-web-search-free": "link:../.generations/live/dsh-web-search-free+1.3.0+33bb3fd9313d/node_modules/dsh-web-search-free",
+      "dsh-web-search-free": "link:../.generations/live/dsh-web-search-free+1.4.0+6d44f8253f96/node_modules/dsh-web-search-free",
       "dshmarket": "link:../.generations/live/dshmarket+1.44.0+af88ab682bc0/node_modules/dshmarket",
       "gitee-ai-employee": "link:../.generations/live/gitee-ai-employee+1.2.8+a92a77817658/node_modules/gitee-ai-employee",
       "@joekytc/dsh-swarm": "link:../.generations/live/joekytc+dsh-swarm+0.1.2+b43355753591/node_modules/@joekytc/dsh-swarm",

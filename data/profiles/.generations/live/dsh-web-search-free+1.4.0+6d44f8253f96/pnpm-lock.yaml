@@ -1,0 +1,47 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    dependencies:
+      dsh-web-search-free:
+        specifier: 1.4.0
+        version: 1.4.0
+
+packages:
+
+  '@deepseek-ai/cosmokit@1.8.3':
+    resolution: {integrity: sha512-qBo+ronVM6Eu2WNVJXi8JcMiqZ19T9BRIpV+5qJUFPXjGH/Z0QKcQMC/IZJ7L394YTOtJgcovbk9qP0w2GsBXQ==}
+
+  '@deepseek-ai/schemastery@3.18.2':
+    resolution: {integrity: sha512-njDtZsznjYxok7KLLlHOPyuv2efdWVbSflAHgztSfbMsg+CVraEoRe2DjOCgClYv3ZCSm7WXoaUkbB/+RY7tWQ==}
+
+  '@standard-schema/spec@1.1.0':
+    resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
+  dsh-web-search-free@1.4.0:
+    resolution: {integrity: sha512-2epHR7unp6ANCEO7P2IwmmnTANnkmvm3/0ZUtFW9Tx4enikc6Pbf1XK+GUYBBfUJPMxHUkjvh2UNGL602LqWdA==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ^4.0.1
+    peerDependenciesMeta:
+      '@deepseek-ai/cordis':
+        optional: true
+
+snapshots:
+
+  '@deepseek-ai/cosmokit@1.8.3': {}
+
+  '@deepseek-ai/schemastery@3.18.2':
+    dependencies:
+      '@deepseek-ai/cosmokit': 1.8.3
+      '@standard-schema/spec': 1.1.0
+
+  '@standard-schema/spec@1.1.0': {}
+
+  dsh-web-search-free@1.4.0:
+    dependencies:
+      '@deepseek-ai/schemastery': 3.18.2

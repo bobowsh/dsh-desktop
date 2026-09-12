@@ -16,6 +16,9 @@
       transport: stdio
       command: D:\Users\bobowsh\AppData\Roaming\Python\Python312\Scripts\codewiki.exe
       args: ['mcp']
+  # WorkBuddy 风格欢迎页（本仓库 packages/workbuddy-hero，client slot 注入）
+  - id: workbuddy-hero
+    name: workbuddy-hero
 
 # dsh-automation 已禁用：用户反馈“自动化按钮过多，请勿在此添加”
 - id: dsh-automation
@@ -85,4 +88,10 @@
 - id: dsh-editor
   disabled: true
 - id: vscode-workbench
+  disabled: true
+- id: prompt-vault
+  disabled: true
+- id: prompt-optimizer
+  disabled: true
+- id: dsh-vscode-mode
   disabled: true

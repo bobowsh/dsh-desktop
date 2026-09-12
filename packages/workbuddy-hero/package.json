@@ -1,0 +1,32 @@
+{
+  "name": "workbuddy-hero",
+  "description": "WorkBuddy 风格的 DSH Web GUI 欢迎页：大标题 + 场景分段切换 + 快捷起步 chips + 宇航员吉祥物，通过 client slot 注入，不改动 harness 包本体",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./client": {
+      "default": "./lib/client.js"
+    }
+  },
+  "dsh": {
+    "engines": {
+      "dsh": ">=0.1.2-rc.1"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-renderer",
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ],
+      "platform": "web"
+    }
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "license": "MIT"
+}
