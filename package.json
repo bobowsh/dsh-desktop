@@ -25,9 +25,9 @@
   "scripts": {
     "postinstall": "patch-package && node scripts/install-brand-assets.mjs && install-electron --no",
     "dev": "node scripts/sync-harness-pkgs.mjs && electron-vite dev",
-    "build": "npm run build:market && electron-vite build",
-    "build:market": "tsc -p packages/dshmarket/tsconfig.json",
+    "build": "electron-vite build",
     "icons:generate": "node scripts/generate-app-icons.mjs",
+    "loader:generate": "node scripts/generate-loader-gifs.mjs",
     "preview": "electron-vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.node.json",
     "test": "vitest run",
@@ -276,7 +276,9 @@
     "dsh-desktop-market-installer": "file:packages/dsh-desktop-market-installer",
     "dsh-desktop-preset-transfer": "file:packages/dsh-desktop-preset-transfer",
     "dsh-llm-opencode": "git+https://github.com/bobowsh/dsh-llm-opencode.git#c8316a735b0a206240fc85fa84a57643e89855af",
-    "dshmarket": "file:packages/dshmarket",
+    "dsh-ppt": "file:packages/ppt-bundles/dsh-ppt-0.1.1-rc.2-desktop-20260906.tgz",
+    "dsh-ppt-composer": "file:packages/ppt-bundles/dsh-ppt-composer-0.1.1-rc.2-desktop-20260906.tgz",
+    "dshmarket": "1.45.1",
     "electron-updater": "^6.8.9",
     "fflate": "^0.8.3",
     "iconv-lite": "^0.7.3",
@@ -286,9 +288,7 @@
     "qrcode": "^1.5.4",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "ws": "^8.21.3",
-    "dsh-ppt": "file:packages/ppt-bundles/dsh-ppt-0.1.1-rc.2-desktop-20260906.tgz",
-    "dsh-ppt-composer": "file:packages/ppt-bundles/dsh-ppt-composer-0.1.1-rc.2-desktop-20260906.tgz"
+    "ws": "^8.21.3"
   },
   "devDependencies": {
     "@types/node": "24.10.1",

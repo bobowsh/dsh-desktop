@@ -91,5 +91,5 @@
   "dsh.conversation.session-2154b5ad-9506-4cb4-9af7-644fc51d1a3c": "{\"draft\":\"\",\"view\":null,\"viewRequest\":null}",
   "dsh-sidebar:v1:session-d3a8c6b5-2148-4476-bd5c-4570116de5c7": "{\"panelOpen\":true,\"width\":328,\"activePane\":\"pane:10\",\"nextTerminal\":1,\"nextBrowser\":1,\"expanded\":[],\"revealed\":[],\"splits\":{\"kind\":\"leaf\",\"id\":\"pane:10\",\"tabs\":[{\"id\":\"tab:11\",\"type\":\"editor\",\"title\":\"Files\",\"meta\":{\"treeOpen\":true}},{\"id\":\"subagent\",\"type\":\"subagent\",\"title\":\"任务管理\"}],\"active\":\"subagent\"},\"bottomOpen\":false,\"bottomHeight\":220,\"bottomOpenedOnce\":false,\"bottomSplits\":{\"kind\":\"leaf\",\"id\":\"pane:12\",\"tabs\":[],\"active\":null},\"floats\":[]}",
   "dsh-web-ui-telemetry-day:2026-09-12": "1",
-  "dsh.conversation.session-60acf9cb-373c-4750-afc4-c15d7cfb73e8": "{\"draft\":\"\",\"view\":null,\"viewRequest\":null}"
+  "dsh.conversation.session-60acf9cb-373c-4750-afc4-c15d7cfb73e8": "{\"draft\":\"\",\"view\":\"chat\",\"viewRequest\":null}"
 }

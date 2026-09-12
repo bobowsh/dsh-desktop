@@ -133,7 +133,14 @@ async function defaultRunInstall(options, stagingDir) {
   return new Promise((resolve) => {
     const child = spawnProcess(
       options.nodeExecutablePath,
-      [options.pnpmEntryPath, 'add', options.pluginSpec],
+      [options.pnpmEntryPath, 'add', options.pluginSpec,
+        ...(options.registry ? [`--registry=${options.registry}`] : []),
+        ...(typeof options.autoInstallPeers === 'boolean'
+          ? [`--config.auto-install-peers=${options.autoInstallPeers}`] : []),
+        ...(options.strictDepBuilds === true ? ['--config.strict-dep-builds=true'] : []),
+        ...(Number.isSafeInteger(options.minimumReleaseAge) && options.minimumReleaseAge >= 0
+          ? [`--config.minimum-release-age=${options.minimumReleaseAge}`] : [])
+      ],
       {
         cwd: stagingDir,
         env: {
@@ -195,13 +202,35 @@ async function hoistHostSingletons(generationDir) {
 }
 
 /**
- * pnpm's hoisted layout leaves every top-level `node_modules` entry — the
- * plugin itself and its direct dependencies — as a symlink pointing into the
- * `.pnpm` store. The generation self-contained check (walkGenerationPackages)
- * forbids symlinks, so before promotion we copy each top-level entry into a
- * plain real directory. `.pnpm` is then unreferenced and removed by the caller.
+ * Materialise pnpm's hoisted symlinks into real directories, but ONLY links
+ * whose target resolves inside this staging tree (pnpm's in-tree `.pnpm`
+ * virtual store). A link that escapes staging — a hostile or malformed tree
+ * pointing outside the generation — is left untouched so the
+ * walkGenerationPackages self-contained check rejects it; its external target
+ * is never copied or deleted.
  */
-async function dereferenceTopLevelSymlinks(nodeModulesDir) {
+async function dereferenceInTreeSymlinks(nodeModulesDir, stagingRoot) {
+  const root = await realpath(stagingRoot)
+  const insideRoot = (candidate) => {
+    const rel = relative(root, candidate)
+    return rel === '' || (!rel.startsWith('..') && !isAbsolute(rel))
+  }
+
+  const materialize = async (linkPath) => {
+    const info = await lstat(linkPath).catch(() => undefined)
+    if (!info?.isSymbolicLink()) return
+    let target
+    try {
+      target = await realpath(linkPath)
+    } catch {
+      return
+    }
+    // Leave any out-of-tree link for the self-contained validation to reject.
+    if (!insideRoot(target)) return
+    await unlink(linkPath)
+    await cp(target, linkPath, { recursive: true })
+  }
+
   let entries
   try {
     entries = await readdir(nodeModulesDir, { withFileTypes: true })
@@ -212,25 +241,19 @@ async function dereferenceTopLevelSymlinks(nodeModulesDir) {
     if (entry.name.startsWith('.') || entry.name === '.bin') continue
     const entryPath = join(nodeModulesDir, entry.name)
     if (entry.isDirectory()) {
-      // Scoped scope directory (e.g. @deepseek-ai): dereference each inner package.
-      const scopeEntries = await readdir(entryPath, { withFileTypes: true }).catch(() => [])
+      // Scoped bucket (e.g. @deepseek-ai): dereference each inner package.
+      let scopeEntries
+      try {
+        scopeEntries = await readdir(entryPath, { withFileTypes: true })
+      } catch {
+        continue
+      }
       for (const inner of scopeEntries) {
         if (inner.name.startsWith('.')) continue
-        const innerPath = join(entryPath, inner.name)
-        const info = await lstat(innerPath).catch(() => undefined)
-        if (info?.isSymbolicLink()) {
-          const real = await realpath(innerPath)
-          await unlink(innerPath)
-          await cp(real, innerPath, { recursive: true })
-        }
+        await materialize(join(entryPath, inner.name))
       }
     } else {
-      const info = await lstat(entryPath).catch(() => undefined)
-      if (info?.isSymbolicLink()) {
-        const real = await realpath(entryPath)
-        await unlink(entryPath)
-        await cp(real, entryPath, { recursive: true })
-      }
+      await materialize(entryPath)
     }
   }
 }
@@ -241,11 +264,31 @@ function diagnosticLine(output) {
     .split(/\r?\n/u)
     .map((line) => line.trim())
     .filter(Boolean)
-  const named = lines.filter((line) => /EPERM|EBUSY|EEXIST|ENOENT|ERR_PNPM|error/iu.test(line))
-  return (named.at(-1) ?? lines.at(-1))?.slice(0, 400)
+  // pnpm's error CODE names the cause, and it comes FIRST. The sentence that
+  // follows it — "This error happened while installing a direct dependency of
+  // <staging path>" — also matches /error/i and, being last, used to win: the
+  // log kept the path and dropped ERR_PNPM_NO_MATCHING_VERSION, which is why
+  // #337 could only be diagnosed by reproducing the install by hand.
+  const coded = lines.find((line) => /\bERR_[A-Z][A-Z0-9_]*\b/u.test(line))
+  const named = lines.filter((line) => /EPERM|EBUSY|EEXIST|ENOENT|error/iu.test(line))
+  return (coded ?? named.at(-1) ?? lines.at(-1))?.slice(0, 400)
 }
 
 export async function installGeneration(options) {
+  // A standalone staging workspace cannot see the Profile's peer policy.
+  // Carry its explicit boolean into the subprocess before the first attempt:
+  // the market may spend its single retry on a different failure (release age).
+  // Explicit command-line policy takes precedence; do not copy workspace paths.
+  if (typeof options.autoInstallPeers !== 'boolean') {
+    const workspace = await readFile(
+      join(options.dshHome, 'profiles', options.profile ?? 'web', 'pnpm-workspace.yaml'), 'utf8'
+    ).catch(error => {
+      if (error.code === 'ENOENT') return ''
+      throw error
+    })
+    const policy = /^autoInstallPeers:[ \t]*(true|false)[ \t]*(?:#.*)?\r?$/m.exec(workspace)
+    if (policy) options = { ...options, autoInstallPeers: policy[1] === 'true' }
+  }
   const { dshHome, pluginSpec, onTrace } = options
   const trace = (line) => onTrace?.(`generation-install: ${line}`)
   const layout = await ensureRegistryDirectories(dshHome)
@@ -260,7 +303,22 @@ export async function installGeneration(options) {
   // node-linker=hoisted keeps every package a real directory under the
   // generation's own node_modules — no links into a `.pnpm` store that the
   // promotion rename would strand.
-  await writeFile(join(stagingDir, '.npmrc'), 'node-linker=hoisted\nside-effects-cache=false\n')
+  //
+  // The registry line, when the caller resolved one, is what keeps the source
+  // pnpm fetches from drifting away from the source the market read version
+  // metadata from (#337). A project `.npmrc` outranks the user's `~/.npmrc`,
+  // which is the only registry pnpm could see here before.
+  const settings = ['node-linker=hoisted', 'side-effects-cache=false']
+  if (options.strictDepBuilds === true) settings.push('strict-dep-builds=true')
+  if (Number.isSafeInteger(options.minimumReleaseAge) && options.minimumReleaseAge >= 0) {
+    settings.push(`minimum-release-age=${options.minimumReleaseAge}`)
+  }
+  if (typeof options.registry === 'string' && options.registry !== '') {
+    // npm's own convention terminates a registry with a slash.
+    settings.push(`registry=${options.registry.replace(/\/+$/u, '')}/`)
+    trace(`pinned staging to ${options.registry}`)
+  }
+  await writeFile(join(stagingDir, '.npmrc'), `${settings.join('\n')}\n`)
 
   const cleanupStaging = () => rm(stagingDir, { recursive: true, force: true }).catch(() => undefined)
 
@@ -320,14 +378,18 @@ export async function installGeneration(options) {
     const manifest = JSON.parse(await readFile(installedManifestPath, 'utf8'))
     const version = typeof manifest.version === 'string' ? manifest.version : '0.0.0'
 
-    // pnpm's hoisted layout links top-level node_modules entries into .pnpm as
-    // symlinks; the generation self-contained check forbids those. Dereference
-    // every top-level entry into a real directory so remote npm plugins
-    // (dshmarket, etc.) build as generations instead of failing
-    // `package <name> is not a real directory`. The .pnpm store is kept intact
-    // as the backing store for any nested dependency that pnpm did not hoist to
-    // the top level — dropping it would orphan those resolutions.
-    await dereferenceTopLevelSymlinks(join(stagingDir, 'node_modules'))
+    if (options.expectedVersion !== undefined && version !== options.expectedVersion) {
+      await cleanupStaging()
+      return { ok: false, detail: `ERR_RESOLVED_VERSION_MISMATCH: expected ${options.expectedVersion}, installed ${version}` }
+    }
+
+    // pnpm 11 still links the hoisted plugin root and its direct dependencies
+    // into the in-tree `.pnpm` virtual store even under node-linker=hoisted.
+    // The self-contained check rejects any symlink, so materialise the links
+    // that point back into THIS staging tree's own store into real dirs. Links
+    // resolving outside staging are deliberately left as symlinks so the
+    // walkGenerationPackages self-contained check rejects them.
+    await dereferenceInTreeSymlinks(join(stagingDir, 'node_modules'), stagingDir)
 
     const hoisted = await hoistHostSingletons(stagingDir)
     if (hoisted.length > 0) {
@@ -335,7 +397,11 @@ export async function installGeneration(options) {
     }
 
     const lockfileText = await readFile(join(stagingDir, 'pnpm-lock.yaml'), 'utf8').catch(() => randomUUID())
-    const id = generationId(pluginName, version, lockfileText)
+    // Approval can change built files without changing the lockfile. Never
+    // reuse an older unbuilt generation after the user approves its scripts.
+    const buildIdentity = options.strictDepBuilds === true || approvals.length > 0
+      ? `\nbuild-policy-v1:${JSON.stringify([...approvals].sort())}:${process.platform}:${process.arch}` : ''
+    const id = generationId(pluginName, version, lockfileText + buildIdentity)
     const generationDir = join(layout.generations, id)
 
     if (existsSync(generationDir)) {
@@ -478,6 +544,86 @@ async function installedPackageManifestPaths(generationDir) {
   return { manifests, problems }
 }
 
+/**
+ * Root-entry resolution is not a package-presence test: declaration packages
+ * have no JS entry, and exports may expose only subpaths.
+ * Inspect the nearest package manifest without bypassing a nearer broken copy.
+ * The caller still checks its real path against the permitted installation roots.
+ */
+function hasRuntimeExport(value) {
+  if (typeof value === 'string') return !/\.d\.[cm]?ts$/u.test(value)
+  if (Array.isArray(value)) return value.some(hasRuntimeExport)
+  if (value === null || typeof value !== 'object') return false
+  return Object.entries(value).some(([condition, target]) =>
+    condition !== 'types' && !condition.startsWith('types@') && hasRuntimeExport(target))
+}
+
+// Follow Node's ordered conditions for an ESM import, without loading code.
+function importExportTarget(value) {
+  if (typeof value === 'string' || value === null) return value
+  if (Array.isArray(value)) {
+    for (const target of value) {
+      const selected = importExportTarget(target)
+      if (selected !== undefined) return selected
+    }
+  } else if (typeof value === 'object') {
+    for (const [condition, target] of Object.entries(value)) {
+      if (!['node', 'import', 'default'].includes(condition)) continue
+      const selected = importExportTarget(target)
+      if (selected !== undefined) return selected
+    }
+  }
+  return undefined
+}
+
+async function resolveNonRootPackage(requireFromPackage, dependency) {
+  for (const modules of requireFromPackage.resolve.paths(dependency) ?? []) {
+    const file = join(modules, dependency, 'package.json')
+    let manifest
+    try {
+      manifest = JSON.parse(await readFile(file, 'utf8'))
+    } catch (error) {
+      if (error?.code === 'ENOENT') continue
+      return undefined
+    }
+    if (manifest.name !== dependency) return undefined
+    const exported = manifest.exports
+    const rootExport = exported && typeof exported === 'object' &&
+      Object.hasOwn(exported, '.') ? exported['.'] : exported
+    const importTarget = importExportTarget(rootExport)
+    if (typeof importTarget === 'string' && importTarget.startsWith('./')) {
+      const entry = join(modules, dependency, importTarget)
+      if (existsSync(entry)) return entry
+    }
+    const declarationOnly = typeof (manifest.types ?? manifest.typings) === 'string' &&
+      !manifest.main && !hasRuntimeExport(manifest.exports)
+    const subpathOnly = manifest.exports !== null && typeof manifest.exports === 'object' &&
+      !Array.isArray(manifest.exports) && !Object.hasOwn(manifest.exports, '.') &&
+      Object.keys(manifest.exports).some((key) => key.startsWith('./'))
+    if (declarationOnly) {
+      const declaration = join(modules, dependency, manifest.types ?? manifest.typings)
+      return existsSync(declaration) ? declaration : undefined
+    }
+    // Some SDKs publish a root export without shipping its target, while their
+    // supported API is exposed through concrete client/server subpaths. Package
+    // dependency validation must not require an unused root entry. Require an
+    // existing runtime subpath instead; a manifest alone is insufficient here.
+    if (exported !== null && typeof exported === 'object' && !Array.isArray(exported)) {
+      for (const [subpath, target] of Object.entries(exported)) {
+        if (!subpath.startsWith('./') || subpath.includes('*')) continue
+        const selected = importExportTarget(target)
+        if (typeof selected !== 'string' || !selected.startsWith('./') || selected.includes('*')) continue
+        const entry = join(modules, dependency, selected)
+        if (existsSync(entry)) return entry
+      }
+    }
+    // Subpath exports are resolved when imported. A bare require is explicitly
+    // unsupported by these packages; it cannot determine whether they exist.
+    return subpathOnly ? file : undefined
+  }
+  return undefined
+}
+
 /** Verify every installed package's required runtime dependency stays in an allowed closure. */
 export async function verifyGenerationPeers(dshHome, generation) {
   const { createRequire } = await import('node:module')
@@ -485,6 +631,25 @@ export async function verifyGenerationPeers(dshHome, generation) {
   const closure = await realpath(installationClosureDir(dshHome)).catch(
     () => installationClosureDir(dshHome)
   )
+  // Harness owns the named entries in this directory. Under plain Node they
+  // are package links into the running installation (including a dev checkout),
+  // rather than files physically below the fallback directory. Trust only the
+  // matching package's canonical root, never the entire checkout or its parent.
+  const fallbackRoots = new Map()
+  const fallbackRoot = async (dependency) => {
+    if (!fallbackRoots.has(dependency)) {
+      let root
+      try {
+        const entry = join(installationClosureDir(dshHome), dependency)
+        const manifest = JSON.parse(await readFile(join(entry, 'package.json'), 'utf8'))
+        if (manifest.name === dependency) root = await realpath(entry)
+      } catch {
+        // Missing or malformed fallback entries do not authorize ancestor lookup.
+      }
+      fallbackRoots.set(dependency, root)
+    }
+    return fallbackRoots.get(dependency)
+  }
   const packageRoot = join(generation.directory, 'node_modules', generation.pluginName)
   const manifestPath = join(packageRoot, 'package.json')
   if (!existsSync(manifestPath)) return { ok: false, problems: ['plugin package root missing'] }
@@ -518,11 +683,19 @@ export async function verifyGenerationPeers(dshHome, generation) {
       ]
     )
     for (const dependency of candidates) {
+      // Optional peers are integrations supplied by the host when available.
+      // An unrelated ancestor's dev tool (e.g. TypeScript) must not turn their
+      // absence from the installation closure into a migration failure.
+      const optionalPeerOnly = Object.hasOwn(peerDependencies, dependency) &&
+        manifest.peerDependenciesMeta?.[dependency]?.optional === true &&
+        !Object.hasOwn(dependencies, dependency) &&
+        !Object.hasOwn(optionalDependencies, dependency)
+      if (optionalPeerOnly && !isHostSingleton(dependency)) continue
       let resolved
       try {
         resolved = requireFromPackage.resolve(dependency)
       } catch {
-        resolved = undefined
+        resolved = await resolveNonRootPackage(requireFromPackage, dependency)
       }
       const requiredDependency =
         Object.hasOwn(dependencies, dependency) && !Object.hasOwn(optionalDependencies, dependency)
@@ -541,7 +714,9 @@ export async function verifyGenerationPeers(dshHome, generation) {
         continue
       }
       const realResolved = await realpath(resolved).catch(() => resolved)
-      const insideClosure = isInsideDirectory(closure, realResolved)
+      const providedRoot = await fallbackRoot(dependency)
+      const insideClosure = isInsideDirectory(closure, realResolved) ||
+        (providedRoot !== undefined && isInsideDirectory(providedRoot, realResolved))
       if (isHostSingleton(dependency)) {
         if (!insideClosure) {
           problems.push(
